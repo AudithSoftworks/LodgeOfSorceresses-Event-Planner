@@ -1,0 +1,74 @@
+version: '2'
+
+services:
+  mariadb:
+    container_name: mariadb
+    image: mariadb:10.1
+    environment:
+      MYSQL_DATABASE: "basis"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: "basis"
+      POSTGRES_PASSWORD: ""
+  redis:
+    container_name: redis
+    image: redis
+  php-fpm:
+    container_name: php-fpm
+    build:
+      context: ./storage/build/scripts/php-fpm
+    image: audithsoftworks/basis:php-fpm
+    volumes:
+      - .:/var/www
+    working_dir: /var/www
+    links:
+      - mariadb
+      - postgres
+      - redis
+    environment:
+      XDEBUG_CONFIG: "remote_host=172.17.0.1"
+      REDIS_PORT: 6379
+  nginx:
+    container_name: nginx
+    build:
+      context: ./storage/build/scripts/nginx
+    image: audithsoftworks/basis:nginx
+    volumes:
+      - ./storage/build/configs/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - .:/var/www
+    working_dir: /var/www
+    links:
+      - php-fpm:phpFpm
+    networks:
+      default:
+        aliases:
+          - basis.audith.org
+  selenium-chrome:
+    container_name: selenium-chrome
+    image: selenium/standalone-chrome-debug
+  selenium-firefox:
+    container_name: selenium-firefox
+    image: selenium/standalone-firefox-debug
+  dev-env:
+    container_name: dev-env
+    build:
+      context: ./storage/build/scripts/php
+    image: audithsoftworks/basis:php
+    volumes:
+      - .:/var/www
+      - ./storage/build/configs/crontabs:/var/spool/cron/crontabs
+    working_dir: /var/www
+    links:
+      - mariadb
+      - postgres
+      - redis
+      - nginx
+    environment:
+      XDEBUG_CONFIG: "remote_host=172.18.0.1"
+      REDIS_PORT: 6379
+      WORKDIR: "/var/www"
+    stdin_open: true
+    tty: true

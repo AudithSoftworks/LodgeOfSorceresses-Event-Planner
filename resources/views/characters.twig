@@ -1,0 +1,23 @@
+{% extends "layout" %}
+
+{% use "layout/head" %}
+{% use "layout/body/header" %}
+{% use "layout/body/main" %}
+{% use "layout/body/footer" %}
+
+{% block document_head_javascripts %}
+    <script type="text/javascript" src="{{ elixir('vendor.js') }}"></script>
+    <script type="text/javascript" src="{{ elixir('index.js') }}"></script>
+{% endblock %}
+
+{% block document_head_stylesheets %}
+    <link rel="stylesheet" href="{{ elixir('vendor.css') }}">
+{% endblock %}
+
+{% block document_body_main %}
+    <main class="container">
+        <section class="col-md-12">
+            <h2 class="form-title font-green col-md-12">Characters</h2>
+        </section>
+    </main>
+{% endblock %}

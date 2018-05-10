@@ -1,0 +1,6 @@
+@include font-face(RobotoCondensed, $font-public-path + robotocondensed/RobotoCondensed-Light, 300, normal, eot woff2 woff ttf);
+@include font-face(RobotoCondensed, $font-public-path + robotocondensed/RobotoCondensed-LightItalic, 300, italic, eot woff2 woff ttf);
+@include font-face(RobotoCondensed, $font-public-path + robotocondensed/RobotoCondensed-Regular, 400, normal, eot woff2 woff ttf);
+@include font-face(RobotoCondensed, $font-public-path + robotocondensed/RobotoCondensed-Italic, 400, italic, eot woff2 woff ttf);
+@include font-face(RobotoCondensed, $font-public-path + robotocondensed/RobotoCondensed-Bold, 700, normal, eot woff2 woff ttf);
+@include font-face(RobotoCondensed, $font-public-path + robotocondensed/RobotoCondensed-BoldItalic, 700, italic, eot woff2 woff ttf);

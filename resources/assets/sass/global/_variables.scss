@@ -1,0 +1,30 @@
+/*
+|-----------------------------------------
+| Core bootstrap variables and mixins
+|-----------------------------------------
+*/
+@import "colors";
+@import "mixins";
+
+$direction: 'ltr' !default;
+$theme-style: 'square' !default;
+$theme-type: 'default' !default;
+
+/*
+|--------------------------------------------------------------------------------
+| Typography - Font, line-height, and color for body text, headings, and more.
+|--------------------------------------------------------------------------------
+*/
+
+$font-public-path: "/fonts/";
+
+$general-heading-color: #3f444a;
+
+/* Image paths */
+$global-img-path: '/media_assets/images/' !default;
+$page-img-path: '/media_assets/images/' !default;
+$page-media-path: '/media_assets/other/' !default;
+
+$jquery-uniform-img-path: "#{$global-img-path}global/vendor/jquery.uniform/themes/default/" !default;
+
+@import "bootstrap-override";

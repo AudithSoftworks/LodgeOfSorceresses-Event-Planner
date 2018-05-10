@@ -1,0 +1,15 @@
+.*
+/node_modules
+/vendor
+/public/build
+/public/fonts/*
+/public/hot
+/public/swagger*
+/storage/*.key
+/storage/coverage*
+!.babelrc
+!.env.*
+!.git*
+!*.yml
+_ide_helper.php
+old

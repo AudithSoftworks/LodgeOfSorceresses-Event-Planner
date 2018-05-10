@@ -1,0 +1,4 @@
+@include font-face('PT Sans', $font-public-path + pt_sans/PT_Sans-Web-Regular, 400, normal);
+@include font-face('PT Sans', $font-public-path + pt_sans/PT_Sans-Web-Bold, 700, normal);
+@include font-face('PT Sans', $font-public-path + pt_sans/PT_Sans-Web-Italic, 400, italic);
+@include font-face('PT Sans', $font-public-path + pt_sans/PT_Sans-Web-BoldItalic, 700, italic);

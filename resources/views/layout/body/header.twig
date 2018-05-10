@@ -1,0 +1,23 @@
+{% block document_body_header %}
+    <!--suppress HtmlUnknownAnchorTarget -->
+    <header class="container">
+        <h1 class="col-md-16">Lodge of Sorceresses</h1>
+        <ul class="member-bar col-md-8">
+            <li>
+                <figure>
+                    <img src="{{ user ? user.avatar : '' }}">
+                </figure>
+            </li>
+        </ul>
+        <nav class="col-md-24">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link {% if url_current() == route('home') %}active{% endif %}" href="/">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if url_current() == route('chars.index') %}active{% endif %}" href="/chars" >Characters</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+{% endblock %}

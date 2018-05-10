@@ -1,0 +1,29 @@
+{% extends "layout" %}
+
+{% use "layout/head" %}
+{% use "layout/body/header" %}
+{% use "layout/body/main" %}
+{% use "layout/body/footer" %}
+
+{% block document_head_javascripts %}
+    <script type="text/javascript" src="{{ elixir('vendor.js') }}"></script>
+    <script type="text/javascript" src="{{ elixir('index.js') }}"></script>
+{% endblock %}
+
+{% block document_head_stylesheets %}
+    <link rel="stylesheet" href="{{ elixir('vendor.css') }}">
+{% endblock %}
+
+{% block document_body_main %}
+    <main class="container">
+        <section class="col-md-12">
+            <h2 class="form-title font-green col-md-12">{{ trans_choice('auth.headings.welcome', userType, {'name' : name})|raw }}</h2>
+            <fieldset class="col-md-12">
+                <a class="btn green uppercase"
+                   href="{% if name == trans('auth.guest') %}{{ route('oauth.to', 'ips', false) }}{% else %}{{ route('logout', [], false) }}{% endif %}">
+                    {% if name == trans('auth.guest') %}{{ trans('auth.buttons.login') }}{% else %}{{ trans('auth.buttons.logout') }}{% endif %}
+                </a>
+            </fieldset>
+        </section>
+    </main>
+{% endblock %}
