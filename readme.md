@@ -1,6 +1,6 @@
 ## Lodge of Sorceresses - Event Planner (powered by Laravel 5)
 
-[![Build Status](https://travis-ci.org/AudithSoftworks/Basis.svg?branch=master)](https://travis-ci.org/AudithSoftworks/Basis)
+[![Build Status](https://travis-ci.org/AudithSoftworks/LodgeOfSorceresses-Event-Planner.svg?branch=master)](https://travis-ci.org/AudithSoftworks/Basis)
 
 [![](https://img.shields.io/docker/automated/audithsoftworks/basis.svg?maxAge=2592000?style=plastic)](https://microbadger.com/images/audithsoftworks/basis "Docker Hub public images")
 [![](https://images.microbadger.com/badges/version/audithsoftworks/basis.svg)](https://microbadger.com/images/audithsoftworks/basis "Docker Hub public images")
