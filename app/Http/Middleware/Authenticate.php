@@ -13,11 +13,18 @@ class Authenticate extends IlluminateAuthenticateMiddleware
      * @param  string[]                 ...$guards
      *
      * @return mixed
+     * @throws \Illuminate\Auth\AuthenticationException
      */
     public function handle($request, \Closure $next, ...$guards)
     {
-        if (!app('auth.driver')->check()) {
-            return redirect()->guest(route('oauth.to', 'ips', false));
+        try {
+            $this->authenticate($guards);
+        } catch (AuthenticationException $e) {
+            if ($request->expectsJson()) {
+                throw $e;
+            } else {
+                return redirect()->guest(route('oauth.to', 'ips', false));
+            }
         }
 
         return $next($request);

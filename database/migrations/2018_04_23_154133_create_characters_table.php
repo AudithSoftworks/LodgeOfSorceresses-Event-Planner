@@ -19,6 +19,7 @@ class CreateCharactersTable extends Migration
             $table->string('name');
             $table->integer('class');
             $table->integer('role');
+            $table->string('sets');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');

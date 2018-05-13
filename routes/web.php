@@ -30,5 +30,5 @@ $middleware = 'auth';
 $router->group(compact('namespace', 'middleware', 'prefix'), function (Router $router) {
     $router->get('logout', ['uses' => 'Auth\LoginController@logout', 'as' => 'logout']);
     $router->get('', ['uses' => 'HomeController@index', 'as' => 'home']);
-    $router->resource('chars', 'CharactersController');
+    $router->resource('chars', 'CharactersController')->only('index');
 });

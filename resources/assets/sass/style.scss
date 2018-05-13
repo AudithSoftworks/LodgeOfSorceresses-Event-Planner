@@ -88,17 +88,16 @@ body {
     }
 
     > main.container {
-        height: calc(100vh - 186px - 80px);
+        min-height: calc(100vh - 186px - 80px);
         background-color: rgba(white, 0.75);
         border-radius: 0 6px 6px 6px;
-        padding-top: $grid-gutter-width / 2;
-        padding-bottom: $grid-gutter-width / 2;
+        padding-top: $grid-gutter-width;
+        padding-bottom: $grid-gutter-width;
 
-        > section {
-            padding-left: 0;
-            padding-right: 0;
-
+        > section, > form {
             > h2 {
+                padding-left: 0;
+                padding-right: 0;
                 font-weight: 600;
             }
         }

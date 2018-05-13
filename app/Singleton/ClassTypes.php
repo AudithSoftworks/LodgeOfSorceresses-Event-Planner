@@ -4,13 +4,13 @@ class ClassTypes
 {
     public const CLASS_DRAGONKNIGHT = 1;
 
-    public const CLASS_SORCERER = 2;
+    public const CLASS_NIGHTBLADE = 2;
 
-    public const CLASS_NIGHTBLADE = 3;
+    public const CLASS_SORCERER = 3;
 
-    public const CLASS_WARDEN = 4;
+    public const CLASS_TEMPLAR = 4;
 
-    public const CLASS_TEMPLAR = 6;
+    public const CLASS_WARDEN = 5;
 
     /**
      * @param string $class_name

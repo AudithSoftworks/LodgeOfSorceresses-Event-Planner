@@ -21,21 +21,6 @@ test -f .env || cat .env.example | tee .env > /dev/null 2>&1;
 docker-compose exec dev-env bash -c "
     sudo mkdir -p ~;
     sudo chown -R basis:basis ~;
-    if [ ! -f ~/.bash_profile ]; then touch ~/.bash_profile; fi;
-    if [ ! \$(cat ~/.bash_profile | grep SAUCE_) ]; then
-        echo 'export SAUCE_USERNAME=\"$SAUCE_USERNAME\"' | sudo tee -a ~/.bash_profile;
-        echo 'export SAUCE_ACCESS_KEY=\"$SAUCE_ACCESS_KEY\"' | sudo tee -a ~/.bash_profile;
-    fi;
-    source ~/.bash_profile;
-
-    daemon -U --respawn -- phantomjs --webdriver=25852 --webdriver-logfile=\$WORKDIR/storage/logs/phantomjs.log --webdriver-loglevel=DEBUG;
-    if [ ! -z ${SAUCE_ACCESS_KEY+x} ]; then
-        wget -P ./storage/build/tools https://saucelabs.com/downloads/sc-4.4.9-linux.tar.gz;
-        tar -C ./storage/build/tools -xzf ./storage/build/tools/sc-4.4.9-linux.tar.gz;
-        rm ./storage/build/tools/sc-4.4.9-linux.tar.gz;
-
-        daemon -U --respawn -- /var/www/storage/build/tools/sc-4.4.9-linux/bin/sc --tunnel-domains=basis.audith.org;
-    fi;
 
     crontab -l;
     npm update;

@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Model\EquipmentSet;
+use App\Models\Character;
+use App\Singleton\RoleTypes;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class CharactersController extends Controller
 {
@@ -24,25 +27,34 @@ class CharactersController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request)
     {
-        //
+        $validator = app('validator')->make($request->all(), [
+            'name' => 'required|string',
+            'role' => 'required|integer|min:1|max:4',
+            'class' => 'required|integer|min:1|max:5',
+            'sets.*' => 'sometimes|required|numeric|exists:equipment_sets,id',
+        ]);
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
+        $character = new Character();
+        $character->user_id = app('auth.driver')->id();
+        $character->name = $request->get('name');
+        $character->role = $request->get('role');
+        $character->class = $request->get('class');
+        $character->sets = !empty($request->get('sets')) ? implode(',', $request->get('sets')) : null;
+        $character->save();
+
+        return response()->json(['success' => true], 201);
     }
 
     /**
