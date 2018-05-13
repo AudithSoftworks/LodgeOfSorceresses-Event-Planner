@@ -4,17 +4,11 @@
     {% block document_head_description %}<meta name="description" content="Audith.Basis">{% endblock %}
 
     <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="author" content="Shahriyar Imanov <shehi@imanov.me>">
-
-    <meta name="google" content="notranslate">
-
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     {# Viewport metatags #}
     <meta name="HandheldFriendly" content="true">
     <meta name="MobileOptimized" content="480">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     {# iOS webapp metatags #}
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -31,8 +25,8 @@
 
     <link rel="shortcut icon" href="/favicon.ico">
 
-    {% block document_head_javascripts %}{% endblock %}
     {% block document_head_stylesheets %}{% endblock %}
+    {% block document_head_javascripts %}{% endblock %}
 
     {% if errors.any %}{% set flashMessage, flashType = errors.all, 'error' %}{% endif %}
     {% if session_has('message') %}{% set flashMessage, flashType = session_get('message'), 'success' %}{% endif %}

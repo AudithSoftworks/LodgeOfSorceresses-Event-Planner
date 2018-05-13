@@ -6,8 +6,8 @@
 {% use "layout/body/footer" %}
 
 {% block document_head_javascripts %}
-    <script type="text/javascript" src="{{ elixir('vendor.js') }}"></script>
-    <script type="text/javascript" src="{{ elixir('index.js') }}"></script>
+    <script defer="defer" type="text/javascript" src="{{ elixir('vendor.js') }}"></script>
+    <script defer="defer" type="text/javascript" src="{{ elixir('index.js') }}"></script>
 {% endblock %}
 
 {% block document_head_stylesheets %}
@@ -15,9 +15,16 @@
 {% endblock %}
 
 {% block document_body_main %}
-    <main class="container">
+    <main class="container" id="root">
         <section class="col-md-12">
             <h2 class="form-title font-green col-md-12">Characters</h2>
+            <article>
+                <ul>
+                    <li></li>
+                </ul>
+            </article>
         </section>
+        <form class="col-md-12 hidden">
+        </form>
     </main>
 {% endblock %}

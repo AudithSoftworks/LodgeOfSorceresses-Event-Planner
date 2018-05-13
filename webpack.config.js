@@ -27,7 +27,7 @@ let common = {
     },
     output: {
         path: PATHS.build,
-        publicPath: '/build/',
+        publicPath: '/build',
         filename: process.env.NODE_ENV === 'development' ? '[name].js' : '[name].[contenthash].js',
         chunkFilename: '[name].[contenthash].js' // This is used for require.ensure. The setup will work without but this is useful to set.
     },
@@ -44,7 +44,7 @@ let common = {
         }),
         // ensure that we get a production build of any dependencies this is primarily for React, where this removes 179KB from the bundle
         new DefinePlugin({
-            'process.env.NODE_ENV': '"production"'
+            'process.env.NODE_ENV': process.env.NODE_ENV === 'development' ? '"development"' : '"production"'
         })
     ],
     resolve: {

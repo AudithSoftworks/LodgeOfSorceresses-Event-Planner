@@ -12,10 +12,10 @@
         <nav class="col-md-24">
             <ul class="nav nav-tabs">
                 <li class="nav-item">
-                    <a class="nav-link {% if url_current() == route('home') %}active{% endif %}" href="/">Dashboard</a>
+                    <a class="{% if url_current() == route('home') %}active{% endif %}" href="/">Dashboard</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if url_current() == route('chars.index') %}active{% endif %}" href="/chars" >Characters</a>
+                    <a class="{% if url_current() == route('chars.index') %}active{% endif %}" href="/chars" >Characters</a>
                 </li>
             </ul>
         </nav>

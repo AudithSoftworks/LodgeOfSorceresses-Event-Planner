@@ -1,5 +1,8 @@
-require('../sass/style.scss');
+import '../sass/style.scss';
 
-import jQuery from 'jquery/src/core';
-import Util from 'bootstrap/js/src/util';
-import Tab from 'bootstrap/js/src/tab';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { CharacterCreateForm, CharacterList } from './Components/Characters';
+
+ReactDOM.render(<CharacterCreateForm/>, document.getElementById('root'));
+ReactDOM.render(<CharacterList/>, document.getElementById('root'));
