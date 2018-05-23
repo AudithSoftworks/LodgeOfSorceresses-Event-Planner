@@ -8,23 +8,13 @@ test -f .env || sed \
     -e "s/SAUCE_ACCESS_KEY=.*/SAUCE_ACCESS_KEY=${SAUCE_ACCESS_KEY}/g" .env.example \
     | tee .env > /dev/null 2>&1;
 
-docker-compose exec --privileged dev-env /bin/bash -c "
+docker-compose exec --privileged nginx bash -c "cat /etc/hosts | sed s/localhost/localhost\ basis.audith.org/g | tee /etc/hosts";
+
+docker-compose exec --privileged dev /bin/bash -c "
     export NPM_CONFIG_LOGLEVEL=warn;
-    export SAUCE_BUILD=audithsoftworks-basis-travis-job-${TRAVIS_JOB_NUMBER};
-    export SAUCE_USERNAME=${SAUCE_USERNAME};
-    export SAUCE_ACCESS_KEY=${SAUCE_ACCESS_KEY};
 
     sudo mkdir -p ~;
-    sudo chown -R basis:basis ~;
-
-    daemon -U --respawn -- phantomjs --webdriver=25852 --webdriver-logfile=\$WORKDIR/storage/logs/phantomjs.log --webdriver-loglevel=DEBUG;
-    if [[ ${DB_CONNECTION} == 'mysql' ]]; then
-        wget -P ./storage/build/tools https://saucelabs.com/downloads/sc-4.4.9-linux.tar.gz;
-        tar -C ./storage/build/tools -xzf ./storage/build/tools/sc-4.4.9-linux.tar.gz;
-        rm ./storage/build/tools/sc-4.4.9-linux.tar.gz;
-
-        daemon -U --respawn -- /var/www/storage/build/tools/sc-4.4.9-linux/bin/sc --tunnel-domains=basis.audith.org;
-    fi;
+    sudo chown -R audith:audith ~;
 
     crontab -l;
     npm update;
@@ -67,7 +57,7 @@ docker-compose exec --privileged dev-env /bin/bash -c "
     ./storage/build/tools/css3_font_converter/convertFonts.sh --use-font-weight --output=public/fonts/marcellus/stylesheet.css public/fonts/marcellus/*.ttf;
 
     npm run build;
-    composer update --prefer-source --no-interaction;
+    composer install --prefer-source --no-interaction;
 
     ./artisan key:generate;
     ./artisan migrate;

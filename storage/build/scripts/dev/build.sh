@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
 
-#docker build -f storage/build/scripts/nginx/Dockerfile -t audithsoftworks/basis:nginx .
-#docker build -f storage/build/scripts/php_7/Dockerfile -t audithsoftworks/basis:php_7 .;
-#docker build -f storage/build/scripts/php_7-fpm/Dockerfile -t audithsoftworks/basis:php_7-fpm .;
-
-#docker-compose build
 docker-compose pull;
 
 docker-compose down;
@@ -13,14 +8,18 @@ docker-compose ps;
 
 test -f .env || cat .env.example | tee .env > /dev/null 2>&1;
 
-###############################################################################################################
-# IMPORTANT NOTE: Before running the next command, make sure you have also exported SAUCE_USERNAME
-# and SAUCE_ACCESS_KEY env variables to the environment for which the next 'docker exec' is being run.
-###############################################################################################################
+docker-compose exec dev bash -c "
+    if [[ \$(id -g) != \${MYGID} || \$(id -u) != \${MYUID} ]]; then
+        sudo groupmod -g \${MYGID} audith;
+        sudo usermod -u \${MYUID} -g \${MYGID} audith;
+    fi;
+";
 
-docker-compose exec dev-env bash -c "
+docker-compose exec nginx bash -c "cat /etc/hosts | sed s/localhost/localhost\ basis.audith.org/g | tee /etc/hosts";
+
+docker-compose exec dev bash -c "
     sudo mkdir -p ~;
-    sudo chown -R basis:basis ~;
+    sudo chown -R audith:audith ~;
 
     crontab -l;
     npm update;
@@ -62,7 +61,7 @@ docker-compose exec dev-env bash -c "
     ./storage/build/tools/css3_font_converter/convertFonts.sh --use-font-weight --output=public/fonts/robotocondensed/stylesheet.css public/fonts/robotocondensed/*.ttf;
 
     npm run build;
-    composer update --prefer-source --no-interaction;
+    composer install --prefer-source --no-interaction;
 
     ./artisan key:generate;
     ./artisan migrate;

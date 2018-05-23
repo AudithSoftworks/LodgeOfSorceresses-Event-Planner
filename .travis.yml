@@ -34,11 +34,7 @@ install:
 #  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo `curl -s $PR | jq -r .head.ref`; fi)
 #  - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH"
 
-  - if [[ $TRAVIS_TAG == 'docker-build' ]]; then docker build -qf storage/build/scripts/nginx/Dockerfile -t audithsoftworks/basis:nginx .; else docker pull audithsoftworks/basis:nginx; fi;
-  - if [[ $TRAVIS_TAG == 'docker-build' ]]; then docker build -qf storage/build/scripts/php/Dockerfile -t audithsoftworks/basis:php .; fi;
-  - if [[ $TRAVIS_TAG == 'docker-build' ]]; then docker build -qf storage/build/scripts/php-fpm/Dockerfile -t audithsoftworks/basis:php-fpm .; fi;
-  - if [[ $TRAVIS_TAG != 'docker-build' ]]; then docker pull audithsoftworks/basis:php; fi;
-  - if [[ $TRAVIS_TAG != 'docker-build' ]]; then docker pull audithsoftworks/basis:php-fpm; fi;
+  - docker-compose pull;
   - docker-compose up -d;
   - docker images;
   - docker-compose ps;
@@ -51,11 +47,5 @@ script:
   - ./storage/build/scripts/ci/build.sh;
 
 after_script:
-  - docker exec dev-env /bin/bash -c "pkill sc";
+  - docker exec dev /bin/bash -c "pkill sc";
   - if [[ $PHP_VERSION == 7 && $DB_CONNECTION == 'mysql' ]]; then wget https://scrutinizer-ci.com/ocular.phar; php ocular.phar code-coverage:upload --format=php-clover ./storage/coverage/coverage-clover-merged.xml; fi
-
-notifications:
-  hipchat: f504f9e2e6696c17589a7b49f4ce05@Audith.Basis
-  slack:
-    rooms:
-      - audith:S5sZNDhaq1BnqBMNk4UunAnz#github-ci-logs

@@ -18,9 +18,7 @@ services:
     image: redis
   php-fpm:
     container_name: php-fpm
-    build:
-      context: ./storage/build/scripts/php-fpm
-    image: audithsoftworks/basis:php-fpm
+    image: audithsoftworks/docker:php-fpm
     volumes:
       - .:/var/www
     working_dir: /var/www
@@ -33,9 +31,7 @@ services:
       REDIS_PORT: 6379
   nginx:
     container_name: nginx
-    build:
-      context: ./storage/build/scripts/nginx
-    image: audithsoftworks/basis:nginx
+    image: nginx
     volumes:
       - ./storage/build/configs/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - .:/var/www
@@ -52,11 +48,9 @@ services:
   selenium-firefox:
     container_name: selenium-firefox
     image: selenium/standalone-firefox-debug
-  dev-env:
-    container_name: dev-env
-    build:
-      context: ./storage/build/scripts/php
-    image: audithsoftworks/basis:php
+  dev:
+    container_name: dev
+    image: audithsoftworks/docker:php
     volumes:
       - .:/var/www
       - ./storage/build/configs/crontabs:/var/spool/cron/crontabs
