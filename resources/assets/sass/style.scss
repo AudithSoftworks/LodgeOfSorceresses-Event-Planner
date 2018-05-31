@@ -100,6 +100,20 @@ body {
                 padding-right: 0;
                 font-weight: 600;
             }
+
+            input:focus {
+                outline-width: 0;
+            }
+
+            > fieldset {
+                > input {
+                    border: 1px rgb(204, 204, 204) solid;
+                    border-radius: 4px;
+                    padding: 2px 8px;
+                    line-height: 32px;
+                    font-size: 1rem;
+                }
+            }
         }
     }
 

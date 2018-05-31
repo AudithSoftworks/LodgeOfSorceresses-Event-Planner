@@ -1,7 +1,9 @@
 import Axios from '../vendor/Axios';
-import React from 'react';
+import React, { Component } from 'react';
+import Select from 'react-select';
+import * as Animated from 'react-select/lib/animated';
 
-class CharacterCreateForm extends React.Component {
+class CharacterCreateForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -12,10 +14,9 @@ class CharacterCreateForm extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    handleSubmit(event) {
+    handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.target);
-        console.log(event.target);
         Axios
             .post('/api/chars', data)
             .then((response) => {
@@ -32,9 +33,9 @@ class CharacterCreateForm extends React.Component {
                     error: error
                 });
             });
-    }
+    };
 
-    componentDidMount() {
+    componentDidMount = () => {
         Axios
             .get('/api/sets')
             .then((response) => {
@@ -51,70 +52,86 @@ class CharacterCreateForm extends React.Component {
                     error: error
                 });
             });
-    }
+    };
 
-    render() {
+    render = () => {
         const {setsLoaded, sets, error} = this.state;
         if (error) {
             return <fieldset className='error'>Error</fieldset>;
         } else if (!setsLoaded) {
             return <fieldset className='general'>Loading</fieldset>;
         } else {
-            const setsNode = Object.values(sets).map(
-                item => (
-                    <option key={item.name} value={item.id}>{item.name}</option>
-                )
+            const classOptions = [
+                {value: 1, label: 'Dragonknight'},
+                {value: 2, label: 'Nightblade'},
+                {value: 3, label: 'Sorcerer'},
+                {value: 4, label: 'Templar'},
+                {value: 5, label: 'Warden'},
+            ];
+            const roleOptions = [
+                {value: 1, label: 'Tank'},
+                {value: 2, label: 'Healer'},
+                {value: 3, label: 'Damage Dealer (Magicka)'},
+                {value: 4, label: 'Damage Dealer (Stamina)'},
+            ];
+            const setsOptions = Object.values(sets).map(
+                item => ({value: item.id, label: item.name})
             );
+
             return (
                 <form className='col-md-24' onSubmit={this.handleSubmit}>
                     <h2 className="form-title font-green col-md-24">Create Character</h2>
                     <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')}/>
                     <fieldset className='form-group'>
                         <label htmlFor='characterName'>Character Name:</label>
-                        <input type='text' name='name' className='form-control form-control-lg' id='characterName' aria-describedby='characterNameHelp' placeholder='Enter character name'/>
-                        <small id='characterNameHelp' className='form-text text-muted'>Enter character name.</small>
+                        <input
+                            type='text'
+                            name='name'
+                            id='characterName'
+                            className='form-control form-control-lg'
+                            placeholder='Enter...'
+                            autoComplete='off'
+                            required
+                        />
                     </fieldset>
                     <fieldset className='form-group'>
-                        <label htmlFor='characterClass'>Class:</label>
-                        <select name='class' className='form-control form-control-lg' id='characterClass' aria-describedby='characterClassHelp'>
-                            <option value='1'>Dragonknight</option>
-                            <option value='2'>Nightblade</option>
-                            <option value='3'>Sorcerer</option>
-                            <option value='4'>Templar</option>
-                            <option value='5'>Warden</option>
-                        </select>
-                        <small id='characterClassHelp' className='form-text text-muted'>Select character class.</small>
+                        <label>Class:</label>
+                        <Select
+                            options={classOptions}
+                            defaultValue={classOptions[0]}
+                            components={Animated}
+                            name='class'
+                        />
                     </fieldset>
                     <fieldset className='form-group'>
-                        <label htmlFor='characterRole'>Role:</label>
-                        <select name='role' className='form-control form-control-lg' id='characterRole' aria-describedby='characterRoleHelp'>
-                            <option value='1'>Tank</option>
-                            <option value='2'>Healer</option>
-                            <option value='3'>Damage Dealer (Magicka)</option>
-                            <option value='4'>Damage Dealer (Stamina)</option>
-                        </select>
-                        <small id='characterRoleHelp' className='form-text text-muted'>Select character role.</small>
+                        <label>Role:</label>
+                        <Select
+                            options={roleOptions}
+                            defaultValue={roleOptions[0]}
+                            components={Animated}
+                            name='role'
+                        />
                     </fieldset>
                     <fieldset className='form-group'>
-                        <label htmlFor='characterSets'>Supportive Sets:</label>
-                        <select name='sets[]' className='form-control form-control-lg' id='characterSets' aria-describedby='characterSetsHelp' multiple>
-                            {setsNode}
-                        </select>
-                        <small id='characterSetsHelp' className='form-text text-muted'>Select sets your character has (only full sets please). Hold down Ctrl key (Cmd key on Mac) to select more than
-                            one.
-                        </small>
+                        <label>Supportive Sets:</label>
+                        <Select
+                            options={setsOptions}
+                            placeholder='Select sets your character has (only full sets please)...'
+                            components={Animated}
+                            name='sets[]'
+                            isMulti
+                        />
                     </fieldset>
                     <fieldset className='form-group text-right'>
-                        <button className="btn btn-primary btn-lg mr-1" type="reset">Reset</button>
                         <button className="btn btn-primary btn-lg" type="submit">Save</button>
                     </fieldset>
                 </form>
             );
         }
-    }
+    };
 }
 
-class CharacterList extends React.Component {
+class CharacterList extends Component {
     render() {
         return (
             <form method='POST' action='/chars'>

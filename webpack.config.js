@@ -19,11 +19,7 @@ const PATHS = {
 let common = {
     mode: process.env.NODE_ENV === 'development' ? 'development' : 'production',
     entry: {
-        // register: path.join(PATHS.js, 'register.js'),
-        // login: path.join(PATHS.js, 'login.js'),
-        // auth: path.join(PATHS.js, 'auth.js'),
-        // file: path.join(PATHS.js, 'file.js'),
-        index: path.join(PATHS.js, 'index.js'),
+        index: path.join(PATHS.js, 'index.js')
     },
     output: {
         path: PATHS.build,
@@ -37,7 +33,10 @@ let common = {
             publicPath: '/'
         }),
         new CleanWebpackPlugin([PATHS.build], {
-            root: process.cwd() // Without `root` CleanWebpackPlugin won't point to our project and will fail to work.
+            root: process.cwd(), // Without `root` CleanWebpackPlugin won't point to our project and will fail to work.
+            watch: true,
+            beforeEmit: true,
+            verbose: true
         }),
         new MiniCssExtractPlugin({
             filename: "[name].[contenthash].css",
