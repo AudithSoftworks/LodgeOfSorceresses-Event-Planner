@@ -3,9 +3,7 @@
 test -f .env || sed \
     -e "s/DB_CONNECTION=.*/DB_CONNECTION=${DB_CONNECTION}/g" \
     -e "s/DB_HOST=.*/DB_HOST=${DB_HOST}/g" \
-    -e "s/DB_USERNAME=.*/DB_USERNAME=${DB_USERNAME}/g" \
-    -e "s/SAUCE_USERNAME=.*/SAUCE_USERNAME=${SAUCE_USERNAME}/g" \
-    -e "s/SAUCE_ACCESS_KEY=.*/SAUCE_ACCESS_KEY=${SAUCE_ACCESS_KEY}/g" .env.example \
+    -e "s/DB_USERNAME=.*/DB_USERNAME=${DB_USERNAME}/g" .env.example \
     | tee .env > /dev/null 2>&1;
 
 docker-compose exec --privileged nginx bash -c "cat /etc/hosts | sed s/localhost/localhost\ basis.audith.org/g | tee /etc/hosts";
@@ -17,6 +15,7 @@ docker-compose exec --privileged dev /bin/bash -c "
     sudo chown -R audith:audith ~;
 
     crontab -l;
+    ls -l && whoami;
     npm update;
 
     cd \$WORKDIR;
