@@ -6,16 +6,13 @@ test -f .env || sed \
     -e "s/DB_USERNAME=.*/DB_USERNAME=${DB_USERNAME}/g" .env.example \
     | tee .env > /dev/null 2>&1;
 
-docker-compose exec --privileged nginx bash -c "cat /etc/hosts | sed s/localhost/localhost\ basis.audith.org/g | tee /etc/hosts";
+docker-compose exec --privileged nginx bash -c "cat /etc/hosts | sed s/localhost/localhost\ events.lodgeofsorceresses.dev/g | tee /etc/hosts > /dev/null 2>&1";
 
-docker-compose exec --privileged dev /bin/bash -c "
+docker-compose exec --privileged dev bash -c "
     export NPM_CONFIG_LOGLEVEL=warn;
 
-    sudo mkdir -p ~;
-    sudo chown -R audith:audith ~;
-
     crontab -l;
-    ls -l && whoami;
+    sudo chown -R audith:audith ./;
     npm update;
 
     cd \$WORKDIR;
@@ -38,52 +35,30 @@ docker-compose exec --privileged dev /bin/bash -c "
     fi;
 
     cd \$WORKDIR;
-    if [[ ! -d ./public/fonts/glyphicons ]]; then cp -r ./node_modules/bootstrap-sass/assets/fonts/bootstrap ./public/fonts/glyphicons; fi;
-    if [[ ! -d ./public/fonts/font_awesome ]]; then cp -r ./node_modules/font-awesome/fonts ./public/fonts/font_awesome; fi;
-    if [[ ! -d ./public/fonts/simple-line-icons ]]; then cp -r ./node_modules/simple-line-icons-webfont/fonts ./public/fonts/simple-line-icons; fi;
-    if [[ ! -d ./public/fonts/opensans ]]; then cp -r ./node_modules/.google-fonts/apache/opensans ./public/fonts/opensans; fi;
-    if [[ ! -d ./public/fonts/armata ]]; then cp -r ./node_modules/.google-fonts/ofl/armata ./public/fonts/armata; fi;
-    if [[ ! -d ./public/fonts/marcellus ]]; then cp -r ./node_modules/.google-fonts/ofl/marcellus ./public/fonts/marcellus; fi;
-    if [[ ! -d ./public/fonts/pontano_sans ]]; then cp -r ./node_modules/.google-fonts/ofl/pontanosans ./public/fonts/pontano_sans; fi;
-    if [[ ! -d ./public/fonts/montserrat ]]; then cp -r ./node_modules/.google-fonts/ofl/montserrat ./public/fonts/montserrat; fi;
+    rm -rf ./public/fonts/*;
+    cp -r ./node_modules/font-awesome/fonts ./public/fonts/font_awesome;
+    cp -r ./node_modules/simple-line-icons-webfont/fonts ./public/fonts/simple-line-icons;
+    cp -r ./node_modules/.google-fonts/apache/opensans ./public/fonts/opensans;
+    cp -r ./node_modules/.google-fonts/apache/robotocondensed ./public/fonts/robotocondensed;
+    cp -r ./node_modules/.google-fonts/ofl/asapcondensed ./public/fonts/asapcondensed;
 
     chmod -R +x /var/www/storage/build/tools;
     ./storage/build/tools/css3_font_converter/convertFonts.sh --use-font-weight --output=public/fonts/simple-line-icons/stylesheet.css public/fonts/simple-line-icons/*.ttf;
+    ./storage/build/tools/css3_font_converter/convertFonts.sh --use-font-weight --output=public/fonts/asapcondensed/stylesheet.css public/fonts/asapcondensed/*.ttf;
     ./storage/build/tools/css3_font_converter/convertFonts.sh --use-font-weight --output=public/fonts/opensans/stylesheet.css public/fonts/opensans/*.ttf;
-    ./storage/build/tools/css3_font_converter/convertFonts.sh --use-font-weight --output=public/fonts/montserrat/stylesheet.css public/fonts/montserrat/*.ttf;
-    ./storage/build/tools/css3_font_converter/convertFonts.sh --use-font-weight --output=public/fonts/pontano_sans/stylesheet.css public/fonts/pontano_sans/*.ttf;
-    ./storage/build/tools/css3_font_converter/convertFonts.sh --use-font-weight --output=public/fonts/armata/stylesheet.css public/fonts/armata/*.ttf;
-    ./storage/build/tools/css3_font_converter/convertFonts.sh --use-font-weight --output=public/fonts/marcellus/stylesheet.css public/fonts/marcellus/*.ttf;
+    ./storage/build/tools/css3_font_converter/convertFonts.sh --use-font-weight --output=public/fonts/robotocondensed/stylesheet.css public/fonts/robotocondensed/*.ttf;
 
-    npm run build;
+    touch ./storage/logs/laravel.log;
+
+    NODE_ENV=production npm run build;
     composer install --prefer-source --no-interaction;
 
     ./artisan key:generate;
     ./artisan migrate;
     ./artisan passport:install;
 
-    sudo chown -R 1000:1000 ./;
-    sudo touch ./storage/logs/laravel.log;
-    sudo chown -R www-data:www-data ./storage/framework/views ./storage/logs;
-    sudo chmod -R 0777 ./storage/framework/views ./storage/logs;
-
-    ./vendor/bin/phpunit --debug --verbose --testsuite='Unit';
-
-    ls -l ./storage/framework/views/twig ./storage/logs;
-    sudo chmod -R 0777 ./storage/framework/views ./storage/logs;
-
-    ./artisan dusk -vvv;
-
-    ls -l ./storage/framework/views/twig ./storage/logs;
-    sudo chmod -R 0777 ./storage/framework/views ./storage/logs;
-
-    ./vendor/bin/phpcov merge ./storage/coverage --clover ./storage/coverage/coverage-clover-merged.xml
-
-    ls -l ./storage/framework/views/twig ./storage/logs;
-    sudo chmod -R 0777 ./storage/framework/views ./storage/logs;
-
-    ./vendor/bin/phpunit --debug --verbose --no-coverage --testsuite='SauceWebDriver';
-
-    ls -l ./storage/framework/views/twig ./storage/logs;
-    sudo chmod -R 0777 ./storage/framework/views ./storage/logs;
+#    ./vendor/bin/phpunit --debug --verbose --testsuite='Unit';
+#    ./artisan dusk -vvv;
+#    ./vendor/bin/phpcov merge ./storage/coverage --clover ./storage/coverage/coverage-clover-merged.xml
+#    ./vendor/bin/phpunit --debug --verbose --no-coverage --testsuite='SauceWebDriver';
 ";

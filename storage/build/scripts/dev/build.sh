@@ -8,19 +8,9 @@ docker-compose ps;
 
 test -f .env || cat .env.example | tee .env > /dev/null 2>&1;
 
-docker-compose exec dev bash -c "
-    if [[ \$(id -g) != \${MYGID} || \$(id -u) != \${MYUID} ]]; then
-        sudo groupmod -g \${MYGID} audith;
-        sudo usermod -u \${MYUID} -g \${MYGID} audith;
-    fi;
-";
-
-docker-compose exec nginx bash -c "cat /etc/hosts | sed s/localhost/localhost\ basis.audith.org/g | tee /etc/hosts";
+docker-compose exec nginx bash -c "cat /etc/hosts | sed s/localhost/localhost\ events.lodgeofsorceresses.dev/g | tee /etc/hosts";
 
 docker-compose exec dev bash -c "
-    sudo mkdir -p ~;
-    sudo chown -R audith:audith ~;
-
     crontab -l;
     npm update;
 
@@ -44,15 +34,11 @@ docker-compose exec dev bash -c "
 
     cd \$WORKDIR;
     rm -rf ./public/fonts/*;
-    cp -r ./node_modules/bootstrap-sass/assets/fonts/bootstrap ./public/fonts/glyphicons;
     cp -r ./node_modules/font-awesome/fonts ./public/fonts/font_awesome;
     cp -r ./node_modules/simple-line-icons-webfont/fonts ./public/fonts/simple-line-icons;
     cp -r ./node_modules/.google-fonts/apache/opensans ./public/fonts/opensans;
     cp -r ./node_modules/.google-fonts/apache/robotocondensed ./public/fonts/robotocondensed;
     cp -r ./node_modules/.google-fonts/ofl/asapcondensed ./public/fonts/asapcondensed;
-    cp -r ./node_modules/.google-fonts/ofl/marcellus ./public/fonts/marcellus;
-    cp -r ./node_modules/.google-fonts/ofl/montserrat ./public/fonts/montserrat;
-    cp -r ./node_modules/.google-fonts/ofl/pontanosans ./public/fonts/pontano_sans;
 
     chmod -R +x /var/www/storage/build/tools;
     ./storage/build/tools/css3_font_converter/convertFonts.sh --use-font-weight --output=public/fonts/simple-line-icons/stylesheet.css public/fonts/simple-line-icons/*.ttf;
@@ -67,15 +53,8 @@ docker-compose exec dev bash -c "
     ./artisan migrate;
     ./artisan passport:install;
 
-    sudo chown -R 1000:1000 ./;
-    sudo chmod -R 0777 ./storage/framework/views/twig;
-    sudo chmod -R 0777 ./storage/logs;
-
     ./vendor/bin/phpunit --debug --verbose --testsuite='Unit';
     ./artisan dusk -vvv;
 
     ./vendor/bin/phpcov merge ./storage/coverage --html ./storage/coverage/merged/;
 ";
-
-#stty cols 239 rows 61;
-#docker-compose down;

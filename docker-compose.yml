@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
   mariadb:
@@ -29,6 +29,10 @@ services:
     environment:
       XDEBUG_CONFIG: "remote_host=172.17.0.1"
       REDIS_PORT: 6379
+      MYUID: "${MYUID:-1000}"
+      MYGID: "${MYGID:-1000}"
+    entrypoint: storage/build/scripts/php-fpm-init-container.sh
+    command: php-fpm
   nginx:
     container_name: nginx
     image: nginx
@@ -41,7 +45,7 @@ services:
     networks:
       default:
         aliases:
-          - basis.audith.org
+          - events.lodgeofsorceresses.dev
   selenium-chrome:
     container_name: selenium-chrome
     image: selenium/standalone-chrome-debug
@@ -64,5 +68,9 @@ services:
       XDEBUG_CONFIG: "remote_host=172.18.0.1"
       REDIS_PORT: 6379
       WORKDIR: "/var/www"
+      MYUID: "${MYUID:-1000}"
+      MYGID: "${MYGID:-1000}"
+    entrypoint: storage/build/scripts/dev-init-container.sh
+    command: "php -a"
     stdin_open: true
     tty: true
