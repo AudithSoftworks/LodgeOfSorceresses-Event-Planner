@@ -28,8 +28,6 @@ cache:
   directories:
     - vendor
     - node_modules
-    - storage/build/tools/css3_font_converter
-    - storage/build/tools/woff2
 
 before_install:
   - curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-`uname -s`-`uname -m` > docker-compose; chmod +x docker-compose; true
