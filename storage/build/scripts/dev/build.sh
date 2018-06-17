@@ -8,7 +8,7 @@ docker-compose ps;
 
 test -f .env || cat .env.example | tee .env > /dev/null 2>&1;
 
-docker-compose exec nginx bash -c "cat /etc/hosts | sed s/localhost/localhost\ events.lodgeofsorceresses.dev/g | tee /etc/hosts";
+docker-compose exec nginx bash -c "cat /etc/hosts | sed s/localhost/localhost\ basis.audith.org/g | tee /etc/hosts";
 
 docker-compose exec dev bash -c "
     crontab -l;
@@ -53,8 +53,7 @@ docker-compose exec dev bash -c "
     ./artisan migrate;
     ./artisan passport:install;
 
-    ./vendor/bin/phpunit --debug --verbose --testsuite='Unit';
-    ./artisan dusk -vvv;
-
-    ./vendor/bin/phpcov merge ./storage/coverage --html ./storage/coverage/merged/;
+#    ./vendor/bin/phpunit --debug --verbose --testsuite='Unit';
+#    ./artisan dusk -vvv;
+#    ./vendor/bin/phpcov merge ./storage/coverage --html ./storage/coverage/merged/;
 ";

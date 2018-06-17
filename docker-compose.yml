@@ -45,7 +45,7 @@ services:
     networks:
       default:
         aliases:
-          - events.lodgeofsorceresses.dev
+          - basis.audith.org
   selenium-chrome:
     container_name: selenium-chrome
     image: selenium/standalone-chrome-debug
