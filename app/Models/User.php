@@ -30,7 +30,7 @@ use Laravel\Passport\HasApiTokens;
  */
 class User extends Authenticatable
 {
-    use Notifiable, HasApiTokens, CanActivate, CanResetPassword, SoftDeletes;
+    use Notifiable, HasApiTokens, SoftDeletes;
 
     /**
      * The attributes excluded from the model's JSON form.
