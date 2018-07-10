@@ -3,6 +3,7 @@
 namespace App\Extensions\Socialite;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Laravel\Socialite\Two\AbstractProvider;
 use Laravel\Socialite\Two\ProviderInterface;
 use Laravel\Socialite\Two\User;
@@ -94,6 +95,7 @@ class IpsProvider extends AbstractProvider implements ProviderInterface
             'name' => $user['name'],
             'email' => $user['email'],
             'avatar' => $user['photoUrl'],
+            'token' => Arr::get($user, 'access_token'),
         ]);
     }
 }

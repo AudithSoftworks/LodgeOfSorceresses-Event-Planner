@@ -122,6 +122,7 @@ return [
         App\Providers\ConfigServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\FileStreamServiceProvider::class,
+        App\Providers\IpsApiServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         /*
          * Custom Service Providers...

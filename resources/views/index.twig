@@ -24,6 +24,11 @@
                     {% if name == trans('auth.guest') %}{{ trans('auth.buttons.login') }}{% else %}{{ trans('auth.buttons.logout') }}{% endif %}
                 </a>
             </fieldset>
+            <ul>
+                {% for event in events %}
+                    <li><a href="{{ event.url }}">{{ event.title }} (starts at: {{ event.start }})</a></li>
+                {% endfor %}
+            </ul>
         </section>
     </main>
 {% endblock %}

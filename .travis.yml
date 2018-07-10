@@ -8,13 +8,10 @@ sudo: required
 services:
   - docker
 
-language:
-  - php
-  - node_js
+language: php
 php:
   - 7.2
-node_js:
-  - 8
+node_js: 8
 
 matrix:
   fast_finish: true

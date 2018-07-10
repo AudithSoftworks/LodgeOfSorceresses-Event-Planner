@@ -138,9 +138,12 @@ class LoginController extends Controller
                 break;
         }
 
-        /** @var SocialiteUser $userInfo */
+        /** @var SocialiteUser|\Laravel\Socialite\One\User|\Laravel\Socialite\Two\User $userInfo */
         $userInfo = $socialite->driver($provider)->user();
         if ($this->loginViaOAuth($userInfo, $provider)) {
+            if (!empty($userInfo->token)) {
+                $request->session()->put('token', $userInfo->token);
+            }
             return redirect()->intended($this->redirectPath());
         }
 
