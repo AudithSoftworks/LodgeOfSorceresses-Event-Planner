@@ -29,7 +29,7 @@ class IpsApi
 
     public function __construct(Request $request)
     {
-        $this->ipsUrl = env('IPS_URL') . '/api';
+        $this->ipsUrl = trim(config('services.ips.url'), '/') . '/api';
         $this->accessToken = $request->session()->get('token');
         $this->client = new Client([
             'headers' => [

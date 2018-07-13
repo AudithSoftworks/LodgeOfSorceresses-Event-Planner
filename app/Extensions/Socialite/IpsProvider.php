@@ -36,7 +36,7 @@ class IpsProvider extends AbstractProvider implements ProviderInterface
     {
         parent::__construct($request, $clientId, $clientSecret, $redirectUrl, $guzzle);
 
-        $this->ipsUrl = trim(env('IPS_URL'), '/');
+        $this->ipsUrl = trim(config('services.ips.url'), '/');
     }
 
     /**
