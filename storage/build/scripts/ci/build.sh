@@ -54,8 +54,8 @@ docker-compose exec --privileged dev bash -c "
     composer install --prefer-source --no-interaction;
 
     ./artisan key:generate;
+    ./artisan passport:keys;
     ./artisan migrate;
-    ./artisan passport:install;
 
 #    ./vendor/bin/phpunit --debug --verbose --testsuite='Unit';
 #    ./artisan dusk -vvv;

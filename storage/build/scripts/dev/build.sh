@@ -51,7 +51,7 @@ docker-compose exec dev bash -c "
 
     ./artisan key:generate;
     ./artisan migrate;
-    ./artisan passport:install;
+    ./artisan passport:keys;
 
 #    ./vendor/bin/phpunit --debug --verbose --testsuite='Unit';
 #    ./artisan dusk -vvv;
