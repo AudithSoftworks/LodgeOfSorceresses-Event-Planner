@@ -47,12 +47,12 @@ class IpsApi
     {
         $timeIntervalStart = new Carbon('last Monday');
         if ($timeInterval & self::TIME_INTERVAL_LAST_WEEK) {
-            $timeIntervalStart = $timeIntervalStart->diffInDays(-7);
+            $timeIntervalStart = $timeIntervalStart->subWeek();
         }
 
         $timeIntervalEnd = new Carbon('next Monday');
         if ($timeInterval & self::TIME_INTERVAL_NEXT_WEEK) {
-            $timeIntervalEnd = $timeIntervalEnd->diffInDays(7);
+            $timeIntervalEnd = $timeIntervalEnd->addWeek();
         }
 
         $page = 1;
