@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Socialite\Contracts\Factory;
+use Laravel\Passport\Passport;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
         if (app()->environment('local', 'testing')) {
             app()->register(DuskServiceProvider::class);
         }
+        Passport::ignoreMigrations();
     }
 
     private function bootIpsSocialiteProvider()
