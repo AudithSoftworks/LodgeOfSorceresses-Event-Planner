@@ -15,62 +15,48 @@ class IpsApi
     /**
      * @var \GuzzleHttp\Client
      */
-    private $client;
+    private $apiClient;
+
+    /**
+     * @var \GuzzleHttp\Client
+     */
+    private $oauthClient;
 
     /**
      * @var string
      */
     private $ipsUrl;
 
-    /**
-     * @var string
-     */
-    private $accessToken;
-
     public function __construct(Request $request)
     {
         $this->ipsUrl = trim(config('services.ips.url'), '/') . '/api';
-        $this->accessToken = $request->session()->get('token');
-        $this->client = new Client([
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->accessToken
-            ]
+        $this->apiClient = new Client([
+            'auth' => [config('services.ips.api_key'), '']
         ]);
+        if ($request->hasSession()) {
+            $accessToken = $request->session()->get('token');
+            $this->oauthClient = new Client([
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $accessToken,
+                ],
+            ]);
+        }
     }
 
     /**
-     * @param int $timeInterval
-     *
      * @return array
      */
-    public function getCalendarEvents($timeInterval = self::TIME_INTERVAL_THIS_WEEK)
+    public function getCalendarEvents()
     {
-        $timeIntervalStart = new Carbon('last Monday');
-        if ($timeInterval & self::TIME_INTERVAL_LAST_WEEK) {
-            $timeIntervalStart = $timeIntervalStart->subWeek();
-        }
-
-        $timeIntervalEnd = new Carbon('next Monday');
-        if ($timeInterval & self::TIME_INTERVAL_NEXT_WEEK) {
-            $timeIntervalEnd = $timeIntervalEnd->addWeek();
-        }
-
-        $page = 1;
         $events = [];
-        while ($response = $this->client->get($this->ipsUrl . '/calendar/events', ['query' => ['sortBy' => 'date', 'sortDir' => 'desc', 'page' => $page]])) {
-            $responseDecoded = json_decode($response->getBody()->getContents(), true);
-            foreach ($responseDecoded['results'] as $event) {
-                $eventTimestamp = new Carbon($event['start']);
-                if ($eventTimestamp->between($timeIntervalStart, $timeIntervalEnd)) {
-                    $events[$eventTimestamp->getTimestamp()] = $event;
-                }
-            }
 
-            if ($responseDecoded['totalPages'] > $page) {
-                $page++;
-            } else {
-                break;
-            }
+        $response = $this->apiClient->get(
+            $this->ipsUrl . '/calendar/events',
+            ['query' => ['sortBy' => 'date', 'sortDir' => 'desc', 'page' => 1, 'perPage' => 50]]
+        );
+        $responseDecoded = json_decode($response->getBody()->getContents(), true);
+        foreach ($responseDecoded['results'] as $event) {
+            $events[(new Carbon($event['start']))->getTimestamp()] = $event;
         }
         ksort($events);
 

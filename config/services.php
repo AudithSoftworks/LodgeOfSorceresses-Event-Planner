@@ -36,6 +36,7 @@ return [
     'ips' => [
         'client_id' => env('IPS_CLIENT_ID'),
         'client_secret' => env('IPS_CLIENT_SECRET'),
+        'api_key' => env('IPS_API_KEY'),
         'redirect' => env('IPS_REDIRECT_URI'),
         'url' => env('IPS_URL'),
     ]
