@@ -59,7 +59,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         app('router')
             ->prefix('api')
-            ->middleware(['api', 'auth:api'])
+            ->middleware(['auth:api'])
             ->namespace($this->namespace)
             ->group(base_path('routes/api.php'));
     }

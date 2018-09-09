@@ -19,9 +19,7 @@ class EventServiceProvider extends ServiceProvider
         Events\Users\LoggedIn::class => [],
         Events\Users\LoggedOut::class => [],
         Events\Users\Registered::class => [],
-        Events\Users\RequestedActivationLink::class => [
-            Listeners\Users\SendActivationLinkViaEmail::class
-        ],
+        Events\Users\RequestedActivationLink::class => [],
         Events\Users\RequestedResetPasswordLink::class => [],
     ];
 

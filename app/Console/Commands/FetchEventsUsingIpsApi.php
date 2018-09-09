@@ -12,21 +12,12 @@ class FetchEventsUsingIpsApi extends Command
     /**
      * @var string
      */
-    protected $signature = 'ips:events {action=sync : Action to perform. Possible values are: reset|sync|update}';
+    protected $signature = 'ips:events';
 
     /**
      * @var string
      */
     protected $description = 'Fetches events from IPS and Syncs them to Events repo';
-
-    /**
-     * @var array
-     */
-    protected $actionOptions = [
-        'reset',
-        'sync',
-        'update',
-    ];
 
     /**
      * @var \App\Services\IpsApi $api
@@ -47,13 +38,6 @@ class FetchEventsUsingIpsApi extends Command
      */
     public function handle(): bool
     {
-        $arguments = $this->arguments();
-        if (!in_array($action = $arguments['action'], $this->actionOptions)) {
-            $this->error('Invalid action: "' . $action . '"!');
-
-            return false;
-        }
-
         $events = $this->ipsApi->getCalendarEvents();
 
         foreach ($events as $event) {
@@ -85,6 +69,8 @@ class FetchEventsUsingIpsApi extends Command
                 'featured' => $event['featured'],
             ]);
         }
+
+        $this->info('Calendar events succesfully synced!');
 
         return true;
     }

@@ -14,7 +14,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        FetchEventsUsingIpsApi::class
     ];
 
     /**
@@ -26,7 +26,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command(FetchEventsUsingIpsApi::class)->twiceDaily('9', '15');
+        $schedule->command(FetchEventsUsingIpsApi::class)->everyMinute();
     }
 
     /**

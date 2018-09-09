@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property integer               $user_id
  * @property string                $remote_provider
  * @property string                $remote_id
+ * @property integer               $remote_member_group
  * @property string                $nickname
  * @property string                $name
  * @property string                $email

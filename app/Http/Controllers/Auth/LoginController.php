@@ -5,6 +5,7 @@ use App\Events\Users\LoggedOut;
 use App\Events\Users\Registered;
 use App\Exceptions\Common\ValidationException;
 use App\Exceptions\Users\LoginNotValidException;
+use App\Extensions\Socialite\IpsUser;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\UserOAuth;
@@ -138,12 +139,13 @@ class LoginController extends Controller
                 break;
         }
 
-        /** @var SocialiteUser|\Laravel\Socialite\One\User|\Laravel\Socialite\Two\User $userInfo */
+        /** @var IpsUser $userInfo */
         $userInfo = $socialite->driver($provider)->user();
         if ($this->loginViaOAuth($userInfo, $provider)) {
             if (!empty($userInfo->token)) {
                 $request->session()->put('token', $userInfo->token);
             }
+
             return redirect()->intended($this->redirectPath());
         }
 
@@ -151,12 +153,12 @@ class LoginController extends Controller
     }
 
     /**
-     * @param SocialiteUser $oauthUserData
-     * @param string        $provider
+     * @param IpsUser $oauthUserData
+     * @param string  $provider
      *
      * @return bool
      */
-    protected function loginViaOAuth(SocialiteUser $oauthUserData, $provider)
+    protected function loginViaOAuth(IpsUser $oauthUserData, $provider)
     {
         /** @var UserOAuth $owningOAuthAccount */
         if ($owningOAuthAccount = UserOAuth::whereRemoteProvider($provider)->whereRemoteId($oauthUserData->id)->first()) {
@@ -172,12 +174,12 @@ class LoginController extends Controller
     }
 
     /**
-     * @param SocialiteUser $oauthUserData
-     * @param string        $provider
+     * @param IpsUser $oauthUserData
+     * @param string  $provider
      *
      * @return \Illuminate\Contracts\Auth\Authenticatable|bool
      */
-    protected function registerViaOAuth(SocialiteUser $oauthUserData, $provider)
+    protected function registerViaOAuth(IpsUser $oauthUserData, $provider)
     {
         /** @var \App\Models\User $ownerAccount */
         if (!($ownerAccount = User::withTrashed()->whereEmail($oauthUserData->email)->first())) {
@@ -208,13 +210,13 @@ class LoginController extends Controller
     }
 
     /**
-     * @param SocialiteUser $oauthUserData
-     * @param string        $provider
-     * @param User          $ownerAccount
+     * @param IpsUser $oauthUserData
+     * @param string  $provider
+     * @param User    $ownerAccount
      *
      * @return \App\Models\User|bool
      */
-    protected function linkOAuthAccount(SocialiteUser $oauthUserData, $provider, $ownerAccount)
+    protected function linkOAuthAccount(IpsUser $oauthUserData, $provider, $ownerAccount)
     {
         /** @var UserOAuth[] $linkedAccounts */
         $linkedAccounts = $ownerAccount->linkedAccounts()->ofProvider($provider)->get();
@@ -222,6 +224,7 @@ class LoginController extends Controller
         foreach ($linkedAccounts as $linkedAccount) {
             if ($linkedAccount->remote_id === $oauthUserData->id || $linkedAccount->email === $oauthUserData->email) {
                 $linkedAccount->remote_id = $oauthUserData->id;
+                $linkedAccount->remote_member_group = $oauthUserData->remoteMemberGroup;
                 $linkedAccount->nickname = $oauthUserData->nickname;
                 $linkedAccount->name = $oauthUserData->name;
                 $linkedAccount->email = $oauthUserData->email;
@@ -234,6 +237,7 @@ class LoginController extends Controller
         $linkedAccount = new UserOAuth();
         $linkedAccount->remote_provider = $provider;
         $linkedAccount->remote_id = $oauthUserData->id;
+        $linkedAccount->remote_member_group = $oauthUserData->remoteMemberGroup;
         $linkedAccount->nickname = $oauthUserData->nickname;
         $linkedAccount->name = $oauthUserData->name;
         $linkedAccount->email = $oauthUserData->email;

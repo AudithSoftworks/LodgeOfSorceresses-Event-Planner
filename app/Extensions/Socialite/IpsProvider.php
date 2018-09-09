@@ -89,11 +89,12 @@ class IpsProvider extends AbstractProvider implements ProviderInterface
      */
     protected function mapUserToObject(array $user)
     {
-        return (new User)->setRaw($user)->map([
+        return (new IpsUser())->setRaw($user)->map([
             'id' => $user['id'],
             'nickname' => $user['name'],
             'name' => $user['name'],
             'email' => $user['email'],
+            'remoteMemberGroup' => $user['primaryGroup']['id'],
             'avatar' => $user['photoUrl'],
             'token' => Arr::get($user, 'access_token'),
         ]);
