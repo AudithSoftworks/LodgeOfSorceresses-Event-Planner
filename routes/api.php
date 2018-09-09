@@ -12,5 +12,6 @@
 */
 
 /** @var \Illuminate\Routing\Router $router */
-$router->resource('sets', 'SetsController')->only(['index']);
 $router->resource('chars', 'CharactersController')->only(['store']);
+$router->resource('events', 'EventsController')->only(['index']);
+$router->resource('sets', 'SetsController')->only(['index']);

@@ -39,6 +39,7 @@ class CharacterCreateForm extends Component {
         Axios
             .get('/api/sets')
             .then((response) => {
+                // console.log(response.data.sets);
                 this.setState({
                     setsLoaded: true,
                     sets: response.data.sets,
@@ -134,11 +135,9 @@ class CharacterCreateForm extends Component {
 class CharacterList extends Component {
     render() {
         return (
-            <form method='POST' action='/chars'>
-                <fieldset className='form-group'>
-                    <label/>
-                </fieldset>
-            </form>
+            <ul>
+                <li></li>
+            </ul>
         );
     }
 }

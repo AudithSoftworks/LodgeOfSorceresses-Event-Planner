@@ -17,13 +17,11 @@ class CharactersController extends Controller
      */
     public function index()
     {
-        $equipmentSetsResult = EquipmentSet::query()->orderBy('name')->get();
-        /** @var EquipmentSet $set */
-        foreach ($equipmentSetsResult as $set) {
-            $equipmentSets[$set->id] = $set->name;
-        }
+//        return response()->json([
+//            'characters' => Character::query()->orderBy('name')->get()->keyBy('id')->toArray()
+//        ]);
 
-        return view('characters', compact('equipmentSets'));
+        return view('characters');
     }
 
     /**
