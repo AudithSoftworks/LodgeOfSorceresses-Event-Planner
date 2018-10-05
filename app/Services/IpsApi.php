@@ -6,12 +6,6 @@ use Illuminate\Http\Request;
 
 class IpsApi
 {
-    const TIME_INTERVAL_THIS_WEEK = 1;
-
-    const TIME_INTERVAL_LAST_WEEK = 2;
-
-    const TIME_INTERVAL_NEXT_WEEK = 4;
-
     /**
      * @var \GuzzleHttp\Client
      */
@@ -49,16 +43,20 @@ class IpsApi
     public function getCalendarEvents()
     {
         $events = [];
+        $page = 1;
 
-        $response = $this->apiClient->get(
-            $this->ipsUrl . '/calendar/events',
-            ['query' => ['sortBy' => 'date', 'sortDir' => 'desc', 'page' => 1, 'perPage' => 50]]
-        );
-        $responseDecoded = json_decode($response->getBody()->getContents(), true);
-        foreach ($responseDecoded['results'] as $event) {
-            $events[(new Carbon($event['start']))->getTimestamp()] = $event;
+        while ($response = $this->apiClient->get($this->ipsUrl . '/calendar/events', ['query' => ['sortBy' => 'date', 'sortDir' => 'desc', 'page' => $page, 'perPage' => 100]])) {
+            $responseDecoded = json_decode($response->getBody()->getContents(), true);
+            foreach ($responseDecoded['results'] as $event) {
+                $events[(new Carbon($event['start']))->getTimestamp()] = $event;
+            }
+
+            if ($responseDecoded['totalPages'] > $page) {
+                $page++;
+            } else {
+                break;
+            }
         }
-        ksort($events);
 
         return $events;
     }

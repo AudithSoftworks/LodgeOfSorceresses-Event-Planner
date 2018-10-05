@@ -26,7 +26,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command(FetchEventsUsingIpsApi::class)->everyMinute();
+        $schedule->command(FetchEventsUsingIpsApi::class)->hourly();
     }
 
     /**
