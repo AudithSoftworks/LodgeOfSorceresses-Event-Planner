@@ -32,12 +32,6 @@ let common = {
             fileName: 'rev-manifest.json',
             publicPath: '/'
         }),
-        new CleanWebpackPlugin([PATHS.build], {
-            root: process.cwd(), // Without `root` CleanWebpackPlugin won't point to our project and will fail to work.
-            watch: true,
-            beforeEmit: true,
-            verbose: true
-        }),
         new MiniCssExtractPlugin({
             filename: "[name].[contenthash].css",
         }),
@@ -57,6 +51,7 @@ let common = {
 let config;
 
 // Detect how npm is run and branch based on that
+/** @var {String} process.env.NODE_ENV */
 switch (process.env.NODE_ENV) {
     case 'production':
         config = merge(
@@ -73,6 +68,18 @@ switch (process.env.NODE_ENV) {
             toolset.extractBundles()
         );
         break;
+}
+
+/** @var {String} process.env.npm_lifecycle_event */
+if (process.env.npm_lifecycle_event !== 'watch') {
+    config.plugins.push(
+        new CleanWebpackPlugin([PATHS.build], {
+            root: process.cwd(), // Without `root` CleanWebpackPlugin won't point to our project and will fail to work.
+            watch: true,
+            beforeEmit: true,
+            verbose: true
+        })
+    );
 }
 
 module.exports = config;
