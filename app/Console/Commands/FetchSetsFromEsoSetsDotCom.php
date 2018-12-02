@@ -47,14 +47,15 @@ class FetchSetsFromEsoSetsDotCom extends Command
             }
             if ($response->getStatusCode() === 200) {
                 $body = $response->getBody()->getContents();
-                preg_match(preg_quote('#<meta property="og:title" content="') . '(.*)' . preg_quote('"/>') . '#i', $body, $matches);
-                if (!empty($matches)) {
-                    $setName = str_replace('’', '\'', $matches[1]);
+                preg_match(preg_quote('#<meta property="og:title" content="') . '(.*)' . preg_quote('"/>') . '#i', $body, $setNameMatches);
+                preg_match(preg_quote('#<meta property="og:url" content="https://eso-sets.com/set/') . '(.*)' . preg_quote('"/>') . '#i', $body, $setSlugMatches);
+                if (!empty($setNameMatches)) {
+                    $setName = str_replace('’', '\'', $setNameMatches[1]);
                     if (($doWeHaveIrregularCharacters = preg_match("#^[a-z\'\s]+$#i", $setName, $a)) === 0 || $doWeHaveIrregularCharacters === false) {
                         $setName = mb_convert_encoding($setName, 'UTF-8', 'HTML-ENTITIES');
                     }
 
-                    $data[] = ['id' => $i, 'name' => $setName];
+                    $data[] = ['id' => $i, 'name' => $setName, 'slug' => $setSlugMatches[1]];
                 }
             }
         }

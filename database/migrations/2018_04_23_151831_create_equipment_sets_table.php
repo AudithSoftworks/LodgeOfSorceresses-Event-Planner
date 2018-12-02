@@ -15,6 +15,7 @@ class CreateEquipmentSetsTable extends Migration
         Schema::create('equipment_sets', function (Blueprint $table) {
             $table->engine = 'InnoDb';
             $table->increments('id');
+            $table->string('slug', 64);
             $table->string('name', 128);
             $table->timestamps();
             $table->softDeletes();
