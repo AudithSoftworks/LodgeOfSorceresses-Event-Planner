@@ -7,15 +7,24 @@ services:
     environment:
       MYSQL_DATABASE: "basis"
       MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+    networks:
+      default:
+        ipv4_address: 172.72.0.101
   postgres:
     container_name: postgres
     image: postgres:latest
     environment:
       POSTGRES_DB: "basis"
       POSTGRES_PASSWORD: ""
+    networks:
+      default:
+        ipv4_address: 172.72.0.102
   redis:
     container_name: redis
     image: redis
+    networks:
+      default:
+        ipv4_address: 172.72.0.103
   php-fpm:
     container_name: php-fpm
     image: audithsoftworks/docker:php-fpm
@@ -27,12 +36,15 @@ services:
       - postgres
       - redis
     environment:
-      XDEBUG_CONFIG: "remote_host=172.17.0.1"
+      XDEBUG_CONFIG: "remote_host=172.72.0.1"
       REDIS_PORT: 6379
       MYUID: "${MYUID:-1000}"
       MYGID: "${MYGID:-1000}"
     entrypoint: storage/build/scripts/php-fpm-init-container.sh
     command: php-fpm
+    networks:
+      default:
+        ipv4_address: 172.72.0.104
   nginx:
     container_name: nginx
     image: nginx
@@ -46,12 +58,19 @@ services:
       default:
         aliases:
           - basis.audith.org
+        ipv4_address: 172.72.0.105
   selenium-chrome:
     container_name: selenium-chrome
     image: selenium/standalone-chrome-debug
+    networks:
+      default:
+        ipv4_address: 172.72.0.106
   selenium-firefox:
     container_name: selenium-firefox
     image: selenium/standalone-firefox-debug
+    networks:
+      default:
+        ipv4_address: 172.72.0.107
   dev:
     container_name: dev
     image: audithsoftworks/docker:php
@@ -65,7 +84,7 @@ services:
       - redis
       - nginx
     environment:
-      XDEBUG_CONFIG: "remote_host=172.18.0.1"
+      XDEBUG_CONFIG: "remote_host=172.72.0.1"
       REDIS_PORT: 6379
       WORKDIR: "/var/www"
       MYUID: "${MYUID:-1000}"
@@ -74,3 +93,11 @@ services:
     command: "php -a"
     stdin_open: true
     tty: true
+    networks:
+      default:
+        ipv4_address: 172.72.0.108
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.72.0.0/24
