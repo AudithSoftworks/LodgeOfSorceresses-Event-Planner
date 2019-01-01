@@ -27,11 +27,11 @@ docker-compose exec --privileged dev bash -c "
     fi;
 
     cd \$WORKDIR;
-    if [[ -d ./node_modules/.google-fonts ]]; then
+    if [[ -d ./node_modules/.google-fonts/.git ]]; then
         cd ./node_modules/.google-fonts && git pull origin master;
     else
+        rm -rf ./node_modules/.google-fonts;
         git clone --depth=1 https://github.com/google/fonts.git ./node_modules/.google-fonts;
-        rm -rf ./node_modules/.google-fonts/.git
     fi;
 
     cd \$WORKDIR;
