@@ -29,7 +29,7 @@ cache:
     - node_modules/.google-fonts
 
 before_install:
-  - curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-`uname -s`-`uname -m` > docker-compose; chmod +x docker-compose; true
+  - curl -L https://github.com/docker/compose/releases/download/1.23.1/docker-compose-`uname -s`-`uname -m` > docker-compose; chmod +x docker-compose; true
   - sudo mv docker-compose /usr/local/bin/
   - pwd && docker -v && docker info && docker-compose -v
 
