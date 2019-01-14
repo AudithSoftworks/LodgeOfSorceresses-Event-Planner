@@ -12,7 +12,6 @@ use App\Models\UserOAuth;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Laravel\Socialite\Contracts\Factory as SocialiteContract;
-use Laravel\Socialite\AbstractUser as SocialiteUser;
 
 class LoginController extends Controller
 {
