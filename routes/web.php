@@ -26,8 +26,7 @@ $router->get('oauth/from/{provider}', ['uses' => 'Auth\LoginController@handleOAu
  *--------------------------------------------------------------------------------------------------------*/
 
 // Localized routes.
-$middleware = 'auth';
-$router->group(compact('namespace', 'middleware', 'prefix'), function (Router $router) {
+$router->middleware('auth')->group(function (Router $router) {
     $router->get('logout', ['uses' => 'Auth\LoginController@logout', 'as' => 'logout']);
     $router->get('', ['uses' => 'HomeController@index', 'as' => 'home']);
     $router->resource('chars', 'CharactersController')->only('index');

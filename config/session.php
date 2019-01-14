@@ -64,7 +64,7 @@ return [
     | correspond to a connection in your database configuration options.
     |
     */
-    'connection' => null,
+    'connection' => env('SESSION_CONNECTION', null),
 
     /*
     |--------------------------------------------------------------------------
@@ -88,7 +88,7 @@ return [
     | correspond with one of the application's configured cache stores.
     |
     */
-    'store' => null,
+    'store' => env('SESSION_STORE', null),
 
     /*
     |--------------------------------------------------------------------------

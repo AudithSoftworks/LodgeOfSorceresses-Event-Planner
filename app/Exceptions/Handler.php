@@ -1,16 +1,14 @@
 <?php namespace App\Exceptions;
 
-use App\Exceptions\Users\UserNotActivatedException;
-use Illuminate\Auth\AuthenticationException;
+use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Validation\ValidationException as IlluminateValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -29,6 +27,16 @@ class Handler extends ExceptionHandler
     ];
 
     /**
+     * A list of the inputs that are never flashed for validation exceptions.
+     *
+     * @var array
+     */
+    protected $dontFlash = [
+        'password',
+        'password_confirmation',
+    ];
+
+    /**
      * Report or log an exception.
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
      *
@@ -37,7 +45,7 @@ class Handler extends ExceptionHandler
      * @return void
      * @throws \Exception
      */
-    public function report(\Exception $e)
+    public function report(Exception $e)
     {
         parent::report($e);
     }
@@ -50,7 +58,7 @@ class Handler extends ExceptionHandler
      *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function render($request, \Exception $e)
+    public function render($request, Exception $e)
     {
         if ($e instanceof ModelNotFoundException) {
             $e = new NotFoundHttpException($e->getMessage(), $e);

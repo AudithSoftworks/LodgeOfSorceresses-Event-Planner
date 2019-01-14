@@ -1,9 +1,8 @@
 <?php namespace App\Events\Users;
 
-use App\Events\Event as EventAbstract;
 use Illuminate\Contracts\Auth\Authenticatable;
 
-class Registered extends EventAbstract
+class Registered
 {
     /**
      * @var \Illuminate\Contracts\Auth\Authenticatable
@@ -23,7 +22,5 @@ class Registered extends EventAbstract
     {
         $this->user = $user;
         $this->oauthProviderName = $oauthProviderName;
-
-        parent::__construct();
     }
 }

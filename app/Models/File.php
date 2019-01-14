@@ -15,15 +15,15 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|User[] $uploaders
- * @method static \Illuminate\Database\Query\Builder|\App\Models\File whereHash($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\File whereDisk($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\File wherePath($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\File whereMime($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\File whereSize($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\File whereMetadata($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\File whereCreatedAt($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\File whereUpdatedAt($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\File ofType($type = 'image')
+ * @method static \Illuminate\Database\Query\Builder|File whereHash($value)
+ * @method static \Illuminate\Database\Query\Builder|File whereDisk($value)
+ * @method static \Illuminate\Database\Query\Builder|File wherePath($value)
+ * @method static \Illuminate\Database\Query\Builder|File whereMime($value)
+ * @method static \Illuminate\Database\Query\Builder|File whereSize($value)
+ * @method static \Illuminate\Database\Query\Builder|File whereMetadata($value)
+ * @method static \Illuminate\Database\Query\Builder|File whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|File whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|File ofType($type = 'image')
  */
 class File extends Model
 {

@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 class CreateCalendarsTable extends Migration
 {
@@ -26,6 +27,6 @@ class CreateCalendarsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('calendars');
+        Schema::dropIfExists('calendars');
     }
 }

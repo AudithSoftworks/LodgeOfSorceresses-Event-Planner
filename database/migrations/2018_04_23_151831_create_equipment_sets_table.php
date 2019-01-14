@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 class CreateEquipmentSetsTable extends Migration
 {
@@ -29,6 +30,6 @@ class CreateEquipmentSetsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('equipment_sets');
+        Schema::dropIfExists('equipment_sets');
     }
 }

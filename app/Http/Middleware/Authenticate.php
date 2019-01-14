@@ -18,7 +18,7 @@ class Authenticate extends IlluminateAuthenticateMiddleware
     public function handle($request, \Closure $next, ...$guards)
     {
         try {
-            $this->authenticate($guards);
+            $this->authenticate($request, $guards);
         } catch (AuthenticationException $e) {
             if ($request->expectsJson()) {
                 throw $e;

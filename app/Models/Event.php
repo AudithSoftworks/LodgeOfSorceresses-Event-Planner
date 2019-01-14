@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int                             $calendar_id
  * @property string|null                     $start_time
  * @property string|null                     $end_time
- * @property int                             $recurrence
+ * @property string|null                     $recurrence
  * @property int                             $rsvp
  * @property int                             $rsvp_limit
  * @property int                             $locked

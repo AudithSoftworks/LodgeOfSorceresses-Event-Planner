@@ -1,9 +1,8 @@
 <?php namespace App\Events\Users;
 
-use App\Events\Event as EventAbstract;
 use Illuminate\Contracts\Auth\Authenticatable;
 
-class RequestedResetPasswordLink extends EventAbstract
+class RequestedResetPasswordLink
 {
     /**
      * @var array|\Illuminate\Contracts\Auth\Authenticatable
@@ -16,7 +15,5 @@ class RequestedResetPasswordLink extends EventAbstract
     public function __construct(Authenticatable $user)
     {
         $this->user = $user;
-
-        parent::__construct();
     }
 }

@@ -12,6 +12,7 @@ class PersistUploadedFile
      * @param \App\Events\Files\Uploaded $event
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @throws \Exception
      */
     public function handle(Uploaded $event)
     {
@@ -82,7 +83,7 @@ class PersistUploadedFile
         $me->files()->newPivotStatement()->whereTag($tag)->whereFileHash($hash)->delete();
 
         $file->uploaders()->attach([
-            $me->getUserId() => [
+            $me->id => [
                 'uuid' => $request->get('qquuid'),
                 'original_client_name' => $request->get('qqfilename'),
                 'tag' => $tag

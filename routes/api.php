@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Http\Request;
+use Illuminate\Routing\Router;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -12,6 +15,14 @@
 */
 
 /** @var \Illuminate\Routing\Router $router */
-$router->resource('chars', 'CharactersController')->only(['store']);
-$router->resource('events', 'EventsController')->only(['index']);
-$router->resource('sets', 'SetsController')->only(['index']);
+$router->middleware('auth:api')->group(function (Router $router) {
+    $router->get('/user', function (Request $request) {
+        return $request->user();
+    });
+    $router->resource('chars', 'CharactersController')->only(['store']);
+    $router->resource('events', 'EventsController')->only(['index']);
+    $router->resource('sets', 'SetsController')->only(['index']);
+});
+
+
+

@@ -1,9 +1,8 @@
 <?php namespace App\Events\Files;
 
-use App\Events\Event as EventAbstract;
 use Illuminate\Http\Request;
 
-class Uploaded extends EventAbstract
+class Uploaded
 {
     /**
      * @var string
@@ -23,7 +22,5 @@ class Uploaded extends EventAbstract
     {
         $this->uploadUuid = $uploadUuid;
         $this->request = $request;
-
-        parent::__construct();
     }
 }
