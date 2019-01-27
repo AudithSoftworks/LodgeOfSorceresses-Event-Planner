@@ -1,26 +1,29 @@
-<?php namespace App\Models;
+<?php
 
-use Carbon\Carbon;
+namespace App\Models;
+
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @mixin \Eloquent
- * @property int                             $id
- * @property string                          $title
- * @property string|null                     $description
- * @property string                          $url
- * @property int                             $calendar_id
- * @property string|null                     $start_time
- * @property string|null                     $end_time
- * @property string|null                     $recurrence
- * @property int                             $rsvp
- * @property int                             $rsvp_limit
- * @property int                             $locked
- * @property int                             $hidden
- * @property int                             $featured
+ * @property int $id
+ * @property string|null $title
+ * @property string|null $description
+ * @property string|null $url
+ * @property int|null $calendar_id
+ * @property string|null $start_time
+ * @property string|null $end_time
+ * @property string|null $recurrence
+ * @property int $rsvp
+ * @property int|null $rsvp_limit
+ * @property int $locked
+ * @property int $hidden
+ * @property int $featured
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- *
+ * @property-read \App\Models\Calendar|null $calendar
+ * @method static \Illuminate\Database\Eloquent\Builder|Event newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Event newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Event query()
  * @method static \Illuminate\Database\Eloquent\Builder|Event whereCalendarId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Event whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Event whereDescription($value)
@@ -36,8 +39,6 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Event whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Event whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Event whereUrl($value)
- *
- * @property-read Calendar $calendar
  */
 class Event extends Model
 {

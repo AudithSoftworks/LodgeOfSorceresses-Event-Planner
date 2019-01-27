@@ -12,6 +12,8 @@ class ClassTypes
 
     public const CLASS_WARDEN = 5;
 
+    public const CLASS_NECROMANCER = 6;
+
     /**
      * @param string $class_name
      *
@@ -30,6 +32,8 @@ class ClassTypes
                 return self::CLASS_WARDEN;
             case 'Templar':
                 return self::CLASS_TEMPLAR;
+            case 'Necromancer':
+                return self::CLASS_NECROMANCER;
             default:
                 return 0;
         }
@@ -53,6 +57,8 @@ class ClassTypes
                 return 'Warden';
             case self::CLASS_TEMPLAR:
                 return 'Templar';
+            case self::CLASS_NECROMANCER:
+                return 'Necromancer';
             default:
                 return '';
         }

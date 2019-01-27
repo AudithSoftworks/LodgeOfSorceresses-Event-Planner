@@ -10,16 +10,16 @@ const merge = require('webpack-merge');
 const dirname = path.resolve();
 
 const PATHS = {
-    js: path.join(dirname, 'resources', 'assets', 'javascripts'),
-    scss: path.join(dirname, 'resources', 'assets', 'sass'),
-    css: path.join(dirname, 'resources', 'assets', 'stylesheets'),
+    js: path.join(dirname, 'resources', 'js'),
+    scss: path.join(dirname, 'resources', 'sass'),
+    css: path.join(dirname, 'resources', 'stylesheets'),
     build: path.join(dirname, 'public', 'build')
 };
 
 let common = {
     mode: process.env.NODE_ENV === 'development' ? 'development' : 'production',
     entry: {
-        index: path.join(PATHS.js, 'index.js')
+        app: path.join(PATHS.js, 'app.js')
     },
     output: {
         path: PATHS.build,

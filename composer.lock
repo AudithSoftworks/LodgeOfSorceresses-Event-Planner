@@ -1234,23 +1234,23 @@
         },
         {
             "name": "justinrainbow/json-schema",
-            "version": "5.2.7",
+            "version": "5.2.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/justinrainbow/json-schema.git",
-                "reference": "8560d4314577199ba51bf2032f02cd1315587c23"
+                "reference": "dcb6e1006bb5fd1e392b4daa68932880f37550d4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/justinrainbow/json-schema/zipball/8560d4314577199ba51bf2032f02cd1315587c23",
-                "reference": "8560d4314577199ba51bf2032f02cd1315587c23",
+                "url": "https://api.github.com/repos/justinrainbow/json-schema/zipball/dcb6e1006bb5fd1e392b4daa68932880f37550d4",
+                "reference": "dcb6e1006bb5fd1e392b4daa68932880f37550d4",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^2.1",
+                "friendsofphp/php-cs-fixer": "~2.2.20",
                 "json-schema/json-schema-test-suite": "1.2.0",
                 "phpunit/phpunit": "^4.8.35"
             },
@@ -1296,7 +1296,7 @@
                 "json",
                 "schema"
             ],
-            "time": "2018-02-14T22:26:30+00:00"
+            "time": "2019-01-14T23:55:14+00:00"
         },
         {
             "name": "laravel/dusk",
@@ -1361,16 +1361,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v5.7.20",
+            "version": "v5.7.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "10cd20294b5668f90ba91996236834e71f7ff670"
+                "reference": "64a7749bd9e8df68addce1d01a54bcf606141f29"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/10cd20294b5668f90ba91996236834e71f7ff670",
-                "reference": "10cd20294b5668f90ba91996236834e71f7ff670",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/64a7749bd9e8df68addce1d01a54bcf606141f29",
+                "reference": "64a7749bd9e8df68addce1d01a54bcf606141f29",
                 "shasum": ""
             },
             "require": {
@@ -1503,7 +1503,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2019-01-08T14:39:11+00:00"
+            "time": "2019-01-22T15:08:35+00:00"
         },
         {
             "name": "laravel/nexmo-notification-channel",
@@ -1564,19 +1564,20 @@
         },
         {
             "name": "laravel/passport",
-            "version": "v7.0.5",
+            "version": "v7.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/passport.git",
-                "reference": "d7f24f6d4e95049b04369d60596d7a5b619a1dc9"
+                "reference": "b0c0dcbb8d7d61ba814b1e2cb404dbb4e1d8a852"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/passport/zipball/d7f24f6d4e95049b04369d60596d7a5b619a1dc9",
-                "reference": "d7f24f6d4e95049b04369d60596d7a5b619a1dc9",
+                "url": "https://api.github.com/repos/laravel/passport/zipball/b0c0dcbb8d7d61ba814b1e2cb404dbb4e1d8a852",
+                "reference": "b0c0dcbb8d7d61ba814b1e2cb404dbb4e1d8a852",
                 "shasum": ""
             },
             "require": {
+                "ext-json": "*",
                 "firebase/php-jwt": "~3.0|~4.0|~5.0",
                 "guzzlehttp/guzzle": "~6.0",
                 "illuminate/auth": "~5.6",
@@ -1629,7 +1630,7 @@
                 "oauth",
                 "passport"
             ],
-            "time": "2019-01-02T10:25:07+00:00"
+            "time": "2019-01-22T14:41:41+00:00"
         },
         {
             "name": "laravel/slack-notification-channel",
@@ -1690,16 +1691,16 @@
         },
         {
             "name": "laravel/socialite",
-            "version": "v4.0.1",
+            "version": "v4.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/socialite.git",
-                "reference": "ad71c2691b04d843e24608ca13d9e004a34907d0"
+                "reference": "25eea36010c4e714c58a4792ef52b0a8e8a9c21c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/socialite/zipball/ad71c2691b04d843e24608ca13d9e004a34907d0",
-                "reference": "ad71c2691b04d843e24608ca13d9e004a34907d0",
+                "url": "https://api.github.com/repos/laravel/socialite/zipball/25eea36010c4e714c58a4792ef52b0a8e8a9c21c",
+                "reference": "25eea36010c4e714c58a4792ef52b0a8e8a9c21c",
                 "shasum": ""
             },
             "require": {
@@ -1750,7 +1751,7 @@
                 "laravel",
                 "oauth"
             ],
-            "time": "2018-12-20T11:14:43+00:00"
+            "time": "2019-01-21T12:35:13+00:00"
         },
         {
             "name": "laravel/tinker",
@@ -2285,16 +2286,16 @@
         },
         {
             "name": "nexmo/client",
-            "version": "1.6.0",
+            "version": "1.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nexmo/nexmo-php.git",
-                "reference": "01809cc1e17a5af275913c49bb5d444eb6cc06d4"
+                "reference": "3dc03ca1dab726a23b757110897740e54304fc65"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nexmo/nexmo-php/zipball/01809cc1e17a5af275913c49bb5d444eb6cc06d4",
-                "reference": "01809cc1e17a5af275913c49bb5d444eb6cc06d4",
+                "url": "https://api.github.com/repos/Nexmo/nexmo-php/zipball/3dc03ca1dab726a23b757110897740e54304fc65",
+                "reference": "3dc03ca1dab726a23b757110897740e54304fc65",
                 "shasum": ""
             },
             "require": {
@@ -2329,7 +2330,7 @@
                 }
             ],
             "description": "PHP Client for using Nexmo's API.",
-            "time": "2018-12-17T10:47:50+00:00"
+            "time": "2019-01-02T09:06:47+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -5943,16 +5944,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.5.1",
+            "version": "7.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "c23d78776ad415d5506e0679723cb461d71f488f"
+                "reference": "7c89093bd00f7d5ddf0ab81dee04f801416b4944"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c23d78776ad415d5506e0679723cb461d71f488f",
-                "reference": "c23d78776ad415d5506e0679723cb461d71f488f",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/7c89093bd00f7d5ddf0ab81dee04f801416b4944",
+                "reference": "7c89093bd00f7d5ddf0ab81dee04f801416b4944",
                 "shasum": ""
             },
             "require": {
@@ -6023,7 +6024,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-12-12T07:20:32+00:00"
+            "time": "2019-01-15T08:19:08+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",

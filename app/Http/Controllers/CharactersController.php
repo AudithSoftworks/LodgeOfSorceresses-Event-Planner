@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Model\EquipmentSet;
 use App\Models\Character;
+use App\Models\EquipmentSet;
+use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -17,11 +19,24 @@ class CharactersController extends Controller
      */
     public function index()
     {
-//        return response()->json([
-//            'characters' => Character::query()->orderBy('name')->get()->keyBy('id')->toArray()
-//        ]);
+        $characters = Character::query()->where('user_id', '=', app('auth.driver')->id())->orderBy('id', 'desc')->get();
+        if ($characters->count()) {
+            $equipmentSets = app('cache.store')->remember('equipmentSets', EquipmentSet::CACHE_TTL, function () {
+                return EquipmentSet::query()->get()->keyBy('id')->toArray();
+            });
+            foreach ($characters as $character) {
+                $character->class = ClassTypes::getClassName($character->class);
+                $character->role = RoleTypes::getRoleName($character->role);
+                $characterEquipmentSets = array_filter($equipmentSets, function ($key) use ($character) {
+                    return in_array($key, explode(',', $character->sets));
+                }, ARRAY_FILTER_USE_KEY);
+                $character->sets = array_values($characterEquipmentSets);
+            }
+        }
 
-        return view('characters');
+        return response()->json([
+            'characters' => $characters
+        ]);
     }
 
     /**
@@ -29,10 +44,10 @@ class CharactersController extends Controller
      *
      * @param  \Illuminate\Http\Request $request
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $validator = app('validator')->make($request->all(), [
             'name' => 'required|string',

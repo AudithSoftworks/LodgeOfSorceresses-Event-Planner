@@ -3,23 +3,9 @@
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\UserActivation
- *
- * @mixin \Eloquent
- * @property integer        $id
- * @property integer        $user_id
- * @property string         $code
- * @property boolean        $completed
- * @property string         $completed_at
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @method static \Illuminate\Database\Query\Builder|\App\Models\UserActivation whereId($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\UserActivation whereUserId($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\UserActivation whereCode($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\UserActivation whereCompleted($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\UserActivation whereCompletedAt($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\UserActivation whereCreatedAt($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\UserActivation whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserActivation newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserActivation newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserActivation query()
  */
 class UserActivation extends Model
 {

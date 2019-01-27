@@ -1,5 +1,6 @@
 import Axios from '../vendor/Axios';
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 class Events extends Component {
     constructor(props) {
@@ -15,10 +16,9 @@ class Events extends Component {
         Axios
             .get('/api/events')
             .then((response) => {
-                console.log(response.data.events);
                 this.setState({
                     setsLoaded: true,
-                    events: response.data.events,
+                    events: response.data,
                     error: null
                 });
             })
@@ -38,10 +38,30 @@ class Events extends Component {
         } else if (!setsLoaded) {
             return <fieldset className='general'>Loading</fieldset>;
         } else {
-            const events = Object.values(events).map(
-                item => console.log(item)
-            );
-
+            console.log(events);
+            // const parsedEvents = Object.values(events).map(
+            //     item => {
+            //         const start = moment(item.start_time);
+            //         const eventDate = start.format('MMMM D, YYYY');
+            //         const eventDayOfWeek = start.format('dddd');
+            //         let eventTime = 'all day';
+            //         if (start.format('HH:mm:ss') !== '00:00:00') {
+            //             eventTime = start.format('HH:mma');
+            //             if (item.end_time) {
+            //                 eventTime += moment(item.end_time).filter('[ - ]HH:mma')
+            //             }
+            //         }
+            //
+            //         delete(item.start_time);
+            //         delete(item.end_time);
+            //         item.eventDate = eventDate;
+            //         item.eventDayOfWeek = eventDayOfWeek;
+            //         item.eventTime = eventTime;
+            //
+            //         return item;
+            //     }
+            // );
+            // console.log(parsedEvents);
             return (
                 <section className="col-md-12">
                     <h2 className="form-title font-green col-md-12">Calendar Events</h2>
@@ -53,5 +73,12 @@ class Events extends Component {
         }
     };
 }
+
+Events.propTypes = {
+    events: PropTypes.shape({
+        start_time: PropTypes.string,
+        end_time: PropTypes.string
+    })
+};
 
 export default Events;

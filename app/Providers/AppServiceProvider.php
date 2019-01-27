@@ -4,8 +4,8 @@ use App\Extensions\Socialite\IpsProvider;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Dusk\DuskServiceProvider;
-use Laravel\Socialite\Contracts\Factory;
 use Laravel\Passport\Passport;
+use Laravel\Socialite\Contracts\Factory;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -31,6 +31,9 @@ class AppServiceProvider extends ServiceProvider
             app()->register(DuskServiceProvider::class);
         }
         Passport::ignoreMigrations();
+        if (!app()->environment('production')) {
+            app()->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
+        }
     }
 
     private function bootIpsSocialiteProvider()

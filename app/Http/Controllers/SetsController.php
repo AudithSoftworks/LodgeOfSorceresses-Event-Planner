@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Model\EquipmentSet;
+use App\Models\EquipmentSet;
 
 class SetsController extends Controller
 {

@@ -1,4 +1,6 @@
-<?php namespace App\Models;
+<?php
+
+namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -6,22 +8,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\JoinClause;
 
 /**
- * App\Models\NestedEntity
- *
- * @property integer $id
- * @property string  $name
- * @property integer $left_range
- * @property integer $right_range
- * @property Carbon  $created_at
- * @property Carbon  $updated_at
- * @property integer $deleted_at
- * @method static \Illuminate\Database\Query\Builder|\App\Models\NestedEntity whereId($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\NestedEntity whereName($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\NestedEntity whereLeftRange($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\NestedEntity whereRightRange($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\NestedEntity whereCreatedAt($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\NestedEntity whereUpdatedAt($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\NestedEntity whereDeletedAt($value)
+ * @method static bool|null forceDelete()
+ * @method static \Illuminate\Database\Eloquent\Builder|NestedEntity newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|NestedEntity newQuery()
+ * @method static \Illuminate\Database\Query\Builder|NestedEntity onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|NestedEntity query()
+ * @method static bool|null restore()
+ * @method static \Illuminate\Database\Query\Builder|NestedEntity withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|NestedEntity withoutTrashed()
  */
 class NestedEntity extends Model
 {
@@ -40,13 +34,13 @@ class NestedEntity extends Model
     const SELECT_LEAVES_ONLY = 8;
 
     /**
-     * @param        $newEntityName
+     * @param string $newEntityName
      * @param int    $referenceEntityId
      *
      * @return boolean
-     * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
-    public function insertIntoAtTheBeginning($newEntityName, $referenceEntityId)
+    public function insertIntoAtTheBeginning(string $newEntityName, int $referenceEntityId): bool
     {
         # Fetch reference entity
         $referenceEntity = app('db.connection')->table($this->table)->where('id', $referenceEntityId)->first();
@@ -80,13 +74,13 @@ class NestedEntity extends Model
     }
 
     /**
-     * @param        $newEntityName
+     * @param string $newEntityName
      * @param int    $referenceEntityId
      *
      * @return boolean
-     * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
-    public function insertIntoAtTheEnd($newEntityName, $referenceEntityId)
+    public function insertIntoAtTheEnd(string $newEntityName, int $referenceEntityId): bool
     {
         # Fetch reference entity
         $referenceEntity = app('db.connection')->table($this->table)->where('id', $referenceEntityId)->first();
@@ -127,8 +121,9 @@ class NestedEntity extends Model
      *
      * @return boolean
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
-    public function insertInto($newEntityName, $referenceEntityId)
+    public function insertInto(string $newEntityName, int $referenceEntityId): bool
     {
         return $this->insertIntoAtTheEnd($newEntityName, $referenceEntityId);
     }
@@ -138,9 +133,9 @@ class NestedEntity extends Model
      * @param int    $referenceEntityId
      *
      * @return boolean
-     * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
-    public function prependTo($newEntityName, $referenceEntityId)
+    public function prependTo(string $newEntityName, int $referenceEntityId): bool
     {
         # Fetch reference entity
         $referenceEntity = app('db.connection')->table($this->table)->where('id', $referenceEntityId)->first();
@@ -178,9 +173,9 @@ class NestedEntity extends Model
      * @param int    $referenceEntityId
      *
      * @return boolean
-     * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
-    public function appendTo($newEntityName, $referenceEntityId)
+    public function appendTo(string $newEntityName, int $referenceEntityId): bool
     {
         # Fetch reference entity
         $referenceEntity = app('db.connection')->table($this->table)->where('id', $referenceEntityId)->first();
@@ -213,7 +208,14 @@ class NestedEntity extends Model
         );
     }
 
-    public function remove($id, $doSoftDelete = true)
+    /**
+     * @param int  $id
+     * @param bool $doSoftDelete
+     *
+     * @return mixed
+     * @throws \Throwable
+     */
+    public function remove(int $id, bool $doSoftDelete = true)
     {
         # Round up delete-ables
         $referenceEntity = app('db.connection')->table($this->table)->select('left_range', 'right_range', app('db.connection')->raw('right_range - left_range + 1 as range_width'))->where('id', $id)

@@ -1,19 +1,17 @@
 {% extends "layout" %}
 
 {% use "layout/head" %}
-{% use "layout/body/header" %}
-{% use "layout/body/main" %}
-{% use "layout/body/footer" %}
 
 {% block document_head_javascripts %}
-    <script defer="defer" type="text/javascript" src="{{ elixir('vendor.js') }}"></script>
-    <script defer="defer" type="text/javascript" src="{{ elixir('index.js') }}"></script>
+    <script async type="text/javascript" src="{{ elixir('vendor.js') }}"></script>
+    <script defer="defer" type="text/javascript" src="{{ elixir('app.js') }}"></script>
+    <script async src="https://www.elderscrollsbote.de/esodb/tooltips.js"></script>
 {% endblock %}
 
 {% block document_head_stylesheets %}
-    <link rel="stylesheet" href="{{ elixir('vendor.css') }}">
+    <link rel="stylesheet" href="{{ elixir('app.css') }}">
 {% endblock %}
 
 {% block document_body_main %}
-    <main class="container" id="root"></main>
+    <main class="container" id="root"/>
 {% endblock %}

@@ -1,29 +1,31 @@
-<?php namespace App\Models;
+<?php
+
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * \App\Models\File
- *
- * @mixin \Eloquent
  * @property string $hash
  * @property string $disk
  * @property string $path
  * @property string $mime
- * @property integer $size
+ * @property int $size
  * @property string $metadata
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection|User[] $uploaders
- * @method static \Illuminate\Database\Query\Builder|File whereHash($value)
- * @method static \Illuminate\Database\Query\Builder|File whereDisk($value)
- * @method static \Illuminate\Database\Query\Builder|File wherePath($value)
- * @method static \Illuminate\Database\Query\Builder|File whereMime($value)
- * @method static \Illuminate\Database\Query\Builder|File whereSize($value)
- * @method static \Illuminate\Database\Query\Builder|File whereMetadata($value)
- * @method static \Illuminate\Database\Query\Builder|File whereCreatedAt($value)
- * @method static \Illuminate\Database\Query\Builder|File whereUpdatedAt($value)
- * @method static \Illuminate\Database\Query\Builder|File ofType($type = 'image')
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $uploaders
+ * @method static \Illuminate\Database\Eloquent\Builder|File newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|File newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|File ofType($type = 'image')
+ * @method static \Illuminate\Database\Eloquent\Builder|File query()
+ * @method static \Illuminate\Database\Eloquent\Builder|File whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|File whereDisk($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|File whereHash($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|File whereMetadata($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|File whereMime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|File wherePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|File whereSize($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|File whereUpdatedAt($value)
  */
 class File extends Model
 {

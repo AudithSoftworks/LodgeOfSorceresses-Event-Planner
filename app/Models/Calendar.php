@@ -1,19 +1,20 @@
-<?php namespace App\Models;
+<?php
+
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @mixin \Eloquent
- *
- * @property int    $id
- * @property string $name
- * @property string $url
- *
+ * @property int $id
+ * @property string|null $name
+ * @property string|null $url
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Event[] $events
+ * @method static \Illuminate\Database\Eloquent\Builder|Calendar newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Calendar newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Calendar query()
  * @method static \Illuminate\Database\Eloquent\Builder|Calendar whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Calendar whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Calendar whereUrl($value)
- *
- * @property-read \Illuminate\Database\Eloquent\Collection|Event[] $events
  */
 class Calendar extends Model
 {
@@ -32,6 +33,9 @@ class Calendar extends Model
      */
     public $timestamps = false;
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function events()
     {
         return $this->hasMany(Event::class);

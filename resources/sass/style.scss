@@ -1,10 +1,11 @@
 @import "global/variables";
 @import "~bootstrap/scss/bootstrap";
 @import "global/fonts/asapcondensed";
+@import "global/fonts/opensans";
 
 //noinspection CssUnknownTarget
 body {
-    background: url('/images/loadscreen_aldmerimanor_01.jpg') no-repeat fixed 50% 0;
+    background: black url('/images/loadscreen_aldmerimanor_01.jpg') fixed no-repeat 50% 0;
     background-size: 100% auto;
     font-size: 16px;
 
@@ -73,12 +74,12 @@ body {
                         padding: 0 1em;
                         border: none !important;
                         border-radius: 6px 6px 0 0;
-                        background-color: rgba(white, 0.25);
+                        background-color: rgba(white, 0.45);
                         text-decoration: none;
                         color: #aaaaaa;
 
                         &.active {
-                            background-color: rgba(white, 0.75);
+                            background-color: rgba(white, 0.85);
                             color: inherit;
                         }
                     }
@@ -89,16 +90,31 @@ body {
 
     > main.container {
         min-height: calc(100vh - 186px - 80px);
-        background-color: rgba(white, 0.75);
+        background-color: rgba(white, 0.85);
         border-radius: 0 6px 6px 6px;
         padding-top: $grid-gutter-width;
         padding-bottom: $grid-gutter-width;
 
         > section, > form {
             > h2 {
-                padding-left: 0;
-                padding-right: 0;
                 font-weight: 600;
+            }
+
+            > table {
+                border-collapse: separate;
+
+                > thead {
+                    border-bottom: 1px;
+
+                    > tr {
+                        > th {
+                            text-transform: uppercase;
+                            font-family: 'Open Sans', sans-serif;
+                            font-weight: 300 !important;
+                            font-size: 0.75rem;
+                        }
+                    }
+                }
             }
 
             input:focus {
