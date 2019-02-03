@@ -8,5 +8,5 @@ $router->get('oauth/from/{provider}', ['uses' => 'Auth\LoginController@handleOAu
 
 $router->middleware('auth')->group(function (Router $router) {
     $router->get('logout', ['uses' => 'Auth\LoginController@logout', 'as' => 'logout']);
-    $router->fallback(['uses' => 'HomeController@index', 'as' => 'home']);
+    $router->get('{any}', ['uses' => 'HomeController@index', 'as' => 'home'])->where('any', '(?!api).*');
 });

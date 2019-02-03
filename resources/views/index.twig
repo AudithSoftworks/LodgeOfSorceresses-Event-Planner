@@ -3,12 +3,13 @@
 {% use "layout/head" %}
 
 {% block document_head_javascripts %}
-    <script async type="text/javascript" src="{{ elixir('vendor.js') }}"></script>
-    <script defer="defer" type="text/javascript" src="{{ elixir('app.js') }}"></script>
-    <script async src="https://www.elderscrollsbote.de/esodb/tooltips.js"></script>
+    <script type="text/javascript" src="{{ elixir('vendor.js') }}" defer async></script>
+    <script type="text/javascript" src="{{ elixir('app.js') }}" defer async></script>
+    <script type="text/javascript" src="https://www.elderscrollsbote.de/esodb/tooltips.js" defer async></script>
 {% endblock %}
 
 {% block document_head_stylesheets %}
+    <link rel="stylesheet" href="{{ elixir('vendor.css') }}">
     <link rel="stylesheet" href="{{ elixir('app.css') }}">
 {% endblock %}
 

@@ -112,10 +112,12 @@ class CharactersController extends Controller
      *
      * @param  int $id
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
+    public function destroy($id): JsonResponse
     {
-        //
+        Character::destroy($id);
+
+        return response()->json(['success' => true]);
     }
 }

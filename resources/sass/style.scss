@@ -2,6 +2,9 @@
 @import "~bootstrap/scss/bootstrap";
 @import "global/fonts/asapcondensed";
 @import "global/fonts/opensans";
+@import "global/notifications";
+@import "~react-notifications-component/dist/theme.css";
+@import "~animate.css/animate.css";
 
 //noinspection CssUnknownTarget
 body {
@@ -97,7 +100,15 @@ body {
 
         > section, > form {
             > h2 {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
                 font-weight: 600;
+
+                > a {
+                    font-size: 1.25rem;
+                }
             }
 
             > table {
@@ -112,6 +123,30 @@ body {
                             font-family: 'Open Sans', sans-serif;
                             font-weight: 300 !important;
                             font-size: 0.75rem;
+                        }
+                    }
+                }
+
+                > tbody {
+                    > tr {
+                        > td {
+                            position: relative;
+
+                            > ul.actionList {
+                                position: absolute;
+                                right: 0;
+                                top: 0;
+                                display: none;
+                                list-style: none;
+                                flex-direction: row;
+                                justify-content: space-between;
+                            }
+                        }
+
+                        &:hover {
+                            ul.actionList {
+                                display: flex;
+                            }
                         }
                     }
                 }

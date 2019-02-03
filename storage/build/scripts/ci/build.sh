@@ -36,7 +36,6 @@ docker-compose exec --privileged dev bash -c "
 
     cd \$WORKDIR;
     rm -rf ./public/fonts/*;
-    cp -r ./node_modules/font-awesome/fonts ./public/fonts/font_awesome;
     cp -r ./node_modules/simple-line-icons-webfont/fonts ./public/fonts/simple-line-icons;
     cp -r ./node_modules/.google-fonts/apache/opensans ./public/fonts/opensans;
     cp -r ./node_modules/.google-fonts/apache/robotocondensed ./public/fonts/robotocondensed;

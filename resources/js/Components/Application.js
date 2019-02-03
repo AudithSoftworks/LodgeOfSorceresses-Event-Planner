@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { NavLink } from "react-router-dom";
+import Footer from "./Layout/Footer";
 import Header from "./Layout/Header";
 import Main from "./Layout/Main";
-import Footer from "./Layout/Footer";
 
 class Application extends Component {
     navLinks = [

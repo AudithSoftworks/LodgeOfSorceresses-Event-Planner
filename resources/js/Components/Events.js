@@ -1,6 +1,6 @@
-import Axios from '../vendor/Axios';
-import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import Axios from '../vendor/Axios';
 
 class Events extends Component {
     constructor(props) {

@@ -1,8 +1,10 @@
-import Axios from '../../vendor/Axios';
 import React, { Component } from 'react';
 import { Link, Redirect } from "react-router-dom";
 import Select from 'react-select';
 import * as Animated from 'react-select/lib/animated';
+import Axios from '../../vendor/Axios';
+import Loading from "../Characters";
+import Notification from '../Notification';
 
 class CharacterCreateForm extends Component {
     classOptions = [
@@ -26,50 +28,80 @@ class CharacterCreateForm extends Component {
         this.state = {
             setsLoaded: false,
             characterCreated: null,
-            sets: [],
-            error: null
+            sets: null,
+            messages: [],
         };
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.render = this.render.bind(this);
+    };
+
+    componentDidMount = () => {
+        this.cancelTokenSource = Axios.CancelToken.source();
+        Axios.get('/api/sets', {
+            cancelToken: this.cancelTokenSource.token
+        }).then((response) => {
+            if (response.data) {
+                this.setState({
+                    setsLoaded: true,
+                    sets: response.data.sets,
+                    messages: [
+                        {
+                            type: "success",
+                            message: "Form loaded."
+                        }
+                    ]
+                });
+                this.cancelTokenSource = null;
+            }
+        }).catch((error) => {
+            if (!Axios.isCancel(error)) {
+                this.setState({
+                    messages: [
+                        {
+                            type: "danger",
+                            message: error.response.statusText
+                        }
+                    ]
+                })
+            }
+        });
+    };
+
+    componentWillUnmount = () => {
+        this.cancelTokenSource && this.cancelTokenSource.cancel('Unmount');
     };
 
     handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.target);
-        Axios
-            .post('/api/chars', data)
-            .then((response) => {
-                this.setState({
-                    characterCreated: response.data.success === true,
-                    error: null
-                });
-            })
-            .catch(function (error) {
-                this.setState({
-                    characterCreated: false,
-                    error: error
-                });
+        this.cancelTokenSource = Axios.CancelToken.source();
+        Axios.post(
+            '/api/chars', data, {
+                cancelToken: this.cancelTokenSource.token
+            }
+        ).then((response) => {
+            this.setState({
+                characterCreated: response.data.success === true,
+                messages: [
+                    {
+                        type: "success",
+                        message: response.statusText
+                    }
+                ]
             });
+            this.cancelTokenSource = null;
+        }).catch((error) => {
+            if (!Axios.isCancel(error)) {
+                this.setState({
+                    messages: [
+                        {
+                            type: "danger",
+                            message: error.response.statusText
+                        }
+                    ]
+                })
+            }
+        });
     };
 
-    componentDidMount = () => {
-        Axios
-            .get('/api/sets')
-            .then((response) => {
-                this.setState({
-                    setsLoaded: true,
-                    sets: response.data.sets,
-                    error: null
-                });
-            })
-            .catch(function (error) {
-                this.setState({
-                    setsLoaded: true,
-                    sets: [],
-                    error: error
-                });
-            });
-    };
     renderForm = (sets) => {
         const setsOptions = Object.values(sets).map(
             item => ({value: item.id, label: item.name})
@@ -77,7 +109,7 @@ class CharacterCreateForm extends Component {
 
         return (
             <form className='col-md-24 d-flex flex-row flex-wrap p-0' onSubmit={this.handleSubmit} key='characterCreationForm'>
-                <h2 className="form-title font-green col-md-24">Create Character</h2>
+                <h2 className="form-title col-md-24">Create Character</h2>
                 <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')}/>
                 <fieldset className='form-group col-md-6'>
                     <label htmlFor='characterName'>Character Name:</label>
@@ -128,16 +160,17 @@ class CharacterCreateForm extends Component {
     };
 
     render = () => {
-        const {setsLoaded, characterCreated, sets, error} = this.state;
-        if (error) {
-            return <fieldset className='error'>Error: {error}</fieldset>;
-        } else if (!setsLoaded) {
-            return <fieldset className='general'>Loading...</fieldset>;
-        } else if (characterCreated) {
+        const {setsLoaded, characterCreated, sets, messages} = this.state;
+        if (characterCreated) {
             return <Redirect to="/chars"/>
+        } else if (setsLoaded === true && sets) {
+            return [
+                this.renderForm(sets),
+                <Notification key='notifications' messages={messages}/>
+            ];
         }
 
-        return [this.renderForm(sets)];
+        return <Loading/>;
     };
 }
 

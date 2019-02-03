@@ -1,6 +1,13 @@
-import Axios from '../vendor/Axios';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faSpinner, faTrashAlt, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { Component } from 'react';
 import { Link } from "react-router-dom";
+import Notification from '../Components/Notification';
+import Axios from '../vendor/Axios';
+import Loading from "./Loading";
+
+library.add(faSpinner, faTrashAlt, faUserPlus);
 
 class Characters extends Component {
     constructor(props) {
@@ -8,41 +15,108 @@ class Characters extends Component {
         this.state = {
             charactersLoaded: false,
             characters: [],
-            error: null
+            messages: [],
         };
-        this.render = this.render.bind(this);
     };
 
     componentDidMount = () => {
-        Axios
-            .get('/api/chars')
-            .then((response) => {
+        this.cancelTokenSource = Axios.CancelToken.source();
+        Axios.get('/api/chars', {
+            cancelToken: this.cancelTokenSource.token
+        }).then((response) => {
+            this.cancelTokenSource = null;
+            if (response.data) {
                 this.setState({
                     charactersLoaded: true,
-                    chars: response.data.characters,
-                    error: null
+                    characters: response.data.characters,
+                    messages: [
+                        {
+                            type: "success",
+                            message: "Characters loaded."
+                        }
+                    ]
                 });
-            })
-            .catch(function (error) {
+            }
+        }).catch(error => {
+            if (!Axios.isCancel(error)) {
                 this.setState({
-                    charactersLoaded: true,
-                    chars: [],
-                    error: error
-                });
+                    messages: [
+                        {
+                            type: "danger",
+                            message: error.response.statusText
+                        }
+                    ]
+                })
+            }
+        });
+    };
+
+    componentWillUnmount = () => {
+        this.cancelTokenSource && this.cancelTokenSource.cancel('Unmount');
+    };
+
+    handleDelete = (event) => {
+        event.preventDefault();
+        if (confirm('Are you sure you want to delete this character?')) {
+            this.cancelTokenSource = Axios.CancelToken.source();
+            let currentTarget = event.currentTarget;
+            const characters = this.state.characters;
+            Axios.delete('/api/chars/' + currentTarget.getAttribute('data-id'), {
+                cancelToken: this.cancelTokenSource.token
+            }).then((response) => {
+                this.cancelTokenSource = null;
+                if (response.data.success === true) {
+                    characters.forEach((item, idx) => {
+                        if (item.id === parseInt(currentTarget.getAttribute('data-id'))) {
+                            delete (characters[idx]);
+                        }
+                    });
+                    this.setState({
+                        characters: characters,
+                        messages: [
+                            {
+                                type: "success",
+                                message: response.statusText
+                            }
+                        ],
+                    });
+                }
+            }).catch(error => {
+                if (!Axios.isCancel(error)) {
+                    this.setState({
+                        messages: [
+                            {
+                                type: "danger",
+                                message: error.response.statusText
+                            }
+                        ]
+                    })
+                }
             });
+        }
     };
 
     renderList = (characters) => {
         let charactersRendered = characters.map(
             item => {
                 const characterSets = item.sets.map(set => <a key={set.id} href={'https://eso-sets.com/set/' + set.slug}>{set.name}</a>);
+                item.actionList = {
+                    delete: <Link to={'/api/chars/' + item.id} onClick={this.handleDelete} data-id={item.id}><FontAwesomeIcon icon="trash-alt"/></Link>
+                };
+                let actionListRendered = [];
+                for (const [actionType, link] of Object.entries(item.actionList)) {
+                    actionListRendered.push(<li key={actionType}>{link}</li>);
+                }
 
                 return (
-                    <tr key={'characterRow-' + item.id}>
+                    <tr key={'characterRow-' + item.id} data-id={item.id}>
                         <td>{item.name}</td>
                         <td>{item.class}</td>
                         <td>{item.role}</td>
-                        <td>{characterSets.reduce((prev, curr) => [prev, ', ', curr])}</td>
+                        <td>
+                            {characterSets.reduce((prev, curr) => [prev, ', ', curr])}
+                            <ul className='actionList'>{actionListRendered}</ul>
+                        </td>
                     </tr>
                 )
             }
@@ -63,25 +137,29 @@ class Characters extends Component {
             ];
         }
 
-        const linkToCharacterCreateForm = <Link to="/chars/create">Add Character</Link>
+        const linkToCharacterCreateForm = <Link to="/chars/create"><FontAwesomeIcon icon="user-plus"/></Link>;
 
-        return (
+        return [
             <section className="col-md-24 p-0 mb-4" key='characterList'>
-                <h2 className="form-title font-green col-md-24">My Characters {linkToCharacterCreateForm}</h2>
+                <h2 className="form-title col-md-24">My Characters {linkToCharacterCreateForm}</h2>
                 {charactersRendered}
             </section>
-        );
+        ];
     };
 
     render = () => {
-        const {charactersLoaded, chars, error} = this.state;
-        if (error) {
-            return <fieldset className='error'>Error: {error}</fieldset>;
-        } else if (!charactersLoaded) {
-            return <fieldset className='general'>Loading...</fieldset>;
+        const {charactersLoaded, characters, messages} = this.state;
+        if (!charactersLoaded) {
+            return [
+                <Loading key='loading'/>,
+                <Notification key='notifications' messages={messages}/>
+            ]
         }
 
-        return this.renderList(chars);
+        return [
+            this.renderList(characters),
+            <Notification key='notifications' messages={messages}/>,
+        ]
     };
 }
 

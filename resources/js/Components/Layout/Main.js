@@ -1,21 +1,32 @@
 import React, { Component } from 'react';
 import { Route, Switch } from "react-router-dom";
 import Characters from "../Characters";
-import CharacterCreateForm from "../Forms/CharacterCreateForm";
+import ErrorBoundary from "../ErrorBoundary";
 import Events from "../Events";
+import CharacterCreateForm from "../Forms/CharacterCreateForm";
 
 class Main extends Component {
     render = () => {
-        return (
+        return [
             <main key="main" className="container">
-                <Switch>
-                    <Route exact path="/" component={Characters}/>
-                    <Route exact path="/chars" component={Characters}/>
-                    <Route path="/chars/create" component={CharacterCreateForm}/>
-                    <Route path="/events" component={Events}/>
-                </Switch>
-            </main>
-        );
+                <ErrorBoundary>
+                    <Switch>
+                        <Route exact path="/" component={Characters}/>
+                        <Route path="/events" component={Events}/>
+                        <Route
+                            path="/chars"
+                            render={({match: {url}}) => (
+                                <>
+                                    <Route exact path={`${url}/`} component={Characters}/>
+                                    <Route path={`${url}/create`} component={CharacterCreateForm}/>
+                                </>
+                            )}
+                        />
+                        <Route component={ErrorBoundary}/>
+                    </Switch>
+                </ErrorBoundary>
+            </main>,
+        ];
     };
 }
 
