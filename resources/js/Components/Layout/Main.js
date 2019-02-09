@@ -3,7 +3,7 @@ import { Route, Switch } from "react-router-dom";
 import Characters from "../Characters";
 import ErrorBoundary from "../ErrorBoundary";
 import Events from "../Events";
-import CharacterCreateForm from "../Forms/CharacterCreateForm";
+import CharacterForm from "../Forms/CharacterForm";
 
 class Main extends Component {
     render = () => {
@@ -17,8 +17,9 @@ class Main extends Component {
                             path="/chars"
                             render={({match: {url}}) => (
                                 <>
-                                    <Route exact path={`${url}/`} component={Characters}/>
-                                    <Route path={`${url}/create`} component={CharacterCreateForm}/>
+                                    <Route exact path={url} component={Characters}/>
+                                    <Route path={url + '/create'} component={CharacterForm}/>
+                                    <Route path={url + '/:id/edit'} component={CharacterForm}/>
                                 </>
                             )}
                         />

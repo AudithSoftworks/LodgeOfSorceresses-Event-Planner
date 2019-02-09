@@ -55,11 +55,11 @@ class Notification extends Component {
         return null;
     };
 
-    componentDidMount = () => {
+    componentDidMount() {
         this.props.messages.map((item) => this.add(item));
     };
 
-    componentDidUpdate = (prevProps, prevState, snapshot) => {
+    componentDidUpdate(prevProps, prevState, snapshot) {
         if (snapshot && snapshot.length) {
             snapshot.map((item) => this.add(item));
         }

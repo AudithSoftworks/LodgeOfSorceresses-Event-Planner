@@ -6,7 +6,7 @@ import Axios from '../../vendor/Axios';
 import Loading from "../Characters";
 import Notification from '../Notification';
 
-class CharacterCreateForm extends Component {
+class CharacterForm extends Component {
     classOptions = [
         {value: 1, label: 'Dragonknight'},
         {value: 2, label: 'Nightblade'},
@@ -27,13 +27,14 @@ class CharacterCreateForm extends Component {
         super(props);
         this.state = {
             setsLoaded: false,
-            characterCreated: null,
+            characterLoaded: null,
+            characterProcessed: null,
             sets: null,
             messages: [],
         };
     };
 
-    componentDidMount = () => {
+    componentDidMount() {
         this.cancelTokenSource = Axios.CancelToken.source();
         Axios.get('/api/sets', {
             cancelToken: this.cancelTokenSource.token
@@ -63,9 +64,34 @@ class CharacterCreateForm extends Component {
                 })
             }
         });
+
+        if (this.props.match.params.id) {
+            const charId = this.props.match.params.id;
+            Axios.get('/api/chars/' + charId + '/edit', {
+                cancelToken: this.cancelTokenSource.token
+            }).then((response) => {
+                if (response.data) {
+                    this.setState({
+                        characterLoaded: response.data,
+                    });
+                    this.cancelTokenSource = null;
+                }
+            }).catch((error) => {
+                if (!Axios.isCancel(error)) {
+                    this.setState({
+                        messages: [
+                            {
+                                type: "danger",
+                                message: error.response.statusText
+                            }
+                        ]
+                    })
+                }
+            });
+        }
     };
 
-    componentWillUnmount = () => {
+    componentWillUnmount() {
         this.cancelTokenSource && this.cancelTokenSource.cancel('Unmount');
     };
 
@@ -73,13 +99,23 @@ class CharacterCreateForm extends Component {
         event.preventDefault();
         const data = new FormData(event.target);
         this.cancelTokenSource = Axios.CancelToken.source();
-        Axios.post(
-            '/api/chars', data, {
-                cancelToken: this.cancelTokenSource.token
-            }
-        ).then((response) => {
+        let result = this.props.match.params.id
+            ? Axios.post(
+                '/api/chars/' + this.props.match.params.id, data, {
+                    cancelToken: this.cancelTokenSource.token,
+                    headers: {
+                        'X-HTTP-Method-Override': 'PUT'
+                    }
+                }
+            )
+            : Axios.post(
+                '/api/chars', data, {
+                    cancelToken: this.cancelTokenSource.token
+                }
+            );
+        result.then((response) => {
             this.setState({
-                characterCreated: response.data.success === true,
+                characterProcessed: this.props.match.params.id ? response.status === 204 : response.status === 201,
                 messages: [
                     {
                         type: "success",
@@ -109,7 +145,7 @@ class CharacterCreateForm extends Component {
 
         return (
             <form className='col-md-24 d-flex flex-row flex-wrap p-0' onSubmit={this.handleSubmit} key='characterCreationForm'>
-                <h2 className="form-title col-md-24">Create Character</h2>
+                <h2 className="form-title col-md-24">{this.props.match.params.id ? 'Edit' : 'Create'} Character</h2>
                 <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')}/>
                 <fieldset className='form-group col-md-6'>
                     <label htmlFor='characterName'>Character Name:</label>
@@ -119,6 +155,7 @@ class CharacterCreateForm extends Component {
                         id='characterName'
                         className='form-control form-control-md'
                         placeholder='Enter...'
+                        defaultValue={this.state.characterLoaded ? this.state.characterLoaded.name : ''}
                         autoComplete='off'
                         required
                     />
@@ -127,7 +164,11 @@ class CharacterCreateForm extends Component {
                     <label>Class:</label>
                     <Select
                         options={this.classOptions}
-                        defaultValue={this.classOptions[0]}
+                        defaultValue={
+                            this.state.characterLoaded
+                                ? this.classOptions.filter(option => option.value === this.state.characterLoaded.class)
+                                : this.classOptions[0]
+                        }
                         components={Animated}
                         name='class'
                     />
@@ -136,7 +177,11 @@ class CharacterCreateForm extends Component {
                     <label>Role:</label>
                     <Select
                         options={this.roleOptions}
-                        defaultValue={this.roleOptions[0]}
+                        defaultValue={
+                            this.state.characterLoaded
+                            ? this.roleOptions.filter(option => option.value === this.state.characterLoaded.role)
+                            : this.roleOptions[0]
+                        }
                         components={Animated}
                         name='role'
                     />
@@ -145,6 +190,11 @@ class CharacterCreateForm extends Component {
                     <label>Supportive Sets:</label>
                     <Select
                         options={setsOptions}
+                        defaultValue={
+                            this.state.characterLoaded
+                                ? setsOptions.filter(option => this.state.characterLoaded.sets.includes(option.value))
+                                : null
+                        }
                         placeholder='Full sets you have...'
                         components={Animated}
                         name='sets[]'
@@ -160,10 +210,20 @@ class CharacterCreateForm extends Component {
     };
 
     render = () => {
-        const {setsLoaded, characterCreated, sets, messages} = this.state;
-        if (characterCreated) {
+        const {setsLoaded, characterLoaded, characterProcessed, sets, messages} = this.state;
+
+        let formBasicsLoaded = setsLoaded && sets;
+
+        let editFormCharacterLoaded = true;
+        if (this.props.match.params.id) {
+            if (!characterLoaded) {
+                editFormCharacterLoaded = false;
+            }
+        }
+
+        if (characterProcessed) {
             return <Redirect to="/chars"/>
-        } else if (setsLoaded === true && sets) {
+        } else if (formBasicsLoaded && editFormCharacterLoaded) {
             return [
                 this.renderForm(sets),
                 <Notification key='notifications' messages={messages}/>
@@ -174,4 +234,4 @@ class CharacterCreateForm extends Component {
     };
 }
 
-export default CharacterCreateForm;
+export default CharacterForm;

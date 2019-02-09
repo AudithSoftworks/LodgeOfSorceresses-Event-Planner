@@ -2,6 +2,7 @@
 
 use App\Events as Events;
 use App\Listeners as Listeners;
+use Illuminate\Cache\Events\CacheMissed;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -21,6 +22,9 @@ class EventServiceProvider extends ServiceProvider
         Events\Users\Registered::class => [],
         Events\Users\RequestedActivationLink::class => [],
         Events\Users\RequestedResetPasswordLink::class => [],
+        CacheMissed::class => [
+            Listeners\Cache\Recache::class
+        ]
     ];
 
     /**

@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\EquipmentSet;
-
 class SetsController extends Controller
 {
     /**
@@ -13,8 +11,10 @@ class SetsController extends Controller
      */
     public function index()
     {
+        app('cache.store')->has('equipmentSets'); // Trigger Recache listener.
+
         return response()->json([
-            'sets' => EquipmentSet::query()->orderBy('name')->get()->keyBy('id')->toArray()
+            'sets' => app('cache.store')->get('equipmentSets')
         ]);
     }
 }

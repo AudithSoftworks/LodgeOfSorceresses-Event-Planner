@@ -1,13 +1,13 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSpinner, faTrashAlt, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faTrashAlt, faUserEdit, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { Component } from 'react';
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import Notification from '../Components/Notification';
 import Axios from '../vendor/Axios';
 import Loading from "./Loading";
 
-library.add(faSpinner, faTrashAlt, faUserPlus);
+library.add(faSpinner, faTrashAlt, faUserEdit, faUserPlus);
 
 class Characters extends Component {
     constructor(props) {
@@ -19,7 +19,7 @@ class Characters extends Component {
         };
     };
 
-    componentDidMount = () => {
+    componentDidMount() {
         this.cancelTokenSource = Axios.CancelToken.source();
         Axios.get('/api/chars', {
             cancelToken: this.cancelTokenSource.token
@@ -51,7 +51,7 @@ class Characters extends Component {
         });
     };
 
-    componentWillUnmount = () => {
+    componentWillUnmount() {
         this.cancelTokenSource && this.cancelTokenSource.cancel('Unmount');
     };
 
@@ -101,6 +101,7 @@ class Characters extends Component {
             item => {
                 const characterSets = item.sets.map(set => <a key={set.id} href={'https://eso-sets.com/set/' + set.slug}>{set.name}</a>);
                 item.actionList = {
+                    edit: <Link to={'/chars/' + item.id + '/edit'}><FontAwesomeIcon icon="user-edit"/></Link>,
                     delete: <Link to={'/api/chars/' + item.id} onClick={this.handleDelete} data-id={item.id}><FontAwesomeIcon icon="trash-alt"/></Link>
                 };
                 let actionListRendered = [];
