@@ -3,35 +3,6 @@ import { Route, Switch } from "react-router-dom";
 import Loading from "../Characters";
 import ErrorBoundary from "../ErrorBoundary";
 
-// const Events = Loadable({
-//     loader: () => import(
-//         /* webpackPrefetch: true */
-//         /* webpackChunkName: "components-events" */
-//         '../Events'),
-//     loading: () => <Loading/>
-// });
-// const Characters = Loadable({
-//     loader: () => import(
-//         /* webpackPrefetch: true */
-//         /* webpackChunkName: "components-characters" */
-//         '../Characters'),
-//     loading: () => <Loading/>
-// });
-// const CharacterForm = Loadable({
-//     loader: () => import(
-//         /* webpackPrefetch: true */
-//         /* webpackChunkName: "components-character_form" */
-//         '../Forms/CharacterForm'),
-//     loading: () => <Loading/>
-// });
-// const DpsParseForm = Loadable({
-//     loader: () => import(
-//         /* webpackPrefetch: true */
-//         /* webpackChunkName: "components-dps_parse_form" */
-//         '../Forms/DpsParseForm'),
-//     loading: () => <Loading/>
-// });
-
 const Events = React.lazy(() => import(
     /* webpackPrefetch: true */
     /* webpackChunkName: "components-events" */
@@ -59,16 +30,16 @@ class Main extends Component {
                 <Suspense fallback={<Loading/>}>
                     <ErrorBoundary>
                         <Switch>
-                            <Route exact path="/" component={() => <Characters/>}/>
-                            <Route path="/events" component={() => <Events/>}/>
+                            <Route exact path="/" component={props => <Characters {...props}/>}/>
+                            <Route path="/events" component={props => <Events {...props}/>}/>
                             <Route
                                 path="/chars"
                                 render={({match: {url}}) => (
                                     <>
-                                        <Route exact path={url} component={() => <Characters/>}/>
-                                        <Route path={url + '/create'} component={() => <CharacterForm/>}/>
-                                        <Route path={url + '/:id/edit'} component={() => <CharacterForm/>}/>
-                                        <Route path={url + '/:id/parses/create'} component={() => <DpsParseForm/>}/>
+                                        <Route exact path={url} component={props => <Characters {...props}/>}/>
+                                        <Route path={url + '/create'} component={props => <CharacterForm {...props}/>}/>
+                                        <Route path={url + '/:id/edit'} component={props => <CharacterForm {...props}/>}/>
+                                        <Route path={url + '/:id/parses/create'} component={props => <DpsParseForm {...props}/>}/>
                                     </>
                                 )}
                             />
