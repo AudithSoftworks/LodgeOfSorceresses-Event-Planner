@@ -138,7 +138,7 @@ class CharactersController extends Controller
         $character->sets = !empty($request->get('sets')) ? implode(',', $request->get('sets')) : null;
         $character->save();
 
-        return response()->json(['success' => true], JsonResponse::HTTP_NO_CONTENT);
+        return response()->json([], JsonResponse::HTTP_NO_CONTENT);
     }
 
     /**

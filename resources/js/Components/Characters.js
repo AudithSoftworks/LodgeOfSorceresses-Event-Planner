@@ -1,13 +1,13 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSpinner, faTrashAlt, faUserEdit, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faTachometerAlt, faTrashAlt, faUserEdit, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { Component } from 'react';
-import { Link, Redirect } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Notification from '../Components/Notification';
 import Axios from '../vendor/Axios';
 import Loading from "./Loading";
 
-library.add(faSpinner, faTrashAlt, faUserEdit, faUserPlus);
+library.add(faSpinner,faTachometerAlt, faTrashAlt, faUserEdit, faUserPlus);
 
 class Characters extends Component {
     constructor(props) {
@@ -101,6 +101,7 @@ class Characters extends Component {
             item => {
                 const characterSets = item.sets.map(set => <a key={set.id} href={'https://eso-sets.com/set/' + set.slug}>{set.name}</a>);
                 item.actionList = {
+                    parseCreate: <Link to={'/chars/' + item.id + '/parses/create'}><FontAwesomeIcon icon="tachometer-alt"/></Link>,
                     edit: <Link to={'/chars/' + item.id + '/edit'}><FontAwesomeIcon icon="user-edit"/></Link>,
                     delete: <Link to={'/api/chars/' + item.id} onClick={this.handleDelete} data-id={item.id}><FontAwesomeIcon icon="trash-alt"/></Link>
                 };

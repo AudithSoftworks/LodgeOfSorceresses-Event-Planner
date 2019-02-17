@@ -23,6 +23,8 @@ class RouteServiceProvider extends ServiceProvider
     {
         app('router')->patterns([
             'provider' => 'ips',
+            'char' => '\d+',
+            'parse' => '\d+',
         ]);
 
         parent::boot();

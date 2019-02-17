@@ -1,7 +1,9 @@
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const UglifyJsWebpackPlugin = require('uglifyjs-webpack-plugin');
+
+/** @var {String} process.env.NODE_ENV */
+const devMode = process.env.NODE_ENV !== 'production';
 
 exports.extractBundles = function () {
     return {
@@ -29,17 +31,9 @@ exports.loadersAndPluginsForVariousTypes = function () {
         module: {
             rules: [
                 {
-                    test: /\.css$/,
+                    test: /\.(sa|sc|c)ss$/,
                     use: [
-                        MiniCssExtractPlugin.loader,
-                        'css-loader',
-                        'postcss-loader'
-                    ]
-                },
-                {
-                    test: /\.scss$/,
-                    use: [
-                        MiniCssExtractPlugin.loader,
+                        devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
                         'css-loader',
                         'postcss-loader',
                         'sass-loader'

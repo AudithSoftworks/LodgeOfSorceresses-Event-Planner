@@ -9,6 +9,7 @@ $router->middleware('auth:api')->group(function (Router $router) {
         return $request->user();
     });
     $router->resource('chars', 'CharactersController')->except(['create', 'show']);
+    $router->resource('chars/{char}/parses', 'DpsParsesController')->except(['create', 'show']);
     $router->resource('events', 'EventsController')->only(['index']);
     $router->resource('sets', 'SetsController')->only(['index']);
 });

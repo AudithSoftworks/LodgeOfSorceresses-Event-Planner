@@ -8,6 +8,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
 const merge = require('webpack-merge');
 const dirname = path.resolve();
+/** @var {String} process.env.NODE_ENV */
+const devMode = process.env.NODE_ENV !== 'production';
 
 const PATHS = {
     js: path.join(dirname, 'resources', 'js'),
@@ -23,7 +25,7 @@ let common = {
     },
     output: {
         path: PATHS.build,
-        publicPath: '/build',
+        publicPath: '/build/',
         filename: process.env.NODE_ENV === 'development' ? '[name].js' : '[name].[contenthash].js',
         chunkFilename: '[name].[contenthash].js' // This is used for require.ensure. The setup will work without but this is useful to set.
     },
@@ -33,7 +35,8 @@ let common = {
             publicPath: '/'
         }),
         new MiniCssExtractPlugin({
-            filename: "[name].[contenthash].css",
+            filename: devMode ? '[name].css' : '[name].[hash].css',
+            chunkFilename: devMode ? '[id].css' : '[id].[hash].css',
         }),
         // ensure that we get a production build of any dependencies this is primarily for React, where this removes 179KB from the bundle
         new DefinePlugin({
@@ -51,24 +54,9 @@ let common = {
 let config;
 
 // Detect how npm is run and branch based on that
-/** @var {String} process.env.NODE_ENV */
-switch (process.env.NODE_ENV) {
-    case 'production':
-        config = merge(
-            common,
-            toolset.loadersAndPluginsForVariousTypes(),
-            toolset.extractBundles(),
-            toolset.minify()
-        );
-        break;
-    default:
-        config = merge(
-            common,
-            toolset.loadersAndPluginsForVariousTypes(),
-            toolset.extractBundles()
-        );
-        break;
-}
+config = devMode
+    ? merge(common, toolset.loadersAndPluginsForVariousTypes() /*, toolset.extractBundles() */)
+    : merge(common, toolset.loadersAndPluginsForVariousTypes() /*, toolset.extractBundles() */, toolset.minify());
 
 /** @var {String} process.env.npm_lifecycle_event */
 if (process.env.npm_lifecycle_event !== 'watch') {
