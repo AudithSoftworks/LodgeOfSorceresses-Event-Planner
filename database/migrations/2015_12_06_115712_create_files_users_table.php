@@ -15,9 +15,10 @@ class CreateFilesUsersTable extends Migration
     {
         Schema::create('files_users', function (Blueprint $table) {
             $table->engine = 'InnoDb';
+            $table->increments('id');
             $table->string('file_hash', 64);
             $table->unsignedInteger('user_id');
-            $table->string('uuid', 36)->nullable();
+            $table->string('qquuid', 64)->nullable();
             $table->string('original_client_name');
             $table->string('tag');
             $table->timestamps();

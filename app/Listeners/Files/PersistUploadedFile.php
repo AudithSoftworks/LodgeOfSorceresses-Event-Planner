@@ -26,16 +26,16 @@ class PersistUploadedFile
         */
 
         $hash = hash_file('sha256', app('filestream')->getAbsolutePath($uploadUuid));
-        $destination = $hash;
+        $destination = 'public/' . $hash;
         if (config('filesystems.load_balancing.enabled')) {
             $config = config('filesystems.load_balancing');
             $folders = [];
             for ($i = 0; $i < $config['depth']; $i++) {
                 $folders[] = substr($hash, -1 * ($i + 1) * $config['length'], $config['length']);
             }
-            $destination = implode(DIRECTORY_SEPARATOR, array_merge($folders, [$hash]));
+            $destination = 'public/' . implode(DIRECTORY_SEPARATOR, array_merge($folders, [$hash]));
         }
-        $filesystem = app('filesystem')->disk();
+        $filesystem = app('filesystem');
         (!$filesystem->exists($destination)) ? $filesystem->move($uploadUuid, $destination) : $filesystem->delete($uploadUuid);
 
         /*
@@ -45,7 +45,7 @@ class PersistUploadedFile
         */
 
         /** @var \App\Models\User $me */
-        $me = app('sentinel')->getUser();
+        $me = app('auth.driver')->user();
         $tag = $request->get('qqtag');
         $tagLimit = config('filesystems.allowed_tags_and_limits.' . $tag);
         if ($tagLimit > 0) {
@@ -70,11 +70,13 @@ class PersistUploadedFile
         */
 
         $uploadedFile = new SymfonyFile(app('filestream')->getAbsolutePath($destination));
+        /** @noinspection PhpUndefinedMethodInspection */
+        $pathPrefix = app('filesystem.disk')->getDriver()->getAdapter()->getPathPrefix();
         if (!$file = File::find($hash = $uploadedFile->getFilename())) {
             $file = new File();
             $file->hash = $hash;
             $file->disk = 'local';
-            $file->path = trim(str_replace(config('filesystems.disks.local.root'), '', $uploadedFile->getPathname()), DIRECTORY_SEPARATOR);
+            $file->path = trim(str_replace($pathPrefix, '', $uploadedFile->getPathname()), DIRECTORY_SEPARATOR);
             $file->mime = $uploadedFile->getMimeType();
             $file->size = $uploadedFile->getSize();
             $file->save();
@@ -84,7 +86,7 @@ class PersistUploadedFile
 
         $file->uploaders()->attach([
             $me->id => [
-                'uuid' => $request->get('qquuid'),
+                'qquuid' => $request->get('qquuid'),
                 'original_client_name' => $request->get('qqfilename'),
                 'tag' => $tag
             ]

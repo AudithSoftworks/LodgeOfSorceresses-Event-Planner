@@ -1,5 +1,7 @@
-import React, { Component } from 'react';
 import FineUploaderTraditional from 'fine-uploader-wrappers';
+import React, { Component } from 'react';
+
+import Loadable from 'react-loadable';
 import { Link, Redirect } from "react-router-dom";
 import Select from 'react-select';
 import * as Animated from 'react-select/lib/animated';
@@ -7,7 +9,6 @@ import Axios from '../../vendor/Axios';
 import Loading from "../Characters";
 import Notification from '../Notification';
 
-import Loadable from 'react-loadable';
 const Gallery = Loadable({
     loader: () => import(
         /* webpackPrefetch: true */
@@ -30,26 +31,123 @@ class DpsParseForm extends Component {
         {value: 5, label: 'Warden'},
         {value: 6, label: 'Necromancer'},
     ];
-
     roleOptions = [
         {value: 1, label: 'Tank'},
         {value: 2, label: 'Healer'},
         {value: 3, label: 'Damage Dealer (Magicka)'},
         {value: 4, label: 'Damage Dealer (Stamina)'},
     ];
-
     parseScreenshotUploader = new FineUploaderTraditional({
         options: {
             request: {
-                endpoint: 'my/upload/endpoint'
+                endpoint: '/api/files',
+                customHeaders: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                params: {
+                    qqtag: 'parse-screenshot'
+                },
+            },
+            validation: {
+                allowedExtensions: ['jpeg', 'jpg', 'png', 'gif'],
+                acceptFiles: 'image/*',
+                itemLimit: 1
+            },
+            chunking: {
+                enabled: true,
+                concurrent: {
+                    enabled: true
+                },
+                partSize: 1024000,
+                success: {
+                    endpoint: '/api/files?post-process=1'
+                }
+            },
+            resume: {
+                enabled: true,
+                // recordsExpireIn: {{ config('filesystems.disks.local.chunks_expire_in') }}
+                recordsExpireIn: 604800
+            },
+            deleteFile: {
+                enabled: true,
+                endpoint: '/api/files',
+                params: {
+                    tag: 'parse-screenshot'
+                },
+                customHeaders: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+            },
+            callbacks: {
+                onComplete: (id, name, responseJson) => {
+                    this.setState({
+                        parseScreenshotUploaded: responseJson.hash
+                    });
+                },
+                onDeleteComplete: (id, xhr, isError) => {
+                    if (!isError) {
+                        this.setState({
+                            parseScreenshotUploaded: null
+                        });
+                    }
+                },
             }
         }
     });
-
     superstarScreenshotUploader = new FineUploaderTraditional({
         options: {
             request: {
-                endpoint: 'my/upload/endpoint'
+                endpoint: '/api/files',
+                customHeaders: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                params: {
+                    qqtag: 'superstar-screenshot'
+                },
+            },
+            validation: {
+                allowedExtensions: ['jpeg', 'jpg', 'png', 'gif'],
+                acceptFiles: 'image/*',
+                itemLimit: 1
+            },
+            chunking: {
+                enabled: true,
+                concurrent: {
+                    enabled: true
+                },
+                partSize: 1024000,
+                success: {
+                    endpoint: '/api/files?post-process=1'
+                }
+            },
+            resume: {
+                enabled: true,
+                // recordsExpireIn: {{ config('filesystems.disks.local.chunks_expire_in') }}
+                recordsExpireIn: 604800
+            },
+            deleteFile: {
+                enabled: true,
+                endpoint: '/api/files',
+                params: {
+                    tag: 'superstar-screenshot'
+                },
+                customHeaders: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+            },
+            callbacks: {
+                onComplete: (id, name, responseJson) => {
+                    this.setState({
+                        superstarScreenshotUploaded: responseJson.hash
+                    });
+                },
+                onDeleteComplete: (id, xhr, isError) => {
+                    if (!isError) {
+                        this.setState({
+                            superstarScreenshotUploaded: null
+                        });
+                    }
+                },
             }
         }
     });
@@ -57,9 +155,10 @@ class DpsParseForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            setsLoaded: false,
+            dpsParseProcessed: null,
             characterLoaded: null,
-            characterProcessed: null,
+            parseScreenshotUploaded: null,
+            superstarScreenshotUploaded: null,
             sets: null,
             messages: [],
         };
@@ -72,7 +171,6 @@ class DpsParseForm extends Component {
         }).then((response) => {
             if (response.data) {
                 this.setState({
-                    setsLoaded: true,
                     sets: response.data.sets,
                     messages: [
                         {
@@ -130,23 +228,14 @@ class DpsParseForm extends Component {
         event.preventDefault();
         const data = new FormData(event.target);
         this.cancelTokenSource = Axios.CancelToken.source();
-        let result = this.props.match.params.id
-            ? Axios.post(
-                '/api/chars/' + this.props.match.params.id, data, {
-                    cancelToken: this.cancelTokenSource.token,
-                    headers: {
-                        'X-HTTP-Method-Override': 'PUT'
-                    }
-                }
-            )
-            : Axios.post(
-                '/api/chars', data, {
+        let result = Axios.post(
+                '/api/chars/' + this.props.match.params.id + '/parses', data, {
                     cancelToken: this.cancelTokenSource.token
                 }
             );
         result.then((response) => {
             this.setState({
-                characterProcessed: this.props.match.params.id ? response.status === 204 : response.status === 201,
+                dpsParseProcessed: response.status === 201,
                 messages: [
                     {
                         type: "success",
@@ -175,9 +264,11 @@ class DpsParseForm extends Component {
         );
 
         return (
-            <form className='col-md-24 d-flex flex-row flex-wrap p-0' onSubmit={this.handleSubmit} key='characterCreationForm'>
+            <form className='col-md-24 d-flex flex-row flex-wrap p-0' onSubmit={this.handleSubmit} key='dpsParseForm'>
                 <h2 className="form-title col-md-24">Submit Parse for Character</h2>
                 <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')}/>
+                <input type="hidden" name="parse_file_hash" value={this.state.parseScreenshotUploaded || ''}/>
+                <input type="hidden" name="superstar_file_hash" value={this.state.superstarScreenshotUploaded || ''}/>
                 <fieldset className='form-group col-md-12'>
                     <label>Sets worn during Parse:</label>
                     <Select
@@ -202,6 +293,7 @@ class DpsParseForm extends Component {
                                 ? this.classOptions.filter(option => option.value === this.state.characterLoaded.class)
                                 : this.classOptions[0]
                         }
+                        isDisabled={true}
                         components={Animated}
                         name='class'
                     />
@@ -215,6 +307,7 @@ class DpsParseForm extends Component {
                                 ? this.roleOptions.filter(option => option.value === this.state.characterLoaded.role)
                                 : this.roleOptions[0]
                         }
+                        isDisabled={true}
                         components={Animated}
                         name='role'
                     />
@@ -228,7 +321,7 @@ class DpsParseForm extends Component {
                     <Gallery uploader={this.superstarScreenshotUploader} className='uploader'/>
                 </fieldset>
                 <fieldset className='form-group col-md-24 text-right'>
-                    <Link to="/chars" className="btn btn-info btn-lg mr-1">Cancel</Link>
+                    <Link to={'/chars/' + this.props.match.params.id + '/parses'} className="btn btn-info btn-lg mr-1">Cancel</Link>
                     <button className="btn btn-primary btn-lg" type="submit">Save</button>
                 </fieldset>
             </form>
@@ -236,20 +329,10 @@ class DpsParseForm extends Component {
     };
 
     render = () => {
-        const {setsLoaded, characterLoaded, characterProcessed, sets, messages} = this.state;
-
-        let formBasicsLoaded = setsLoaded && sets;
-
-        let editFormCharacterLoaded = true;
-        if (this.props.match.params.id) {
-            if (!characterLoaded) {
-                editFormCharacterLoaded = false;
-            }
-        }
-
-        if (characterProcessed) {
-            return <Redirect to="/chars"/>
-        } else if (formBasicsLoaded && editFormCharacterLoaded) {
+        const {characterLoaded, dpsParseProcessed, sets, messages} = this.state;
+        if (dpsParseProcessed) {
+            return <Redirect to={'/chars/' + this.props.match.params.id + '/parses'}/>
+        } else if (sets && characterLoaded) {
             return [
                 this.renderForm(sets),
                 <Notification key='notifications' messages={messages}/>

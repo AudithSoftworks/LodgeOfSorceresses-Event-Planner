@@ -9,30 +9,30 @@ import Loading from "./Loading";
 
 library.add(faSpinner,faTachometerAlt, faTrashAlt, faUserEdit, faUserPlus);
 
-class Characters extends Component {
+class DpsParses extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            charactersLoaded: false,
-            characters: [],
+            parsesLoaded: false,
+            dpsParses: [],
             messages: [],
         };
     };
 
     componentDidMount() {
         this.cancelTokenSource = Axios.CancelToken.source();
-        Axios.get('/api/chars', {
+        Axios.get('/api/chars/' + this.props.match.params.id + '/parses', {
             cancelToken: this.cancelTokenSource.token
         }).then((response) => {
             this.cancelTokenSource = null;
             if (response.data) {
                 this.setState({
-                    charactersLoaded: true,
-                    characters: response.data.characters,
+                    parsesLoaded: true,
+                    dpsParses: response.data.dpsParses,
                     messages: [
                         {
                             type: "success",
-                            message: "Characters loaded."
+                            message: "Parses loaded."
                         }
                     ]
                 });
@@ -57,22 +57,22 @@ class Characters extends Component {
 
     handleDelete = (event) => {
         event.preventDefault();
-        if (confirm('Are you sure you want to delete this character?')) {
+        if (confirm('Are you sure you want to delete this parse?')) {
             this.cancelTokenSource = Axios.CancelToken.source();
             let currentTarget = event.currentTarget;
-            const characters = this.state.characters;
-            Axios.delete('/api/chars/' + currentTarget.getAttribute('data-id'), {
-                cancelToken: this.cancelTokenSource.token
+            const dpsParses = this.state.dpsParses;
+            Axios.delete('/api/chars/' + this.props.match.params.id + '/parses/' + currentTarget.getAttribute('data-id'), {
+                cancelToken: this.cancelTokenSource.token,
             }).then((response) => {
                 this.cancelTokenSource = null;
                 if (response.status === 204) {
-                    characters.forEach((item, idx) => {
+                    dpsParses.forEach((item, idx) => {
                         if (item.id === parseInt(currentTarget.getAttribute('data-id'))) {
-                            delete (characters[idx]);
+                            delete (dpsParses[idx]);
                         }
                     });
                     this.setState({
-                        characters: characters,
+                        dpsParses: dpsParses,
                         messages: [
                             {
                                 type: "success",
@@ -96,14 +96,13 @@ class Characters extends Component {
         }
     };
 
-    renderList = (characters) => {
-        let charactersRendered = characters.map(
+    renderList = (dpsParses) => {
+        let parsesRendered = dpsParses.map(
             item => {
                 const characterSets = item.sets.map(set => <a key={set.id} href={'https://eso-sets.com/set/' + set.slug}>{set.name}</a>);
+                console.log(item);
                 item.actionList = {
-                    parseCreate: <Link to={'/chars/' + item.id + '/parses/create'}><FontAwesomeIcon icon="tachometer-alt"/></Link>,
-                    edit: <Link to={'/chars/' + item.id + '/edit'}><FontAwesomeIcon icon="user-edit"/></Link>,
-                    delete: <Link to={'/api/chars/' + item.id} onClick={this.handleDelete} data-id={item.id}><FontAwesomeIcon icon="trash-alt"/></Link>
+                    delete: <Link to='' onClick={this.handleDelete} data-id={item.id}><FontAwesomeIcon icon="trash-alt"/></Link>
                 };
                 let actionListRendered = [];
                 for (const [actionType, link] of Object.entries(item.actionList)) {
@@ -111,47 +110,47 @@ class Characters extends Component {
                 }
 
                 return (
-                    <tr key={'characterRow-' + item.id} data-id={item.id}>
-                        <td>{item.name}</td>
-                        <td>{item.class}</td>
-                        <td>{item.role}</td>
+                    <tr key={'dpsParseRow-' + item.id}>
                         <td>
                             {characterSets.reduce((prev, curr) => [prev, ', ', curr])}
+                        </td>
+                        <td><img src={item.parse_file_hash} alt='Parse screenshot' width='100' /></td>
+                        <td><img src={item.superstar_file_hash} alt='Superstar screenshot' width='100' />
                             <ul className='actionList'>{actionListRendered}</ul>
                         </td>
+
                     </tr>
                 )
             }
         );
-        if (charactersRendered.length) {
-            charactersRendered = [
+        if (parsesRendered.length) {
+            parsesRendered = [
                 <table key="character-list-table" className='pl-2 pr-2 col-md-24'>
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Class</th>
-                            <th>Role</th>
                             <th>Sets</th>
+                            <th>Parse Screenshots</th>
+                            <th>Superstar Screenshot</th>
                         </tr>
                     </thead>
-                    <tbody>{charactersRendered}</tbody>
+                    <tbody>{parsesRendered}</tbody>
                 </table>
             ];
         }
 
-        const linkToCharacterCreateForm = <Link to="/chars/create"><FontAwesomeIcon icon="user-plus"/></Link>;
+        const linkToDpsParseForm = <Link to={'/chars/' + this.props.match.params.id + '/parses/create'}><FontAwesomeIcon icon="user-plus"/></Link>;
 
         return [
             <section className="col-md-24 p-0 mb-4" key='characterList'>
-                <h2 className="form-title col-md-24">My Characters {linkToCharacterCreateForm}</h2>
-                {charactersRendered}
+                <h2 className="form-title col-md-24">Parses {linkToDpsParseForm}</h2>
+                {parsesRendered}
             </section>
         ];
     };
 
     render = () => {
-        const {charactersLoaded, characters, messages} = this.state;
-        if (!charactersLoaded) {
+        const {parsesLoaded, dpsParses, messages} = this.state;
+        if (!parsesLoaded) {
             return [
                 <Loading key='loading'/>,
                 <Notification key='notifications' messages={messages}/>
@@ -159,10 +158,10 @@ class Characters extends Component {
         }
 
         return [
-            this.renderList(characters),
+            this.renderList(dpsParses),
             <Notification key='notifications' messages={messages}/>,
         ]
     };
 }
 
-export default Characters;
+export default DpsParses;

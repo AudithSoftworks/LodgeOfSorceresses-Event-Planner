@@ -76,6 +76,6 @@ class User extends Authenticatable
      */
     public function files()
     {
-        return $this->belongsToMany(File::class, 'files_users', 'user_id', 'file_hash')->withTimestamps()->withPivot(['uuid', 'original_client_name']);
+        return $this->belongsToMany(File::class, 'files_users', 'user_id', 'file_hash')->withTimestamps()->withPivot(['id', 'qquuid', 'original_client_name', 'tag']);
     }
 }

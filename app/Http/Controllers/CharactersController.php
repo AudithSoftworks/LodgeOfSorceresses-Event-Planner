@@ -152,6 +152,6 @@ class CharactersController extends Controller
     {
         Character::destroy($id);
 
-        return response()->json(['success' => true]);
+        return response()->json([], JsonResponse::HTTP_NO_CONTENT);
     }
 }

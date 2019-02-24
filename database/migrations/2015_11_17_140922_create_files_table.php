@@ -16,11 +16,11 @@ class CreateFilesTable extends Migration
         Schema::create('files', function (Blueprint $table) {
             $table->engine = 'InnoDb';
             $table->string('hash', 64)->primary();
-            $table->string('disk', 64)->default('localhost');
+            $table->string('disk', 8)->default('local');
             $table->string('path', 1024);
             $table->string('mime', 255);
             $table->bigInteger('size');
-            $table->text('metadata');
+            $table->text('metadata')->nullable();
             $table->timestamps();
         });
     }

@@ -211,10 +211,9 @@ class CharacterForm extends Component {
 
     render = () => {
         const {setsLoaded, characterLoaded, characterProcessed, sets, messages} = this.state;
-
         let formBasicsLoaded = setsLoaded && sets;
-
         let editFormCharacterLoaded = true;
+
         if (this.props.match.params.id) {
             if (!characterLoaded) {
                 editFormCharacterLoaded = false;

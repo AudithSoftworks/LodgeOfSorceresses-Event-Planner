@@ -3,8 +3,7 @@
 /vendor
 /public/build
 /public/fonts/*
-/public/hot
-/public/swagger*
+/public/storage
 /storage/*.key
 /storage/coverage*
 !.babelrc

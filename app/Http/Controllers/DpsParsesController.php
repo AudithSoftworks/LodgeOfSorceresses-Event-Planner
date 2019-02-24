@@ -2,159 +2,99 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Character;
-use App\Singleton\ClassTypes;
-use App\Singleton\RoleTypes;
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\DpsParse;
+use App\Models\File;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class DpsParsesController extends Controller
 {
-    public function __construct(Request $request)
-    {
-        $characterId = $request->get('char');
-    }
-
     /**
-     * Display a listing of the resource.
+     * @param int $char
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(int $char)
     {
-//        $characters = Character::query()
-//            ->where('user_id', app('auth.driver')->id())
-//            ->orderBy('id', 'desc')
-//            ->get();
-//        if ($characters->count()) {
-//            app('cache.store')->has('equipmentSets'); // Trigger Recache listener.
-//            $equipmentSets = app('cache.store')->get('equipmentSets');
-//            foreach ($characters as $character) {
-//                $character->class = ClassTypes::getClassName($character->class);
-//                $character->role = RoleTypes::getRoleName($character->role);
-//                $characterEquipmentSets = array_filter($equipmentSets, function ($key) use ($character) {
-//                    return in_array($key, explode(',', $character->sets));
-//                }, ARRAY_FILTER_USE_KEY);
-//                $character->sets = array_values($characterEquipmentSets);
-//            }
-//        }
+        $dpsParses = DpsParse::query()
+            ->whereUserId(app('auth.driver')->id())
+            ->whereCharacterId($char)
+            ->orderBy('id', 'desc')
+            ->get();
+        if ($dpsParses->count()) {
+            app('cache.store')->has('equipmentSets'); // Trigger Recache listener.
+            $equipmentSets = app('cache.store')->get('equipmentSets');
+            foreach ($dpsParses as $dpsParse) {
+                $characterEquipmentSets = array_filter($equipmentSets, function ($key) use ($dpsParse) {
+                    return in_array($key, explode(',', $dpsParse->sets));
+                }, ARRAY_FILTER_USE_KEY);
+                $dpsParse->sets = array_values($characterEquipmentSets);
+                $parseFile = File::whereHash($dpsParse->parse_file_hash)->first();
+                $dpsParse->parse_file_hash = app('filestream')->url($parseFile);
+                $superstarFile = File::whereHash($dpsParse->superstar_file_hash)->first();
+                $dpsParse->superstar_file_hash = app('filestream')->url($superstarFile);
+            }
+        }
 
-        return response()->json([]);
+        return response()->json(['dpsParses' => $dpsParses]);
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
      * @param \Illuminate\Http\Request $request
+     * @param int                      $char
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request, int $char): JsonResponse
     {
-//        $validator = app('validator')->make($request->all(), [
-//            'name' => 'required|string',
-//            'role' => 'required|integer|min:1|max:4',
-//            'class' => 'required|integer|min:1|max:6',
-//            'sets.*' => 'sometimes|required|numeric|exists:equipment_sets,id',
-//        ]);
-//        if ($validator->fails()) {
-//            throw new ValidationException($validator);
-//        }
-//
-//        $character = new Character();
-//        $character->user_id = app('auth.driver')->id();
-//        $character->name = $request->get('name');
-//        $character->role = $request->get('role');
-//        $character->class = $request->get('class');
-//        $character->sets = !empty($request->get('sets')) ? implode(',', $request->get('sets')) : null;
-//        $character->save();
+        $validator = app('validator')->make($request->all(), [
+            'parse_file_hash' => 'required|string',
+            'superstar_file_hash' => 'required|string',
+            'sets.*' => 'sometimes|required|numeric|exists:equipment_sets,id',
+        ]);
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
 
-        return response()->json(['success' => true], JsonResponse::HTTP_CREATED);
+        $dpsParse = new DpsParse();
+        $dpsParse->user_id = app('auth.driver')->id();
+        $dpsParse->character_id = $char;
+        $dpsParse->parse_file_hash = $request->get('parse_file_hash');
+        $dpsParse->superstar_file_hash = $request->get('superstar_file_hash');
+        $dpsParse->sets = !empty($request->get('sets')) ? implode(',', $request->get('sets')) : null;
+        $dpsParse->save();
+
+        return response()->json([], JsonResponse::HTTP_CREATED);
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param int $id
+     * @param int $char
+     * @param int $parse
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show($id): JsonResponse
+    public function show(int $char, int $parse): JsonResponse
     {
-        return response()->json([]);
+        $dpsParse = DpsParse::whereUserId(app('auth.driver')->id())->whereCharacterId($char)->whereId($parse)->get();
+        $dpsParse->parse_file_hash = File::whereHash($dpsParse->parse_file_hash)->get();
+        $dpsParse->superstar_file_hash = File::whereHash($dpsParse->superstar_file_hash)->get();
+
+        return response()->json($dpsParse);
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function edit($id): JsonResponse
-    {
-//        $character = Character::query()->where(function (Builder $query) use ($id) {
-//            $query
-//                ->where('user_id', app('auth.driver')->id())
-//                ->where('id', $id);
-//        })->first(['id', 'name', 'class', 'role', 'sets']);
-//        $character->sets = array_map(function ($item) {
-//            return (int)$item;
-//        }, explode(',', $character->sets));
-
-        return response()->json([]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int                      $id
+     * @param int $char
+     * @param int $parse
      *
      * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws \Exception
      */
-    public function update(Request $request, $id): JsonResponse
+    public function destroy(int $char, int $parse): JsonResponse
     {
-//        $validator = app('validator')->make($request->all(), [
-//            'name' => 'required|string',
-//            'role' => 'required|integer|min:1|max:4',
-//            'class' => 'required|integer|min:1|max:6',
-//            'sets.*' => 'sometimes|required|numeric|exists:equipment_sets,id',
-//        ]);
-//        if ($validator->fails()) {
-//            throw new ValidationException($validator);
-//        }
-//
-//        $character = Character::query()->where(function (Builder $query) use ($id) {
-//            $query
-//                ->where('user_id', app('auth.driver')->id())
-//                ->where('id', $id);
-//        })->first(['id', 'name', 'class', 'role', 'sets']);
-//        $character->user_id = app('auth.driver')->id();
-//        $character->name = $request->get('name');
-//        $character->role = $request->get('role');
-//        $character->class = $request->get('class');
-//        $character->sets = !empty($request->get('sets')) ? implode(',', $request->get('sets')) : null;
-//        $character->save();
+        DpsParse::whereUserId(app('auth.driver')->id())->whereCharacterId($char)->whereId($parse)->delete();
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function destroy($id): JsonResponse
-    {
-        Character::destroy($id);
-
-        return response()->json(['success' => true]);
     }
 }

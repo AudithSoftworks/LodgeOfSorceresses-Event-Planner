@@ -17,6 +17,10 @@ const CharacterForm = React.lazy(() => import(
     /* webpackChunkName: "components-character_form" */
     '../Forms/CharacterForm')
 );
+const DpsParses = React.lazy(() => import(
+    /* webpackPrefetch: true */
+    /* webpackChunkName: "components-dps-parses" */
+    '../DpsParses'));
 const DpsParseForm = React.lazy(() => import(
     /* webpackPrefetch: true */
     /* webpackChunkName: "components-dps_parse_form" */
@@ -30,8 +34,7 @@ class Main extends Component {
                 <Suspense fallback={<Loading/>}>
                     <ErrorBoundary>
                         <Switch>
-                            <Route exact path="/" component={props => <Characters {...props}/>}/>
-                            <Route path="/events" component={props => <Events {...props}/>}/>
+                            <Route exact path="/" component={props => <Events {...props}/>}/>
                             <Route
                                 path="/chars"
                                 render={({match: {url}}) => (
@@ -39,6 +42,7 @@ class Main extends Component {
                                         <Route exact path={url} component={props => <Characters {...props}/>}/>
                                         <Route path={url + '/create'} component={props => <CharacterForm {...props}/>}/>
                                         <Route path={url + '/:id/edit'} component={props => <CharacterForm {...props}/>}/>
+                                        <Route exact path={url + '/:id/parses'} component={props => <DpsParses {...props}/>}/>
                                         <Route path={url + '/:id/parses/create'} component={props => <DpsParseForm {...props}/>}/>
                                     </>
                                 )}

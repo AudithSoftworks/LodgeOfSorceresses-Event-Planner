@@ -32,13 +32,9 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app'),
-            'chunks_expire_in' => 604800
-        ],
-        'public' => [
-            'driver' => 'local',
-            'root' => storage_path('app/public'),
             'url' => env('APP_URL') . '/storage',
             'visibility' => 'public',
+            'chunks_expire_in' => 604800,
         ],
         's3' => [
             'driver' => 's3',
@@ -48,32 +44,25 @@ return [
             'bucket' => env('AWS_BUCKET'),
             'url' => env('AWS_URL'),
         ],
+        'cloudinary' => [
+            'driver' => 'cloudinary',
+            'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+            'key' => env('CLOUDINARY_API_KEY'),
+            'secret' => env('CLOUDINARY_API_SECRET')
+        ],
     ],
     'allowed_extensions' => [
-        'pdf', 'odt', 'ods', 'odp', 'doc', 'xls', 'ppt', 'docx', 'pptx', 'zip', 'tar.gz', 'iso',
         'jpeg', 'jpg', 'png', 'gif'
     ],
     'allowed_mimetypes' => [
-        'application/pdf',
-        'application/vnd.oasis.opendocument.text',
-        'application/vnd.oasis.opendocument.spreadsheet',
-        'application/vnd.oasis.opendocument.presentation',
-        'application/msword',
-        'application/vnd.ms-office',
-        'application/vnd.ms-powerpoint',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-        'application/zip',
-        'application/gzip',
-        'application/x-gzip',
-        'application/x-iso9660-image',
         'image/jpeg',
         'image/png',
         'image/gif'
     ],
     'allowed_tags_and_limits' => [
         'avatar' => 1,
-        'content' => 0 // 0 means no limit.
+        'parse-screenshot' => 0, // 0 means no limit.
+        'superstar-screenshot' => 0,
     ],
     'load_balancing' => [
         'enabled' => true,

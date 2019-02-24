@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $path
  * @property string $mime
  * @property int $size
- * @property string $metadata
+ * @property string|null $metadata
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $uploaders
@@ -60,6 +60,6 @@ class File extends Model
      */
     public function uploaders()
     {
-        return $this->belongsToMany(User::class, 'files_users', 'file_hash', 'user_id')->withTimestamps()->withPivot(['uuid', 'original_client_name']);
+        return $this->belongsToMany(User::class, 'files_users', 'file_hash', 'user_id')->withTimestamps()->withPivot(['id', 'qquuid', 'original_client_name', 'tag']);
     }
 }

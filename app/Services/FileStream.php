@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class FileStream
 {
     /**
-     * @var \Illuminate\Contracts\Filesystem\Filesystem
+     * @var \Illuminate\Filesystem\FilesystemAdapter
      */
     public $filesystem;
 
@@ -18,7 +18,7 @@ class FileStream
      *
      * @var string
      */
-    public $temporaryChunksFolder;
+    public $temporaryChunksFolder = '/_chunks';
 
     /**
      * Chunks will be cleaned once in 1000 requests on average.
@@ -41,11 +41,13 @@ class FileStream
      */
     public $sizeLimit;
 
+    /**
+     * FileStream constructor.
+     */
     public function __construct()
     {
-        $this->filesystem = app('filesystem')->disk();
-        $this->chunksExpireIn = config('filesystems.disks.local.chunks_expire_in');
-        $this->temporaryChunksFolder = DIRECTORY_SEPARATOR . '_chunks';
+        $this->filesystem = app('filesystem');
+        $this->chunksExpireIn = config('filesystems.disks.public.chunks_expire_in');
         if (app('config')->has('filesystems.chunks_ttl') && is_int(config('filesystems.chunks_ttl'))) {
             $this->chunksExpireIn = config('filesystems.chunks_ttl');
         }
@@ -60,6 +62,7 @@ class FileStream
      * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\JsonResponse
+     * @throws \ErrorException
      */
     public function handleUpload(Request $request)
     {
@@ -73,7 +76,6 @@ class FileStream
         //------------------------------
 
         if ($request->has('post-process') && $request->get('post-process') == 1) {
-            # Combine chunks.
             $this->combineChunks($request);
 
             return collect(event(new Uploaded($fineUploaderUuid, $request)))->last(); // Return the result of the second event listener.
@@ -88,7 +90,7 @@ class FileStream
         }
 
         # Temp folder writable?
-        if (!is_writable($absolutePathToTemporaryChunksFolder = config('filesystems.disks.local.root') . $this->temporaryChunksFolder) || !is_executable($absolutePathToTemporaryChunksFolder)) {
+        if (!is_writable($absolutePathToTemporaryChunksFolder = $this->getAbsolutePath($this->temporaryChunksFolder)) || !is_executable($absolutePathToTemporaryChunksFolder)) {
             throw new FileStreamExceptions\TemporaryUploadFolderNotWritableException;
         }
 
@@ -133,26 +135,33 @@ class FileStream
             throw new FileStreamExceptions\UploadFilenameIsEmptyException;
         }
 
-        $totalNumberOfChunks = $request->has('qqtotalparts') ? $request->get('qqtotalparts') : 1;
+        $totalNumberOfChunks = $request->has('qqtotalparts') ? (int)$request->get('qqtotalparts') : 1;
 
         if ($totalNumberOfChunks > 1) {
             $chunkIndex = intval($request->get('qqpartindex'));
             $targetFolder = $this->temporaryChunksFolder . DIRECTORY_SEPARATOR . $fineUploaderUuid;
             if (!$this->filesystem->exists($targetFolder)) {
-                $this->filesystem->makeDirectory($targetFolder);
+                try {
+                    $this->filesystem->makeDirectory($targetFolder);
+                } /** @noinspection PhpRedundantCatchClauseInspection */ catch (\ErrorException $e) {
+                    if (!$this->filesystem->exists($targetFolder)) {
+                        /** @noinspection PhpUnhandledExceptionInspection */
+                        throw $e;
+                    }
+                }
             }
 
             if (!$file->isValid()) {
                 throw new FileStreamExceptions\UploadAttemptFailedException;
             }
-            $file->move(storage_path('app' . $targetFolder), $chunkIndex);
+            $file->move($this->getAbsolutePath($targetFolder), $chunkIndex);
 
             return response()->json(['success' => true, 'uuid' => $fineUploaderUuid]);
         } else {
             if (!$file->isValid()) {
                 throw new FileStreamExceptions\UploadAttemptFailedException;
             }
-            $file->move(storage_path('app'), $fineUploaderUuid);
+            $file->move($this->getAbsolutePath(''), $fineUploaderUuid);
 
             return collect(event(new Uploaded($fineUploaderUuid, $request)))->last(); // Return the result of the second event listener.
         }
@@ -221,32 +230,45 @@ class FileStream
      */
     public function getAbsolutePath($path)
     {
-        return config('filesystems.disks.local.root') . DIRECTORY_SEPARATOR . trim($path, DIRECTORY_SEPARATOR);
+        return $this->filesystem->path(trim($path, DIRECTORY_SEPARATOR));
     }
 
     /**
-     * @param string $hash
+     * @param File $file
+     *
+     * @return string
+     */
+    public function url(File $file): string
+    {
+        $relativeUrl = str_replace('public', '', $file->path);
+
+        return app('filesystem.disk')->url($relativeUrl);
+    }
+
+    /**
+     * @param string $qquuid
      * @param string $tag
      *
      * @return bool
      * @throws \Exception
      */
-    public function deleteFile($hash, $tag = '')
+    public function deleteFile($qquuid, $tag = '')
     {
-        /** @var \App\Models\File $file */
-        $file = File::findOrFail($hash);
-        if ($file->load('uploaders')->count()) {
-            /** @var \App\Models\User $me */
-            $me = app('sentinel')->getUser();
-            if ($file->uploaders->contains('id', $me->id)) {
-                $pivotToDelete = $file->uploaders()->newPivotStatement()->where('user_id', '=', $me->id);
-                if (!empty($tag)) {
-                    $pivotToDelete->where('tag', '=', $tag);
-                }
-                $pivotToDelete->delete();
+        /** @var \App\Models\User $me */
+        $me = app('auth.driver')->user();
+
+        foreach ($me->files as $file) {
+            /** @var \Illuminate\Database\Eloquent\Relations\Pivot $pivot */
+            $pivot = $file->pivot;
+            /** @noinspection PhpUndefinedFieldInspection */
+            $tagCheck = (!empty($tag) && $pivot->tag === $tag) || empty($tag);
+            /** @noinspection PhpUndefinedFieldInspection */
+            if ($pivot->qquuid === $qquuid && $tagCheck) {
+                $pivot->delete();
+
                 $file->load('uploaders');
+                !$file->uploaders->count() && app('filesystem')->disk($file->disk)->delete($file->path) && $file->delete();
             }
-            !$file->uploaders->count() && app('filesystem')->disk($file->disk)->delete($file->path) && $file->delete();
         }
 
         return true;
