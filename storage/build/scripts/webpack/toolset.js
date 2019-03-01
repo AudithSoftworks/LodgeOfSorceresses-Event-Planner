@@ -1,28 +1,20 @@
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const UglifyJsWebpackPlugin = require('uglifyjs-webpack-plugin');
-
-/** @var {String} process.env.NODE_ENV */
-const devMode = process.env.NODE_ENV !== 'production';
 
 exports.extractBundles = function () {
     return {
         optimization: {
             splitChunks: {
                 cacheGroups: {
-                    node_modules: {
-                        name: 'vendor',
-                        test: /node_modules/,
-                        chunks: 'all'
-                    },
-                    vendor_scss: {
-                        name: 'vendor',
-                        test: /resources\/assets\/sass/,
-                        chunks: 'all'
+                    styles: {
+                        name: 'styles',
+                        test: /\.css$/,
+                        chunks: 'all',
+                        enforce: true
                     }
                 }
             }
-        }
+        },
     };
 };
 
@@ -33,7 +25,7 @@ exports.loadersAndPluginsForVariousTypes = function () {
                 {
                     test: /\.(sa|sc|c)ss$/,
                     use: [
-                        devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+                        'style-loader',
                         'css-loader',
                         'postcss-loader',
                         'sass-loader'

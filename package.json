@@ -5,11 +5,11 @@
         "defaults"
     ],
     "devDependencies": {
-        "@babel/core": "^7.3.3",
+        "@babel/core": "^7.3.4",
         "@babel/plugin-syntax-dynamic-import": "^7.2.0",
-        "@babel/preset-env": "^7.3.1",
+        "@babel/preset-env": "^7.3.4",
         "@babel/preset-react": "^7.0.0",
-        "autoprefixer": "^9.4.8",
+        "autoprefixer": "^9.4.9",
         "babel-loader": "^8.0.5",
         "babel-plugin-transform-class-properties": "^6.24.1",
         "clean-webpack-plugin": "^1.0.1",
@@ -24,8 +24,8 @@
         "precss": "^3.1.2",
         "sass-loader": "^7.1.0",
         "style-loader": "^0.23.1",
-        "uglifyjs-webpack-plugin": "^2.1.1",
-        "webpack": "^4.29.5",
+        "uglifyjs-webpack-plugin": "^2.1.2",
+        "webpack": "^4.29.6",
         "webpack-cli": "^3.2.3",
         "webpack-manifest-plugin": "^2.0.4",
         "webpack-merge": "^4.2.1"

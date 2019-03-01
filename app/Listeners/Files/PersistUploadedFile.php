@@ -18,6 +18,10 @@ class PersistUploadedFile
     {
         $uploadUuid = $event->uploadUuid;
         $request = $event->request;
+        /** @noinspection PhpUndefinedMethodInspection */
+        $pathPrefix = app('filesystem.disk')->getDriver()->getAdapter()->getPathPrefix();
+        /** @var \App\Models\User $me */
+        $me = app('auth.driver')->user();
 
         /*
         |--------------------------------------------------
@@ -38,14 +42,26 @@ class PersistUploadedFile
         $filesystem = app('filesystem');
         (!$filesystem->exists($destination)) ? $filesystem->move($uploadUuid, $destination) : $filesystem->delete($uploadUuid);
 
+        \Cloudinary::config([
+            'cloud_name' => config('filesystems.disks.cloudinary.cloud_name'),
+            'api_key' => config('filesystems.disks.cloudinary.key'),
+            'api_secret' => config('filesystems.disks.cloudinary.secret'),
+        ]);
+        $cloudinaryResponse = \Cloudinary\Uploader::upload($pathPrefix . $destination, [
+            'public_id' => $hash,
+            'use_filename' => true,
+            'unique_filename' => false,
+            'tags' => ['dps-parse', 'user-' . $me->id],
+            'quality_analysis' => true,
+            'phash' => true,
+        ]);
+
         /*
         |---------------------------------
         | Check the tag and its limit.
         |---------------------------------
         */
 
-        /** @var \App\Models\User $me */
-        $me = app('auth.driver')->user();
         $tag = $request->get('qqtag');
         $tagLimit = config('filesystems.allowed_tags_and_limits.' . $tag);
         if ($tagLimit > 0) {
@@ -70,8 +86,6 @@ class PersistUploadedFile
         */
 
         $uploadedFile = new SymfonyFile(app('filestream')->getAbsolutePath($destination));
-        /** @noinspection PhpUndefinedMethodInspection */
-        $pathPrefix = app('filesystem.disk')->getDriver()->getAdapter()->getPathPrefix();
         if (!$file = File::find($hash = $uploadedFile->getFilename())) {
             $file = new File();
             $file->hash = $hash;

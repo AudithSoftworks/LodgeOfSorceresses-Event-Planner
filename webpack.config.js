@@ -3,7 +3,6 @@ const toolset = require('./storage/build/scripts/webpack/toolset.js');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const DefinePlugin = require("webpack/lib/DefinePlugin");
 const ManifestPlugin = require('webpack-manifest-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const path = require('path');
 const merge = require('webpack-merge');
@@ -20,9 +19,7 @@ const PATHS = {
 
 let common = {
     mode: process.env.NODE_ENV === 'development' ? 'development' : 'production',
-    entry: {
-        app: path.join(PATHS.js, 'app.js')
-    },
+    entry: path.join(PATHS.js, 'app.js'),
     output: {
         path: PATHS.build,
         publicPath: '/build/',
@@ -34,21 +31,11 @@ let common = {
             fileName: 'rev-manifest.json',
             publicPath: '/'
         }),
-        new MiniCssExtractPlugin({
-            filename: devMode ? '[name].css' : '[name].[hash].css',
-            chunkFilename: devMode ? '[id].css' : '[id].[hash].css',
-        }),
         // ensure that we get a production build of any dependencies this is primarily for React, where this removes 179KB from the bundle
         new DefinePlugin({
             'process.env.NODE_ENV': process.env.NODE_ENV === 'development' ? '"development"' : '"production"'
         })
     ],
-    resolve: {
-        alias: {
-            pace: 'pace-progress/pace.js',
-            // jquery: 'jquery/src/jquery'
-        }
-    }
 };
 
 let config;

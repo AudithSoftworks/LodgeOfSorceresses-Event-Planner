@@ -54,6 +54,11 @@ class FileStream
         if (app('config')->has('filesystems.size_limit') && is_int(config('filesystems.size_limit'))) {
             $this->sizeLimit = config('filesystems.size_limit');
         }
+        \Cloudinary::config([
+            'cloud_name' => config('filesystems.disks.cloudinary.cloud_name'),
+            'api_key' => config('filesystems.disks.cloudinary.key'),
+            'api_secret' => config('filesystems.disks.cloudinary.secret'),
+        ]);
     }
 
     /**
@@ -236,13 +241,27 @@ class FileStream
     /**
      * @param File $file
      *
-     * @return string
+     * @return array
      */
-    public function url(File $file): string
+    public function url(File $file): array
     {
-        $relativeUrl = str_replace('public', '', $file->path);
+        $large = cloudinary_url($file->hash, [
+            'secure' => true,
+            'width' => 800,
+            'height' => 800,
+            'gravity' => 'auto:classic',
+            'crop' => 'fill'
+        ]);
 
-        return app('filesystem.disk')->url($relativeUrl);
+        $thumbnail = cloudinary_url($file->hash, [
+            'secure' => true,
+            'width' => 100,
+            'height' => 100,
+            'gravity' => 'auto:classic',
+            'crop' => 'fill'
+        ]);
+
+        return ['thumbnail' => $thumbnail, 'large' => $large];
     }
 
     /**

@@ -7,7 +7,7 @@ import Notification from '../Components/Notification';
 import Axios from '../vendor/Axios';
 import Loading from "./Loading";
 
-library.add(faSpinner,faTachometerAlt, faTrashAlt, faUserEdit, faUserPlus);
+library.add(faSpinner, faTachometerAlt, faTrashAlt, faUserEdit, faUserPlus);
 
 class DpsParses extends Component {
     constructor(props) {
@@ -99,8 +99,7 @@ class DpsParses extends Component {
     renderList = (dpsParses) => {
         let parsesRendered = dpsParses.map(
             item => {
-                const characterSets = item.sets.map(set => <a key={set.id} href={'https://eso-sets.com/set/' + set.slug}>{set.name}</a>);
-                console.log(item);
+                const characterSets = item.sets.map(set => <a key={set.id} href={'https://eso-sets.com/set/' + set['slug']}>{set.name}</a>);
                 item.actionList = {
                     delete: <Link to='' onClick={this.handleDelete} data-id={item.id}><FontAwesomeIcon icon="trash-alt"/></Link>
                 };
@@ -114,8 +113,15 @@ class DpsParses extends Component {
                         <td>
                             {characterSets.reduce((prev, curr) => [prev, ', ', curr])}
                         </td>
-                        <td><img src={item.parse_file_hash} alt='Parse screenshot' width='100' /></td>
-                        <td><img src={item.superstar_file_hash} alt='Superstar screenshot' width='100' />
+                        <td>
+                            <a href={item['parse_file_hash']['large']} target='_blank'>
+                                <img src={item['parse_file_hash']['thumbnail']} alt='Parse screenshot'/>
+                            </a>
+                        </td>
+                        <td>
+                            <a href={item['superstar_file_hash']['large']} target='_blank'>
+                                <img src={item['superstar_file_hash']['thumbnail']} alt='Superstar screenshot'/>
+                            </a>
                             <ul className='actionList'>{actionListRendered}</ul>
                         </td>
 
