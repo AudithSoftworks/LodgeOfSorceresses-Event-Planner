@@ -127,12 +127,12 @@ class LoginController extends Controller
             case 'google':
             case 'facebook':
                 if (!$request->exists('code')) {
-                    return redirect('/login')->withErrors(trans('passwords.oauth_failed'));
+                    return abort(500, trans('passwords.oauth_failed'));
                 }
                 break;
             case 'twitter':
                 if (!$request->exists('oauth_token') || !$request->exists('oauth_verifier')) {
-                    return redirect('/login')->withErrors(trans('passwords.oauth_failed'));
+                    return abort(500, trans('passwords.oauth_failed'));
                 }
                 break;
         }

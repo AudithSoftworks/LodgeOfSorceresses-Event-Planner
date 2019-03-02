@@ -1,7 +1,7 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSpinner, faTachometerAlt, faTrashAlt, faUserEdit, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { Link } from "react-router-dom";
 import Notification from '../Components/Notification';
 import Axios from '../vendor/Axios';
@@ -171,6 +171,28 @@ class DpsParses extends Component {
                     </thead>
                     <tbody>{parsesRendered}</tbody>
                 </table>
+            ];
+        } else {
+            const messages = [
+                {
+                    type: 'default',
+                    message: [
+                        <Fragment key='f-1'>Create a new parse, by clicking</Fragment>,
+                        <FontAwesomeIcon icon="user-plus" key='icon'/>,
+                        <Fragment key='f-2'>icon on top right corner.</Fragment>
+                    ].reduce((prev, curr) => [prev, ' ', curr])
+                }
+            ];
+
+            const options = {
+                container: 'bottom-center',
+                animationIn: ["animated", "bounceInDown"],
+                animationOut: ["animated", "bounceOutDown"],
+                dismiss: {duration: 30000},
+            };
+
+            parsesRendered = [
+                <Notification key='notifications' messages={messages} options={options}/>
             ];
         }
 

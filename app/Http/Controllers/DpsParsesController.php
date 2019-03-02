@@ -49,11 +49,16 @@ class DpsParsesController extends Controller
      */
     public function store(Request $request, int $char): JsonResponse
     {
+        $validatorErrorMessages = [
+            'parse_file_hash.required' => 'Parse screenshot needs to be uploaded.',
+            'superstar_file_hash.required' => 'Superstar screenshot needs to be uploaded.',
+            'sets.*.required' => 'Select sets worn during the parse.',
+        ];
         $validator = app('validator')->make($request->all(), [
             'parse_file_hash' => 'required|string',
             'superstar_file_hash' => 'required|string',
             'sets.*' => 'sometimes|required|numeric|exists:equipment_sets,id',
-        ]);
+        ], $validatorErrorMessages);
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }

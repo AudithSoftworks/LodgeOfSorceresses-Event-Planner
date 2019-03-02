@@ -106,7 +106,7 @@ body {
 
             > a.ne-corner {
                 position: absolute;
-                right: 0;
+                right: $grid-gutter-width / 2;
                 top: 3px;
                 font-size: 1.25rem;
             }

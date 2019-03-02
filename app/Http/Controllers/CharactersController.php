@@ -51,12 +51,18 @@ class CharactersController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        $validatorErrorMessages = [
+            'name.required' => 'Character name is required.',
+            'role.required' => 'Choose a role.',
+            'class.required' => 'Choose a class.',
+            'sets.*.required' => 'Select sets used during the parse.',
+        ];
         $validator = app('validator')->make($request->all(), [
             'name' => 'required|string',
             'role' => 'required|integer|min:1|max:4',
             'class' => 'required|integer|min:1|max:6',
             'sets.*' => 'sometimes|required|numeric|exists:equipment_sets,id',
-        ]);
+        ], $validatorErrorMessages);
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }

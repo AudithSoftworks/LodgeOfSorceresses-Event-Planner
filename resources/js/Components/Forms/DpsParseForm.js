@@ -1,5 +1,5 @@
 import FineUploaderTraditional from 'fine-uploader-wrappers';
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 
 import Loadable from 'react-loadable';
 import { Link, Redirect } from "react-router-dom";
@@ -229,10 +229,10 @@ class DpsParseForm extends Component {
         const data = new FormData(event.target);
         this.cancelTokenSource = Axios.CancelToken.source();
         let result = Axios.post(
-                '/api/chars/' + this.props.match.params.id + '/parses', data, {
-                    cancelToken: this.cancelTokenSource.token
-                }
-            );
+            '/api/chars/' + this.props.match.params.id + '/parses', data, {
+                cancelToken: this.cancelTokenSource.token
+            }
+        );
         result.then((response) => {
             this.setState({
                 dpsParseProcessed: response.status === 201,
@@ -246,14 +246,23 @@ class DpsParseForm extends Component {
             this.cancelTokenSource = null;
         }).catch((error) => {
             if (!Axios.isCancel(error)) {
+                const errorMessage = error.response.data;
+                const messageDetails = Object.values(errorMessage.errors).map((item, key) => <li key={key}>{item}</li>);
+                const message = [
+                    <Fragment>{errorMessage.message}</Fragment>,
+                    <ul>{messageDetails}</ul>
+                ];
+                // this.setState({
+                //     messages: [
+                //         {
+                //             type: "danger",
+                //             message: message
+                //         }
+                //     ]
+                // });
                 this.setState({
-                    messages: [
-                        {
-                            type: "danger",
-                            message: error.response.statusText
-                        }
-                    ]
-                })
+                    messages: Object.values(errorMessage.errors).map(item => {return {type: 'danger', message: item[0]}})
+                });
             }
         });
     };

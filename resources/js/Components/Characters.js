@@ -1,13 +1,13 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSpinner, faTachometerAlt, faTrashAlt, faUserEdit, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { Link } from "react-router-dom";
 import Notification from '../Components/Notification';
 import Axios from '../vendor/Axios';
 import Loading from "./Loading";
 
-library.add(faSpinner,faTachometerAlt, faTrashAlt, faUserEdit, faUserPlus);
+library.add(faSpinner, faTachometerAlt, faTrashAlt, faUserEdit, faUserPlus);
 
 class Characters extends Component {
     constructor(props) {
@@ -116,7 +116,9 @@ class Characters extends Component {
                         <td>{item.class}</td>
                         <td>{item.role}</td>
                         <td>{characterSets.reduce((prev, curr) => [prev, ' ', curr])}</td>
-                        <td><ul className='actionList'>{actionListRendered}</ul></td>
+                        <td>
+                            <ul className='actionList'>{actionListRendered}</ul>
+                        </td>
                     </tr>
                 )
             }
@@ -135,6 +137,27 @@ class Characters extends Component {
                     </thead>
                     <tbody>{charactersRendered}</tbody>
                 </table>
+            ];
+        } else {
+            const messages = [
+                {
+                    type: 'default',
+                    message: [
+                        <Fragment key='f-1'>Create a new character, by clicking</Fragment>,
+                        <FontAwesomeIcon icon="user-plus" key='icon'/>,
+                        <Fragment key='f-2'>icon on top right corner.</Fragment>
+                    ].reduce((prev, curr) => [prev, ' ', curr])
+                }
+            ];
+            const options = {
+                container: 'bottom-center',
+                animationIn: ["animated", "bounceInDown"],
+                animationOut: ["animated", "bounceOutDown"],
+                dismiss: {duration: 30000},
+            };
+
+            charactersRendered = [
+                <Notification key='notifications' messages={messages} options={options}/>
             ];
         }
 

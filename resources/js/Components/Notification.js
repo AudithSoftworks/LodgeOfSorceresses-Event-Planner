@@ -12,6 +12,7 @@ class Notification extends Component {
         this.notificationDOMRef = React.createRef();
         this.getSnapshotBeforeUpdate = this.getSnapshotBeforeUpdate.bind(this);
         this.add = (item) => {
+console.log(item);
             if (!this.notificationDOMRef.current) {
                 return;
             }
@@ -21,8 +22,10 @@ class Notification extends Component {
             } else if (item.type === 'danger') {
                 icon = 'exclamation-circle';
             }
+            const options = this.props.options || {};
+            const {title, insert, container, animationIn, animationOut, dismiss, dismissable} = options;
             this.notificationDOMRef.current.addNotification({
-                title: "Test",
+                title: title || "",
                 message: item.message,
                 type: item.type,
                 content: (
@@ -37,12 +40,12 @@ class Notification extends Component {
                         </div>
                     </div>
                 ),
-                insert: "top",
-                container: "top-right",
-                animationIn: ["animated", "flash"],
-                animationOut: ["animated", "fadeOut"],
-                dismiss: {duration: 5000},
-                dismissable: {click: true},
+                insert: insert || "top",
+                container: container || "top-right",
+                animationIn: animationIn || ["animated", "flash"],
+                animationOut: animationOut || ["animated", "fadeOut"],
+                dismiss: dismiss || {duration: 5000},
+                dismissable: dismissable || {click: true},
             });
         };
     };
@@ -61,7 +64,9 @@ class Notification extends Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (snapshot && snapshot.length) {
-            snapshot.map((item) => this.add(item));
+            snapshot.map((item) => {
+                setTimeout(this.add, 10, item)
+            });
         }
     };
 

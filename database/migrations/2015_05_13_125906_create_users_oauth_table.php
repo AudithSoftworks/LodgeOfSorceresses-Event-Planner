@@ -22,7 +22,7 @@ class CreateUsersOauthTable extends Migration
             $table->string('nickname')->nullable();
             $table->string('name')->nullable();
             $table->string('email')->nullable();
-            $table->string('avatar', 255)->nullable();
+            $table->text('avatar')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
