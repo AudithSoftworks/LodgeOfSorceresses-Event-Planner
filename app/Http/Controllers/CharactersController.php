@@ -75,28 +75,44 @@ class CharactersController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param int $id
+     * @param int $char
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show($id): JsonResponse
+    public function show($char): JsonResponse
     {
-        return response()->json([]);
+        $character = Character::query()
+            ->where('user_id', app('auth.driver')->id())
+            ->whereId($char)
+            ->first();
+        if ($character) {
+            app('cache.store')->has('equipmentSets'); // Trigger Recache listener.
+            $equipmentSets = app('cache.store')->get('equipmentSets');
+
+            $character->class = ClassTypes::getClassName($character->class);
+            $character->role = RoleTypes::getRoleName($character->role);
+            $characterEquipmentSets = array_filter($equipmentSets, function ($key) use ($character) {
+                return in_array($key, explode(',', $character->sets));
+            }, ARRAY_FILTER_USE_KEY);
+            $character->sets = array_values($characterEquipmentSets);
+        }
+
+        return response()->json($character);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param int $char
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function edit($id): JsonResponse
+    public function edit($char): JsonResponse
     {
-        $character = Character::query()->where(function (Builder $query) use ($id) {
+        $character = Character::query()->where(function (Builder $query) use ($char) {
             $query
                 ->where('user_id', app('auth.driver')->id())
-                ->where('id', $id);
+                ->where('id', $char);
         })->first(['id', 'name', 'class', 'role', 'sets']);
         $character->sets = array_map(function ($item) {
             return (int)$item;
@@ -109,12 +125,12 @@ class CharactersController extends Controller
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param int                      $id
+     * @param int                      $char
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function update(Request $request, $id): JsonResponse
+    public function update(Request $request, $char): JsonResponse
     {
         $validator = app('validator')->make($request->all(), [
             'name' => 'required|string',
@@ -126,10 +142,10 @@ class CharactersController extends Controller
             throw new ValidationException($validator);
         }
 
-        $character = Character::query()->where(function (Builder $query) use ($id) {
+        $character = Character::query()->where(function (Builder $query) use ($char) {
             $query
                 ->where('user_id', app('auth.driver')->id())
-                ->where('id', $id);
+                ->where('id', $char);
         })->first(['id', 'name', 'class', 'role', 'sets']);
         $character->user_id = app('auth.driver')->id();
         $character->name = $request->get('name');
@@ -144,13 +160,13 @@ class CharactersController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param int $char
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id): JsonResponse
+    public function destroy($char): JsonResponse
     {
-        Character::destroy($id);
+        Character::destroy($char);
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);
     }

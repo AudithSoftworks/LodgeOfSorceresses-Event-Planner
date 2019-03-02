@@ -76,7 +76,7 @@ class Characters extends Component {
                         messages: [
                             {
                                 type: "success",
-                                message: response.statusText
+                                message: 'Character deleted.'
                             }
                         ],
                     });
@@ -99,9 +99,9 @@ class Characters extends Component {
     renderList = (characters) => {
         let charactersRendered = characters.map(
             item => {
-                const characterSets = item.sets.map(set => <a key={set.id} href={'https://eso-sets.com/set/' + set.slug}>{set.name}</a>);
+                const characterSets = item.sets.map(set => <a key={set['id']} href={'https://eso-sets.com/set/' + set['slug']} className='badge badge-dark'>{set['name']}</a>);
                 item.actionList = {
-                    parseCreate: <Link to={'/chars/' + item.id + '/parses/create'}><FontAwesomeIcon icon="tachometer-alt"/></Link>,
+                    parses: <Link to={'/chars/' + item.id + '/parses'}><FontAwesomeIcon icon="tachometer-alt"/></Link>,
                     edit: <Link to={'/chars/' + item.id + '/edit'}><FontAwesomeIcon icon="user-edit"/></Link>,
                     delete: <Link to={'/api/chars/' + item.id} onClick={this.handleDelete} data-id={item.id}><FontAwesomeIcon icon="trash-alt"/></Link>
                 };
@@ -115,10 +115,8 @@ class Characters extends Component {
                         <td>{item.name}</td>
                         <td>{item.class}</td>
                         <td>{item.role}</td>
-                        <td>
-                            {characterSets.reduce((prev, curr) => [prev, ', ', curr])}
-                            <ul className='actionList'>{actionListRendered}</ul>
-                        </td>
+                        <td>{characterSets.reduce((prev, curr) => [prev, ' ', curr])}</td>
+                        <td><ul className='actionList'>{actionListRendered}</ul></td>
                     </tr>
                 )
             }
@@ -128,10 +126,11 @@ class Characters extends Component {
                 <table key="character-list-table" className='pl-2 pr-2 col-md-24'>
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Class</th>
-                            <th>Role</th>
-                            <th>Sets</th>
+                            <th width="20%">Name</th>
+                            <th width="10%">Class</th>
+                            <th width="20%">Role</th>
+                            <th width="40%">Sets</th>
+                            <th width="10%"/>
                         </tr>
                     </thead>
                     <tbody>{charactersRendered}</tbody>
@@ -139,11 +138,12 @@ class Characters extends Component {
             ];
         }
 
-        const linkToCharacterCreateForm = <Link to="/chars/create"><FontAwesomeIcon icon="user-plus"/></Link>;
+        const linkToCharacterCreateForm = <Link to="/chars/create" className='ne-corner' title='Submit a Character'><FontAwesomeIcon icon="user-plus"/></Link>;
 
         return [
             <section className="col-md-24 p-0 mb-4" key='characterList'>
-                <h2 className="form-title col-md-24">My Characters {linkToCharacterCreateForm}</h2>
+                <h2 className="form-title col-md-24">My Characters</h2>
+                {linkToCharacterCreateForm}
                 {charactersRendered}
             </section>
         ];

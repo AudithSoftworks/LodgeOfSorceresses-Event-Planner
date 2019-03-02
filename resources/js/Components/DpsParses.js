@@ -13,6 +13,7 @@ class DpsParses extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            character: null,
             parsesLoaded: false,
             dpsParses: [],
             messages: [],
@@ -21,6 +22,35 @@ class DpsParses extends Component {
 
     componentDidMount() {
         this.cancelTokenSource = Axios.CancelToken.source();
+
+        Axios.get('/api/chars/' + this.props.match.params.id, {
+            cancelToken: this.cancelTokenSource.token
+        }).then((response) => {
+            this.cancelTokenSource = null;
+            if (response.data) {
+                this.setState({
+                    character: response.data,
+                    messages: [
+                        {
+                            type: "success",
+                            message: "Character loaded."
+                        }
+                    ]
+                });
+            }
+        }).catch(error => {
+            if (!Axios.isCancel(error)) {
+                this.setState({
+                    messages: [
+                        {
+                            type: "danger",
+                            message: error.response.statusText
+                        }
+                    ]
+                })
+            }
+        });
+
         Axios.get('/api/chars/' + this.props.match.params.id + '/parses', {
             cancelToken: this.cancelTokenSource.token
         }).then((response) => {
@@ -76,7 +106,7 @@ class DpsParses extends Component {
                         messages: [
                             {
                                 type: "success",
-                                message: response.statusText
+                                message: 'DPS Parse deleted.'
                             }
                         ],
                     });
@@ -96,12 +126,12 @@ class DpsParses extends Component {
         }
     };
 
-    renderList = (dpsParses) => {
+    renderList = (dpsParses, character) => {
         let parsesRendered = dpsParses.map(
             item => {
-                const characterSets = item.sets.map(set => <a key={set.id} href={'https://eso-sets.com/set/' + set['slug']}>{set.name}</a>);
+                const characterSets = item.sets.map(set => <a key={set['id']} href={'https://eso-sets.com/set/' + set['slug']} className='badge badge-dark'>{set['name']}</a>);
                 item.actionList = {
-                    delete: <Link to='' onClick={this.handleDelete} data-id={item.id}><FontAwesomeIcon icon="trash-alt"/></Link>
+                    delete: <Link to='' onClick={this.handleDelete} data-id={item.id} title='Delete this Parse'><FontAwesomeIcon icon="trash-alt"/></Link>
                 };
                 let actionListRendered = [];
                 for (const [actionType, link] of Object.entries(item.actionList)) {
@@ -111,7 +141,7 @@ class DpsParses extends Component {
                 return (
                     <tr key={'dpsParseRow-' + item.id}>
                         <td>
-                            {characterSets.reduce((prev, curr) => [prev, ', ', curr])}
+                            {characterSets.reduce((prev, curr) => [prev, ' ', curr])}
                         </td>
                         <td>
                             <a href={item['parse_file_hash']['large']} target='_blank'>
@@ -134,9 +164,9 @@ class DpsParses extends Component {
                 <table key="character-list-table" className='pl-2 pr-2 col-md-24'>
                     <thead>
                         <tr>
-                            <th>Sets</th>
-                            <th>Parse Screenshots</th>
-                            <th>Superstar Screenshot</th>
+                            <th width="70%">Sets</th>
+                            <th width="15%">Parse Screenshot</th>
+                            <th width="15%">Superstar Screenshot</th>
                         </tr>
                     </thead>
                     <tbody>{parsesRendered}</tbody>
@@ -144,19 +174,20 @@ class DpsParses extends Component {
             ];
         }
 
-        const linkToDpsParseForm = <Link to={'/chars/' + this.props.match.params.id + '/parses/create'}><FontAwesomeIcon icon="user-plus"/></Link>;
+        const linkToDpsParseForm = <Link to={'/chars/' + this.props.match.params.id + '/parses/create'} className='ne-corner' title='Submit a Parse'><FontAwesomeIcon icon="user-plus"/></Link>;
 
         return [
             <section className="col-md-24 p-0 mb-4" key='characterList'>
-                <h2 className="form-title col-md-24">Parses {linkToDpsParseForm}</h2>
+                <h2 className="form-title col-md-24">Parses for <i>{character.name}</i></h2>
+                {linkToDpsParseForm}
                 {parsesRendered}
             </section>
         ];
     };
 
     render = () => {
-        const {parsesLoaded, dpsParses, messages} = this.state;
-        if (!parsesLoaded) {
+        const {character, parsesLoaded, dpsParses, messages} = this.state;
+        if (!parsesLoaded || !character) {
             return [
                 <Loading key='loading'/>,
                 <Notification key='notifications' messages={messages}/>
@@ -164,7 +195,7 @@ class DpsParses extends Component {
         }
 
         return [
-            this.renderList(dpsParses),
+            this.renderList(dpsParses, character),
             <Notification key='notifications' messages={messages}/>,
         ]
     };
