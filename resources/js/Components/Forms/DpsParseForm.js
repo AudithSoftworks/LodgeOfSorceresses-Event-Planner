@@ -1,5 +1,5 @@
 import FineUploaderTraditional from 'fine-uploader-wrappers';
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 
 import Loadable from 'react-loadable';
 import { Link, Redirect } from "react-router-dom";
@@ -20,7 +20,7 @@ const Gallery = Loadable({
 import(
     /* webpackPrefetch: true */
     /* webpackChunkName: "react-fine-uploader_gallery-css" */
-    'react-fine-uploader/gallery/gallery.css');
+    '../../../sass/vendor/_fine-uploader-gallery.scss');
 
 class DpsParseForm extends Component {
     classOptions = [
@@ -247,21 +247,10 @@ class DpsParseForm extends Component {
         }).catch((error) => {
             if (!Axios.isCancel(error)) {
                 const errorMessage = error.response.data;
-                const messageDetails = Object.values(errorMessage.errors).map((item, key) => <li key={key}>{item}</li>);
-                const message = [
-                    <Fragment>{errorMessage.message}</Fragment>,
-                    <ul>{messageDetails}</ul>
-                ];
-                // this.setState({
-                //     messages: [
-                //         {
-                //             type: "danger",
-                //             message: message
-                //         }
-                //     ]
-                // });
                 this.setState({
-                    messages: Object.values(errorMessage.errors).map(item => {return {type: 'danger', message: item[0]}})
+                    messages: Object.values(errorMessage.errors).map(item => {
+                        return {type: 'danger', message: item[0]}
+                    })
                 });
             }
         });
@@ -293,7 +282,7 @@ class DpsParseForm extends Component {
                         isMulti
                     />
                 </fieldset>
-                <fieldset className='form-group col-md-6'>
+                <fieldset className='form-group col-md-4'>
                     <label>Class:</label>
                     <Select
                         options={this.classOptions}
@@ -307,7 +296,7 @@ class DpsParseForm extends Component {
                         name='class'
                     />
                 </fieldset>
-                <fieldset className='form-group col-md-6'>
+                <fieldset className='form-group col-md-4'>
                     <label>Role:</label>
                     <Select
                         options={this.roleOptions}
@@ -321,6 +310,19 @@ class DpsParseForm extends Component {
                         name='role'
                     />
                 </fieldset>
+                <fieldset className='form-group col-md-4'>
+                    <label htmlFor='dpsAmount'>DPS amount:</label>
+                    <input
+                        type='number'
+                        name='dps_amount'
+                        id='dpsAmount'
+                        className='form-control form-control-md'
+                        placeholder='Enter...'
+                        autoComplete='off'
+                        required
+                    />
+                </fieldset>
+
                 <fieldset className='form-group col-md-12'>
                     <label htmlFor='parseFile'>Parse Screenshot:</label>
                     <Gallery uploader={this.parseScreenshotUploader} className='uploader'/>

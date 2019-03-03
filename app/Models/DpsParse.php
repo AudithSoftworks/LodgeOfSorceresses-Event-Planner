@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $user_id
  * @property int $character_id
  * @property string $sets
+ * @property int $dps_amount
  * @property string $parse_file_hash
  * @property string|null $superstar_file_hash
  * @property int|null $approved_by
@@ -33,6 +34,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereApprovedForMidgame($value)
  * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereCharacterId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereDpsAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereParseFileHash($value)
  * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereSets($value)

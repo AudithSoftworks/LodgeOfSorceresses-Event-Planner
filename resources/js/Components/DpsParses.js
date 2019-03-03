@@ -140,9 +140,8 @@ class DpsParses extends Component {
 
                 return (
                     <tr key={'dpsParseRow-' + item.id}>
-                        <td>
-                            {characterSets.reduce((prev, curr) => [prev, ' ', curr])}
-                        </td>
+                        <td>{characterSets.reduce((prev, curr) => [prev, ' ', curr])}</td>
+                        <td>{item['dps_amount']}</td>
                         <td>
                             <a href={item['parse_file_hash']['large']} target='_blank'>
                                 <img src={item['parse_file_hash']['thumbnail']} alt='Parse screenshot'/>
@@ -164,7 +163,8 @@ class DpsParses extends Component {
                 <table key="character-list-table" className='pl-2 pr-2 col-md-24'>
                     <thead>
                         <tr>
-                            <th width="70%">Sets</th>
+                            <th width="60%">Sets</th>
+                            <th width="10%">DPS Number</th>
                             <th width="15%">Parse Screenshot</th>
                             <th width="15%">Superstar Screenshot</th>
                         </tr>

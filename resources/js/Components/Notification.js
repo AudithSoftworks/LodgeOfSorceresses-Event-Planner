@@ -12,7 +12,6 @@ class Notification extends Component {
         this.notificationDOMRef = React.createRef();
         this.getSnapshotBeforeUpdate = this.getSnapshotBeforeUpdate.bind(this);
         this.add = (item) => {
-console.log(item);
             if (!this.notificationDOMRef.current) {
                 return;
             }

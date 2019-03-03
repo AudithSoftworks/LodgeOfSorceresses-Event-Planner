@@ -52,11 +52,13 @@ class DpsParsesController extends Controller
         $validatorErrorMessages = [
             'parse_file_hash.required' => 'Parse screenshot needs to be uploaded.',
             'superstar_file_hash.required' => 'Superstar screenshot needs to be uploaded.',
+            'dps_amount.required' => 'DPS Number is required.',
             'sets.*.required' => 'Select sets worn during the parse.',
         ];
         $validator = app('validator')->make($request->all(), [
             'parse_file_hash' => 'required|string',
             'superstar_file_hash' => 'required|string',
+            'dps_amount' => 'required|numeric',
             'sets.*' => 'sometimes|required|numeric|exists:equipment_sets,id',
         ], $validatorErrorMessages);
         if ($validator->fails()) {
@@ -66,6 +68,7 @@ class DpsParsesController extends Controller
         $dpsParse = new DpsParse();
         $dpsParse->user_id = app('auth.driver')->id();
         $dpsParse->character_id = $char;
+        $dpsParse->dps_amount = $request->get('dps_amount');
         $dpsParse->parse_file_hash = $request->get('parse_file_hash');
         $dpsParse->superstar_file_hash = $request->get('superstar_file_hash');
         $dpsParse->sets = !empty($request->get('sets')) ? implode(',', $request->get('sets')) : null;

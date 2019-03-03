@@ -19,7 +19,7 @@ class CreateDpsParsesTable extends Migration
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('character_id');
             $table->string('sets');
-            $table->unsignedInteger('parse_value');
+            $table->unsignedInteger('dps_amount');
             $table->string('parse_file_hash', 64);
             $table->string('superstar_file_hash', 64)->nullable();
             $table->unsignedInteger('approved_by')->nullable();

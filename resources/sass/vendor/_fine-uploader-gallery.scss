@@ -1,0 +1,40 @@
+@import "~react-fine-uploader/gallery/gallery.css";
+@import "../global/bootstrap-override";
+
+.react-fine-uploader-gallery-nodrop-container,
+.react-fine-uploader-gallery-dropzone {
+    min-height: 200px;
+    border: 1px dashed $primary;
+}
+
+.react-fine-uploader-gallery-file-input-container {
+    border: 1px solid $primary;
+    background: $primary;
+    width: auto;
+    font-size: 0.8em;
+
+    &:hover {
+        background: $primary;
+    }
+}
+
+.react-fine-uploader-gallery-file-input-upload-icon {
+    width: 25px;
+    height: 20px;
+    padding-left: 0;
+    padding-right: 5px;
+    vertical-align: baseline;
+}
+
+.react-fine-uploader-gallery-dropzone-upload-icon {
+    vertical-align: baseline;
+}
+
+.react-fine-uploader-gallery-dropzone-content {
+    font-size: 32px;
+}
+
+.react-fine-uploader-gallery-progress-bar,
+.react-fine-uploader-gallery-total-progress-bar {
+    background: $primary;
+}
