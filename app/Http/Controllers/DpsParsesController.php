@@ -48,6 +48,7 @@ class DpsParsesController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function store(Request $request, int $char): JsonResponse
     {
@@ -76,7 +77,7 @@ class DpsParsesController extends Controller
         $dpsParse->sets = !empty($request->get('sets')) ? implode(',', $request->get('sets')) : null;
         $dpsParse->save();
 
-        app('events')->fire(new DpsParseSubmitted($dpsParse));
+        app('events')->dispatch(new DpsParseSubmitted($dpsParse));
 
         return response()->json([], JsonResponse::HTTP_CREATED);
     }
@@ -107,7 +108,7 @@ class DpsParsesController extends Controller
     {
         $dpsParse = DpsParse::whereUserId(app('auth.driver')->id())->whereCharacterId($char)->whereId($parse);
         $dpsParse->delete();
-        app('events')->fire(new DpsParseDeleted($dpsParse->withTrashed()->first()));
+        app('events')->dispatch(new DpsParseDeleted($dpsParse->withTrashed()->first()));
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);
     }

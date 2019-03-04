@@ -60,7 +60,7 @@ class IpsProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getTokenFields($code)
     {
-        return array_add(
+        return Arr::add(
             parent::getTokenFields($code), 'grant_type', 'authorization_code'
         );
     }

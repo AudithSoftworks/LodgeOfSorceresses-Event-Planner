@@ -4,6 +4,7 @@ use App\Events\Files\Uploaded;
 use App\Exceptions\FileStream as FileStreamExceptions;
 use App\Models\File;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class FileStream
@@ -207,7 +208,7 @@ class FileStream
 
         $base = in_array($prefix, $binaryPrefices) ? 1024 : 1000;
         $flippedPrefixMap = $base == 1024 ? array_flip($binaryPrefices) : array_flip($decimalPrefices);
-        $factor = array_pull($flippedPrefixMap, $prefix);
+        $factor = Arr::pull($flippedPrefixMap, $prefix);
 
         return sprintf("%d", bcmul(str_replace(',', '', $coefficient), bcpow($base, $factor)));
     }

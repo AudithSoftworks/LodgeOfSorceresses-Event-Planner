@@ -258,7 +258,7 @@ class LoginController extends Controller
 
             app('auth.driver')->logout();
 
-            app('events')->fire(new LoggedOut($user));
+            app('events')->dispatch(new LoggedOut($user));
         }
 
         $request->session()->flush();

@@ -44,9 +44,10 @@ class CharactersController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request): JsonResponse
@@ -83,7 +84,7 @@ class CharactersController extends Controller
      *
      * @param int $char
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function show($char): JsonResponse
     {
@@ -111,7 +112,7 @@ class CharactersController extends Controller
      *
      * @param int $char
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function edit($char): JsonResponse
     {
@@ -130,10 +131,11 @@ class CharactersController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param int                      $char
+     * @param Request $request
+     * @param int     $char
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      * @throws \Illuminate\Validation\ValidationException
      */
     public function update(Request $request, $char): JsonResponse
@@ -168,7 +170,7 @@ class CharactersController extends Controller
      *
      * @param int $char
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function destroy($char): JsonResponse
     {
