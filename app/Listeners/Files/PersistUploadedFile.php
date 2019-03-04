@@ -47,13 +47,27 @@ class PersistUploadedFile
             'api_key' => config('filesystems.disks.cloudinary.key'),
             'api_secret' => config('filesystems.disks.cloudinary.secret'),
         ]);
-        $cloudinaryResponse = \Cloudinary\Uploader::upload($pathPrefix . $destination, [
+        \Cloudinary\Uploader::upload($pathPrefix . $destination, [
             'public_id' => $hash,
             'use_filename' => true,
             'unique_filename' => false,
             'tags' => ['dps-parse', 'user-' . $me->id],
             'quality_analysis' => true,
             'phash' => true,
+            'eager' => [
+                [
+                    'width' => 800,
+                    'height' => 800,
+                    'gravity' => 'auto:classic',
+                    'crop' => 'fill'
+                ],
+                [
+                    'width' => 100,
+                    'height' => 100,
+                    'gravity' => 'auto:classic',
+                    'crop' => 'fill'
+                ]
+            ]
         ]);
 
         /*
@@ -105,6 +119,8 @@ class PersistUploadedFile
                 'tag' => $tag
             ]
         ]);
+
+        $filesystem->delete($destination); // Delete files from local, Cloudinary copy will suffice!
 
         return response()->json(['success' => true, 'hash' => $file->hash])->setStatusCode(IlluminateResponse::HTTP_CREATED);
     }

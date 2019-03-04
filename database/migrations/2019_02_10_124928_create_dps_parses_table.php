@@ -22,12 +22,14 @@ class CreateDpsParsesTable extends Migration
             $table->unsignedInteger('dps_amount');
             $table->string('parse_file_hash', 64);
             $table->string('superstar_file_hash', 64)->nullable();
+            $table->string('discord_notification_message_ids', 255)->nullable();
             $table->unsignedInteger('approved_by')->nullable();
             $table->boolean('approved_for_midgame')->default(false);
             $table->boolean('approved_for_endgame_t0')->default(false);
             $table->boolean('approved_for_endgame_t1')->default(false);
             $table->boolean('approved_for_endgame_t2')->default(false);
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('character_id')->references('id')->on('characters')->onUpdate('cascade')->onDelete('cascade');

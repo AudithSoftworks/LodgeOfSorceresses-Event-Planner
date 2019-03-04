@@ -36,6 +36,7 @@ class PostNewDpsParseToDiscord
     public function handle(DpsParseSubmitted $event)
     {
         $dpsParse = $event->dpsParse;
+        $dpsParse->refresh();
 
         $botAccessToken = config('services.discord_bot.token');
         $discordClient = new Client([
@@ -55,68 +56,80 @@ class PostNewDpsParseToDiscord
             $gearSetsParsed[] = '[' . $set->name . '](' . 'https://eso-sets.com/set/' . $set->id . ')';
         }
 
-        $discordClient->post('channels/' . self::DISCORD_TEST_CHANNEL_ID . '/messages', [
-            RequestOptions::FORM_PARAMS => [
-                'content' => '# ' . $me->name . ' has submitted a DPS parse with ' . $dpsParse->dps_amount . ' DPS.',
-                'tts' => false,
-            ]
-        ]);
-        $discordClient->post('channels/' . self::DISCORD_TEST_CHANNEL_ID . '/messages', [
-            RequestOptions::FORM_PARAMS => [
-                'payload_json' => json_encode([
-                    'embed' => [
-                        'title' => 'Parse Screenshot',
-                        'color' => 0xdddd00,
-                        'fields' => [
-                            [
-                                'name' => 'Role',
-                                'value' => RoleTypes::getRoleName($character->role),
+        $params = [
+            [
+                RequestOptions::FORM_PARAMS => [
+                    'content' => '**' . $me->name . ' has submitted a DPS parse with ' . $dpsParse->dps_amount . ' DPS.**',
+                    'tts' => false,
+                ]
+            ],
+            [
+                RequestOptions::FORM_PARAMS => [
+                    'payload_json' => json_encode([
+                        'embed' => [
+                            'title' => 'Parse Screenshot',
+                            'color' => 0x888800,
+                            'fields' => [
+                                [
+                                    'name' => 'Role',
+                                    'value' => RoleTypes::getRoleName($character->role),
+                                ],
+                                [
+                                    'name' => 'Class',
+                                    'value' => ClassTypes::getClassName($character->class),
+                                ],
                             ],
-                            [
-                                'name' => 'Class',
-                                'value' => ClassTypes::getClassName($character->class),
-                            ],
-                        ],
-                        'image' => [
-                            'url' => cloudinary_url($dpsParse->parse_file_hash, [
-                                'secure' => true,
-                                'width' => 800,
-                                'height' => 800,
-                                'gravity' => 'auto:classic',
-                                'crop' => 'fill'
-                            ])
-                        ],
-                    ],
-                ]),
-            ]
-        ]);
-        $discordClient->post('channels/' . self::DISCORD_TEST_CHANNEL_ID . '/messages', [
-            RequestOptions::FORM_PARAMS => [
-                'payload_json' => json_encode([
-                    'embed' => [
-                        'title' => 'Superstar Screenshot',
-                        'color' => 0xff0000,
-                        'fields' => [
-                            [
-                                'name' => 'Sets Used',
-                                'value' => implode(', ', $gearSetsParsed),
-                                'inline' => false
+                            'image' => [
+                                'url' => cloudinary_url($dpsParse->parse_file_hash, [
+                                    'secure' => true,
+                                    'width' => 800,
+                                    'height' => 800,
+                                    'gravity' => 'auto:classic',
+                                    'crop' => 'fill'
+                                ])
                             ],
                         ],
-                        'timestamp' => (new \DateTimeImmutable($dpsParse->created_at))->format('c'),
-                        'image' => [
-                            'url' => cloudinary_url($dpsParse->superstar_file_hash, [
-                                'secure' => true,
-                                'width' => 800,
-                                'height' => 800,
-                                'gravity' => 'auto:classic',
-                                'crop' => 'fill'
-                            ])
+                    ]),
+                ]
+            ],
+            [
+                RequestOptions::FORM_PARAMS => [
+                    'payload_json' => json_encode([
+                        'embed' => [
+                            'title' => 'Superstar Screenshot',
+                            'color' => 0x888800,
+                            'fields' => [
+                                [
+                                    'name' => 'Sets Used',
+                                    'value' => implode(', ', $gearSetsParsed),
+                                    'inline' => false
+                                ],
+                            ],
+                            'timestamp' => (new \DateTimeImmutable($dpsParse->created_at))->format('c'),
+                            'image' => [
+                                'url' => cloudinary_url($dpsParse->superstar_file_hash, [
+                                    'secure' => true,
+                                    'width' => 800,
+                                    'height' => 800,
+                                    'gravity' => 'auto:classic',
+                                    'crop' => 'fill'
+                                ])
+                            ],
                         ],
-                    ],
-                ]),
-            ]
-        ]);
+                    ]),
+                ]
+
+            ],
+        ];
+
+        $idsOfCreatedDiscordMessages = [];
+        foreach ($params as $param) {
+            $response = $discordClient->post('channels/' . self::DISCORD_TEST_CHANNEL_ID . '/messages', $param);
+            $bodyDecoded = json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
+            $idsOfCreatedDiscordMessages[] = $bodyDecoded['id'];
+        }
+        $dpsParse->discord_notification_message_ids = implode(',', $idsOfCreatedDiscordMessages);
+        $dpsParse->save();
 
         return true;
     }

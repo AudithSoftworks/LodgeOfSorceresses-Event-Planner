@@ -57,9 +57,7 @@ class User extends Authenticatable
     protected $fillable = ['name', 'email', 'password'];
 
     /**
-     * Soft-deletes enabled.
-     *
-     * @var array
+     * {@inheritdoc}
      */
     protected $dates = ['deleted_at'];
 

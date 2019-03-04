@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\DpsParses\DpsParseDeleted;
 use App\Events\DpsParses\DpsParseSubmitted;
 use App\Models\DpsParse;
 use App\Models\File;
@@ -104,7 +105,9 @@ class DpsParsesController extends Controller
      */
     public function destroy(int $char, int $parse): JsonResponse
     {
-        DpsParse::whereUserId(app('auth.driver')->id())->whereCharacterId($char)->whereId($parse)->delete();
+        $dpsParse = DpsParse::whereUserId(app('auth.driver')->id())->whereCharacterId($char)->whereId($parse);
+        $dpsParse->delete();
+        app('events')->fire(new DpsParseDeleted($dpsParse->withTrashed()->first()));
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);
     }
