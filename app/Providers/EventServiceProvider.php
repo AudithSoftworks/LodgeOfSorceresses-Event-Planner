@@ -13,6 +13,9 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
+        Events\DpsParses\DpsParseSubmitted::class => [
+            Listeners\DpsParses\PostNewDpsParseToDiscord::class
+        ],
         Events\Files\Uploaded::class => [
             Listeners\Files\ValidateUploadRealMimeAgainstAllowedTypes::class,
             Listeners\Files\PersistUploadedFile::class

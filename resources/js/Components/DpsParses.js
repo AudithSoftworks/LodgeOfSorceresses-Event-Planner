@@ -129,7 +129,7 @@ class DpsParses extends Component {
     renderList = (dpsParses, character) => {
         let parsesRendered = dpsParses.map(
             item => {
-                const characterSets = item.sets.map(set => <a key={set['id']} href={'https://eso-sets.com/set/' + set['slug']} className='badge badge-dark'>{set['name']}</a>);
+                const characterSets = item.sets.map(set => <a key={set['id']} href={'https://eso-sets.com/set/' + set['id']} className='badge badge-dark'>{set['name']}</a>);
                 item.actionList = {
                     delete: <Link to='' onClick={this.handleDelete} data-id={item.id} title='Delete this Parse'><FontAwesomeIcon icon="trash-alt"/></Link>
                 };

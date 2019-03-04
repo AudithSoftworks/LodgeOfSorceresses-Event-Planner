@@ -16,7 +16,8 @@ sed -e "s/APP_ENV=.*/APP_ENV=development/g" \
     -e "s/IPS_API_KEY=.*/IPS_API_KEY=${IPS_API_KEY}/g" \
     -e "s/CLOUDINARY_CLOUD_NAME=.*/CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}/g" \
     -e "s/CLOUDINARY_API_KEY=.*/CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}/g" \
-    -e "s/CLOUDINARY_API_SECRET=.*/CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}/g" .env.example \
+    -e "s/CLOUDINARY_API_SECRET=.*/CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}/g" \
+    -e "s/DISCORD_BOT_TOKEN=.*/DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}/g" .env.example \
     | tee .env;
 
 rm -rf ./.git* ./node_modules/ ./tests/ ./deploy_rsa.enc ./.scrutinizer.yml ./.travis.yml ./_ide_helper.php old;

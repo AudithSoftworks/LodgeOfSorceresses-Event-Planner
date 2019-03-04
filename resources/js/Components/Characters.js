@@ -99,15 +99,17 @@ class Characters extends Component {
     renderList = (characters) => {
         let charactersRendered = characters.map(
             item => {
-                const characterSets = item.sets.map(set => <a key={set['id']} href={'https://eso-sets.com/set/' + set['slug']} className='badge badge-dark'>{set['name']}</a>);
+                const characterSets = item.sets.map(set => <a key={set['id']} href={'https://eso-sets.com/set/' + set['id']} className='badge badge-dark'>{set['name']}</a>);
                 item.actionList = {
-                    parses: <Link to={'/chars/' + item.id + '/parses'}><FontAwesomeIcon icon="tachometer-alt"/></Link>,
-                    edit: <Link to={'/chars/' + item.id + '/edit'}><FontAwesomeIcon icon="user-edit"/></Link>,
-                    delete: <Link to={'/api/chars/' + item.id} onClick={this.handleDelete} data-id={item.id}><FontAwesomeIcon icon="trash-alt"/></Link>
+                    parses: item.role.indexOf('Damage') !== -1 ? <Link to={'/chars/' + item.id + '/parses'} title='Submit DPS Parse'><FontAwesomeIcon icon="tachometer-alt"/></Link> : null,
+                    edit: <Link to={'/chars/' + item.id + '/edit'} title='Edit Character'><FontAwesomeIcon icon="user-edit"/></Link>,
+                    delete: <Link to={'/api/chars/' + item.id} onClick={this.handleDelete} data-id={item.id} title='Delete Character'><FontAwesomeIcon icon="trash-alt"/></Link>
                 };
                 let actionListRendered = [];
                 for (const [actionType, link] of Object.entries(item.actionList)) {
-                    actionListRendered.push(<li key={actionType}>{link}</li>);
+                    if (link) {
+                        actionListRendered.push(<li key={actionType}>{link}</li>);
+                    }
                 }
 
                 return (

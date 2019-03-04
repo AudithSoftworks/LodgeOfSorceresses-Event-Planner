@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\DpsParses\DpsParseSubmitted;
 use App\Models\DpsParse;
 use App\Models\File;
 use Illuminate\Http\JsonResponse;
@@ -73,6 +74,8 @@ class DpsParsesController extends Controller
         $dpsParse->superstar_file_hash = $request->get('superstar_file_hash');
         $dpsParse->sets = !empty($request->get('sets')) ? implode(',', $request->get('sets')) : null;
         $dpsParse->save();
+
+        app('events')->fire(new DpsParseSubmitted($dpsParse));
 
         return response()->json([], JsonResponse::HTTP_CREATED);
     }

@@ -45,5 +45,8 @@ return [
         'api_key' => env('IPS_API_KEY'),
         'redirect' => env('IPS_REDIRECT_URI'),
         'url' => env('IPS_URL'),
-    ]
+    ],
+    'discord_bot' => [
+        'token' => env('DISCORD_BOT_TOKEN'),
+    ],
 ];
