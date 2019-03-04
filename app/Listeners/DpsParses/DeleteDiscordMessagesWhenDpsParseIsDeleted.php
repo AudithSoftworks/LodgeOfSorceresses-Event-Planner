@@ -34,11 +34,16 @@ class DeleteDiscordMessagesWhenDpsParseIsDeleted
             ],
         ]);
 
-        $response = $discordClient->post('channels/' . self::DISCORD_TEST_CHANNEL_ID . '/messages/bulk-delete', [
-            RequestOptions::JSON => [
-                'messages' => explode(',', $dpsParse->discord_notification_message_ids),
-            ]
-        ]);
+        $discordMessageIdsToDelete = explode(',', $dpsParse->discord_notification_message_ids);
+        if (count($discordMessageIdsToDelete) > 1) {
+            $response = $discordClient->post('channels/' . self::DISCORD_TEST_CHANNEL_ID . '/messages/bulk-delete', [
+                RequestOptions::JSON => [
+                    'messages' => $discordMessageIdsToDelete,
+                ]
+            ]);
+        } else {
+            $response = $discordClient->delete('channels/' . self::DISCORD_TEST_CHANNEL_ID . '/messages/' . $dpsParse->discord_notification_message_ids);
+        }
         if ($response->getStatusCode() === Response::HTTP_NO_CONTENT) {
             $dpsParse->forceDelete();
         }

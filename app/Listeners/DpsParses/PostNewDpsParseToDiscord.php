@@ -53,23 +53,29 @@ class PostNewDpsParseToDiscord
         $gearSets = $this->getGearSets($dpsParse->sets);
         $gearSetsParsed = [];
         foreach ($gearSets as $set) {
-            $gearSetsParsed[] = '[' . $set->name . '](' . 'https://eso-sets.com/set/' . $set->id . ')';
+            $gearSetsParsed[] = '[' . $set->name . '](https://eso-sets.com/set/' . $set->id . ')';
         }
 
         $params = [
             [
                 RequestOptions::FORM_PARAMS => [
-                    'content' => '**' . $me->name . ' has submitted a DPS parse with ' . $dpsParse->dps_amount . ' DPS.**',
-                    'tts' => false,
-                ]
-            ],
-            [
-                RequestOptions::FORM_PARAMS => [
                     'payload_json' => json_encode([
+                        'content' => '**' . $me->name . ' has submitted a DPS parse with ' . $dpsParse->dps_amount . ' DPS.**',
+                        'tts' => false,
                         'embed' => [
-                            'title' => 'Parse Screenshot',
                             'color' => 0x888800,
+                            'thumbnail' => [
+                                'url' => cloudinary_url('special/logo.png', [
+                                    'secure' => true,
+                                    'width' => 300,
+                                    'height' => 300
+                                ])
+                            ],
                             'fields' => [
+                                [
+                                    'name' => 'Character',
+                                    'value' => $character->name,
+                                ],
                                 [
                                     'name' => 'Role',
                                     'value' => RoleTypes::getRoleName($character->role),
@@ -78,47 +84,21 @@ class PostNewDpsParseToDiscord
                                     'name' => 'Class',
                                     'value' => ClassTypes::getClassName($character->class),
                                 ],
-                            ],
-                            'image' => [
-                                'url' => cloudinary_url($dpsParse->parse_file_hash, [
-                                    'secure' => true,
-                                    'width' => 800,
-                                    'height' => 800,
-                                    'gravity' => 'auto:classic',
-                                    'crop' => 'fill'
-                                ])
-                            ],
-                        ],
-                    ]),
-                ]
-            ],
-            [
-                RequestOptions::FORM_PARAMS => [
-                    'payload_json' => json_encode([
-                        'embed' => [
-                            'title' => 'Superstar Screenshot',
-                            'color' => 0x888800,
-                            'fields' => [
                                 [
                                     'name' => 'Sets Used',
                                     'value' => implode(', ', $gearSetsParsed),
                                     'inline' => false
                                 ],
                             ],
-                            'timestamp' => (new \DateTimeImmutable($dpsParse->created_at))->format('c'),
                             'image' => [
-                                'url' => cloudinary_url($dpsParse->superstar_file_hash, [
+                                'url' => cloudinary_url($dpsParse->parse_file_hash, [
                                     'secure' => true,
-                                    'width' => 800,
-                                    'height' => 800,
-                                    'gravity' => 'auto:classic',
-                                    'crop' => 'fill'
                                 ])
                             ],
+                            'timestamp' => (new \DateTimeImmutable($dpsParse->created_at))->format('c'),
                         ],
                     ]),
                 ]
-
             ],
         ];
 

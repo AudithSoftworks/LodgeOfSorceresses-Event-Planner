@@ -247,18 +247,12 @@ class FileStream
     {
         $large = cloudinary_url($file->hash, [
             'secure' => true,
-            'width' => 800,
-            'height' => 800,
-            'gravity' => 'auto:classic',
-            'crop' => 'fill'
         ]);
 
         $thumbnail = cloudinary_url($file->hash, [
             'secure' => true,
             'width' => 100,
-            'height' => 100,
-            'gravity' => 'auto:classic',
-            'crop' => 'fill'
+            'height' => 60,
         ]);
 
         return ['thumbnail' => $thumbnail, 'large' => $large];

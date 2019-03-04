@@ -56,16 +56,8 @@ class PersistUploadedFile
             'phash' => true,
             'eager' => [
                 [
-                    'width' => 800,
-                    'height' => 800,
-                    'gravity' => 'auto:classic',
-                    'crop' => 'fill'
-                ],
-                [
                     'width' => 100,
-                    'height' => 100,
-                    'gravity' => 'auto:classic',
-                    'crop' => 'fill'
+                    'height' => 60,
                 ]
             ]
         ]);
