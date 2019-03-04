@@ -1,13 +1,20 @@
-import React, { Component, Suspense } from 'react';
+import React, { Component, Fragment, Suspense } from 'react';
 import { Route, Switch } from "react-router-dom";
 import Loading from "../Characters";
 import ErrorBoundary from "../ErrorBoundary";
 
-const Events = React.lazy(() => import(
+const Home = React.lazy(() => import(
     /* webpackPrefetch: true */
-    /* webpackChunkName: "components-events" */
-    '../Events')
+    /* webpackChunkName: "components-home" */
+    '../Home')
 );
+
+// const Events = React.lazy(() => import(
+//     /* webpackPrefetch: true */
+//     /* webpackChunkName: "components-events" */
+//     '../Events')
+// );
+
 const Characters = React.lazy(() => import(
     /* webpackPrefetch: true */
     /* webpackChunkName: "components-characters" */
@@ -34,17 +41,18 @@ class Main extends Component {
                 <Suspense fallback={<Loading/>}>
                     <ErrorBoundary>
                         <Switch>
-                            <Route exact path="/" component={props => <Events {...props}/>}/>
+                            <Route exact path="/" component={props => <Home {...props}/>}/>
+                            {/*<Route exact path="/calendar" component={props => <Events {...props}/>}/>*/}
                             <Route
                                 path="/chars"
                                 render={({match: {url}}) => (
-                                    <>
+                                    <Fragment>
                                         <Route exact path={url} component={props => <Characters {...props}/>}/>
                                         <Route path={url + '/create'} component={props => <CharacterForm {...props}/>}/>
                                         <Route path={url + '/:id/edit'} component={props => <CharacterForm {...props}/>}/>
                                         <Route exact path={url + '/:id/parses'} component={props => <DpsParses {...props}/>}/>
                                         <Route path={url + '/:id/parses/create'} component={props => <DpsParseForm {...props}/>}/>
-                                    </>
+                                    </Fragment>
                                 )}
                             />
                             <Route component={ErrorBoundary}/>
