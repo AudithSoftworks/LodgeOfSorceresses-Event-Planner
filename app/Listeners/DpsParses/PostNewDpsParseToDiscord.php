@@ -56,58 +56,51 @@ class PostNewDpsParseToDiscord
             $gearSetsParsed[] = '[' . $set->name . '](https://eso-sets.com/set/' . $set->id . ')';
         }
 
-        $params = [
-            [
-                RequestOptions::FORM_PARAMS => [
-                    'payload_json' => json_encode([
-                        'content' => '**' . $me->name . ' has submitted a DPS parse with ' . $dpsParse->dps_amount . ' DPS.**',
-                        'tts' => false,
-                        'embed' => [
-                            'color' => 0x888800,
-                            'thumbnail' => [
-                                'url' => cloudinary_url('special/logo.png', [
-                                    'secure' => true,
-                                    'width' => 300,
-                                    'height' => 300
-                                ])
-                            ],
-                            'fields' => [
-                                [
-                                    'name' => 'Character',
-                                    'value' => $character->name,
-                                ],
-                                [
-                                    'name' => 'Role',
-                                    'value' => RoleTypes::getRoleName($character->role),
-                                ],
-                                [
-                                    'name' => 'Class',
-                                    'value' => ClassTypes::getClassName($character->class),
-                                ],
-                                [
-                                    'name' => 'Sets Used',
-                                    'value' => implode(', ', $gearSetsParsed),
-                                    'inline' => false
-                                ],
-                            ],
-                            'image' => [
-                                'url' => cloudinary_url($dpsParse->parse_file_hash, [
-                                    'secure' => true,
-                                ])
-                            ],
-                            'timestamp' => (new \DateTimeImmutable($dpsParse->created_at))->format('c'),
-                        ],
-                    ]),
-                ]
-            ],
-        ];
-
         $idsOfCreatedDiscordMessages = [];
-        foreach ($params as $param) {
-            $response = $discordClient->post('channels/' . self::DISCORD_TEST_CHANNEL_ID . '/messages', $param);
-            $bodyDecoded = json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
-            $idsOfCreatedDiscordMessages[] = $bodyDecoded['id'];
-        }
+        $response = $discordClient->post('channels/' . self::DISCORD_TEST_CHANNEL_ID . '/messages', [
+            RequestOptions::FORM_PARAMS => [
+                'payload_json' => json_encode([
+                    'content' => '**' . $me->name . ' has submitted a DPS parse with ' . $dpsParse->dps_amount . ' DPS.**',
+                    'tts' => false,
+                    'embed' => [
+                        'color' => 0x888800,
+                        'thumbnail' => [
+                            'url' => cloudinary_url('special/logo.png', [
+                                'secure' => true,
+                                'width' => 300,
+                                'height' => 300
+                            ])
+                        ],
+                        'fields' => [
+                            [
+                                'name' => 'Character',
+                                'value' => $character->name,
+                            ],
+                            [
+                                'name' => 'Role',
+                                'value' => RoleTypes::getRoleName($character->role),
+                            ],
+                            [
+                                'name' => 'Class',
+                                'value' => ClassTypes::getClassName($character->class),
+                            ],
+                            [
+                                'name' => 'Sets Used',
+                                'value' => implode(', ', $gearSetsParsed),
+                                'inline' => false
+                            ],
+                        ],
+                        'image' => [
+                            'url' => cloudinary_url($dpsParse->parse_file_hash, [
+                                'secure' => true,
+                            ])
+                        ],
+                    ],
+                ]),
+            ]
+        ]);
+        $bodyDecoded = json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
+        $idsOfCreatedDiscordMessages[] = $bodyDecoded['id'];
         $dpsParse->discord_notification_message_ids = implode(',', $idsOfCreatedDiscordMessages);
         $dpsParse->save();
 

@@ -56,8 +56,7 @@ class PersistUploadedFile
             'phash' => true,
             'eager' => [
                 [
-                    'width' => 100,
-                    'height' => 60,
+                    'width' => 140,
                 ]
             ]
         ]);
