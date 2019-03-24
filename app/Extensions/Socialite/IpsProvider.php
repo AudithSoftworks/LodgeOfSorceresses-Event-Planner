@@ -94,7 +94,7 @@ class IpsProvider extends AbstractProvider implements ProviderInterface
             'nickname' => $user['name'],
             'name' => $user['name'],
             'email' => $user['email'],
-            'remoteMemberGroup' => $user['primaryGroup']['id'],
+            'remotePrimaryGroup' => $user['primaryGroup']['id'],
             'avatar' => $user['photoUrl'],
             'token' => Arr::get($user, 'access_token'),
         ]);

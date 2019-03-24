@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $user_id
  * @property string $remote_provider
  * @property string $remote_id
- * @property int $remote_member_group
+ * @property int $remote_primary_group
+ * @property string|null $remote_secondary_groups
  * @property string|null $nickname
  * @property string|null $name
  * @property string|null $email
@@ -27,8 +28,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|UserOAuth whereName($value)
  * @method static Builder|UserOAuth whereNickname($value)
  * @method static Builder|UserOAuth whereRemoteId($value)
- * @method static Builder|UserOAuth whereRemoteMemberGroup($value)
+ * @method static Builder|UserOAuth whereRemotePrimaryGroup($value)
  * @method static Builder|UserOAuth whereRemoteProvider($value)
+ * @method static Builder|UserOAuth whereRemoteSecondaryGroups($value)
  * @method static Builder|UserOAuth whereUpdatedAt($value)
  * @method static Builder|UserOAuth whereUserId($value)
  */

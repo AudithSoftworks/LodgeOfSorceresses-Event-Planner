@@ -18,7 +18,8 @@ class CreateUsersOauthTable extends Migration
             $table->unsignedInteger('user_id');
             $table->string('remote_provider', 32);
             $table->string('remote_id', 255);
-            $table->unsignedInteger('remote_member_group');
+            $table->unsignedInteger('remote_primary_group');
+            $table->string('remote_secondary_groups')->nullable();
             $table->string('nickname')->nullable();
             $table->string('name')->nullable();
             $table->string('email')->nullable();

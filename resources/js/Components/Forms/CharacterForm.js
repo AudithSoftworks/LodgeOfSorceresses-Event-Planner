@@ -58,7 +58,7 @@ class CharacterForm extends Component {
                     messages: [
                         {
                             type: "danger",
-                            message: error.response.statusText
+                            message: error.response.data.message || error.response.statusText
                         }
                     ]
                 })
@@ -82,7 +82,7 @@ class CharacterForm extends Component {
                         messages: [
                             {
                                 type: "danger",
-                                message: error.response.statusText
+                                message: error.response.data.message || error.response.statusText
                             }
                         ]
                     })
@@ -130,7 +130,7 @@ class CharacterForm extends Component {
                     messages: [
                         {
                             type: "danger",
-                            message: error.response.statusText
+                            message: error.response.data.message || error.response.statusText
                         }
                     ]
                 })

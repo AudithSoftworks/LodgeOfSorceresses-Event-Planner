@@ -16,9 +16,11 @@ class CharactersController extends Controller
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function index()
     {
+        $this->authorize('view', Character::class);
         $characters = Character::query()
             ->where('user_id', app('auth.driver')->id())
             ->orderBy('id', 'desc')
@@ -49,9 +51,11 @@ class CharactersController extends Controller
      * @return JsonResponse
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      * @throws \Illuminate\Validation\ValidationException
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function store(Request $request): JsonResponse
     {
+        $this->authorize('create', Character::class);
         $validatorErrorMessages = [
             'name.required' => 'Character name is required.',
             'role.required' => 'Choose a role.',
@@ -85,9 +89,11 @@ class CharactersController extends Controller
      * @param int $char
      *
      * @return JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function show($char): JsonResponse
     {
+        $this->authorize('view', Character::class);
         $character = Character::query()
             ->where('user_id', app('auth.driver')->id())
             ->whereId($char)
@@ -113,9 +119,11 @@ class CharactersController extends Controller
      * @param int $char
      *
      * @return JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function edit($char): JsonResponse
     {
+        $this->authorize('view', Character::class);
         $character = Character::query()->where(function (Builder $query) use ($char) {
             $query
                 ->where('user_id', app('auth.driver')->id())
@@ -137,9 +145,11 @@ class CharactersController extends Controller
      * @return JsonResponse
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      * @throws \Illuminate\Validation\ValidationException
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function update(Request $request, $char): JsonResponse
     {
+        $this->authorize('update', Character::class);
         $validator = app('validator')->make($request->all(), [
             'name' => 'required|string',
             'role' => 'required|integer|min:1|max:4',
@@ -171,9 +181,11 @@ class CharactersController extends Controller
      * @param int $char
      *
      * @return JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function destroy($char): JsonResponse
     {
+        $this->authorize('delete', Character::class);
         Character::destroy($char);
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);

@@ -43,7 +43,7 @@ class Characters extends Component {
                     messages: [
                         {
                             type: "danger",
-                            message: error.response.statusText
+                            message: error.response.data.message || error.response.statusText
                         }
                     ]
                 })
@@ -87,7 +87,7 @@ class Characters extends Component {
                         messages: [
                             {
                                 type: "danger",
-                                message: error.response.statusText
+                                message: error.response.data.message || error.response.statusText
                             }
                         ]
                     })
@@ -176,16 +176,16 @@ class Characters extends Component {
 
     render = () => {
         const {charactersLoaded, characters, messages} = this.state;
-        if (!charactersLoaded) {
+        if (charactersLoaded && this.props.match !== undefined && this.props.match.params.id === undefined) {
             return [
-                <Loading key='loading'/>,
-                <Notification key='notifications' messages={messages}/>
+                this.renderList(characters),
+                <Notification key='notifications' messages={messages}/>,
             ]
         }
 
         return [
-            this.renderList(characters),
-            <Notification key='notifications' messages={messages}/>,
+            <Loading key='loading'/>,
+            <Notification key='notifications' messages={messages}/>
         ]
     };
 }

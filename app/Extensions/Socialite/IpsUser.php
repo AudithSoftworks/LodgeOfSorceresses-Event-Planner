@@ -9,24 +9,49 @@ class IpsUser extends User
     /**
      * @var int
      */
-    public $remoteMemberGroup;
+    public $remotePrimaryGroup;
+
+    /**
+     * @var array
+     */
+    public $remoteSecondaryGroups;
 
     /**
      * @return int
      */
-    public function getRemoteMemberGroup(): int
+    public function getRemotePrimaryGroup(): int
     {
-        return $this->remoteMemberGroup;
+        return $this->remotePrimaryGroup;
     }
 
     /**
-     * @param int $remoteMemberGroup
+     * @param int $remotePrimaryGroup
      *
-     * @return IpsUser
+     * @return $this
      */
-    public function setRemoteMemberGroup(int $remoteMemberGroup): IpsUser
+    public function setRemotePrimaryGroup(int $remotePrimaryGroup): self
     {
-        $this->remoteMemberGroup = $remoteMemberGroup;
+        $this->remotePrimaryGroup = $remotePrimaryGroup;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRemoteSecondaryGroups(): array
+    {
+        return $this->remoteSecondaryGroups;
+    }
+
+    /**
+     * @param array $remoteSecondaryGroups
+     *
+     * @return $this
+     */
+    public function setRemoteSecondaryGroups(array $remoteSecondaryGroups): self
+    {
+        $this->remoteSecondaryGroups = $remoteSecondaryGroups;
 
         return $this;
     }

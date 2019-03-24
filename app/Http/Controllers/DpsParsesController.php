@@ -16,9 +16,11 @@ class DpsParsesController extends Controller
      * @param int $char
      *
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function index(int $char)
     {
+        $this->authorize('view', DpsParse::class);
         $dpsParses = DpsParse::query()
             ->whereUserId(app('auth.driver')->id())
             ->whereCharacterId($char)
@@ -49,9 +51,11 @@ class DpsParsesController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function store(Request $request, int $char): JsonResponse
     {
+        $this->authorize('create', DpsParse::class);
         $validatorErrorMessages = [
             'parse_file_hash.required' => 'Parse screenshot needs to be uploaded.',
             'superstar_file_hash.required' => 'Superstar screenshot needs to be uploaded.',
@@ -87,9 +91,11 @@ class DpsParsesController extends Controller
      * @param int $parse
      *
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function show(int $char, int $parse): JsonResponse
     {
+        $this->authorize('show', DpsParse::class);
         $dpsParse = DpsParse::whereUserId(app('auth.driver')->id())->whereCharacterId($char)->whereId($parse)->get();
         $dpsParse->parse_file_hash = File::whereHash($dpsParse->parse_file_hash)->get();
         $dpsParse->superstar_file_hash = File::whereHash($dpsParse->superstar_file_hash)->get();
@@ -106,6 +112,7 @@ class DpsParsesController extends Controller
      */
     public function destroy(int $char, int $parse): JsonResponse
     {
+        $this->authorize('delete', DpsParse::class);
         $dpsParse = DpsParse::whereUserId(app('auth.driver')->id())->whereCharacterId($char)->whereId($parse);
         $dpsParse->delete();
         app('events')->dispatch(new DpsParseDeleted($dpsParse->withTrashed()->first()));

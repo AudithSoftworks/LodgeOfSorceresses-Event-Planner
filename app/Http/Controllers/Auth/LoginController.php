@@ -47,8 +47,8 @@ class LoginController extends Controller
      * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\RedirectResponse
-     * @throws ValidationException
      * @throws \Illuminate\Validation\ValidationException
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function loginViaWeb(Request $request)
     {
@@ -155,6 +155,7 @@ class LoginController extends Controller
      * @param string  $provider
      *
      * @return bool
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function loginViaOAuth(IpsUser $oauthUserData, $provider)
     {
@@ -176,6 +177,7 @@ class LoginController extends Controller
      * @param string  $provider
      *
      * @return \Illuminate\Contracts\Auth\Authenticatable|bool
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function registerViaOAuth(IpsUser $oauthUserData, $provider)
     {
@@ -219,10 +221,19 @@ class LoginController extends Controller
         /** @var UserOAuth[] $linkedAccounts */
         $linkedAccounts = $ownerAccount->linkedAccounts()->ofProvider($provider)->get();
 
+        $remoteUserDataFetchedThroughApi = app('ips.api')->getUser($oauthUserData->getId());
+        $remoteSecondaryGroups = array_reduce($remoteUserDataFetchedThroughApi['secondaryGroups'], function ($acc, $item) {
+            $acc === null && $acc = [];
+            $acc[] = $item['id'];
+
+            return $acc;
+        });
+
         foreach ($linkedAccounts as $linkedAccount) {
             if ($linkedAccount->remote_id === $oauthUserData->id || $linkedAccount->email === $oauthUserData->email) {
                 $linkedAccount->remote_id = $oauthUserData->id;
-                $linkedAccount->remote_member_group = $oauthUserData->remoteMemberGroup;
+                $linkedAccount->remote_primary_group = $oauthUserData->remotePrimaryGroup;
+                $linkedAccount->remote_secondary_groups = implode(',', $remoteSecondaryGroups);
                 $linkedAccount->nickname = $oauthUserData->nickname;
                 $linkedAccount->name = $oauthUserData->name;
                 $linkedAccount->email = $oauthUserData->email;
@@ -235,7 +246,8 @@ class LoginController extends Controller
         $linkedAccount = new UserOAuth();
         $linkedAccount->remote_provider = $provider;
         $linkedAccount->remote_id = $oauthUserData->id;
-        $linkedAccount->remote_member_group = $oauthUserData->remoteMemberGroup;
+        $linkedAccount->remote_primary_group = $oauthUserData->remotePrimaryGroup;
+        $linkedAccount->remote_secondary_groups = implode(',', $remoteSecondaryGroups);
         $linkedAccount->nickname = $oauthUserData->nickname;
         $linkedAccount->name = $oauthUserData->name;
         $linkedAccount->email = $oauthUserData->email;

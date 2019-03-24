@@ -6,6 +6,26 @@ use Illuminate\Http\Request;
 
 class IpsApi
 {
+    public const MEMBER_GROUPS_SOULSHRIVEN = 3;
+
+    public const MEMBER_GROUPS_INITIATE = 28;
+
+    public const MEMBER_GROUPS_NEOPHYTE = 8;
+
+    public const MEMBER_GROUPS_PRACTICUS = 19;
+
+    public const MEMBER_GROUPS_ADEPTUS_MINOR = 20;
+
+    public const MEMBER_GROUPS_ADEPTUS_MAJOR = 21;
+
+    public const MEMBER_GROUPS_DOMINUS_LIMINIS = 22;
+
+    public const MEMBER_GROUPS_RECTOR = 25;
+
+    public const MEMBER_GROUPS_MAGISTER_TEMPLI = 6;
+
+    public const MEMBER_GROUPS_IPSISSIMUS = 4;
+
     /**
      * @var \GuzzleHttp\Client
      */
@@ -59,5 +79,17 @@ class IpsApi
         }
 
         return $events;
+    }
+
+    /**
+     * @param int $remoteUserId
+     *
+     * @return array
+     */
+    public function getUser(int $remoteUserId): array
+    {
+        $response = $this->apiClient->get($this->ipsUrl . '/core/members/' . $remoteUserId);
+
+        return json_decode($response->getBody()->getContents(), true);
     }
 }
