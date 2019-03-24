@@ -2,10 +2,9 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSpinner, faTachometerAlt, faTrashAlt, faUserEdit, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { Fragment, PureComponent } from 'react';
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import Notification from '../Components/Notification';
 import Axios from '../vendor/Axios';
-import ErrorBoundary from "./ErrorBoundary";
 import Loading from "./Loading";
 
 library.add(faSpinner, faTachometerAlt, faTrashAlt, faUserEdit, faUserPlus);
@@ -40,9 +39,6 @@ class Characters extends PureComponent {
             }
         }).catch(error => {
             if (!Axios.isCancel(error)) {
-                if (error.response.status === 403) {
-                    return <ErrorBoundary error={'Test'}/>
-                }
                 this.setState({
                     messages: [
                         {
@@ -51,6 +47,9 @@ class Characters extends PureComponent {
                         }
                     ]
                 })
+            }
+            if (error.response && error.response.status === 403) {
+                this.props.history.push('/', this.state);
             }
         });
     };
@@ -180,7 +179,13 @@ class Characters extends PureComponent {
 
     render = () => {
         const {charactersLoaded, characters, messages} = this.state;
+        const flashMessages = [];
+        if (this.props.history && this.props.history.location.state && this.props.history.location.state.messages) {
+            flashMessages.push(...this.props.history.location.state.messages);
+        }
+
         if (charactersLoaded && this.props.match !== undefined && this.props.match.params.id === undefined) {
+console.log(messages);
             return [
                 this.renderList(characters),
                 <Notification key='notifications' messages={messages}/>,
@@ -189,7 +194,7 @@ class Characters extends PureComponent {
 
         return [
             <Loading key='loading'/>,
-            <Notification key='notifications' messages={messages}/>
+            <Notification key='notifications' messages={flashMessages}/>
         ]
     };
 }

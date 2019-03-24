@@ -2,6 +2,16 @@ import React, { PureComponent, Fragment } from 'react';
 import Notification from "./Notification";
 
 class Home extends PureComponent {
+    renderFlashMessages = () => {
+        if (this.props.history.location.state && this.props.history.location.state.messages) {
+            const messages = this.props.history.location.state.messages;
+            this.props.history.location.state.messages = [];
+            return <Notification key='flash-notifications' messages={messages}/>;
+        }
+
+        return null;
+    };
+
     render = () => {
         const messages = [
             {
@@ -21,6 +31,7 @@ class Home extends PureComponent {
         return [
             <section className="col-md-24 p-0 mb-4" key='characterList'>
                 <h2 className="form-title col-md-24">Dashboard</h2>
+                {this.renderFlashMessages()}
                 <Notification key='notifications' messages={messages} options={options}/>
             </section>
         ];

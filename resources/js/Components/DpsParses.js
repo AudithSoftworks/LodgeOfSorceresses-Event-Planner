@@ -49,6 +49,9 @@ class DpsParses extends PureComponent {
                     ]
                 })
             }
+            if (error.response && error.response.status === 403) {
+                this.props.history.push('/', this.state);
+            }
         });
 
         Axios.get('/api/chars/' + this.props.match.params.id + '/parses', {
@@ -77,6 +80,9 @@ class DpsParses extends PureComponent {
                         }
                     ]
                 })
+            }
+            if (error.response && error.response.status === 403) {
+                this.props.history.push('/chars' , this.state);
             }
         });
     };
