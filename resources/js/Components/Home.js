@@ -1,7 +1,7 @@
-import React, { Component, Fragment } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import Notification from "./Notification";
 
-class Home extends Component {
+class Home extends PureComponent {
     render = () => {
         const messages = [
             {

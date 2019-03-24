@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 library.add(faSpinner);
 
-class Loading extends Component {
+class Loading extends PureComponent {
     render = () => {
         return (
             <section className="col-md-24 p-0 mb-4 text-center" key='loading'>

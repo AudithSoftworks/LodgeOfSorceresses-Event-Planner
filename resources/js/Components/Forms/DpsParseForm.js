@@ -1,5 +1,5 @@
 import FineUploaderTraditional from 'fine-uploader-wrappers';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 
 import Loadable from 'react-loadable';
 import { Link, Redirect } from "react-router-dom";
@@ -22,7 +22,7 @@ import(
     /* webpackChunkName: "react-fine-uploader_gallery-css" */
     '../../../sass/vendor/_fine-uploader-gallery.scss');
 
-class DpsParseForm extends Component {
+class DpsParseForm extends PureComponent {
     classOptions = [
         {value: 1, label: 'Dragonknight'},
         {value: 2, label: 'Nightblade'},

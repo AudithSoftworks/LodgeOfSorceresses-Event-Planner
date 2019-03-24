@@ -1,15 +1,16 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSpinner, faTachometerAlt, faTrashAlt, faUserEdit, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { Component, Fragment } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import { Link } from "react-router-dom";
 import Notification from '../Components/Notification';
 import Axios from '../vendor/Axios';
+import ErrorBoundary from "./ErrorBoundary";
 import Loading from "./Loading";
 
 library.add(faSpinner, faTachometerAlt, faTrashAlt, faUserEdit, faUserPlus);
 
-class Characters extends Component {
+class Characters extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
@@ -39,6 +40,9 @@ class Characters extends Component {
             }
         }).catch(error => {
             if (!Axios.isCancel(error)) {
+                if (error.response.status === 403) {
+                    return <ErrorBoundary error={'Test'}/>
+                }
                 this.setState({
                     messages: [
                         {

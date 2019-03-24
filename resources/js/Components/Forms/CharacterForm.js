@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Link, Redirect } from "react-router-dom";
 import Select from 'react-select';
 import * as Animated from 'react-select/lib/animated';
@@ -6,7 +6,7 @@ import Axios from '../../vendor/Axios';
 import Loading from "../Characters";
 import Notification from '../Notification';
 
-class CharacterForm extends Component {
+class CharacterForm extends PureComponent {
     classOptions = [
         {value: 1, label: 'Dragonknight'},
         {value: 2, label: 'Nightblade'},
@@ -179,8 +179,8 @@ class CharacterForm extends Component {
                         options={this.roleOptions}
                         defaultValue={
                             this.state.characterLoaded
-                            ? this.roleOptions.filter(option => option.value === this.state.characterLoaded.role)
-                            : this.roleOptions[0]
+                                ? this.roleOptions.filter(option => option.value === this.state.characterLoaded.role)
+                                : this.roleOptions[0]
                         }
                         components={Animated}
                         name='role'

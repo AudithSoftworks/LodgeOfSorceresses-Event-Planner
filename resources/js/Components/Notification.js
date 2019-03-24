@@ -1,12 +1,12 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCheckCircle, faExclamationCircle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import ReactNotification from "react-notifications-component";
 
 library.add(faCheckCircle, faInfoCircle, faExclamationCircle);
 
-class Notification extends Component {
+class Notification extends PureComponent {
     constructor(props) {
         super(props);
         this.notificationDOMRef = React.createRef();
@@ -49,7 +49,7 @@ class Notification extends Component {
         };
     };
 
-    getSnapshotBeforeUpdate = (prevProps, prevState) => {
+    getSnapshotBeforeUpdate = (prevProps) => {
         if (prevProps.messages !== this.props.messages) {
             return this.props.messages;
         }
