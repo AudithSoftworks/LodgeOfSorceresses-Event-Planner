@@ -7,13 +7,13 @@ use Illuminate\Routing\Controller as BaseController;
 
 abstract class Controller extends BaseController
 {
-    const TRANSLATION_TAG_GUEST_USER = 0;
+    public const TRANSLATION_TAG_GUEST_USER = 0;
 
-    const TRANSLATION_TAG_REGISTERED_USER = 1;
+    public const TRANSLATION_TAG_REGISTERED_USER = 1;
 
-    const TRANSLATION_TAG_MALE = -2;
+    public const TRANSLATION_TAG_MALE = -2;
 
-    const TRANSLATION_TAG_FEMALE = -1;
+    public const TRANSLATION_TAG_FEMALE = -1;
 
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 }

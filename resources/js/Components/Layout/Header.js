@@ -1,10 +1,17 @@
-import React, { Component } from 'react';
-import {NavLink} from "react-router-dom";
 import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { NavLink } from "react-router-dom";
 
 class Header extends Component {
     renderNavLinks = (navLinks) => {
-        return navLinks.map((item, idx) => <li key={idx} className="nav-item">{item}</li>);
+        return navLinks.map((item, idx) => {
+            let className = 'nav-item';
+            if (item.props.className) {
+                className += ' ' + item.props.className;
+            }
+
+            return <li key={idx} className={className}>{item}</li>
+        });
     };
 
     render = () => {
@@ -14,12 +21,12 @@ class Header extends Component {
                 <ul className="member-bar col-md-8">
                     <li>
                         <figure>
-                            <img src=""/>
+                            <img alt='' src=''/>
                         </figure>
                     </li>
                 </ul>
                 <nav className="col-md-24">
-                    <ul className="nav nav-tabs">
+                    <ul className="nav-tabs">
                         {this.renderNavLinks(this.props.navLinks)}
                     </ul>
                 </nav>

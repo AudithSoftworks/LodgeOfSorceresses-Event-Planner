@@ -8,13 +8,11 @@ const Home = React.lazy(() => import(
     /* webpackChunkName: "components-home" */
     '../Home')
 );
-
 // const Events = React.lazy(() => import(
 //     /* webpackPrefetch: true */
 //     /* webpackChunkName: "components-events" */
 //     '../Events')
 // );
-
 const Characters = React.lazy(() => import(
     /* webpackPrefetch: true */
     /* webpackChunkName: "components-characters" */
@@ -34,6 +32,15 @@ const DpsParseForm = React.lazy(() => import(
     '../Forms/DpsParseForm')
 );
 
+const AdminHome = React.lazy(() => import(
+    /* webpackPrefetch: true */
+    /* webpackChunkName: "components-admin-home" */
+    '../Admin/Home'));
+const AdminDpsParses = React.lazy(() => import(
+    /* webpackPrefetch: true */
+    /* webpackChunkName: "components-admin-dps-parses" */
+    '../Admin/DpsParses'));
+
 class Main extends Component {
     render = () => {
         return [
@@ -52,6 +59,15 @@ class Main extends Component {
                                         <Route path={url + '/:id/edit'} component={props => <CharacterForm {...props}/>}/>
                                         <Route exact path={url + '/:id/parses'} component={props => <DpsParses {...props}/>}/>
                                         <Route path={url + '/:id/parses/create'} component={props => <DpsParseForm {...props}/>}/>
+                                    </Fragment>
+                                )}
+                            />
+                            <Route
+                                path="/admin"
+                                render={({match: {url}}) => (
+                                    <Fragment>
+                                        <Route exact path={url} component={props => <AdminHome {...props}/>}/>
+                                        <Route path={url + '/parses'} component={props => <AdminDpsParses {...props}/>}/>
                                     </Fragment>
                                 )}
                             />

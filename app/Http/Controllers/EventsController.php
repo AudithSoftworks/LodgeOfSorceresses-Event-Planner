@@ -8,13 +8,13 @@ use Illuminate\Database\Eloquent\Builder;
 
 class EventsController extends Controller
 {
-    const IPS_EVENT_RECURRENCE_FREQ_DAILY = 'DAILY';
+    private const IPS_EVENT_RECURRENCE_FREQ_DAILY = 'DAILY';
 
-    const IPS_EVENT_RECURRENCE_FREQ_WEEKLY = 'WEEKLY';
+    private const IPS_EVENT_RECURRENCE_FREQ_WEEKLY = 'WEEKLY';
 
-    const IPS_EVENT_RECURRENCE_FREQ_MONTHLY = 'MONTHLY';
+    private const IPS_EVENT_RECURRENCE_FREQ_MONTHLY = 'MONTHLY';
 
-    const IPS_EVENT_RECURRENCE_FREQ_YEARLY = 'YEARLY';
+    private const IPS_EVENT_RECURRENCE_FREQ_YEARLY = 'YEARLY';
 
     /**
      * @var \Carbon\Carbon

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
+
 class SetsController extends Controller
 {
     /**
@@ -9,7 +11,7 @@ class SetsController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(): JsonResponse
     {
         app('cache.store')->has('equipmentSets'); // Trigger Recache listener.
 

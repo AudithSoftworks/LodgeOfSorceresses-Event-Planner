@@ -10,24 +10,20 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\UserOAuth;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 use Laravel\Socialite\Contracts\Factory as SocialiteContract;
 
 class LoginController extends Controller
 {
     use AuthenticatesUsers;
 
-    private $redirectTo;
-
     /**
      * Create a new authentication controller instance.
      */
     public function __construct()
     {
-        if (!empty($locale = app('translator')->getLocale()) && $locale != app('config')->get('app.locale')) {
-            $this->redirectTo = '/' . $locale . $this->redirectTo;
-        }
-
         $this->middleware('guest', ['except' => 'logout']);
     }
 
@@ -36,7 +32,7 @@ class LoginController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function showLoginForm()
+    public function showLoginForm(): View
     {
         return view('auth/login');
     }
@@ -50,7 +46,7 @@ class LoginController extends Controller
      * @throws \Illuminate\Validation\ValidationException
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    public function loginViaWeb(Request $request)
+    public function loginViaWeb(Request $request): RedirectResponse
     {
         $validator = app('validator')->make($request->all(), [
             'email' => 'required|email',
@@ -90,7 +86,7 @@ class LoginController extends Controller
         }
 
         if ($request->expectsJson()) {
-            throw new LoginNotValidException();
+            throw new LoginNotValidException('LoginViaWeb should not expect Json Response!');
         }
 
         return redirect()->back()
@@ -104,10 +100,11 @@ class LoginController extends Controller
      * @param \Laravel\Socialite\Contracts\Factory $socialite
      * @param string                               $provider
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return RedirectResponse
      */
-    public function handleOAuthRedirect(SocialiteContract $socialite, $provider)
+    public function handleOAuthRedirect(SocialiteContract $socialite, $provider): RedirectResponse
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $socialite->driver($provider)->redirect();
     }
 
@@ -119,6 +116,7 @@ class LoginController extends Controller
      * @param string                               $provider
      *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function handleOAuthReturn(Request $request, SocialiteContract $socialite, $provider)
     {
@@ -157,7 +155,7 @@ class LoginController extends Controller
      * @return bool
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    protected function loginViaOAuth(IpsUser $oauthUserData, $provider)
+    protected function loginViaOAuth(IpsUser $oauthUserData, $provider): bool
     {
         /** @var UserOAuth $owningOAuthAccount */
         if ($owningOAuthAccount = UserOAuth::whereRemoteProvider($provider)->whereRemoteId($oauthUserData->id)->first()) {
@@ -186,13 +184,13 @@ class LoginController extends Controller
             $ownerAccount = User::create([
                 'name' => $oauthUserData->name,
                 'email' => $oauthUserData->email,
-                'password' => app('hash')->make(uniqid("", true))
+                'password' => app('hash')->make(uniqid('', true))
             ]);
             event(new Registered($ownerAccount, $provider));
         }
 
         # If user account is soft-deleted, restore it.
-        $ownerAccount->trashed() && $ownerAccount->restore();
+        $ownerAccount->trashed() && $ownerAccount::restore();
 
         # Update missing user name.
         if (!$ownerAccount->name) {
@@ -277,7 +275,7 @@ class LoginController extends Controller
         $request->session()->regenerate();
 
         if ($request->expectsJson()) {
-            return response()->json([]);
+            return response()->json();
         }
 
         return redirect('/');

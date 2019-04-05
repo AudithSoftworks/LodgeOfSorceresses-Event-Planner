@@ -18,42 +18,58 @@ class DpsParsePolicy
 
     public function __construct(User $user)
     {
-        $this->oauthAccount = $user->with([
-            'linkedAccounts' => function (Relation $query) {
+        $userWithLinkedAccounts = $user->with([
+            'linkedAccounts' => static function (Relation $query) {
                 $query->where('remote_provider', '=', 'ips');
             }
-        ])->first()->linkedAccounts()->first();
+        ])->first();
+        if ($userWithLinkedAccounts) {
+            $this->oauthAccount = $userWithLinkedAccounts->linkedAccounts()->first();
+        }
     }
 
     /**
      * @return bool
      */
-    public function view()
+    public function admin(): bool
     {
-        return $this->oauthAccount->remotePrimaryAccount !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN;
+        return $this->oauthAccount
+            && (
+                $this->oauthAccount->remote_primary_group === IpsApi::MEMBER_GROUPS_IPSISSIMUS
+                || $this->oauthAccount->remote_primary_group === IpsApi::MEMBER_GROUPS_MAGISTER_TEMPLI
+                || in_array(IpsApi::MEMBER_GROUPS_MAGISTER_TEMPLI, explode(',', $this->oauthAccount->remote_secondary_groups), false)
+            );
     }
 
     /**
      * @return bool
      */
-    public function create()
+    public function view(): bool
     {
-        return $this->oauthAccount->remotePrimaryAccount !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN;
+        return $this->oauthAccount && $this->oauthAccount->remote_primary_group !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN;
     }
 
     /**
      * @return bool
      */
-    public function update()
+    public function create(): bool
     {
-        return $this->oauthAccount->remotePrimaryAccount !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN;
+        return $this->oauthAccount && $this->oauthAccount->remote_primary_group !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN;
     }
 
     /**
      * @return bool
      */
-    public function delete()
+    public function update(): bool
     {
-        return $this->oauthAccount->remotePrimaryAccount !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN;
+        return $this->oauthAccount && $this->oauthAccount->remote_primary_group !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN;
+    }
+
+    /**
+     * @return bool
+     */
+    public function delete(): bool
+    {
+        return $this->oauthAccount && $this->oauthAccount->remote_primary_group !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN;
     }
 }

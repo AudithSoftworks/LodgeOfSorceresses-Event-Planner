@@ -2,55 +2,59 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 
 /**
- * @property int $id
- * @property int $user_id
- * @property int $character_id
- * @property string $sets
- * @property int $dps_amount
- * @property string $parse_file_hash
- * @property string|null $superstar_file_hash
- * @property string|null $discord_notification_message_ids
- * @property int|null $approved_by
- * @property int $approved_for_midgame
- * @property int $approved_for_endgame_t0
- * @property int $approved_for_endgame_t1
- * @property int $approved_for_endgame_t2
+ * @property int                             $id
+ * @property int                             $user_id
+ * @property int                             $character_id
+ * @property string                          $sets
+ * @property int                             $dps_amount
+ * @property string                          $parse_file_hash
+ * @property string|null                     $superstar_file_hash
+ * @property string|null                     $discord_notification_message_ids
+ * @property int|null                        $approved_by
+ * @property int                             $approved_for_midgame
+ * @property int                             $approved_for_endgame_t0
+ * @property int                             $approved_for_endgame_t1
+ * @property int                             $approved_for_endgame_t2
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\User $approvedBy
- * @property-read \App\Models\Character $character
- * @property-read \App\Models\User $owner
- * @property-read \App\Models\File $parseScreenshot
- * @property-read \App\Models\File $superstarScreenshot
+ * @property-read \App\Models\User           $approvedBy
+ * @property-read \App\Models\Character      $character
+ * @property-read \App\Models\User           $owner
+ * @property-read \App\Models\File           $parseScreenshot
+ * @property-read \App\Models\File           $superstarScreenshot
  * @method static bool|null forceDelete()
- * @method static \Illuminate\Database\Eloquent\Builder|DpsParse newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|DpsParse newQuery()
- * @method static \Illuminate\Database\Query\Builder|DpsParse onlyTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder|DpsParse query()
+ * @method static EloquentBuilder|DpsParse newModelQuery()
+ * @method static EloquentBuilder|DpsParse newQuery()
+ * @method static QueryBuilder|DpsParse onlyTrashed()
+ * @method static EloquentBuilder|DpsParse query()
  * @method static bool|null restore()
- * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereApprovedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereApprovedForEndgameT0($value)
- * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereApprovedForEndgameT1($value)
- * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereApprovedForEndgameT2($value)
- * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereApprovedForMidgame($value)
- * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereCharacterId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereDiscordNotificationMessageIds($value)
- * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereDpsAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereParseFileHash($value)
- * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereSets($value)
- * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereSuperstarFileHash($value)
- * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|DpsParse whereUserId($value)
- * @method static \Illuminate\Database\Query\Builder|DpsParse withTrashed()
- * @method static \Illuminate\Database\Query\Builder|DpsParse withoutTrashed()
+ * @method static EloquentBuilder|DpsParse whereApprovedBy($value)
+ * @method static EloquentBuilder|DpsParse whereApprovedForEndgameT0($value)
+ * @method static EloquentBuilder|DpsParse whereApprovedForEndgameT1($value)
+ * @method static EloquentBuilder|DpsParse whereApprovedForEndgameT2($value)
+ * @method static EloquentBuilder|DpsParse whereApprovedForMidgame($value)
+ * @method static EloquentBuilder|DpsParse whereCharacterId($value)
+ * @method static EloquentBuilder|DpsParse whereCreatedAt($value)
+ * @method static EloquentBuilder|DpsParse whereDeletedAt($value)
+ * @method static EloquentBuilder|DpsParse whereDiscordNotificationMessageIds($value)
+ * @method static EloquentBuilder|DpsParse whereDpsAmount($value)
+ * @method static EloquentBuilder|DpsParse whereId($value)
+ * @method static EloquentBuilder|DpsParse whereParseFileHash($value)
+ * @method static EloquentBuilder|DpsParse whereSets($value)
+ * @method static EloquentBuilder|DpsParse whereSuperstarFileHash($value)
+ * @method static EloquentBuilder|DpsParse whereUpdatedAt($value)
+ * @method static EloquentBuilder|DpsParse whereUserId($value)
+ * @method static QueryBuilder|DpsParse withTrashed()
+ * @method static QueryBuilder|DpsParse withoutTrashed()
  */
 class DpsParse extends Model
 {
@@ -59,7 +63,7 @@ class DpsParse extends Model
     /**
      * {@inheritdoc}
      */
-    protected $table = "dps_parses";
+    protected $table = 'dps_parses';
 
     /**
      * {@inheritdoc}
@@ -74,7 +78,7 @@ class DpsParse extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function character()
+    public function character(): BelongsTo
     {
         return $this->belongsTo(Character::class);
     }
@@ -82,15 +86,15 @@ class DpsParse extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function owner()
+    public function owner(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function parseScreenshot()
+    public function parseScreenshot(): HasOne
     {
         return $this->hasOne(File::class);
     }
@@ -98,7 +102,7 @@ class DpsParse extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function superstarScreenshot()
+    public function superstarScreenshot(): HasOne
     {
         return $this->hasOne(File::class);
     }
@@ -106,7 +110,7 @@ class DpsParse extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function approvedBy()
+    public function approvedBy(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

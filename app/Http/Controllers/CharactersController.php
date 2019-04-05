@@ -15,10 +15,10 @@ class CharactersController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function index()
+    public function index(): JsonResponse
     {
         $this->authorize('view', Character::class);
         $characters = Character::query()

@@ -1,30 +1,27 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Events\DpsParses\DpsParseDeleted;
 use App\Events\DpsParses\DpsParseSubmitted;
+use App\Http\Controllers\Controller;
 use App\Models\DpsParse;
 use App\Models\File;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use UnexpectedValueException;
 
 class DpsParsesController extends Controller
 {
     /**
-     * @param int $char
-     *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function index(int $char): JsonResponse
+    public function index(): JsonResponse
     {
-        $this->authorize('view', DpsParse::class);
+        $this->authorize('admin', DpsParse::class);
         $dpsParses = DpsParse::query()
-            ->whereUserId(app('auth.driver')->id())
-            ->whereCharacterId($char)
+            ->with(['owner', 'character'])
             ->orderBy('id', 'desc')
             ->get();
         if ($dpsParses->count()) {
@@ -37,9 +34,6 @@ class DpsParsesController extends Controller
                 $dpsParse->sets = array_values($characterEquipmentSets);
                 $parseFile = File::whereHash($dpsParse->parse_file_hash)->first();
                 $superstarFile = File::whereHash($dpsParse->superstar_file_hash)->first();
-                if (!$parseFile || !$superstarFile) {
-                    throw new UnexpectedValueException('Couldn\'t find screenshot file records!');
-                }
                 $dpsParse->parse_file_hash = app('filestream')->url($parseFile);
                 $dpsParse->superstar_file_hash = app('filestream')->url($superstarFile);
             }
@@ -57,7 +51,7 @@ class DpsParsesController extends Controller
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function store(Request $request, int $char): JsonResponse
+    public function update(Request $request, int $char): JsonResponse
     {
         $this->authorize('create', DpsParse::class);
         $validatorErrorMessages = [
@@ -119,7 +113,7 @@ class DpsParsesController extends Controller
         $this->authorize('delete', DpsParse::class);
         $dpsParse = DpsParse::whereUserId(app('auth.driver')->id())->whereCharacterId($char)->whereId($parse);
         $dpsParse->delete();
-        app('events')->dispatch(new DpsParseDeleted($dpsParse::withTrashed()->first()));
+        app('events')->dispatch(new DpsParseDeleted($dpsParse->withTrashed()->first()));
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);
     }
