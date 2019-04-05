@@ -10,6 +10,15 @@ services:
     networks:
       default:
         ipv4_address: 172.72.0.101
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: "basis"
+      POSTGRES_PASSWORD: ""
+    networks:
+      default:
+        ipv4_address: 172.72.0.102
   redis:
     container_name: redis
     image: redis
@@ -24,6 +33,7 @@ services:
     working_dir: /var/www
     links:
       - mariadb
+      - postgres
       - redis
     environment:
       XDEBUG_CONFIG: "remote_host=172.72.0.1"
@@ -55,6 +65,12 @@ services:
     networks:
       default:
         ipv4_address: 172.72.0.106
+  selenium-firefox:
+    container_name: selenium-firefox
+    image: selenium/standalone-firefox-debug
+    networks:
+      default:
+        ipv4_address: 172.72.0.107
   dev:
     container_name: dev
     image: audithsoftworks/docker:php
@@ -64,6 +80,7 @@ services:
     working_dir: /var/www
     links:
       - mariadb
+      - postgres
       - redis
       - nginx
     environment:
@@ -78,7 +95,7 @@ services:
     tty: true
     networks:
       default:
-        ipv4_address: 172.72.0.120
+        ipv4_address: 172.72.0.108
 networks:
   default:
     ipam:

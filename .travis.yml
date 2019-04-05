@@ -3,9 +3,8 @@ branches:
     - master
     - docker-build
 
-language: minimal
-#dist: xenial
-#sudo: required
+language: generic
+dist: xenial
 services:
   - docker
 
@@ -26,18 +25,15 @@ cache:
     - vendor
     - node_modules/.google-fonts
 
-before_install:
+#before_install:
 #  - curl -L https://github.com/docker/compose/releases/download/1.23.1/docker-compose-`uname -s`-`uname -m` > docker-compose; chmod +x docker-compose; true
 #  - sudo mv docker-compose /usr/local/bin/
-  - pwd && docker -v && docker info && docker-compose -v
 
 install:
   - chmod -R 0777 ./storage/logs
-
 #  - export PR=https://api.github.com/repos/$TRAVIS_REPO_SLUG/pulls/$TRAVIS_PULL_REQUEST
 #  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo `curl -s $PR | jq -r .head.ref`; fi)
 #  - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH"
-
   - export MYUID=$(id -u) MYGID=$(id -g);
   - docker-compose pull && docker-compose up -d && docker-compose logs dev php-fpm && docker-compose ps;
   - echo $(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx) events.lodgeofsorceresses.dev | sudo tee -a /etc/hosts > /dev/null 2>&1;
