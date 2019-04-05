@@ -2,7 +2,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSpinner, faTachometerAlt, faTrashAlt, faUserEdit, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { Fragment, PureComponent } from 'react';
-import { Link, Redirect } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Notification from '../Components/Notification';
 import Axios from '../vendor/Axios';
 import Loading from "./Loading";
@@ -133,11 +133,11 @@ class Characters extends PureComponent {
                 <table key="character-list-table" className='pl-2 pr-2 col-md-24'>
                     <thead>
                         <tr>
-                            <th width="20%">Name</th>
-                            <th width="10%">Class</th>
-                            <th width="20%">Role</th>
-                            <th width="40%">Sets</th>
-                            <th width="10%"/>
+                            <th style={{width: '20%'}}>Name</th>
+                            <th style={{width: '10%'}}>Class</th>
+                            <th style={{width: '20%'}}>Role</th>
+                            <th style={{width: '40%'}}>Sets</th>
+                            <th style={{width: '10%'}}/>
                         </tr>
                     </thead>
                     <tbody>{charactersRendered}</tbody>
@@ -166,12 +166,19 @@ class Characters extends PureComponent {
             ];
         }
 
-        const linkToCharacterCreateForm = <Link to="/chars/create" className='ne-corner' title='Submit a Character'><FontAwesomeIcon icon="user-plus"/></Link>;
+        const actionList = {
+            return: <Link to={'/chars'} title='Back to My Characters'><FontAwesomeIcon icon="th-list"/></Link>,
+            create: <Link to="/chars/create" className='ne-corner' title='Submit a Character'><FontAwesomeIcon icon="user-plus"/></Link>
+        };
+        let actionListRendered = [];
+        for (const [actionType, link] of Object.entries(actionList)) {
+            actionListRendered.push(<li key={actionType}>{link}</li>);
+        }
 
         return [
             <section className="col-md-24 p-0 mb-4" key='characterList'>
                 <h2 className="form-title col-md-24">My Characters</h2>
-                {linkToCharacterCreateForm}
+                <ul className='ne-corner'>{actionListRendered}</ul>
                 {charactersRendered}
             </section>
         ];
@@ -185,7 +192,6 @@ class Characters extends PureComponent {
         }
 
         if (charactersLoaded && this.props.match !== undefined && this.props.match.params.id === undefined) {
-console.log(messages);
             return [
                 this.renderList(characters),
                 <Notification key='notifications' messages={messages}/>,

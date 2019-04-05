@@ -67,7 +67,7 @@ class CharacterForm extends PureComponent {
 
         if (this.props.match.params.id) {
             const charId = this.props.match.params.id;
-            Axios.get('/api/chars/' + charId + '/edit', {
+            Axios.get('/api/chars/' + charId, {
                 cancelToken: this.cancelTokenSource.token
             }).then((response) => {
                 if (response.data) {

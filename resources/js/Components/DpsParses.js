@@ -1,5 +1,5 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSpinner, faTachometerAlt, faTrashAlt, faUserEdit, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faTachometerAlt, faThList, faTrashAlt, faUserEdit, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { Fragment, PureComponent } from 'react';
 import { Link } from "react-router-dom";
@@ -7,7 +7,7 @@ import Notification from '../Components/Notification';
 import Axios from '../vendor/Axios';
 import Loading from "./Loading";
 
-library.add(faSpinner, faTachometerAlt, faTrashAlt, faUserEdit, faUserPlus);
+library.add(faSpinner, faTachometerAlt, faThList, faTrashAlt, faUserEdit, faUserPlus);
 
 class DpsParses extends PureComponent {
     constructor(props) {
@@ -49,8 +49,15 @@ class DpsParses extends PureComponent {
                     ]
                 })
             }
-            if (error.response && error.response.status === 403) {
-                this.props.history.push('/', this.state);
+            if (error.response) {
+                switch (error.response.status) {
+                    case 403:
+                        this.props.history.push('/', this.state);
+                        break;
+                    case 404:
+                        this.props.history.push('/chars', this.state);
+                        break;
+                }
             }
         });
 
@@ -82,7 +89,7 @@ class DpsParses extends PureComponent {
                 })
             }
             if (error.response && error.response.status === 403) {
-                this.props.history.push('/chars' , this.state);
+                this.props.history.push('/chars', this.state);
             }
         });
     };
@@ -169,10 +176,10 @@ class DpsParses extends PureComponent {
                 <table key="character-list-table" className='pl-2 pr-2 col-md-24'>
                     <thead>
                         <tr>
-                            <th width="60%">Sets</th>
-                            <th width="10%">DPS Number</th>
-                            <th width="15%">Parse Screenshot</th>
-                            <th width="15%">Superstar Screenshot</th>
+                            <th style={{width: '60%'}}>Sets</th>
+                            <th style={{width: '10%'}}>DPS Number</th>
+                            <th style={{width: '15%'}}>Parse Screenshot</th>
+                            <th style={{width: '15%'}}>Superstar Screenshot</th>
                         </tr>
                     </thead>
                     <tbody>{parsesRendered}</tbody>
@@ -202,12 +209,19 @@ class DpsParses extends PureComponent {
             ];
         }
 
-        const linkToDpsParseForm = <Link to={'/chars/' + this.props.match.params.id + '/parses/create'} className='ne-corner' title='Submit a Parse'><FontAwesomeIcon icon="user-plus"/></Link>;
+        const actionList = {
+            return: <Link to={'/chars'} title='Back to My Characters'><FontAwesomeIcon icon="th-list"/></Link>,
+            create: <Link to={'/chars/' + this.props.match.params.id + '/parses/create'} title='Submit a Parse'><FontAwesomeIcon icon="user-plus"/></Link>
+        };
+        let actionListRendered = [];
+        for (const [actionType, link] of Object.entries(actionList)) {
+            actionListRendered.push(<li key={actionType}>{link}</li>);
+        }
 
         return [
             <section className="col-md-24 p-0 mb-4" key='characterList'>
                 <h2 className="form-title col-md-24">Parses for <i>{character.name}</i></h2>
-                {linkToDpsParseForm}
+                <ul className='ne-corner'>{actionListRendered}</ul>
                 {parsesRendered}
             </section>
         ];

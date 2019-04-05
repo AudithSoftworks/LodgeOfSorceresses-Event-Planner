@@ -1,13 +1,16 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 
 /** @var \Illuminate\Routing\Router $router */
-$router->middleware(['auth:api', 'throttle'])->group(function (Router $router) {
-    $router->resource('chars', 'CharactersController')->except(['create']);
-    $router->resource('chars/{char}/parses', 'DpsParsesController')->except(['create', 'show']);
-    $router->resource('events', 'EventsController')->only(['index']);
-    $router->resource('sets', 'SetsController')->only(['index']);
-    $router->resource('files', 'FilesController')->only(['store', 'destroy']);
+$router->middleware(['auth:api', 'throttle'])->group(static function (Router $router) {
+    $router->apiResource('chars', 'CharactersController');
+    $router->apiResource('chars/{char}/parses', 'DpsParsesController')->except(['show']);
+    $router->apiResource('events', 'EventsController')->only(['index']);
+    $router->apiResource('sets', 'SetsController')->only(['index']);
+    $router->apiResource('files', 'FilesController')->only(['store', 'destroy']);
+});
+
+$router->middleware(['auth:api', 'throttle'])->prefix('admin')->group(static function (Router $router) {
+    $router->apiResource('parses', 'Admin\DpsParsesController')->except(['store', 'destroy']);
 });

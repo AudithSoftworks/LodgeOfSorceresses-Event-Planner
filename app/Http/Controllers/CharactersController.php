@@ -31,8 +31,8 @@ class CharactersController extends Controller
             foreach ($characters as $character) {
                 $character->class = ClassTypes::getClassName($character->class);
                 $character->role = RoleTypes::getRoleName($character->role);
-                $characterEquipmentSets = array_filter($equipmentSets, function ($key) use ($character) {
-                    return in_array($key, explode(',', $character->sets));
+                $characterEquipmentSets = array_filter($equipmentSets, static function ($key) use ($character) {
+                    return in_array($key, explode(',', $character->sets), false);
                 }, ARRAY_FILTER_USE_KEY);
                 $character->sets = array_values($characterEquipmentSets);
             }
@@ -91,45 +91,18 @@ class CharactersController extends Controller
      * @return JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function show($char): JsonResponse
+    public function show(int $char): JsonResponse
     {
         $this->authorize('view', Character::class);
-        $character = Character::query()
-            ->where('user_id', app('auth.driver')->id())
-            ->whereId($char)
-            ->first();
-        if ($character) {
-            app('cache.store')->has('equipmentSets'); // Trigger Recache listener.
-            $equipmentSets = app('cache.store')->get('equipmentSets');
-
-            $character->class = ClassTypes::getClassName($character->class);
-            $character->role = RoleTypes::getRoleName($character->role);
-            $characterEquipmentSets = array_filter($equipmentSets, function ($key) use ($character) {
-                return in_array($key, explode(',', $character->sets));
-            }, ARRAY_FILTER_USE_KEY);
-            $character->sets = array_values($characterEquipmentSets);
-        }
-
-        return response()->json($character);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $char
-     *
-     * @return JsonResponse
-     * @throws \Illuminate\Auth\Access\AuthorizationException
-     */
-    public function edit($char): JsonResponse
-    {
-        $this->authorize('view', Character::class);
-        $character = Character::query()->where(function (Builder $query) use ($char) {
+        $character = Character::query()->where(static function (Builder $query) use ($char) {
             $query
                 ->where('user_id', app('auth.driver')->id())
                 ->where('id', $char);
         })->first(['id', 'name', 'class', 'role', 'sets']);
-        $character->sets = array_map(function ($item) {
+        if (!$character) {
+            return response()->json(['message' => 'Character not found! Redirecting to My Characters page...'])->setStatusCode(404);
+        }
+        $character->sets = array_map(static function ($item) {
             return (int)$item;
         }, explode(',', $character->sets));
 
@@ -147,7 +120,7 @@ class CharactersController extends Controller
      * @throws \Illuminate\Validation\ValidationException
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function update(Request $request, $char): JsonResponse
+    public function update(Request $request, int $char): JsonResponse
     {
         $this->authorize('update', Character::class);
         $validator = app('validator')->make($request->all(), [
@@ -160,11 +133,14 @@ class CharactersController extends Controller
             throw new ValidationException($validator);
         }
 
-        $character = Character::query()->where(function (Builder $query) use ($char) {
+        $character = Character::query()->where(static function (Builder $query) use ($char) {
             $query
                 ->where('user_id', app('auth.driver')->id())
                 ->where('id', $char);
         })->first(['id', 'name', 'class', 'role', 'sets']);
+        if (!$character) {
+            return response()->json(['message' => 'Character not found!'])->setStatusCode(404);
+        }
         $character->user_id = app('auth.driver')->id();
         $character->name = $request->get('name');
         $character->role = $request->get('role');
@@ -183,7 +159,7 @@ class CharactersController extends Controller
      * @return JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function destroy($char): JsonResponse
+    public function destroy(int $char): JsonResponse
     {
         $this->authorize('delete', Character::class);
         Character::destroy($char);
