@@ -3,13 +3,11 @@ branches:
     - master
     - docker-build
 
-dist: trusty
-sudo: required
+language: minimal
+#dist: xenial
+#sudo: required
 services:
   - docker
-
-php: 7.2
-node_js: 8
 
 matrix:
   fast_finish: true
@@ -29,8 +27,8 @@ cache:
     - node_modules/.google-fonts
 
 before_install:
-  - curl -L https://github.com/docker/compose/releases/download/1.23.1/docker-compose-`uname -s`-`uname -m` > docker-compose; chmod +x docker-compose; true
-  - sudo mv docker-compose /usr/local/bin/
+#  - curl -L https://github.com/docker/compose/releases/download/1.23.1/docker-compose-`uname -s`-`uname -m` > docker-compose; chmod +x docker-compose; true
+#  - sudo mv docker-compose /usr/local/bin/
   - pwd && docker -v && docker info && docker-compose -v
 
 install:
