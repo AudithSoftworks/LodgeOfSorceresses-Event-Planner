@@ -36,7 +36,7 @@ install:
 #  - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH"
   - export MYUID=$(id -u) MYGID=$(id -g);
   - docker-compose pull && docker-compose up -d && docker-compose logs dev php-fpm && docker-compose ps;
-  - echo $(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx) events.lodgeofsorceresses.dev | sudo tee -a /etc/hosts > /dev/null 2>&1;
+  - echo $(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx) planner.lodgeofsorceresses.dev | sudo tee -a /etc/hosts > /dev/null 2>&1;
 
 before_script:
   - chmod +x ./storage/build/scripts/ci/build.sh;

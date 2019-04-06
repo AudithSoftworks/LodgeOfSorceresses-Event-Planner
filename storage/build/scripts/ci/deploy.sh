@@ -20,6 +20,6 @@ sed -e "s/APP_ENV=.*/APP_ENV=development/g" \
     -e "s/DISCORD_BOT_TOKEN=.*/DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}/g" .env.example \
     | tee .env;
 
-rm -rf ./.git* ./node_modules/ ./tests/ ./deploy_rsa.enc ./.scrutinizer.yml ./.travis.yml ./_ide_helper.php old;
+rm -rf ./.git* ./node_modules/ ./storage/build/tools ./tests/ ./deploy_rsa.enc ./.scrutinizer.yml ./.travis.yml ./_ide_helper.php old;
 
-rsync -r --delete-after -e "ssh -o StrictHostKeyChecking=no" ${TRAVIS_BUILD_DIR}/ lodgeofsorceresses@lodgeofsorceresses.com:/opt/lodgeofsorceresses/subdomains/events/${TRAVIS_JOB_ID}/
+rsync -r --delete-after -e "ssh -o StrictHostKeyChecking=no" ${TRAVIS_BUILD_DIR}/ lodgeofsorceresses@lodgeofsorceresses.com:/opt/lodgeofsorceresses/subdomains/planner/${TRAVIS_JOB_ID}/
