@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit backupGlobals="false"
          backupStaticAttributes="false"
-         bootstrap="bootstrap/autoload.php"
+         bootstrap="vendor/autoload.php"
          colors="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
@@ -29,14 +29,16 @@
         <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
         <log type="json" target="./storage/coverage/unit/logfile.json"/>
         <log type="tap" target="./storage/coverage/unit/logfile.tap"/>
-        <log type="junit" target="./storage/coverage/unit/logfile.xml" logIncompleteSkipped="false"/>
+        <log type="junit" target="./storage/coverage/unit/logfile.xml"/>
         <log type="testdox-html" target="./storage/coverage/unit/testdox.html"/>
         <log type="testdox-text" target="./storage/coverage/unit/testdox.txt"/>
     </logging>
     <php>
         <server name="APP_ENV" value="testing"/>
+        <server name="BCRYPT_ROUNDS" value="4"/>
         <server name="CACHE_DRIVER" value="array"/>
-        <server name="SESSION_DRIVER" value="array"/>
+        <server name="MAIL_DRIVER" value="array"/>
         <server name="QUEUE_DRIVER" value="sync"/>
+        <server name="SESSION_DRIVER" value="array"/>
     </php>
 </phpunit>

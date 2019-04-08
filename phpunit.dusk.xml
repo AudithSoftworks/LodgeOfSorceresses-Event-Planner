@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit backupGlobals="false"
          backupStaticAttributes="false"
-         bootstrap="bootstrap/autoload.php"
+         beStrictAboutTestsThatDoNotTestAnything="false"
+         bootstrap="vendor/autoload.php"
          colors="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
+         failOnRisky="true"
+         failOnWarning="true"
          processIsolation="false"
-         stopOnFailure="false">
+         stopOnError="false"
+         stopOnFailure="false"
+         verbose="true">
     <testsuites>
         <testsuite name="Browser Test Suite">
             <directory suffix="Test.php">./tests/Browser</directory>
@@ -25,14 +30,8 @@
         <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
         <log type="json" target="./storage/coverage/dusk/logfile.json"/>
         <log type="tap" target="./storage/coverage/dusk/logfile.tap"/>
-        <log type="junit" target="./storage/coverage/dusk/logfile.xml" logIncompleteSkipped="false"/>
+        <log type="junit" target="./storage/coverage/dusk/logfile.xml"/>
         <log type="testdox-html" target="./storage/coverage/dusk/testdox.html"/>
         <log type="testdox-text" target="./storage/coverage/dusk/testdox.txt"/>
     </logging>
-    <php>
-        <env name="APP_ENV" value="testing"/>
-        <env name="CACHE_DRIVER" value="array"/>
-        <env name="SESSION_DRIVER" value="array"/>
-        <env name="QUEUE_DRIVER" value="sync"/>
-    </php>
 </phpunit>
