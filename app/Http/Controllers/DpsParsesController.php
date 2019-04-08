@@ -117,9 +117,9 @@ class DpsParsesController extends Controller
     public function destroy(int $char, int $parse): JsonResponse
     {
         $this->authorize('delete', DpsParse::class);
-        $dpsParse = DpsParse::whereUserId(app('auth.driver')->id())->whereCharacterId($char)->whereId($parse);
+        $dpsParse = DpsParse::whereUserId(app('auth.driver')->id())->whereCharacterId($char)->whereId($parse)->firstOrFail();
         $dpsParse->delete();
-        app('events')->dispatch(new DpsParseDeleted($dpsParse::withTrashed()->first()));
+        app('events')->dispatch(new DpsParseDeleted($dpsParse));
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);
     }

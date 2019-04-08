@@ -38,14 +38,12 @@ class UserOAuth extends Model
 {
     protected $table = 'users_oauth';
 
-    protected $hidden = [];
-
     protected $fillable = ['*'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function owner()
+    public function owner(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }

@@ -1,10 +1,12 @@
 <?php namespace App\Http\Controllers\Auth;
 
 use App\Events\Users\LoggedIn;
+use App\Events\Users\LoggedInViaIpsOauth;
 use App\Events\Users\LoggedOut;
 use App\Events\Users\Registered;
 use App\Exceptions\Common\ValidationException;
 use App\Exceptions\Users\LoginNotValidException;
+use App\Exceptions\Users\LoginViaOauthFailedException;
 use App\Extensions\Socialite\IpsUser;
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -14,6 +16,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Laravel\Socialite\Contracts\Factory as SocialiteContract;
+use Laravel\Socialite\Two\User as OauthTwoUser;
 
 class LoginController extends Controller
 {
@@ -160,9 +163,10 @@ class LoginController extends Controller
         /** @var UserOAuth $owningOAuthAccount */
         if ($owningOAuthAccount = UserOAuth::whereRemoteProvider($provider)->whereRemoteId($oauthUserData->id)->first()) {
             $ownerAccount = $owningOAuthAccount->owner;
-            app('auth.driver')->login($ownerAccount, true);
+            app('auth.driver')->login($ownerAccount);
 
             event(new LoggedIn($ownerAccount, $provider));
+            $provider === 'ips' && event(new LoggedInViaIpsOauth($owningOAuthAccount));
 
             return true;
         }
@@ -208,50 +212,30 @@ class LoginController extends Controller
     }
 
     /**
-     * @param IpsUser $oauthUserData
-     * @param string  $provider
-     * @param User    $ownerAccount
+     * @param \Laravel\Socialite\Two\User|IpsUser $oauthUserData
+     * @param string                              $provider
+     * @param User                                $ownerAccount
      *
      * @return \App\Models\User|bool
      */
-    protected function linkOAuthAccount(IpsUser $oauthUserData, $provider, $ownerAccount)
+    protected function linkOAuthAccount(OauthTwoUser $oauthUserData, $provider, $ownerAccount)
     {
-        /** @var UserOAuth[] $linkedAccounts */
-        $linkedAccounts = $ownerAccount->linkedAccounts()->ofProvider($provider)->get();
-
-        $remoteUserDataFetchedThroughApi = app('ips.api')->getUser($oauthUserData->getId());
-        $remoteSecondaryGroups = array_reduce($remoteUserDataFetchedThroughApi['secondaryGroups'], function ($acc, $item) {
-            $acc === null && $acc = [];
-            $acc[] = $item['id'];
-
-            return $acc;
-        });
-
-        foreach ($linkedAccounts as $linkedAccount) {
-            if ($linkedAccount->remote_id === $oauthUserData->id || $linkedAccount->email === $oauthUserData->email) {
-                $linkedAccount->remote_id = $oauthUserData->id;
-                $linkedAccount->remote_primary_group = $oauthUserData->remotePrimaryGroup;
-                $linkedAccount->remote_secondary_groups = implode(',', $remoteSecondaryGroups);
-                $linkedAccount->nickname = $oauthUserData->nickname;
-                $linkedAccount->name = $oauthUserData->name;
-                $linkedAccount->email = $oauthUserData->email;
-                $linkedAccount->avatar = $oauthUserData->avatar;
-
-                return $linkedAccount->save() ? $ownerAccount : false;
-            }
-        }
-
         $linkedAccount = new UserOAuth();
         $linkedAccount->remote_provider = $provider;
         $linkedAccount->remote_id = $oauthUserData->id;
-        $linkedAccount->remote_primary_group = $oauthUserData->remotePrimaryGroup;
-        $linkedAccount->remote_secondary_groups = implode(',', $remoteSecondaryGroups);
-        $linkedAccount->nickname = $oauthUserData->nickname;
-        $linkedAccount->name = $oauthUserData->name;
         $linkedAccount->email = $oauthUserData->email;
         $linkedAccount->avatar = $oauthUserData->avatar;
+        property_exists($oauthUserData, 'remotePrimaryGroup') && $linkedAccount->remote_primary_group = $oauthUserData->remotePrimaryGroup;
+        property_exists($oauthUserData, 'nickname') && $linkedAccount->nickname = $oauthUserData->nickname;
+        property_exists($oauthUserData, 'name') && $linkedAccount->name = $oauthUserData->name;
 
-        return $ownerAccount->linkedAccounts()->save($linkedAccount) ? $ownerAccount : false;
+        if (!$ownerAccount->linkedAccounts()->save($linkedAccount)) {
+            throw new LoginViaOauthFailedException();
+        }
+
+        $provider === 'ips' && event(new LoggedInViaIpsOauth($linkedAccount->refresh(), true));
+
+        return $ownerAccount;
     }
 
     /**

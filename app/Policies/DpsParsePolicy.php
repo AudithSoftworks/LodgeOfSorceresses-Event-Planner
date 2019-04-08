@@ -25,6 +25,7 @@ class DpsParsePolicy
         ])->first();
         if ($userWithLinkedAccounts) {
             $this->oauthAccount = $userWithLinkedAccounts->linkedAccounts()->first();
+            $this->oauthAccount->remote_secondary_groups = explode(',', $this->oauthAccount->remote_secondary_groups);
         }
     }
 

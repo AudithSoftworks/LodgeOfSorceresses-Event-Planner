@@ -64,7 +64,7 @@ class User extends Authenticatable
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function linkedAccounts()
+    public function linkedAccounts(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(UserOAuth::class, 'user_id', 'id');
     }
@@ -72,7 +72,7 @@ class User extends Authenticatable
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function files()
+    public function files(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(File::class, 'files_users', 'user_id', 'file_hash')->withTimestamps()->withPivot(['id', 'qquuid', 'original_client_name', 'tag']);
     }

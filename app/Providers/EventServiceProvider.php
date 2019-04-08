@@ -24,6 +24,9 @@ class EventServiceProvider extends ServiceProvider
             Listeners\Files\PersistUploadedFile::class
         ],
         Events\Users\LoggedIn::class => [],
+        Events\Users\LoggedInViaIpsOauth::class => [
+            Listeners\User\UpdateOauthUserDataViaIpsApi::class
+        ],
         Events\Users\LoggedOut::class => [],
         Events\Users\Registered::class => [],
         Events\Users\RequestedActivationLink::class => [],
