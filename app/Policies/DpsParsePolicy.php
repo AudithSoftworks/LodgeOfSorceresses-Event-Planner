@@ -2,10 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\User;
 use App\Services\IpsApi;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Database\Eloquent\Relations\Relation;
 
 class DpsParsePolicy
 {
@@ -16,17 +14,13 @@ class DpsParsePolicy
      */
     private $oauthAccount;
 
-    public function __construct(User $user)
+    public function __construct()
     {
-        $userWithLinkedAccounts = $user->with([
-            'linkedAccounts' => static function (Relation $query) {
-                $query->where('remote_provider', '=', 'ips');
-            }
-        ])->first();
-        if ($userWithLinkedAccounts) {
-            $this->oauthAccount = $userWithLinkedAccounts->linkedAccounts()->first();
-            $this->oauthAccount->remote_secondary_groups = explode(',', $this->oauthAccount->remote_secondary_groups);
-        }
+        /** @var \App\Models\User $me */
+        $me = app('auth.driver')->user();
+        $me->load('linkedAccounts');
+        $this->oauthAccount = $me->linkedAccounts()->first();
+        $this->oauthAccount->remote_secondary_groups = explode(',', $this->oauthAccount->remote_secondary_groups);
     }
 
     /**
@@ -38,7 +32,7 @@ class DpsParsePolicy
             && (
                 $this->oauthAccount->remote_primary_group === IpsApi::MEMBER_GROUPS_IPSISSIMUS
                 || $this->oauthAccount->remote_primary_group === IpsApi::MEMBER_GROUPS_MAGISTER_TEMPLI
-                || in_array(IpsApi::MEMBER_GROUPS_MAGISTER_TEMPLI, explode(',', $this->oauthAccount->remote_secondary_groups), false)
+                || in_array(IpsApi::MEMBER_GROUPS_MAGISTER_TEMPLI, $this->oauthAccount->remote_secondary_groups, false)
             );
     }
 

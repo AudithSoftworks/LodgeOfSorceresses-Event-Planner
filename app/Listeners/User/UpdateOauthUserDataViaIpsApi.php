@@ -28,9 +28,8 @@ class UpdateOauthUserDataViaIpsApi
 
                 return $acc;
             });
-            if ($remoteSecondaryGroups) {
-                $oauthAccount->remote_secondary_groups = implode(',', $remoteSecondaryGroups);
-            }
+            $oauthAccount->remote_primary_group = $remoteUserDataFetchedThroughApi['primaryGroup']['id'];
+            $oauthAccount->remote_secondary_groups = $remoteSecondaryGroups ? implode(',', $remoteSecondaryGroups) : null;
             $oauthAccount->touch();
             $oauthAccount->save();
         }

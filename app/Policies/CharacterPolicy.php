@@ -2,10 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\User;
 use App\Services\IpsApi;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Database\Eloquent\Relations\Relation;
 
 class CharacterPolicy
 {
@@ -16,44 +14,44 @@ class CharacterPolicy
      */
     private $oauthAccount;
 
-    public function __construct(User $user)
+    public function __construct()
     {
-        $this->oauthAccount = $user->with([
-            'linkedAccounts' => function (Relation $query) {
-                $query->where('remote_provider', '=', 'ips');
-            }
-        ])->first()->linkedAccounts()->first();
+        /** @var \App\Models\User $me */
+        $me = app('auth.driver')->user();
+        $me->load('linkedAccounts');
+        $this->oauthAccount = $me->linkedAccounts()->first();
+        $this->oauthAccount->remote_secondary_groups = explode(',', $this->oauthAccount->remote_secondary_groups);
     }
 
     /**
      * @return bool
      */
-    public function view()
+    public function view(): bool
     {
-        return $this->oauthAccount->remotePrimaryAccount !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN;
+        return $this->oauthAccount && $this->oauthAccount->remote_primary_group !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN;
     }
 
     /**
      * @return bool
      */
-    public function create()
+    public function create(): bool
     {
-        return $this->oauthAccount->remotePrimaryAccount !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN;
+        return $this->oauthAccount && $this->oauthAccount->remote_primary_group !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN;
     }
 
     /**
      * @return bool
      */
-    public function update()
+    public function update(): bool
     {
-        return $this->oauthAccount->remotePrimaryAccount !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN;
+        return $this->oauthAccount && $this->oauthAccount->remote_primary_group !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN;
     }
 
     /**
      * @return bool
      */
-    public function delete()
+    public function delete(): bool
     {
-        return $this->oauthAccount->remotePrimaryAccount !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN;
+        return $this->oauthAccount && $this->oauthAccount->remote_primary_group !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN;
     }
 }

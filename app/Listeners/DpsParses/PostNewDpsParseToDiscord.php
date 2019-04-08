@@ -95,6 +95,9 @@ class PostNewDpsParseToDiscord
                                 'secure' => true,
                             ])
                         ],
+                        'footer' => [
+                            'text' => 'Submitted via Lodge of Sorceresses Planner at: https://planner.lodgeofsorceresses.com'
+                        ]
                     ],
                 ]),
             ]
