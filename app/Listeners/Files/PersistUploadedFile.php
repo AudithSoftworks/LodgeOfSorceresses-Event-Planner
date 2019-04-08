@@ -3,18 +3,19 @@
 use App\Events\Files\Uploaded;
 use App\Models\File;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Http\Response as IlluminateResponse;
+use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\File\File as SymfonyFile;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class PersistUploadedFile
 {
     /**
      * @param \App\Events\Files\Uploaded $event
      *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @return JsonResponse
      * @throws \Exception
      */
-    public function handle(Uploaded $event)
+    public function handle(Uploaded $event): JsonResponse
     {
         $uploadUuid = $event->uploadUuid;
         $request = $event->request;
@@ -71,7 +72,7 @@ class PersistUploadedFile
         $tagLimit = config('filesystems.allowed_tags_and_limits.' . $tag);
         if ($tagLimit > 0) {
             $allFilesWithSameTagBelongingToUser = $me->load([
-                'files' => function (BelongsToMany $query) use ($tag) {
+                'files' => static function (BelongsToMany $query) use ($tag) {
                     $query->wherePivot('tag', '=', $tag);
                 }
             ])->files;
@@ -101,7 +102,8 @@ class PersistUploadedFile
             $file->save();
         }
 
-        $me->files()->newPivotStatement()->whereTag($tag)->whereFileHash($hash)->delete();
+        $fileUserPivot = $me->files()->newPivotStatement();
+        $fileUserPivot->whereTag($tag)->whereFileHash($hash)->delete();
 
         $file->uploaders()->attach([
             $me->id => [
@@ -113,6 +115,6 @@ class PersistUploadedFile
 
         $filesystem->delete($destination); // Delete files from local, Cloudinary copy will suffice!
 
-        return response()->json(['success' => true, 'hash' => $file->hash])->setStatusCode(IlluminateResponse::HTTP_CREATED);
+        return response()->json(['success' => true, 'hash' => $file->hash])->setStatusCode(Response::HTTP_CREATED);
     }
 }

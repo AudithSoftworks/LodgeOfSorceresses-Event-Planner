@@ -11,9 +11,9 @@ class CreateEventsTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('events', function (Blueprint $table) {
+        Schema::create('events', static function (Blueprint $table) {
             $table->increments('id');
             $table->string('title')->nullable();
             $table->text('description')->nullable();
@@ -38,9 +38,9 @@ class CreateEventsTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::table('events', function (Blueprint $table) {
+        Schema::table('events', static function (Blueprint $table) {
             $table->dropForeign('events_calendar_id_foreign');
         });
         Schema::drop('events');

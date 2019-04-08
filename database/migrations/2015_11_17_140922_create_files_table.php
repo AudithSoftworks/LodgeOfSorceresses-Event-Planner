@@ -11,9 +11,9 @@ class CreateFilesTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('files', function (Blueprint $table) {
+        Schema::create('files', static function (Blueprint $table) {
             $table->engine = 'InnoDb';
             $table->string('hash', 64)->primary();
             $table->string('disk', 8)->default('local');
@@ -30,7 +30,7 @@ class CreateFilesTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('files');
     }

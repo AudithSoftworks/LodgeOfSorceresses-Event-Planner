@@ -5,10 +5,10 @@ use Laravel\Dusk\Browser;
 
 class AuthenticationChromeTest extends DuskChromeTestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         // Migrations should run only once, before application is created (the moment when $this->app == null).
-        if (is_null($this->app)) {
+        if ($this->app === null) {
             $this->afterApplicationCreated(function () {
                 $this->artisan('migrate:reset');
                 $this->artisan('migrate');
@@ -18,18 +18,18 @@ class AuthenticationChromeTest extends DuskChromeTestCase
         parent::setUp();
     }
 
-    public function testAuthenticateMiddleware()
+    public function testAuthenticateMiddleware(): void
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(static function (Browser $browser) {
             $browser->visit('/oauth/clients');
             $browser->waitForText('Login');
             $browser->assertPathIs('/en/login');
         });
     }
 
-    public function testHome()
+    public function testHome(): void
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(static function (Browser $browser) {
             $browser->visit('/');
             $browser->assertPathIs('/en');
         });

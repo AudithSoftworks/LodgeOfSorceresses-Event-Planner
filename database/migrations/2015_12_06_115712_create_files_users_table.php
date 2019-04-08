@@ -11,9 +11,9 @@ class CreateFilesUsersTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('files_users', function (Blueprint $table) {
+        Schema::create('files_users', static function (Blueprint $table) {
             $table->engine = 'InnoDb';
             $table->increments('id');
             $table->string('file_hash', 64);
@@ -33,9 +33,9 @@ class CreateFilesUsersTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::table('files_users', function (Blueprint $table) {
+        Schema::table('files_users', static function (Blueprint $table) {
             $table->dropForeign('files_users_file_hash_foreign');
             $table->dropForeign('files_users_user_id_foreign');
         });

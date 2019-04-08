@@ -3,6 +3,8 @@
 use App\Events\Files\Uploaded;
 use App\Exceptions\FileStream as FileStreamExceptions;
 use App\Models\File;
+use ErrorException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -68,9 +70,10 @@ class FileStream
      * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\JsonResponse
-     * @throws \ErrorException
+     * @throws ErrorException
+     * @throws \Exception
      */
-    public function handleUpload(Request $request)
+    public function handleUpload(Request $request): JsonResponse
     {
         $fineUploaderUuid = null;
         if ($request->has('qquuid')) {
@@ -81,7 +84,7 @@ class FileStream
         // Is it Post-processing?
         //------------------------------
 
-        if ($request->has('post-process') && $request->get('post-process') == 1) {
+        if ($request->has('post-process') && $request->get('post-process') === '1') {
             $this->combineChunks($request);
 
             return collect(event(new Uploaded($fineUploaderUuid, $request)))->last(); // Return the result of the second event listener.
@@ -101,14 +104,14 @@ class FileStream
         }
 
         # Cleanup chunks.
-        if (1 === mt_rand(1, 1 / $this->chunksCleanupProbability)) {
+        if (1 === random_int(1, 1 / $this->chunksCleanupProbability)) {
             $this->cleanupChunks();
         }
 
         # Check upload size against the size-limit, if any.
         if (!empty($this->sizeLimit)) {
             $uploadIsTooLarge = false;
-            $request->has('qqtotalfilesize') && intval($request->get('qqtotalfilesize')) > $this->sizeLimit && $uploadIsTooLarge = true;
+            $request->has('qqtotalfilesize') && (int)$request->get('qqtotalfilesize') > $this->sizeLimit && $uploadIsTooLarge = true;
             $this->filesizeFromHumanReadableToBytes(ini_get('post_max_size')) < $this->sizeLimit && $uploadIsTooLarge = true;
             $this->filesizeFromHumanReadableToBytes(ini_get('upload_max_filesize')) < $this->sizeLimit && $uploadIsTooLarge = true;
             if ($uploadIsTooLarge) {
@@ -129,7 +132,7 @@ class FileStream
         // Upload handling.
         //--------------------
 
-        if ($file->getSize() == 0) {
+        if ($file->getSize() === 0) {
             throw new FileStreamExceptions\UploadIsEmptyException;
         }
 
@@ -144,12 +147,13 @@ class FileStream
         $totalNumberOfChunks = $request->has('qqtotalparts') ? (int)$request->get('qqtotalparts') : 1;
 
         if ($totalNumberOfChunks > 1) {
-            $chunkIndex = intval($request->get('qqpartindex'));
+            $chunkIndex = (int)$request->get('qqpartindex');
             $targetFolder = $this->temporaryChunksFolder . DIRECTORY_SEPARATOR . $fineUploaderUuid;
             if (!$this->filesystem->exists($targetFolder)) {
                 try {
                     $this->filesystem->makeDirectory($targetFolder);
-                } /** @noinspection PhpRedundantCatchClauseInspection */ catch (\ErrorException $e) {
+                } /** @noinspection PhpRedundantCatchClauseInspection */ catch (ErrorException $e) {
+                    /** @noinspection NotOptimalIfConditionsInspection */
                     if (!$this->filesystem->exists($targetFolder)) {
                         /** @noinspection PhpUnhandledExceptionInspection */
                         throw $e;
@@ -163,14 +167,14 @@ class FileStream
             $file->move($this->getAbsolutePath($targetFolder), $chunkIndex);
 
             return response()->json(['success' => true, 'uuid' => $fineUploaderUuid]);
-        } else {
-            if (!$file->isValid()) {
-                throw new FileStreamExceptions\UploadAttemptFailedException;
-            }
-            $file->move($this->getAbsolutePath(''), $fineUploaderUuid);
-
-            return collect(event(new Uploaded($fineUploaderUuid, $request)))->last(); // Return the result of the second event listener.
         }
+
+        if (!$file->isValid()) {
+            throw new FileStreamExceptions\UploadAttemptFailedException;
+        }
+        $file->move($this->getAbsolutePath(''), $fineUploaderUuid);
+
+        return collect(event(new Uploaded($fineUploaderUuid, $request)))->last(); // Return the result of the second event listener.
     }
 
     /**
@@ -178,10 +182,10 @@ class FileStream
      *
      * @return bool
      */
-    public function isUploadResumable(Request $request)
+    public function isUploadResumable(Request $request): bool
     {
         $fineUploaderUuid = $request->get('qquuid');
-        $chunkIndex = intval($request->get('qqpartindex'));
+        $chunkIndex = (int)$request->get('qqpartindex');
         $numberOfExistingChunks = count($this->filesystem->files($this->temporaryChunksFolder . DIRECTORY_SEPARATOR . $fineUploaderUuid));
         if ($numberOfExistingChunks < $chunkIndex) {
             throw new FileStreamExceptions\UploadIncompleteException;
@@ -206,11 +210,11 @@ class FileStream
         $binaryPrefices = ['b', 'kib', 'mib', 'gib', 'tib', 'pib', 'eib', 'zib', 'yib'];
         $decimalPrefices = ['b', 'kb', 'mb', 'gb', 'tb', 'pb', 'eb', 'zb', 'yb'];
 
-        $base = in_array($prefix, $binaryPrefices) ? 1024 : 1000;
-        $flippedPrefixMap = $base == 1024 ? array_flip($binaryPrefices) : array_flip($decimalPrefices);
+        $base = in_array($prefix, $binaryPrefices, true) ? 1024 : 1000;
+        $flippedPrefixMap = $base === 1024 ? array_flip($binaryPrefices) : array_flip($decimalPrefices);
         $factor = Arr::pull($flippedPrefixMap, $prefix);
 
-        return sprintf("%d", bcmul(str_replace(',', '', $coefficient), bcpow($base, $factor)));
+        return sprintf('%d', bcmul(str_replace(',', '', $coefficient), bcpow($base, $factor)));
     }
 
     /**
@@ -220,13 +224,13 @@ class FileStream
      *
      * @return string
      */
-    public function filesizeFromBytesToHumanReadable($bytes, $decimals = 2, $binary = true)
+    public function filesizeFromBytesToHumanReadable($bytes, $decimals = 2, $binary = true): string
     {
         $binaryPrefices = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
         $decimalPrefices = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-        $factor = intval(floor((strlen($bytes) - 1) / 3));
+        $factor = (int)floor((strlen($bytes) - 1) / 3);
 
-        return sprintf("%.{$decimals}f", $bytes / pow($binary ? 1024 : 1000, $factor)) . ' ' . $binary ? $binaryPrefices[$factor] : $decimalPrefices[$factor];
+        return (sprintf("%.{$decimals}f", $bytes / (($binary ? 1024 : 1000) ** $factor)) . ' ' . $binary) ? $binaryPrefices[$factor] : $decimalPrefices[$factor];
     }
 
     /**
@@ -234,7 +238,7 @@ class FileStream
      *
      * @return string
      */
-    public function getAbsolutePath($path)
+    public function getAbsolutePath($path): string
     {
         return $this->filesystem->path(trim($path, DIRECTORY_SEPARATOR));
     }
@@ -265,7 +269,7 @@ class FileStream
      * @return bool
      * @throws \Exception
      */
-    public function deleteFile($qquuid, $tag = '')
+    public function deleteFile($qquuid, $tag = ''): bool
     {
         /** @var \App\Models\User $me */
         $me = app('auth.driver')->user();
@@ -278,7 +282,6 @@ class FileStream
             /** @noinspection PhpUndefinedFieldInspection */
             if ($pivot->qquuid === $qquuid && $tagCheck) {
                 $pivot->delete();
-
                 $file->load('uploaders');
                 !$file->uploaders->count() && app('filesystem')->disk($file->disk)->delete($file->path) && $file->delete();
             }
@@ -287,7 +290,7 @@ class FileStream
         return true;
     }
 
-    private function cleanupChunks()
+    private function cleanupChunks(): void
     {
         foreach ($this->filesystem->directories($this->temporaryChunksFolder) as $file) {
             if (time() - $this->filesystem->lastModified($file) > $this->chunksExpireIn) {
@@ -301,16 +304,16 @@ class FileStream
      *
      * @return void
      */
-    private function combineChunks(Request $request)
+    private function combineChunks(Request $request): void
     {
         # Prelim
         $fineUploaderUuid = $request->get('qquuid');
         $chunksFolder = $this->temporaryChunksFolder . DIRECTORY_SEPARATOR . $fineUploaderUuid;
-        $totalNumberOfChunks = $request->has('qqtotalparts') ? intval($request->get('qqtotalparts')) : 1;
+        $totalNumberOfChunks = $request->has('qqtotalparts') ? (int)$request->get('qqtotalparts') : 1;
 
         # Do we have all chunks?
         $numberOfExistingChunks = count($this->filesystem->files($chunksFolder));
-        if ($numberOfExistingChunks != $totalNumberOfChunks) {
+        if ($numberOfExistingChunks !== $totalNumberOfChunks) {
             throw new FileStreamExceptions\UploadIncompleteException;
         }
 

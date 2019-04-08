@@ -11,9 +11,9 @@ class CreateUsersOauthTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('users_oauth', function (Blueprint $table) {
+        Schema::create('users_oauth', static function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->string('remote_provider', 32);
@@ -35,9 +35,9 @@ class CreateUsersOauthTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::table('users_oauth', function (Blueprint $table) {
+        Schema::table('users_oauth', static function (Blueprint $table) {
             $table->dropForeign('users_oauth_user_id_foreign');
         });
         Schema::drop('users_oauth');

@@ -11,9 +11,9 @@ class CreateCalendarsTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('calendars', function (Blueprint $table) {
+        Schema::create('calendars', static function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->nullable();
             $table->string('url')->nullable();
@@ -25,7 +25,7 @@ class CreateCalendarsTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('calendars');
     }

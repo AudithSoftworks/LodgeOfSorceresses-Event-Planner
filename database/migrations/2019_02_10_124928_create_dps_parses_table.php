@@ -11,9 +11,9 @@ class CreateDpsParsesTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('dps_parses', function (Blueprint $table) {
+        Schema::create('dps_parses', static function (Blueprint $table) {
             $table->engine = 'InnoDb';
             $table->increments('id');
             $table->unsignedInteger('user_id');
@@ -44,9 +44,9 @@ class CreateDpsParsesTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::table('dps_parses', function (Blueprint $table) {
+        Schema::table('dps_parses', static function (Blueprint $table) {
             $table->dropForeign('dps_parses_user_id_foreign');
             $table->dropForeign('dps_parses_character_id_foreign');
             $table->dropForeign('dps_parses_parse_file_hash_foreign');

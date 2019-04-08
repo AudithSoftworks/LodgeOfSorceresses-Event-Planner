@@ -11,9 +11,9 @@ class CreateCharactersTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('characters', function (Blueprint $table) {
+        Schema::create('characters', static function (Blueprint $table) {
             $table->engine = 'InnoDb';
             $table->increments('id');
             $table->unsignedInteger('user_id');
@@ -32,9 +32,9 @@ class CreateCharactersTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::table('characters', function (Blueprint $table) {
+        Schema::table('characters', static function (Blueprint $table) {
             $table->dropForeign('characters_user_id_foreign');
         });
         Schema::drop('characters');

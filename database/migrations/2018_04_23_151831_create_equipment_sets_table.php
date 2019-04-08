@@ -11,9 +11,9 @@ class CreateEquipmentSetsTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('equipment_sets', function (Blueprint $table) {
+        Schema::create('equipment_sets', static function (Blueprint $table) {
             $table->engine = 'InnoDb';
             $table->increments('id');
             $table->string('slug', 64);
@@ -28,7 +28,7 @@ class CreateEquipmentSetsTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('equipment_sets');
     }
