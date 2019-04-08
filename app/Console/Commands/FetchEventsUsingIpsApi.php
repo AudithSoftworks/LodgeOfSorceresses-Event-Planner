@@ -41,7 +41,7 @@ class FetchEventsUsingIpsApi extends Command
         $events = $this->ipsApi->getCalendarEvents();
         $this->deleteObsoleteEvents($events);
         $this->syncEvents($events);
-        $this->info('Calendar events succesfully synced!');
+        $this->info('Calendar events successfully synced!');
 
         return true;
     }
@@ -74,8 +74,8 @@ class FetchEventsUsingIpsApi extends Command
                 'url' => $event['calendar']['url'],
             ]);
 
-            $startDateTime = is_null($event['start']) ? null : (new Carbon($event['start']))->toDateTimeString();
-            $endDateTime = is_null($event['end']) ? null : (new Carbon($event['end']))->toDateTimeString();
+            $startDateTime = $event['start'] === null ? null : (new Carbon($event['start']))->toDateTimeString();
+            $endDateTime = $event['end'] === null ? null : (new Carbon($event['end']))->toDateTimeString();
 
             Event::updateOrCreate([
                 'id' => $event['id']
