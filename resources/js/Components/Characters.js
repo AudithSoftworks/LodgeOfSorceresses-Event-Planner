@@ -167,7 +167,6 @@ class Characters extends PureComponent {
         }
 
         const actionList = {
-            return: <Link to={'/chars'} title='Back to My Characters'><FontAwesomeIcon icon="th-list"/></Link>,
             create: <Link to="/chars/create" className='ne-corner' title='Submit a Character'><FontAwesomeIcon icon="user-plus"/></Link>
         };
         let actionListRendered = [];
