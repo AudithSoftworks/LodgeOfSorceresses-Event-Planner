@@ -2,7 +2,7 @@
 
 if [[ ${DB_CONNECTION} != 'mysql' ]]; then exit 0; fi
 
-sed -e "s/APP_ENV=.*/APP_ENV=development/g" \
+sed -e "s/APP_ENV=.*/APP_ENV=production/g" \
     -e "s@APP_KEY=.*@APP_KEY=${APP_KEY}@g" \
     -e "s/APP_DEBUG=.*/APP_DEBUG=true/g" \
     -e "s/APP_LOG_LEVEL=.*/APP_LOG_LEVEL=debug/g" \
