@@ -22,9 +22,9 @@ class Authenticate extends IlluminateAuthenticateMiddleware
         } catch (AuthenticationException $e) {
             if ($request->expectsJson()) {
                 throw $e;
-            } else {
-                return redirect()->guest(route('oauth.to', 'ips', false));
             }
+
+            return redirect()->guest(route('oauth.to', 'ips', false));
         }
 
         return $next($request);

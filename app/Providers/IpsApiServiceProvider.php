@@ -20,7 +20,7 @@ class IpsApiServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->app->singleton('ips.api', IpsApi::class);
     }
@@ -30,7 +30,7 @@ class IpsApiServiceProvider extends ServiceProvider
      *
      * @return array
      */
-    public function provides()
+    public function provides(): array
     {
         return ['ips.api'];
     }

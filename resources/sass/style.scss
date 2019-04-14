@@ -120,7 +120,15 @@ body {
                     margin-left: 10px;
 
                     > a {
-                        font-size: 1.25rem;
+                        font-size: 1.3rem;
+
+                        &.success {
+                            color: $success;
+                        }
+
+                        &.danger {
+                            color: #ff6666;
+                        }
                     }
                 }
             }

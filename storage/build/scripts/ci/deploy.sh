@@ -17,8 +17,11 @@ sed -e "s/APP_ENV=.*/APP_ENV=production/g" \
     -e "s/CLOUDINARY_CLOUD_NAME=.*/CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}/g" \
     -e "s/CLOUDINARY_API_KEY=.*/CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}/g" \
     -e "s/CLOUDINARY_API_SECRET=.*/CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}/g" \
-    -e "s/DISCORD_BOT_TOKEN=.*/DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}/g" .env.example \
-    | tee .env;
+    -e "s/DISCORD_CLIENT_ID=.*/DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}/g" \
+    -e "s/DISCORD_CLIENT_SECRET=.*/DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}/g" \
+    -e "s/DISCORD_REDIRECT_URI=.*/DISCORD_REDIRECT_URI=${DISCORD_REDIRECT_URI}/g" \
+    -e "s/DISCORD_BOT_TOKEN=.*/DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}/g" \
+    .env.example | tee .env;
 
 rm -rf ./.git* ./node_modules/ ./storage/build/tools ./tests/ ./deploy_rsa.enc ./.scrutinizer.yml ./.travis.yml ./_ide_helper.php old;
 

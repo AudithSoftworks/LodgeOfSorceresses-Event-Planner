@@ -11,6 +11,10 @@ $router->middleware(['auth:api', 'throttle'])->group(static function (Router $ro
     $router->apiResource('files', 'FilesController')->only(['store', 'destroy']);
 });
 
+$router->middleware(['auth:api', 'throttle'])->group(static function (Router $router) {
+    $router->get('discord-oauth-account', 'HomeController@getDiscordOauthAccount');
+});
+
 $router->middleware(['auth:api', 'throttle'])->prefix('admin')->group(static function (Router $router) {
     $router->apiResource('parses', 'Admin\DpsParsesController')->except(['store', 'destroy']);
 });

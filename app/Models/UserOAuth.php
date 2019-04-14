@@ -40,6 +40,8 @@ class UserOAuth extends Model
 
     protected $fillable = ['*'];
 
+    protected $hidden = ['remote_id', 'name'];
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

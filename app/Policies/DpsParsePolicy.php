@@ -19,7 +19,7 @@ class DpsParsePolicy
         /** @var \App\Models\User $me */
         $me = app('auth.driver')->user();
         $me->load('linkedAccounts');
-        $this->oauthAccount = $me->linkedAccounts()->first();
+        $this->oauthAccount = $me->linkedAccounts()->where('remote_provider', 'ips')->first();
         $this->oauthAccount->remote_secondary_groups = explode(',', $this->oauthAccount->remote_secondary_groups);
     }
 

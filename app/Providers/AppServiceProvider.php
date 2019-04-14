@@ -1,5 +1,6 @@
 <?php namespace App\Providers;
 
+use App\Extensions\Socialite\DiscordProvider;
 use App\Extensions\Socialite\IpsProvider;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
@@ -14,10 +15,10 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         Schema::defaultStringLength(191);
-        $this->bootIpsSocialiteProvider();
+        $this->extendSocialiteWithAdditionalProviders();
     }
 
     /**
@@ -25,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         if (app()->environment('local', 'testing')) {
             app()->register(DuskServiceProvider::class);
@@ -36,14 +37,21 @@ class AppServiceProvider extends ServiceProvider
         }
     }
 
-    private function bootIpsSocialiteProvider()
+    private function extendSocialiteWithAdditionalProviders(): void
     {
-        $socialite = $this->app->make(Factory::class);
+        $socialite = app(Factory::class);
         $socialite->extend(
             'ips',
-            function ($app) use ($socialite) {
+            static function ($app) use ($socialite) {
                 $config = $app['config']['services.ips'];
                 return $socialite->buildProvider(IpsProvider::class, $config);
+            }
+        );
+        $socialite->extend(
+            'discord',
+            static function ($app) use ($socialite) {
+                $config = $app['config']['services.discord'];
+                return $socialite->buildProvider(DiscordProvider::class, $config);
             }
         );
     }

@@ -8,12 +8,12 @@ use Laravel\Socialite\Two\AbstractProvider;
 use Laravel\Socialite\Two\ProviderInterface;
 use Laravel\Socialite\Two\User;
 
-class IpsProvider extends AbstractProvider implements ProviderInterface
+class DiscordProvider extends AbstractProvider implements ProviderInterface
 {
     /**
      * @var string
      */
-    private $ipsUrl;
+    private $discordUrl;
 
     /**
      * {@inheritdoc}
@@ -24,9 +24,8 @@ class IpsProvider extends AbstractProvider implements ProviderInterface
      * {@inheritdoc}
      */
     protected $scopes = [
-        'profile',
+        'identify',
         'email',
-        'calendar',
     ];
 
     /**
@@ -36,7 +35,7 @@ class IpsProvider extends AbstractProvider implements ProviderInterface
     {
         parent::__construct($request, $clientId, $clientSecret, $redirectUrl, $guzzle);
 
-        $this->ipsUrl = trim(config('services.ips.url'), '/');
+        $this->discordUrl = trim(config('services.discord.url'), '/');
     }
 
     /**
@@ -44,7 +43,7 @@ class IpsProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getAuthUrl($state): string
     {
-        return $this->buildAuthUrlFromBase($this->ipsUrl . '/oauth/authorize/', $state);
+        return $this->buildAuthUrlFromBase($this->discordUrl . '/oauth2/authorize', $state);
     }
 
     /**
@@ -52,13 +51,13 @@ class IpsProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getTokenUrl(): string
     {
-        return $this->ipsUrl . '/oauth/token/';
+        return $this->discordUrl . '/oauth2/token';
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function getTokenFields($code): array
+    protected function getTokenFields($code)
     {
         return Arr::add(
             parent::getTokenFields($code), 'grant_type', 'authorization_code'
@@ -70,7 +69,7 @@ class IpsProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getUserByToken($token): array
     {
-        $response = $this->getHttpClient()->get($this->ipsUrl . '/api/core/me', [
+        $response = $this->getHttpClient()->get($this->discordUrl . '/users/@me', [
             'headers' => [
                 'Accept' => 'application/json',
                 'Authorization' => 'Bearer ' . $token,
@@ -89,14 +88,12 @@ class IpsProvider extends AbstractProvider implements ProviderInterface
      */
     protected function mapUserToObject(array $user): User
     {
-        return (new IpsUser())->setRaw($user)->map([
+        return (new User())->setRaw($user)->map([
             'id' => $user['id'],
-            'nickname' => $user['name'],
-            'name' => $user['name'],
+            'name' => $user['username'] . '#' . $user['discriminator'],
             'email' => $user['email'],
-            'remotePrimaryGroup' => $user['primaryGroup']['id'],
-            'avatar' => $user['photoUrl'],
             'token' => Arr::get($user, 'access_token'),
+            'verified' => $user['verified']
         ]);
     }
 }

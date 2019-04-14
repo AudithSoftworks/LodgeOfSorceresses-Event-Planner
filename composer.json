@@ -47,6 +47,7 @@
         "nunomaduro/collision": "^2.0",
         "phpunit/phpcov": "^6.0",
         "phpunit/phpunit": "^8.0",
+        "roave/security-advisories": "dev-master",
         "symfony/css-selector": "3.1.*",
         "symfony/dom-crawler": "3.1.*"
     },

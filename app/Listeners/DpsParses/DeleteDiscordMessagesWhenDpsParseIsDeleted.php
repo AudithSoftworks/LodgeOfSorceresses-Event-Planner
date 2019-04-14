@@ -25,7 +25,7 @@ class DeleteDiscordMessagesWhenDpsParseIsDeleted
         $dpsParse = $event->dpsParse;
         $dpsParse->refresh();
 
-        $botAccessToken = config('services.discord_bot.token');
+        $botAccessToken = config('services.discord.bot_token');
         $discordClient = new Client([
             'base_uri' => self::DISCORD_API_ENDPOINT,
             'headers' => [

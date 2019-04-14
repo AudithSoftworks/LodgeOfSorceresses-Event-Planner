@@ -38,7 +38,7 @@ class PostNewDpsParseToDiscord
         $dpsParse = $event->dpsParse;
         $dpsParse->refresh();
 
-        $botAccessToken = config('services.discord_bot.token');
+        $botAccessToken = config('services.discord.bot_token');
         $discordClient = new Client([
             'base_uri' => self::DISCORD_API_ENDPOINT,
             'headers' => [
@@ -56,11 +56,15 @@ class PostNewDpsParseToDiscord
             $gearSetsParsed[] = '[' . $set->name . '](https://eso-sets.com/set/' . $set->id . ')';
         }
 
+        $me->load('linkedAccounts');
+        $discordAccount = $me->linkedAccounts()->where('remote_provider', 'discord')->first();
+        $mentionedName = $discordAccount ? '<@!' . $discordAccount->remote_id . '>' : $me->name;
+
         $idsOfCreatedDiscordMessages = [];
         $response = $discordClient->post('channels/' . self::DISCORD_TEST_CHANNEL_ID . '/messages', [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
-                    'content' => '**' . $me->name . ' has submitted a DPS parse with ' . $dpsParse->dps_amount . ' DPS.**',
+                    'content' => $mentionedName . ' has submitted a DPS parse with ' . $dpsParse->dps_amount . ' DPS.',
                     'tts' => false,
                     'embed' => [
                         'color' => 0x888800,

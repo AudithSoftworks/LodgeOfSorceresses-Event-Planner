@@ -18,12 +18,12 @@ const PATHS = {
 };
 
 let common = {
-    mode: process.env.NODE_ENV === 'development' ? 'development' : 'production',
+    mode: devMode ? 'development' : 'production',
     entry: path.join(PATHS.js, 'app.js'),
     output: {
         path: PATHS.build,
         publicPath: '/build/',
-        filename: process.env.NODE_ENV === 'development' ? '[name].js' : '[name].[contenthash].js',
+        filename: devMode ? '[name].js' : '[name].[contenthash].js',
         chunkFilename: '[name].[contenthash].js' // This is used for require.ensure. The setup will work without but this is useful to set.
     },
     plugins: [
@@ -33,7 +33,7 @@ let common = {
         }),
         // ensure that we get a production build of any dependencies this is primarily for React, where this removes 179KB from the bundle
         new DefinePlugin({
-            'process.env.NODE_ENV': process.env.NODE_ENV === 'development' ? '"development"' : '"production"'
+            'process.env.NODE_ENV': devMode ? '"development"' : '"production"'
         })
     ],
 };
@@ -42,8 +42,8 @@ let config;
 
 // Detect how npm is run and branch based on that
 config = devMode
-    ? merge(common, toolset.loadersAndPluginsForVariousTypes() /*, toolset.extractBundles() */)
-    : merge(common, toolset.loadersAndPluginsForVariousTypes() /*, toolset.extractBundles() */, toolset.minify());
+    ? merge(common, toolset.loadersAndPluginsForVariousTypes(), toolset.extractBundles())
+    : merge(common, toolset.loadersAndPluginsForVariousTypes(), toolset.extractBundles(), toolset.minify());
 
 /** @var {String} process.env.npm_lifecycle_event */
 if (process.env.npm_lifecycle_event !== 'watch') {

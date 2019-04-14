@@ -1,18 +1,12 @@
 import React, { Component, Fragment, Suspense } from 'react';
 import { Route, Switch } from "react-router-dom";
-import Loading from "../Characters";
+import Loading from "../Loading";
 import ErrorBoundary from "../ErrorBoundary";
 
 const Home = React.lazy(() => import(
     /* webpackPrefetch: true */
     /* webpackChunkName: "components-home" */
-    '../Home')
-);
-// const Events = React.lazy(() => import(
-//     /* webpackPrefetch: true */
-//     /* webpackChunkName: "components-events" */
-//     '../Events')
-// );
+    '../Home'));
 const Characters = React.lazy(() => import(
     /* webpackPrefetch: true */
     /* webpackChunkName: "components-characters" */

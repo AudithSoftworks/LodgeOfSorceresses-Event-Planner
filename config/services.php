@@ -42,11 +42,15 @@ return [
     'ips' => [
         'client_id' => env('IPS_CLIENT_ID'),
         'client_secret' => env('IPS_CLIENT_SECRET'),
-        'api_key' => env('IPS_API_KEY'),
         'redirect' => env('IPS_REDIRECT_URI'),
+        'api_key' => env('IPS_API_KEY'),
         'url' => env('IPS_URL'),
     ],
-    'discord_bot' => [
-        'token' => env('DISCORD_BOT_TOKEN'),
+    'discord' => [
+        'client_id' => env('DISCORD_CLIENT_ID'),
+        'client_secret' => env('DISCORD_CLIENT_SECRET'),
+        'redirect' => env('DISCORD_REDIRECT_URI'),
+        'bot_token' => env('DISCORD_BOT_TOKEN'),
+        'url' => 'https://discordapp.com/api',
     ],
 ];

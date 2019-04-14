@@ -22,12 +22,14 @@ class LoginController extends Controller
 {
     use AuthenticatesUsers;
 
+    protected $redirectTo = '/';
+
     /**
      * Create a new authentication controller instance.
      */
     public function __construct()
     {
-        $this->middleware('guest', ['except' => 'logout']);
+        $this->middleware('guest', ['except' => ['logout', 'handleOAuthRedirect', 'handleOAuthReturn']]);
     }
 
     /**
@@ -125,15 +127,13 @@ class LoginController extends Controller
     {
         switch ($provider) {
             case 'ips':
-            case 'google':
-            case 'facebook':
                 if (!$request->exists('code')) {
-                    return abort(500, trans('passwords.oauth_failed'));
+                    return back();
                 }
                 break;
-            case 'twitter':
-                if (!$request->exists('oauth_token') || !$request->exists('oauth_verifier')) {
-                    return abort(500, trans('passwords.oauth_failed'));
+            case 'discord':
+                if (!$request->exists('code')) {
+                    return redirect()->intended($this->redirectPath());
                 }
                 break;
         }
@@ -141,32 +141,33 @@ class LoginController extends Controller
         /** @var IpsUser $userInfo */
         $userInfo = $socialite->driver($provider)->user();
         if ($this->loginViaOAuth($userInfo, $provider)) {
-            if (!empty($userInfo->token)) {
+            if ($userInfo instanceof IpsUser && !empty($userInfo->token)) {
                 $request->session()->put('token', $userInfo->token);
             }
 
             return redirect()->intended($this->redirectPath());
         }
 
-        return redirect('/login')->withErrors(trans('passwords.oauth_failed'));
+        return redirect('/')->withErrors(trans('passwords.oauth_failed'));
     }
 
     /**
-     * @param IpsUser $oauthUserData
-     * @param string  $provider
+     * @param \Laravel\Socialite\Two\User $oauthUserData
+     * @param string                      $provider
      *
      * @return bool
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    protected function loginViaOAuth(IpsUser $oauthUserData, $provider): bool
+    protected function loginViaOAuth(OauthTwoUser $oauthUserData, $provider): bool
     {
         /** @var UserOAuth $owningOAuthAccount */
         if ($owningOAuthAccount = UserOAuth::whereRemoteProvider($provider)->whereRemoteId($oauthUserData->id)->first()) {
             $ownerAccount = $owningOAuthAccount->owner;
-            app('auth.driver')->login($ownerAccount);
-
-            event(new LoggedIn($ownerAccount, $provider));
-            $provider === 'ips' && event(new LoggedInViaIpsOauth($owningOAuthAccount));
+            if ($provider === 'ips') {
+                app('auth.driver')->login($ownerAccount);
+                event(new LoggedIn($ownerAccount, $provider));
+                event(new LoggedInViaIpsOauth($owningOAuthAccount));
+            }
 
             return true;
         }
@@ -175,16 +176,23 @@ class LoginController extends Controller
     }
 
     /**
-     * @param IpsUser $oauthUserData
-     * @param string  $provider
+     * @param \Laravel\Socialite\Two\User $oauthUserData
+     * @param string                      $provider
      *
      * @return \Illuminate\Contracts\Auth\Authenticatable|bool
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    protected function registerViaOAuth(IpsUser $oauthUserData, $provider)
+    protected function registerViaOAuth(OauthTwoUser $oauthUserData, $provider)
     {
         /** @var \App\Models\User $ownerAccount */
-        if (!($ownerAccount = User::withTrashed()->whereEmail($oauthUserData->email)->first())) {
+        if ($provider === 'ips') {
+            $ownerAccount = User::withTrashed()->whereEmail($oauthUserData->email)->first();
+        } else {
+            $ownerAccount = app('auth.driver')->user();
+        }
+
+
+        if (!$ownerAccount) {
             $ownerAccount = User::create([
                 'name' => $oauthUserData->name,
                 'email' => $oauthUserData->email,
@@ -197,7 +205,7 @@ class LoginController extends Controller
         $ownerAccount->trashed() && $ownerAccount::restore();
 
         # Update missing user name.
-        if (!$ownerAccount->name) {
+        if (!$ownerAccount->name && $oauthUserData->name) {
             $ownerAccount->name = $oauthUserData->name;
             $ownerAccount->save();
         }

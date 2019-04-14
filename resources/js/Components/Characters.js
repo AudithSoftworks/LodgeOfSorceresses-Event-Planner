@@ -48,8 +48,13 @@ class Characters extends PureComponent {
                     ]
                 })
             }
-            if (error.response && error.response.status === 403) {
-                this.props.history.push('/', this.state);
+            if (error.response && error.response.status >= 400) {
+                if (this.props.history) {
+                    this.props.history.push('/', this.state);
+                } else {
+console.log('kaboom');
+                    window.location.href = '/';
+                }
             }
         });
     };
