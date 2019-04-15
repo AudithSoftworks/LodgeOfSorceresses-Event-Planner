@@ -19,6 +19,9 @@ class EventServiceProvider extends ServiceProvider
         Events\DpsParses\DpsParseDeleted::class => [
             Listeners\DpsParses\DeleteDiscordMessagesWhenDpsParseIsDeleted::class
         ],
+        Events\DpsParses\DpsParseDisapproved::class => [
+            Listeners\DpsParses\PostAnnouncementToDiscordRegardingDpsDisapproval::class
+        ],
         Events\Files\Uploaded::class => [
             Listeners\Files\ValidateUploadRealMimeAgainstAllowedTypes::class,
             Listeners\Files\PersistUploadedFile::class

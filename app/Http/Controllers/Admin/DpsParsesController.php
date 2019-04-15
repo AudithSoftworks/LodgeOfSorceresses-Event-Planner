@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Events\DpsParses\DpsParseDeleted;
+use App\Events\DpsParses\DpsParseDisapproved;
 use App\Events\DpsParses\DpsParseSubmitted;
 use App\Http\Controllers\Controller;
 use App\Models\DpsParse;
@@ -10,6 +10,7 @@ use App\Models\File;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use UnexpectedValueException;
 
 class DpsParsesController extends Controller
 {
@@ -34,6 +35,9 @@ class DpsParsesController extends Controller
                 $dpsParse->sets = array_values($characterEquipmentSets);
                 $parseFile = File::whereHash($dpsParse->parse_file_hash)->first();
                 $superstarFile = File::whereHash($dpsParse->superstar_file_hash)->first();
+                if (!$parseFile || !$superstarFile) {
+                    throw new UnexpectedValueException('Couldn\'t find screenshot file records!');
+                }
                 $dpsParse->parse_file_hash = app('filestream')->url($parseFile);
                 $dpsParse->superstar_file_hash = app('filestream')->url($superstarFile);
             }
@@ -53,7 +57,7 @@ class DpsParsesController extends Controller
      */
     public function update(Request $request, int $char): JsonResponse
     {
-        $this->authorize('create', DpsParse::class);
+        $this->authorize('admin', DpsParse::class);
         $validatorErrorMessages = [
             'parse_file_hash.required' => 'Parse screenshot needs to be uploaded.',
             'superstar_file_hash.required' => 'Superstar screenshot needs to be uploaded.',
@@ -85,35 +89,28 @@ class DpsParsesController extends Controller
     }
 
     /**
-     * @param int $char
-     * @param int $parse
+     * @param \Illuminate\Http\Request $request
+     * @param int                      $parse
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
-     */
-    public function show(int $char, int $parse): JsonResponse
-    {
-        $this->authorize('show', DpsParse::class);
-        $dpsParse = DpsParse::whereUserId(app('auth.driver')->id())->whereCharacterId($char)->whereId($parse)->get();
-        $dpsParse->parse_file_hash = File::whereHash($dpsParse->parse_file_hash)->get();
-        $dpsParse->superstar_file_hash = File::whereHash($dpsParse->superstar_file_hash)->get();
-
-        return response()->json($dpsParse);
-    }
-
-    /**
-     * @param int $char
-     * @param int $parse
-     *
-     * @return \Illuminate\Http\JsonResponse
      * @throws \Exception
      */
-    public function destroy(int $char, int $parse): JsonResponse
+    public function destroy(Request $request, int $parse): JsonResponse
     {
-        $this->authorize('delete', DpsParse::class);
-        $dpsParse = DpsParse::whereUserId(app('auth.driver')->id())->whereCharacterId($char)->whereId($parse);
+        $this->authorize('admin', DpsParse::class);
+
+        /** @var \App\Models\User $me */
+        $me = app('auth.driver')->user();
+
+        $dpsParse = DpsParse::whereId($parse)->firstOrFail();
+        $dpsParse->reason_for_disapproval = $request->get('reason_for_disapproval');
+        $dpsParse->processed_by = $me->id;
+        $dpsParse->save();
+
         $dpsParse->delete();
-        app('events')->dispatch(new DpsParseDeleted($dpsParse->withTrashed()->first()));
+
+        app('events')->dispatch(new DpsParseDisapproved($dpsParse));
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);
     }

@@ -4,7 +4,7 @@ cd /opt/lodgeofsorceresses/subdomains/planner/$1;
 
 composer install --prefer-source --no-interaction --no-dev;
 
-./artisan migrate:refresh --force;
+./artisan migrate;
 ./artisan db:seed --force;
 ./artisan config:cache;
 ./artisan route:cache;

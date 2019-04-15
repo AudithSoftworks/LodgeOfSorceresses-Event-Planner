@@ -52,5 +52,10 @@ return [
         'redirect' => env('DISCORD_REDIRECT_URI'),
         'bot_token' => env('DISCORD_BOT_TOKEN'),
         'url' => 'https://discordapp.com/api',
+        'channels' => [
+            'announcements' => env('APP_ENV') === 'production' ? env('DISCORD_ANNOUNCEMENTS_CHANNEL_ID') : env('DISCORD_TEST_CHANNEL_ID'),
+            'midgame_dps_parses' => env('APP_ENV') === 'production' ? env('DISCORD_MIDGAME_DPS_PARSES_CHANNEL_ID') : env('DISCORD_TEST_CHANNEL_ID'),
+            'endgame_dps_parses' => env('APP_ENV') === 'production' ? env('DISCORD_ENDGAME_DPS_PARSES_CHANNEL_ID') : env('DISCORD_TEST_CHANNEL_ID'),
+        ],
     ],
 ];

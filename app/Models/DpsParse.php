@@ -18,11 +18,12 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
  * @property string                          $parse_file_hash
  * @property string|null                     $superstar_file_hash
  * @property string|null                     $discord_notification_message_ids
- * @property int|null                        $approved_by
+ * @property int                             $processed_by
  * @property int                             $approved_for_midgame
  * @property int                             $approved_for_endgame_t0
  * @property int                             $approved_for_endgame_t1
  * @property int                             $approved_for_endgame_t2
+ * @property string|null                     $reason_for_disapproval
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -37,7 +38,6 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
  * @method static QueryBuilder|DpsParse onlyTrashed()
  * @method static EloquentBuilder|DpsParse query()
  * @method static bool|null restore()
- * @method static EloquentBuilder|DpsParse whereApprovedBy($value)
  * @method static EloquentBuilder|DpsParse whereApprovedForEndgameT0($value)
  * @method static EloquentBuilder|DpsParse whereApprovedForEndgameT1($value)
  * @method static EloquentBuilder|DpsParse whereApprovedForEndgameT2($value)
@@ -49,6 +49,8 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
  * @method static EloquentBuilder|DpsParse whereDpsAmount($value)
  * @method static EloquentBuilder|DpsParse whereId($value)
  * @method static EloquentBuilder|DpsParse whereParseFileHash($value)
+ * @method static EloquentBuilder|DpsParse whereProcessedBy($value)
+ * @method static EloquentBuilder|DpsParse whereReasonForDisapproval($value)
  * @method static EloquentBuilder|DpsParse whereSets($value)
  * @method static EloquentBuilder|DpsParse whereSuperstarFileHash($value)
  * @method static EloquentBuilder|DpsParse whereUpdatedAt($value)

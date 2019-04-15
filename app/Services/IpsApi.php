@@ -59,8 +59,9 @@ class IpsApi
 
     /**
      * @return array
+     * @throws \Exception
      */
-    public function getCalendarEvents()
+    public function getCalendarEvents(): array
     {
         $events = [];
         $page = 1;

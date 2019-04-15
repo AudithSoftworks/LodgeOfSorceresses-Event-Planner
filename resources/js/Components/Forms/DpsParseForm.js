@@ -211,10 +211,20 @@ class DpsParseForm extends PureComponent {
                         messages: [
                             {
                                 type: "danger",
-                                message: error.response.statusText
+                                message: error.response.data.message || error.response.statusText
                             }
                         ]
                     })
+                }
+                if (error.response) {
+                    switch (error.response.status) {
+                        case 403:
+                            this.props.history.push('/', this.state);
+                            break;
+                        case 404:
+                            this.props.history.push('/chars', this.state);
+                            break;
+                    }
                 }
             });
         }
@@ -239,19 +249,24 @@ class DpsParseForm extends PureComponent {
                 messages: [
                     {
                         type: "success",
-                        message: response.statusText
+                        message: 'Parse submitted!'
                     }
                 ]
             });
             this.cancelTokenSource = null;
         }).catch((error) => {
             if (!Axios.isCancel(error)) {
-                const errorMessage = error.response.data;
+                const errorMessage = error.response.data.message || error.response.statusText;
                 this.setState({
                     messages: Object.values(errorMessage.errors).map(item => {
                         return {type: 'danger', message: item[0]}
                     })
                 });
+            }
+            if (error.response) {
+                if (error.response.status >= 400) {
+                    this.props.history.push('/', this.state);
+                }
             }
         });
     };

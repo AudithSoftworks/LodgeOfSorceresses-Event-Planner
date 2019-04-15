@@ -1,5 +1,5 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSpinner, faTachometerAlt, faThList, faUserCheck, faUserEdit, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faTachometerAlt, faThList, faUserCheck, faUserEdit, faUserPlus, faUserTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { Fragment, PureComponent } from 'react';
 import { Link } from "react-router-dom";
@@ -7,7 +7,7 @@ import Notification from '../Notification';
 import Axios from '../../vendor/Axios';
 import Loading from "../Loading";
 
-library.add(faSpinner, faTachometerAlt, faThList, faUserCheck, faUserEdit, faUserPlus);
+library.add(faSpinner, faTachometerAlt, faThList, faUserCheck, faUserEdit, faUserPlus, faUserTimes);
 
 class DpsParses extends PureComponent {
     constructor(props) {
@@ -49,7 +49,7 @@ class DpsParses extends PureComponent {
                     ]
                 })
             }
-            if (error.response && error.response.status === 403) {
+            if (error.response && error.response.status > 400) {
                 this.props.history.push('/', this.state);
             }
         });
@@ -59,7 +59,64 @@ class DpsParses extends PureComponent {
         this.cancelTokenSource && this.cancelTokenSource.cancel('Unmount');
     };
 
-    handleDelete = (event) => {
+    handleDisapprove = (event) => {
+        event.preventDefault();
+        if (confirm('Are you sure you want to disapprove this parse?')) {
+            let prompt = window.prompt('Please provide a reason for disapproval. This will be posted on Discord.');
+            if (prompt && prompt.length) {
+                this.cancelTokenSource = Axios.CancelToken.source();
+                let currentTarget = event.currentTarget;
+                const dpsParses = this.state.dpsParses;
+                Axios.delete('/api/admin/parses/' + currentTarget.getAttribute('data-id'), {
+                    cancelToken: this.cancelTokenSource.token,
+                    data: {
+                        reason_for_disapproval: prompt
+                    }
+                }).then((response) => {
+                    this.cancelTokenSource = null;
+                    if (response.status === 204) {
+                        dpsParses.forEach((item, idx) => {
+                            if (item.id === parseInt(currentTarget.getAttribute('data-id'))) {
+                                delete (dpsParses[idx]);
+                            }
+                        });
+                        this.setState({
+                            dpsParses: dpsParses,
+                            messages: [
+                                {
+                                    type: "success",
+                                    message: 'Parse disapproved!'
+                                }
+                            ],
+                        });
+                    }
+                }).catch(error => {
+                    if (!Axios.isCancel(error)) {
+                        this.setState({
+                            messages: [
+                                {
+                                    type: "danger",
+                                    message: error.response.data.message || error.response.statusText
+                                }
+                            ]
+                        })
+                    }
+                    if (error.response) {
+                        switch (error.response.status) {
+                            case 403:
+                                this.props.history.push('/', this.state);
+                                break;
+                            case 404:
+                                this.props.history.push('/admin/parses', this.state);
+                                break;
+                        }
+                    }
+                });
+            }
+        }
+    };
+
+    handleApprove = (event) => {
         event.preventDefault();
         if (confirm('Are you sure you want to delete this parse?')) {
             this.cancelTokenSource = Axios.CancelToken.source();
@@ -105,7 +162,8 @@ class DpsParses extends PureComponent {
             item => {
                 const characterSets = item.sets.map(set => <a key={set['id']} href={'https://eso-sets.com/set/' + set['id']} className='badge badge-dark'>{set['name']}</a>);
                 item.actionList = {
-                    approve: <Link to='' onClick={this.handleDelete} data-id={item.id} title='Approve this Parse'><FontAwesomeIcon icon="user-check"/></Link>
+                    approve: <Link to='' onClick={this.handleApprove} data-id={item.id} title='Approve this Parse'><FontAwesomeIcon icon="user-check"/></Link>,
+                    disapprove: <Link to='' onClick={this.handleDisapprove} data-id={item.id} title='Disapprove this Parse'><FontAwesomeIcon icon="user-times"/></Link>
                 };
                 let actionListRendered = [];
                 for (const [actionType, link] of Object.entries(item.actionList)) {

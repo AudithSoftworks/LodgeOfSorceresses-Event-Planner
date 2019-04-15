@@ -52,11 +52,7 @@ class DpsParses extends PureComponent {
             if (error.response) {
                 switch (error.response.status) {
                     case 403:
-                        if (this.props.history) {
-                            this.props.history.push('/', this.state);
-                        } else {
-                            window.location.href = '/'
-                        }
+                        this.props.history.push('/', this.state);
                         break;
                     case 404:
                         this.props.history.push('/chars', this.state);

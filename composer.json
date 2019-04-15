@@ -39,7 +39,7 @@
         "rcrowe/twigbridge": "~0.9"
     },
     "require-dev": {
-        "doctrine/dbal": "~2.5",
+        "doctrine/dbal": "~2.9.2",
         "filp/whoops": "^2.0",
         "fzaninotto/faker": "~1.5",
         "laravel/dusk": "~5.0.3",

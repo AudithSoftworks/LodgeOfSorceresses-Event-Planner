@@ -12,11 +12,10 @@ class PostNewDpsParseToDiscord
 {
     private const DISCORD_API_ENDPOINT = 'https://discordapp.com/api/';
 
-    private const DISCORD_MIDGAME_DPS_PARSES_CHANNEL_ID = '460038712311545856';
-
-    private const DISCORD_CORE_DPS_PARSES_CHANNEL_ID = '496635762855641090';
-
-    private const DISCORD_TEST_CHANNEL_ID = '551378145500987392';
+    /**
+     * @var \Illuminate\Config\Repository
+     */
+    private $discordChannels;
 
     public function __construct()
     {
@@ -25,6 +24,8 @@ class PostNewDpsParseToDiscord
             'api_key' => config('filesystems.disks.cloudinary.key'),
             'api_secret' => config('filesystems.disks.cloudinary.secret'),
         ]);
+
+        $this->discordChannels = config('services.discord.channels');
     }
 
     /**
@@ -33,7 +34,7 @@ class PostNewDpsParseToDiscord
      * @return bool
      * @throws \Exception
      */
-    public function handle(DpsParseSubmitted $event)
+    public function handle(DpsParseSubmitted $event): bool
     {
         $dpsParse = $event->dpsParse;
         $dpsParse->refresh();
@@ -61,7 +62,7 @@ class PostNewDpsParseToDiscord
         $mentionedName = $discordAccount ? '<@!' . $discordAccount->remote_id . '>' : $me->name;
 
         $idsOfCreatedDiscordMessages = [];
-        $response = $discordClient->post('channels/' . self::DISCORD_TEST_CHANNEL_ID . '/messages', [
+        $response = $discordClient->post('channels/' . $this->discordChannels['midgame_dps_parses'] . '/messages', [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
                     'content' => $mentionedName . ' has submitted a DPS parse with ' . $dpsParse->dps_amount . ' DPS.',
