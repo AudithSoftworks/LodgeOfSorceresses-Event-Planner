@@ -2,13 +2,13 @@
 
 cd /opt/lodgeofsorceresses/subdomains/planner/$1;
 
-composer install --prefer-source --no-interaction --no-dev;
-
-./artisan migrate;
+./artisan migrate --force;
 ./artisan db:seed --force;
 ./artisan config:cache;
 ./artisan route:cache;
 ./artisan storage:link
+
+composer install --prefer-source --no-interaction --no-dev;
 
 touch ./public/$1.php;
 echo "<?php opcache_reset(); unlink(__FILE__);" | tee ./public/$1.php;
