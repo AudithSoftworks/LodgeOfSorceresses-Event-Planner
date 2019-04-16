@@ -1,13 +1,14 @@
 <?php namespace App\Listeners\DpsParses;
 
-use App\Events\DpsParses\DpsParseDisapproved;
+use App\Events\DpsParses\DpsParseApproved;
 use App\Models\EquipmentSet;
+use App\Services\GuildRankAndClearance;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class PostAnnouncementToDiscordRegardingDpsDisapproval
+class AnnounceDpsApprovalOnDiscord
 {
     public function __construct()
     {
@@ -19,22 +20,24 @@ class PostAnnouncementToDiscordRegardingDpsDisapproval
     }
 
     /**
-     * @param \App\Events\DpsParses\DpsParseDisapproved $event
+     * @param \App\Events\DpsParses\DpsParseApproved $event
      *
      * @return bool
      */
-    public function handle(DpsParseDisapproved $event): bool
+    public function handle(DpsParseApproved $event): bool
     {
         /*------------------------------------
          | Prelim
          *-----------------------------------*/
 
-        $channelId = config('services.discord.channels.midgame_dps_parses');
+        $announcementsChannelId = config('services.discord.channels.announcements');
+        $midgameDpsParsesChannelId = config('services.discord.channels.midgame_dps_parses');
 
         $dpsParse = $event->dpsParse;
         $dpsParse->refresh();
         $dpsParse->load(['owner', 'character']);
 
+        /** @var \App\Models\User $parseAuthor */
         $parseAuthor = $dpsParse->owner()->first();
         if (!$parseAuthor) {
             throw new ModelNotFoundException('Parse author record not found!');
@@ -43,6 +46,7 @@ class PostAnnouncementToDiscordRegardingDpsDisapproval
         if (!$character) {
             throw new ModelNotFoundException('Character record not found!');
         }
+        $topClearanceExisting = app('guild.ranks.clearance')->calculateTopClearance($parseAuthor);
 
         /*--------------------------------------------
          | Me & Parse author mention names parsed
@@ -57,6 +61,8 @@ class PostAnnouncementToDiscordRegardingDpsDisapproval
         $parseOwnersDiscordAccount = $parseAuthor->linkedAccounts()->where('remote_provider', 'discord')->first();
         $mentionedName = $parseOwnersDiscordAccount ? '<@!' . $parseOwnersDiscordAccount->remote_id . '>' : $parseAuthor->name;
 
+        $mentionedAnnouncementsChannel = '<#' . $announcementsChannelId . '>';
+
         $discordMessageIdsToDelete = explode(',', $dpsParse->discord_notification_message_ids);
 
         /*------------------------------------
@@ -64,7 +70,7 @@ class PostAnnouncementToDiscordRegardingDpsDisapproval
          *-----------------------------------*/
 
         $discordApi = app('discord.api');
-        $discordApi->deleteMessagesInChannel($channelId, $discordMessageIdsToDelete);
+        $discordApi->deleteMessagesInChannel($midgameDpsParsesChannelId, $discordMessageIdsToDelete);
 
         /*------------------------------------
          | Post the announcement
@@ -75,15 +81,17 @@ class PostAnnouncementToDiscordRegardingDpsDisapproval
         foreach ($gearSets as $set) {
             $gearSetsParsed[] = '[' . $set->name . '](https://eso-sets.com/set/' . $set->id . ')';
         }
-        $responseDecoded = $discordApi->createMessageInChannel($channelId, [
+        $rankTitle = $topClearanceExisting ? GuildRankAndClearance::CLEARANCE_LEVELS[$topClearanceExisting]['rank']['discord_role'] : GuildRankAndClearance::RANK_INITIATE['discord_role'];
+        $clearanceTitle = $topClearanceExisting ? GuildRankAndClearance::CLEARANCE_LEVELS[$topClearanceExisting]['title'] : null;
+        $responseDecoded = $discordApi->createMessageInChannel($midgameDpsParsesChannelId, [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
-                    'content' => $mentionedName . ': DPS parse you submitted has been **disapproved** by ' . $myMentionedName
-                        . "\nPlease fix your parse and re-submit! DPS Parse rules can be found here: https://lodgeofsorceresses.com/topic/5158-pve-raid-core-dps-parse-rules/\n"
+                    'content' => $mentionedName . ': DPS parse you submitted has been **approved** by ' . $myMentionedName
+                        . "\nAs a result, you have been assigned to the rank of " . $rankTitle . '. Please also expect additional ' . $mentionedAnnouncementsChannel . "\n"
                         . 'Details regarding your parse is listed below. The original Discord post of Parse submit created earlier (which should be above), is deleted now to avoid duplicates.',
                     'tts' => false,
                     'embed' => [
-                        'color' => 0x888800,
+                        'color' => 0x008800,
                         'thumbnail' => [
                             'url' => cloudinary_url('special/logo.png', [
                                 'secure' => true,
@@ -93,8 +101,8 @@ class PostAnnouncementToDiscordRegardingDpsDisapproval
                         ],
                         'fields' => [
                             [
-                                'name' => 'Reason for Disapproval',
-                                'value' => $dpsParse->reason_for_disapproval,
+                                'name' => 'New Clearance',
+                                'value' => '<@&' . $rankTitle . '>' . ($clearanceTitle ? ', cleared for ' . $clearanceTitle : ', no clearance') . '.',
                             ],
                             [
                                 'name' => 'DPS Amount',
@@ -132,10 +140,10 @@ class PostAnnouncementToDiscordRegardingDpsDisapproval
         ]);
 
         /*------------------------------------
-         | React with :x:
+         | React to the message
          *-----------------------------------*/
 
-        $discordApi->reactToMessageInChannel($channelId, $responseDecoded['id'], '❌');
+        $discordApi->reactToMessageInChannel($midgameDpsParsesChannelId, $responseDecoded['id'], '✅');
 
         return true;
     }

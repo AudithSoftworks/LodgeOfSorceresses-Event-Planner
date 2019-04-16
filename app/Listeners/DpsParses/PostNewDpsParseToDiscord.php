@@ -5,13 +5,10 @@ use App\Models\Character;
 use App\Models\EquipmentSet;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
-use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 
 class PostNewDpsParseToDiscord
 {
-    private const DISCORD_API_ENDPOINT = 'https://discordapp.com/api/';
-
     /**
      * @var \Illuminate\Config\Repository
      */
@@ -39,15 +36,6 @@ class PostNewDpsParseToDiscord
         $dpsParse = $event->dpsParse;
         $dpsParse->refresh();
 
-        $botAccessToken = config('services.discord.bot_token');
-        $discordClient = new Client([
-            'base_uri' => self::DISCORD_API_ENDPOINT,
-            'headers' => [
-                'Authorization' => 'Bot ' . $botAccessToken,
-                'Content-Type' => 'application/json'
-            ],
-        ]);
-
         /** @var \App\Models\User $me */
         $me = app('auth.driver')->user();
         $character = $this->getCharacter($dpsParse->character_id);
@@ -62,7 +50,8 @@ class PostNewDpsParseToDiscord
         $mentionedName = $discordAccount ? '<@!' . $discordAccount->remote_id . '>' : $me->name;
 
         $idsOfCreatedDiscordMessages = [];
-        $response = $discordClient->post('channels/' . $this->discordChannels['midgame_dps_parses'] . '/messages', [
+        $channelId = config('services.discord.channels.midgame_dps_parses');
+        $responseDecoded = app('discord.api')->createMessageInChannel($channelId, [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
                     'content' => $mentionedName . ' has submitted a DPS parse with ' . $dpsParse->dps_amount . ' DPS.',
@@ -107,8 +96,7 @@ class PostNewDpsParseToDiscord
                 ]),
             ]
         ]);
-        $bodyDecoded = json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
-        $idsOfCreatedDiscordMessages[] = $bodyDecoded['id'];
+        $idsOfCreatedDiscordMessages[] = $responseDecoded['id'];
         $dpsParse->discord_notification_message_ids = implode(',', $idsOfCreatedDiscordMessages);
         $dpsParse->save();
 

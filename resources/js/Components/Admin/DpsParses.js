@@ -3,9 +3,9 @@ import { faSpinner, faTachometerAlt, faThList, faUserCheck, faUserEdit, faUserPl
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { Fragment, PureComponent } from 'react';
 import { Link } from "react-router-dom";
-import Notification from '../Notification';
 import Axios from '../../vendor/Axios';
 import Loading from "../Loading";
+import Notification from '../Notification';
 
 library.add(faSpinner, faTachometerAlt, faThList, faUserCheck, faUserEdit, faUserPlus, faUserTimes);
 
@@ -61,7 +61,7 @@ class DpsParses extends PureComponent {
 
     handleDisapprove = (event) => {
         event.preventDefault();
-        if (confirm('Are you sure you want to disapprove this parse?')) {
+        if (confirm('Are you sure you want to **disapprove** this parse?')) {
             let prompt = window.prompt('Please provide a reason for disapproval. This will be posted on Discord.');
             if (prompt && prompt.length) {
                 this.cancelTokenSource = Axios.CancelToken.source();
@@ -118,15 +118,15 @@ class DpsParses extends PureComponent {
 
     handleApprove = (event) => {
         event.preventDefault();
-        if (confirm('Are you sure you want to delete this parse?')) {
+        if (confirm('Are you sure you want to **approve** this parse?')) {
             this.cancelTokenSource = Axios.CancelToken.source();
             let currentTarget = event.currentTarget;
             const dpsParses = this.state.dpsParses;
-            Axios.delete('/api/chars/' + this.props.match.params.id + '/parses/' + currentTarget.getAttribute('data-id'), {
-                cancelToken: this.cancelTokenSource.token,
+            Axios.put('/api/admin/parses/' + currentTarget.getAttribute('data-id'), {
+                cancelToken: this.cancelTokenSource.token
             }).then((response) => {
                 this.cancelTokenSource = null;
-                if (response.status === 204) {
+                if (response.data) {
                     dpsParses.forEach((item, idx) => {
                         if (item.id === parseInt(currentTarget.getAttribute('data-id'))) {
                             delete (dpsParses[idx]);
@@ -137,7 +137,7 @@ class DpsParses extends PureComponent {
                         messages: [
                             {
                                 type: "success",
-                                message: 'DPS Parse deleted.'
+                                message: response.data.message
                             }
                         ],
                     });
@@ -152,6 +152,16 @@ class DpsParses extends PureComponent {
                             }
                         ]
                     })
+                }
+                if (error.response) {
+                    switch (error.response.status) {
+                        case 403:
+                            this.props.history.push('/', this.state);
+                            break;
+                        case 404:
+                            this.props.history.push('/admin/parses', this.state);
+                            break;
+                    }
                 }
             });
         }

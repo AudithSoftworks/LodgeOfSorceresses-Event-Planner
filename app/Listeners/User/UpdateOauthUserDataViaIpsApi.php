@@ -5,7 +5,7 @@ use Carbon\Carbon;
 
 class UpdateOauthUserDataViaIpsApi
 {
-    private const IPS_OAUTH_USER_UPDATE_TIMEOUT = 900; // in seconds
+    private const OAUTH_USER_UPDATE_TIMEOUT = 900; // in seconds
 
     /**
      * @param \App\Events\Users\LoggedInViaIpsOauth $event
@@ -19,7 +19,7 @@ class UpdateOauthUserDataViaIpsApi
 
         $now = new Carbon();
         $updatedAt = new Carbon($oauthAccount->updated_at);
-        $oauthAccountUpdateTimeout = env('IPS_OAUTH_USER_UPDATE_TIMEOUT', self::IPS_OAUTH_USER_UPDATE_TIMEOUT);
+        $oauthAccountUpdateTimeout = env('OAUTH_USER_UPDATE_TIMEOUT', self::OAUTH_USER_UPDATE_TIMEOUT);
         if ($event->forceOauthUpdateViaApi || $now->diffAsCarbonInterval($updatedAt)->totalSeconds > $oauthAccountUpdateTimeout) {
             $remoteUserDataFetchedThroughApi = app('ips.api')->getUser($oauthAccount->remote_id);
             $remoteSecondaryGroups = array_reduce($remoteUserDataFetchedThroughApi['secondaryGroups'], static function ($acc, $item) {

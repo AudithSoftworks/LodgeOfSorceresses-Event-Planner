@@ -1,8 +1,11 @@
-<?php namespace App\Providers;
+<?php
 
+namespace App\Providers;
+
+use App\Services\DiscordApi;
 use Illuminate\Support\ServiceProvider;
 
-class FileStreamServiceProvider extends ServiceProvider
+class DiscordApiServiceProvider extends ServiceProvider
 {
     /**
      * Deferring the loading of a provider improves performance of the application,
@@ -13,13 +16,13 @@ class FileStreamServiceProvider extends ServiceProvider
     protected $defer = true;
 
     /**
-     * Register any application services.
+     * Register services.
      *
      * @return void
      */
     public function register(): void
     {
-        $this->app->singleton('filestream', \App\Services\FileStream::class);
+        $this->app->singleton('discord.api', DiscordApi::class);
     }
 
     /**
@@ -29,6 +32,6 @@ class FileStreamServiceProvider extends ServiceProvider
      */
     public function provides(): array
     {
-        return ['filestream'];
+        return ['discord.api'];
     }
 }

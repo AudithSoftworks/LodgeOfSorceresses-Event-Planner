@@ -1,4 +1,6 @@
-<?php namespace App\Services;
+<?php
+
+namespace App\Services;
 
 use Carbon\Carbon;
 use GuzzleHttp\Client;
@@ -90,6 +92,13 @@ class IpsApi
     public function getUser(int $remoteUserId): array
     {
         $response = $this->apiClient->get($this->ipsUrl . '/core/members/' . $remoteUserId);
+
+        return json_decode($response->getBody()->getContents(), true);
+    }
+
+    public function editUser(int $userId, array $params): array
+    {
+        $response = $this->apiClient->post($this->ipsUrl . '/core/members/' . $userId, ['query' => $params]);
 
         return json_decode($response->getBody()->getContents(), true);
     }

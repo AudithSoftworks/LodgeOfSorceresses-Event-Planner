@@ -2,7 +2,7 @@
 
 use Illuminate\Support\ServiceProvider;
 
-class FileStreamServiceProvider extends ServiceProvider
+class GuildRanksAndClearanceServiceProvider extends ServiceProvider
 {
     /**
      * Deferring the loading of a provider improves performance of the application,
@@ -19,7 +19,7 @@ class FileStreamServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton('filestream', \App\Services\FileStream::class);
+        $this->app->singleton('guild.ranks.clearance', \App\Services\GuildRankAndClearance::class);
     }
 
     /**
@@ -29,6 +29,6 @@ class FileStreamServiceProvider extends ServiceProvider
      */
     public function provides(): array
     {
-        return ['filestream'];
+        return ['guild.ranks.clearance'];
     }
 }
