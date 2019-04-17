@@ -7,7 +7,7 @@ use App\Singleton\RoleTypes;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class PostAnnouncementToDiscordRegardingDpsDisapproval
+class AnnounceDpsDisapprovalOnDiscord
 {
     public function __construct()
     {
@@ -83,7 +83,7 @@ class PostAnnouncementToDiscordRegardingDpsDisapproval
                         . 'Details regarding your parse is listed below. The original Discord post of Parse submit created earlier (which should be above), is deleted now to avoid duplicates.',
                     'tts' => false,
                     'embed' => [
-                        'color' => 0x888800,
+                        'color' => 0x880000,
                         'thumbnail' => [
                             'url' => cloudinary_url('special/logo.png', [
                                 'secure' => true,

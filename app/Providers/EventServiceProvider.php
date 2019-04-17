@@ -37,9 +37,10 @@ class EventServiceProvider extends ServiceProvider
             Listeners\DpsParses\ProcessDpsParse::class,
             Listeners\DpsParses\RerankPlayerOnIpsAndDiscord::class,
             Listeners\DpsParses\AnnounceDpsApprovalOnDiscord::class,
+            Listeners\DpsParses\AnnouncePromotionsOnDiscordOfficerChannel::class,
         ],
         Events\DpsParses\DpsParseDisapproved::class => [
-            Listeners\DpsParses\PostAnnouncementToDiscordRegardingDpsDisapproval::class
+            Listeners\DpsParses\AnnounceDpsDisapprovalOnDiscord::class
         ],
 
         Events\Files\Uploaded::class => [

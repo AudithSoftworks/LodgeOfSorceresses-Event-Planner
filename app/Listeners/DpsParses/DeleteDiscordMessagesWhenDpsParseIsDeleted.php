@@ -2,8 +2,6 @@
 
 use App\Events\DpsParses\DpsParseDeleted;
 use GuzzleHttp\Client;
-use GuzzleHttp\RequestOptions;
-use Illuminate\Http\Response;
 
 class DeleteDiscordMessagesWhenDpsParseIsDeleted
 {
@@ -42,18 +40,9 @@ class DeleteDiscordMessagesWhenDpsParseIsDeleted
     {
         $dpsParse = $event->dpsParse;
         $dpsParse->refresh();
-
         $discordMessageIdsToDelete = explode(',', $dpsParse->discord_notification_message_ids);
-        if (count($discordMessageIdsToDelete) > 1) {
-            $response = $this->discordClient->post('channels/' . $this->discordChannels['midgame_dps_parses'] . '/messages/bulk-delete', [
-                RequestOptions::JSON => [
-                    'messages' => $discordMessageIdsToDelete,
-                ]
-            ]);
-        } else {
-            $response = $this->discordClient->delete('channels/' . $this->discordChannels['midgame_dps_parses'] . '/messages/' . $dpsParse->discord_notification_message_ids);
-        }
-        if ($response->getStatusCode() === Response::HTTP_NO_CONTENT) {
+        $response = app('discord.api')->deleteMessagesInChannel(config('services.discord.channels.midgame_dps_parses'), $discordMessageIdsToDelete);
+        if ($response) {
             $dpsParse->forceDelete();
         }
 
