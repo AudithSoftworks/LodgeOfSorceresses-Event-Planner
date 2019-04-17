@@ -1,5 +1,6 @@
 <?php namespace App\Services;
 
+use App\Models\Character;
 use App\Models\User;
 
 class GuildRankAndClearance
@@ -85,7 +86,7 @@ class GuildRankAndClearance
         ],
     ];
 
-    public function calculateTopClearance(User $user): ?string
+    public function calculateTopClearanceForUser(User $user): ?string
     {
         $user->loadMissing(['characters']);
         /** @var \App\Models\Character[] $characters */
@@ -103,6 +104,18 @@ class GuildRankAndClearance
             }
             if (!$parseAuthorHasThisClearanceInACharacter) {
                 break;
+            }
+        }
+
+        return $topClearanceExisting;
+    }
+
+    public function calculateTopClearanceForCharacter(Character $character): ?string
+    {
+        $topClearanceExisting = null;
+        foreach (self::CLEARANCE_LEVELS as $clearanceLevel => $clearanceLevelDetails) {
+            if ($character->{'approved_for_' . $clearanceLevel}) {
+                $topClearanceExisting = $clearanceLevel;
             }
         }
 

@@ -23,7 +23,7 @@ class RerankPlayerOnIpsAndDiscord
         $parseAuthor = $dpsParse->owner()->first();
         $parseAuthor->loadMissing(['linkedAccounts', 'characters']);
 
-        $topClearanceExisting = app('guild.ranks.clearance')->calculateTopClearance($parseAuthor);
+        $topClearanceExisting = app('guild.ranks.clearance')->calculateTopClearanceForUser($parseAuthor);
         $this->rerankUserOnIps($parseAuthor, $topClearanceExisting);
         $this->rerankUserOnDiscord($parseAuthor, $topClearanceExisting);
 

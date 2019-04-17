@@ -42,11 +42,13 @@ class AnnounceDpsApprovalOnDiscord
         if (!$parseAuthor) {
             throw new ModelNotFoundException('Parse author record not found!');
         }
+        /** @var \App\Models\Character $character */
         $character = $dpsParse->character()->first();
         if (!$character) {
             throw new ModelNotFoundException('Character record not found!');
         }
-        $topClearanceExisting = app('guild.ranks.clearance')->calculateTopClearance($parseAuthor);
+        $playerClearance = app('guild.ranks.clearance')->calculateTopClearanceForUser($parseAuthor);
+        $characterClearance = app('guild.ranks.clearance')->calculateTopClearanceForCharacter($character);
 
         /*--------------------------------------------
          | Me & Parse author mention names parsed
@@ -81,14 +83,17 @@ class AnnounceDpsApprovalOnDiscord
         foreach ($gearSets as $set) {
             $gearSetsParsed[] = '[' . $set->name . '](https://eso-sets.com/set/' . $set->id . ')';
         }
-        $rankTitle = $topClearanceExisting ? GuildRankAndClearance::CLEARANCE_LEVELS[$topClearanceExisting]['rank']['discord_role'] : GuildRankAndClearance::RANK_INITIATE['discord_role'];
-        $clearanceTitle = $topClearanceExisting ? GuildRankAndClearance::CLEARANCE_LEVELS[$topClearanceExisting]['title'] : null;
+        $rankTitle = $playerClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['rank']['discord_role'] : GuildRankAndClearance::RANK_INITIATE['discord_role'];
+        $playerClearanceTitle = $playerClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['title'] : null;
+        $characterClearanceTitle = $characterClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$characterClearance]['title'] : null;
         $responseDecoded = $discordApi->createMessageInChannel($midgameDpsParsesChannelId, [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
-                    'content' => $mentionedName . ': DPS parse you submitted has been **approved** by ' . $myMentionedName
-                        . "\nAs a result, you have been assigned to the rank of " . $rankTitle . '. Please also expect additional ' . $mentionedAnnouncementsChannel . "\n"
-                        . 'Details regarding your parse is listed below. The original Discord post of Parse submit created earlier (which should be above), is deleted now to avoid duplicates.',
+                    'content' => $mentionedName . ': DPS parse you submitted has been **approved** by ' . $myMentionedName . ".\n"
+                        . ($characterClearanceTitle ? '**Your character is cleared for ' . $characterClearanceTitle . '.**' : '**You character wasn\'t cleared for any content!**')
+                        . "\nYour current guild rank (based on all your cleared characters) is <@&" . $rankTitle . '>.'
+                        . ($characterClearanceTitle ? "\nPlease also expect additional " . $mentionedAnnouncementsChannel : '')
+                        . "\nDetails regarding your parse is listed below. The original Discord post of Parse submit created earlier (which should be above), is deleted now to avoid duplicates.",
                     'tts' => false,
                     'embed' => [
                         'color' => 0x008800,
@@ -101,8 +106,12 @@ class AnnounceDpsApprovalOnDiscord
                         ],
                         'fields' => [
                             [
-                                'name' => 'New Clearance',
-                                'value' => '<@&' . $rankTitle . '>' . ($clearanceTitle ? ', cleared for ' . $clearanceTitle : ', no clearance') . '.',
+                                'name' => 'Character Clearance',
+                                'value' => ($characterClearanceTitle ? 'Cleared for ' . $characterClearanceTitle : 'No clearance') . '.',
+                            ],
+                            [
+                                'name' => 'Updated Player Clearance',
+                                'value' => '<@&' . $rankTitle . '>' . ($playerClearanceTitle ? ', cleared for ' . $playerClearanceTitle : ', no clearance') . '.',
                             ],
                             [
                                 'name' => 'DPS Amount',
