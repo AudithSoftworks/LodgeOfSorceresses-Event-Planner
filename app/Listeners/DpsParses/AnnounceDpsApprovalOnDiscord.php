@@ -2,6 +2,7 @@
 
 use App\Events\DpsParses\DpsParseApproved;
 use App\Models\EquipmentSet;
+use App\Services\DiscordApi;
 use App\Services\GuildRankAndClearance;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
@@ -74,9 +75,9 @@ class AnnounceDpsApprovalOnDiscord
         $discordApi = app('discord.api');
         $discordApi->deleteMessagesInChannel($midgameDpsParsesChannelId, $discordMessageIdsToDelete);
 
-        /*------------------------------------
-         | Post the announcement
-         *-----------------------------------*/
+        /*------------------------------------------------------
+         | Post approval announcement in #dps-parses channel
+         *-----------------------------------------------------*/
 
         $gearSets = $this->getGearSets($dpsParse->sets);
         $gearSetsParsed = [];
@@ -86,6 +87,7 @@ class AnnounceDpsApprovalOnDiscord
         $rankTitle = $playerClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['rank']['discord_role'] : GuildRankAndClearance::RANK_INITIATE['discord_role'];
         $playerClearanceTitle = $playerClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['title'] : null;
         $characterClearanceTitle = $characterClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$characterClearance]['title'] : null;
+        $className = ClassTypes::getClassName($character->class);
         $responseDecoded = $discordApi->createMessageInChannel($midgameDpsParsesChannelId, [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
@@ -96,7 +98,7 @@ class AnnounceDpsApprovalOnDiscord
                         . "\nDetails regarding your parse is listed below. The original Discord post of Parse submit created earlier (which should be above), is deleted now to avoid duplicates.",
                     'tts' => false,
                     'embed' => [
-                        'color' => 0x008800,
+                        'color' => 0x00aa00,
                         'thumbnail' => [
                             'url' => cloudinary_url('special/logo.png', [
                                 'secure' => true,
@@ -127,7 +129,7 @@ class AnnounceDpsApprovalOnDiscord
                             ],
                             [
                                 'name' => 'Class',
-                                'value' => ClassTypes::getClassName($character->class),
+                                'value' => $className,
                             ],
                             [
                                 'name' => 'Sets Used',
@@ -153,6 +155,57 @@ class AnnounceDpsApprovalOnDiscord
          *-----------------------------------*/
 
         $discordApi->reactToMessageInChannel($midgameDpsParsesChannelId, $responseDecoded['id'], '✅');
+
+        /*-----------------------------------------------------------
+         | Post clearance announcement in #announcements channel
+         *----------------------------------------------------------*/
+
+        if ($characterClearanceTitle) {
+            $guidanceMentioned = '<@&' . DiscordApi::ROLE_GUIDANCE . '>';
+            $roleName = RoleTypes::getShortRoleText($character->role);
+            $discordApi->createMessageInChannel($announcementsChannelId, [
+                RequestOptions::FORM_PARAMS => [
+                    'payload_json' => json_encode([
+                        'content' => $mentionedName . ', you are cleared for ' . $characterClearanceTitle . ' on your ' . $className . ' ' . $roleName . ' named _' . $character->name . "_.\n"
+                            . 'Please start doing content with folks and let the guild get to know you and vice versa (3 day event attendance is in effect). '
+                            . 'It is very important for our community! '
+                            . '_Midgame_, _DPS Trainings_ & _Endgame_ are eligible content towards your attendance. '
+                            . 'Additionally, please do not forget to constantly improve and keep sending your improved parses regularly. '
+                            . 'Refer to ' . $guidanceMentioned . ", should you need any assistance with training or any other questions! Good luck!\n"
+                            . '_P.S.:_ Feel free to find important links listed below for your convenience. _Please emote this message upon reading!_'
+                        ,
+                        'tts' => false,
+                        'embed' => [
+                            'color' => 0x00aa00,
+                            'thumbnail' => [
+                                'url' => cloudinary_url('special/logo.png', [
+                                    'secure' => true,
+                                    'width' => 300,
+                                    'height' => 300,
+                                ])
+                            ],
+                            'fields' => [
+                                [
+                                    'name' => 'DPS Training',
+                                    'value' => 'Sign-up [on Calendar](https://lodgeofsorceresses.com/calendar/)',
+                                ],
+                                [
+                                    'name' => 'Raid Core Guidelines',
+                                    'value' => 'Read [this topic](https://lodgeofsorceresses.com/topic/5506-pve-raid-core-guidelines/) as a preparation to join a Core',
+                                ],
+                                [
+                                    'name' => 'Raid Core Requirements to Join',
+                                    'value' => 'Read [this topic](https://lodgeofsorceresses.com/topic/4887-pve-raid-core-requirements-to-join/) as a preparation to join a Core',
+                                ],
+                            ],
+                            'footer' => [
+                                'text' => 'Sent via Lodge of Sorceresses Planner at: https://planner.lodgeofsorceresses.com'
+                            ]
+                        ],
+                    ]),
+                ]
+            ]);
+        }
 
         return true;
     }
