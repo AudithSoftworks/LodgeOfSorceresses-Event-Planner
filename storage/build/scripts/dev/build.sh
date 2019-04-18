@@ -10,7 +10,7 @@ test -f .env || cat .env.example | tee .env > /dev/null 2>&1;
 
 docker-compose exec nginx bash -c "cat /etc/hosts | sed s/localhost/localhost\ basis.audith.org/g | tee /etc/hosts";
 
-docker-compose exec dev bash -c "
+docker-compose exec php bash -c "
     crontab -l;
     npm update;
 

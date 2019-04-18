@@ -6,9 +6,9 @@ test -f .env || sed \
     -e "s/DB_USERNAME=.*/DB_USERNAME=${DB_USERNAME}/g" .env.example \
     | tee .env > /dev/null 2>&1;
 
-docker-compose exec --privileged nginx bash -c "cat /etc/hosts | sed s/localhost/localhost\ planner.lodgeofsorceresses.dev/g | tee /etc/hosts > /dev/null 2>&1";
+docker-compose exec nginx bash -c "cat /etc/hosts | sed s/localhost/localhost\ planner.lodgeofsorceresses.dev/g | tee /etc/hosts > /dev/null 2>&1";
 
-docker-compose exec --privileged dev bash -c "
+docker-compose exec php bash -c "
     export NPM_CONFIG_LOGLEVEL=warn;
 
     crontab -l;

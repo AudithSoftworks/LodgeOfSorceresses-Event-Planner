@@ -43,7 +43,7 @@
         "fine-uploader": "^5.16.2",
         "fine-uploader-wrappers": "latest",
         "moment": "^2.24.0",
-        "moment-timezone": "^0.5.23",
+        "moment-timezone": "^0.5.25",
         "prop-types": "^15.7.2",
         "react": "^16.8.6",
         "react-dom": "^16.8.6",
@@ -51,7 +51,7 @@
         "react-loadable": "^5.5.0",
         "react-notifications-component": "^1.1.1",
         "react-router-dom": "^4.3.1",
-        "react-select": "^2.4.2",
+        "react-select": "^2.4.3",
         "simple-line-icons-webfont": "^4.0.3",
         "skycons": "^1.0.0"
     },

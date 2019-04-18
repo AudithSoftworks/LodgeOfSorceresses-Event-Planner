@@ -25,26 +25,6 @@ services:
     networks:
       default:
         ipv4_address: 172.72.0.103
-  php-fpm:
-    container_name: php-fpm
-    image: audithsoftworks/docker:php-fpm
-    volumes:
-      - .:/var/www
-    working_dir: /var/www
-    links:
-      - mariadb
-      - postgres
-      - redis
-    environment:
-      XDEBUG_CONFIG: "remote_host=172.72.0.1"
-      REDIS_PORT: 6379
-      MYUID: "${MYUID:-1000}"
-      MYGID: "${MYGID:-1000}"
-    entrypoint: storage/build/scripts/php-fpm-init-container.sh
-    command: php-fpm
-    networks:
-      default:
-        ipv4_address: 172.72.0.104
   nginx:
     container_name: nginx
     image: nginx
@@ -53,26 +33,26 @@ services:
       - .:/var/www
     working_dir: /var/www
     links:
-      - php-fpm:phpFpm
+      - php
     networks:
       default:
         aliases:
           - basis.audith.org
         ipv4_address: 172.72.0.105
-  selenium-chrome:
-    container_name: selenium-chrome
-    image: selenium/standalone-chrome-debug
-    networks:
-      default:
-        ipv4_address: 172.72.0.106
-  selenium-firefox:
-    container_name: selenium-firefox
-    image: selenium/standalone-firefox-debug
-    networks:
-      default:
-        ipv4_address: 172.72.0.107
-  dev:
-    container_name: dev
+#  selenium-chrome:
+#    container_name: selenium-chrome
+#    image: selenium/standalone-chrome-debug
+#    networks:
+#      default:
+#        ipv4_address: 172.72.0.106
+#  selenium-firefox:
+#    container_name: selenium-firefox
+#    image: selenium/standalone-firefox-debug
+#    networks:
+#      default:
+#        ipv4_address: 172.72.0.107
+  php:
+    container_name: php
     image: audithsoftworks/docker:php
     volumes:
       - .:/var/www
@@ -82,15 +62,14 @@ services:
       - mariadb
       - postgres
       - redis
-      - nginx
     environment:
       XDEBUG_CONFIG: "remote_host=172.72.0.1"
       REDIS_PORT: 6379
       WORKDIR: "/var/www"
       MYUID: "${MYUID:-1000}"
       MYGID: "${MYGID:-1000}"
-    entrypoint: storage/build/scripts/dev-init-container.sh
-    command: "php -a"
+    entrypoint: storage/build/scripts/docker-entrypoint.sh
+    command: php-fpm
     stdin_open: true
     tty: true
     networks:
