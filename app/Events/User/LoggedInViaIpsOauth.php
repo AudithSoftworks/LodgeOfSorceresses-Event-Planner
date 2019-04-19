@@ -1,4 +1,4 @@
-<?php namespace App\Events\Users;
+<?php namespace App\Events\User;
 
 use App\Models\UserOAuth;
 

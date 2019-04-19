@@ -1,11 +1,11 @@
-<?php namespace App\Listeners\DpsParses;
+<?php namespace App\Listeners\DpsParse;
 
-use App\Events\DpsParses\DpsParseApproved;
+use App\Events\DpsParse\DpsParseApproved;
 
 class ProcessDpsParse
 {
     /**
-     * @param \App\Events\DpsParses\DpsParseApproved $event
+     * @param \App\Events\DpsParse\DpsParseApproved $event
      *
      * @return bool
      */

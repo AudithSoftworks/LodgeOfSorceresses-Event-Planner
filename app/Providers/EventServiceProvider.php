@@ -17,36 +17,43 @@ class EventServiceProvider extends ServiceProvider
             Listeners\Cache\Recache::class
         ],
 
-        Events\Users\LoggedIn::class => [],
-        Events\Users\LoggedInViaIpsOauth::class => [
+        Events\Character\CharacterDeleting::class => [
+            Listeners\DpsParse\DeleteDpsParsesOfDeletingCharacter::class
+        ],
+        Events\Character\CharacterDeleted::class => [
+            Listeners\Character\RerankPlayerOnIpsAndDiscordUponCharacterDeletion::class
+        ],
+
+        Events\DpsParse\DpsParseSubmitted::class => [
+            Listeners\DpsParse\PostNewDpsParseToDiscord::class
+        ],
+        Events\DpsParse\DpsParseDeleted::class => [
+            Listeners\DpsParse\DeleteDiscordMessagesWhenDpsParseIsDeleted::class
+        ],
+        Events\DpsParse\DpsParseApproved::class => [
+            Listeners\DpsParse\ProcessDpsParse::class,
+            Listeners\DpsParse\RerankPlayerOnIpsAndDiscordUponDpsParseApproval::class,
+            Listeners\DpsParse\AnnounceDpsApprovalOnDiscord::class,
+            Listeners\DpsParse\AnnouncePromotionsOnDiscordOfficerChannel::class,
+        ],
+        Events\DpsParse\DpsParseDisapproved::class => [
+            Listeners\DpsParse\AnnounceDpsDisapprovalOnDiscord::class
+        ],
+
+        Events\File\Uploaded::class => [
+            Listeners\File\ValidateUploadRealMimeAgainstAllowedTypes::class,
+            Listeners\File\PersistUploadedFile::class
+        ],
+
+        Events\User\LoggedIn::class => [],
+        Events\User\LoggedInViaIpsOauth::class => [
             Listeners\User\UpdateOauthUserDataViaIpsApi::class,
             Listeners\User\UpdateOauthUserDataViaDiscordApi::class,
         ],
-        Events\Users\LoggedOut::class => [],
-        Events\Users\Registered::class => [],
-        Events\Users\RequestedActivationLink::class => [],
-        Events\Users\RequestedResetPasswordLink::class => [],
-
-        Events\DpsParses\DpsParseSubmitted::class => [
-            Listeners\DpsParses\PostNewDpsParseToDiscord::class
-        ],
-        Events\DpsParses\DpsParseDeleted::class => [
-            Listeners\DpsParses\DeleteDiscordMessagesWhenDpsParseIsDeleted::class
-        ],
-        Events\DpsParses\DpsParseApproved::class => [
-            Listeners\DpsParses\ProcessDpsParse::class,
-            Listeners\DpsParses\RerankPlayerOnIpsAndDiscord::class,
-            Listeners\DpsParses\AnnounceDpsApprovalOnDiscord::class,
-            Listeners\DpsParses\AnnouncePromotionsOnDiscordOfficerChannel::class,
-        ],
-        Events\DpsParses\DpsParseDisapproved::class => [
-            Listeners\DpsParses\AnnounceDpsDisapprovalOnDiscord::class
-        ],
-
-        Events\Files\Uploaded::class => [
-            Listeners\Files\ValidateUploadRealMimeAgainstAllowedTypes::class,
-            Listeners\Files\PersistUploadedFile::class
-        ],
+        Events\User\LoggedOut::class => [],
+        Events\User\Registered::class => [],
+        Events\User\RequestedActivationLink::class => [],
+        Events\User\RequestedResetPasswordLink::class => [],
     ];
 
     /**

@@ -1,6 +1,6 @@
-<?php namespace App\Listeners\DpsParses;
+<?php namespace App\Listeners\DpsParse;
 
-use App\Events\DpsParses\DpsParseApproved;
+use App\Events\DpsParse\DpsParseApproved;
 use App\Services\GuildRankAndClearance;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -17,7 +17,7 @@ class AnnouncePromotionsOnDiscordOfficerChannel
     }
 
     /**
-     * @param \App\Events\DpsParses\DpsParseApproved $event
+     * @param \App\Events\DpsParse\DpsParseApproved $event
      *
      * @return bool
      */

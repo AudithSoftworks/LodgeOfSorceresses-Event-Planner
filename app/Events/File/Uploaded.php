@@ -1,4 +1,4 @@
-<?php namespace App\Events\Files;
+<?php namespace App\Events\File;
 
 use Illuminate\Http\Request;
 

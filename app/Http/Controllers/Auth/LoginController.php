@@ -1,9 +1,9 @@
 <?php namespace App\Http\Controllers\Auth;
 
-use App\Events\Users\LoggedIn;
-use App\Events\Users\LoggedInViaIpsOauth;
-use App\Events\Users\LoggedOut;
-use App\Events\Users\Registered;
+use App\Events\User\LoggedIn;
+use App\Events\User\LoggedInViaIpsOauth;
+use App\Events\User\LoggedOut;
+use App\Events\User\Registered;
 use App\Exceptions\Common\ValidationException;
 use App\Exceptions\Users\LoginNotValidException;
 use App\Exceptions\Users\LoginViaOauthFailedException;

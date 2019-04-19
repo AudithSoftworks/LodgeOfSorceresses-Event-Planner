@@ -1,6 +1,6 @@
-<?php namespace App\Listeners\DpsParses;
+<?php namespace App\Listeners\DpsParse;
 
-use App\Events\DpsParses\DpsParseSubmitted;
+use App\Events\DpsParse\DpsParseSubmitted;
 use App\Models\Character;
 use App\Models\EquipmentSet;
 use App\Singleton\ClassTypes;
@@ -26,7 +26,7 @@ class PostNewDpsParseToDiscord
     }
 
     /**
-     * @param \App\Events\DpsParses\DpsParseSubmitted $event
+     * @param \App\Events\DpsParse\DpsParseSubmitted $event
      *
      * @return bool
      * @throws \Exception

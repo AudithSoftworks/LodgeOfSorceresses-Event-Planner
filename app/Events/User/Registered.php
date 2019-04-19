@@ -1,18 +1,18 @@
-<?php namespace App\Events\Users;
+<?php namespace App\Events\User;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 
-class LoggedIn
+class Registered
 {
     /**
-     * @var array|\Illuminate\Contracts\Auth\Authenticatable
+     * @var \Illuminate\Contracts\Auth\Authenticatable
      */
     public $user;
 
     /**
      * @var null|string
      */
-    public $oauthProviderNameIfApplicable;
+    public $oauthProviderName;
 
     /**
      * @param \Illuminate\Contracts\Auth\Authenticatable $user
@@ -21,6 +21,6 @@ class LoggedIn
     public function __construct(Authenticatable $user, $oauthProviderName = null)
     {
         $this->user = $user;
-        $this->oauthProviderNameIfApplicable = $oauthProviderName;
+        $this->oauthProviderName = $oauthProviderName;
     }
 }

@@ -1,8 +1,8 @@
-<?php namespace App\Events\Users;
+<?php namespace App\Events\User;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 
-class ResetPassword
+class LoggedOut
 {
     /**
      * @var array|\Illuminate\Contracts\Auth\Authenticatable
@@ -10,7 +10,7 @@ class ResetPassword
     public $user;
 
     /**
-     * @param \Illuminate\Contracts\Auth\Authenticatable $user
+     * @param \Illuminate\Contracts\Auth\Authenticatable|null $user
      */
     public function __construct(Authenticatable $user)
     {

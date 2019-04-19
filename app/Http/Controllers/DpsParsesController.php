@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\DpsParses\DpsParseDeleted;
-use App\Events\DpsParses\DpsParseSubmitted;
+use App\Events\DpsParse\DpsParseDeleted;
+use App\Events\DpsParse\DpsParseSubmitted;
 use App\Models\DpsParse;
 use App\Models\File;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -25,6 +26,7 @@ class DpsParsesController extends Controller
         $dpsParses = DpsParse::query()
             ->whereUserId(app('auth.driver')->id())
             ->whereCharacterId($char)
+            ->whereNull('processed_by')
             ->orderBy('id', 'desc')
             ->get();
         if ($dpsParses->count()) {
@@ -100,7 +102,14 @@ class DpsParsesController extends Controller
     public function show(int $char, int $parse): JsonResponse
     {
         $this->authorize('show', DpsParse::class);
-        $dpsParse = DpsParse::whereUserId(app('auth.driver')->id())->whereCharacterId($char)->whereId($parse)->get();
+        $dpsParse = DpsParse::whereUserId(app('auth.driver')->id())
+            ->whereCharacterId($char)
+            ->whereNull('processed_by')
+            ->whereId($parse)
+            ->first();
+        if (!$dpsParse) {
+            throw new ModelNotFoundException('Parse Not Found!');
+        }
         $dpsParse->parse_file_hash = File::whereHash($dpsParse->parse_file_hash)->get();
         $dpsParse->superstar_file_hash = File::whereHash($dpsParse->superstar_file_hash)->get();
 
@@ -117,7 +126,14 @@ class DpsParsesController extends Controller
     public function destroy(int $char, int $parse): JsonResponse
     {
         $this->authorize('delete', DpsParse::class);
-        $dpsParse = DpsParse::whereUserId(app('auth.driver')->id())->whereCharacterId($char)->whereId($parse)->firstOrFail();
+        $dpsParse = DpsParse::whereUserId(app('auth.driver')->id())
+            ->whereCharacterId($char)
+            ->whereNull('processed_by')
+            ->whereId($parse)
+            ->first();
+        if (!$dpsParse) {
+            throw new ModelNotFoundException('Parse Not Found!');
+        }
         $dpsParse->delete();
         app('events')->dispatch(new DpsParseDeleted($dpsParse));
 

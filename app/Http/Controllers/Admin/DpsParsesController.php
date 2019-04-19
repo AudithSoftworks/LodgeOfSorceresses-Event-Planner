@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Events\DpsParses\DpsParseApproved;
-use App\Events\DpsParses\DpsParseDisapproved;
+use App\Events\DpsParse\DpsParseApproved;
+use App\Events\DpsParse\DpsParseDisapproved;
 use App\Http\Controllers\Controller;
 use App\Models\DpsParse;
 use App\Models\File;

@@ -1,15 +1,15 @@
-<?php namespace App\Listeners\DpsParses;
+<?php namespace App\Listeners\DpsParse;
 
-use App\Events\DpsParses\DpsParseApproved;
+use App\Events\DpsParse\DpsParseApproved;
 use App\Models\User;
 use App\Services\DiscordApi;
 use App\Services\GuildRankAndClearance;
 use App\Services\IpsApi;
 
-class RerankPlayerOnIpsAndDiscord
+class RerankPlayerOnIpsAndDiscordUponDpsParseApproval
 {
     /**
-     * @param \App\Events\DpsParses\DpsParseApproved $event
+     * @param \App\Events\DpsParse\DpsParseApproved $event
      *
      * @return bool|int
      */

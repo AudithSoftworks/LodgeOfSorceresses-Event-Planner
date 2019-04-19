@@ -1,6 +1,6 @@
-<?php namespace App\Listeners\DpsParses;
+<?php namespace App\Listeners\DpsParse;
 
-use App\Events\DpsParses\DpsParseApproved;
+use App\Events\DpsParse\DpsParseApproved;
 use App\Models\EquipmentSet;
 use App\Services\DiscordApi;
 use App\Services\GuildRankAndClearance;
@@ -21,7 +21,7 @@ class AnnounceDpsApprovalOnDiscord
     }
 
     /**
-     * @param \App\Events\DpsParses\DpsParseApproved $event
+     * @param \App\Events\DpsParse\DpsParseApproved $event
      *
      * @return bool
      */
@@ -60,7 +60,7 @@ class AnnounceDpsApprovalOnDiscord
         $myDiscordAccount = $me->linkedAccounts()->where('remote_provider', 'discord')->first();
         $myMentionedName = $myDiscordAccount ? '<@!' . $myDiscordAccount->remote_id . '>' : $me->name;
 
-        $parseAuthor->load('linkedAccounts');
+        $parseAuthor->loadMissing('linkedAccounts');
         $parseOwnersDiscordAccount = $parseAuthor->linkedAccounts()->where('remote_provider', 'discord')->first();
         $mentionedName = $parseOwnersDiscordAccount ? '<@!' . $parseOwnersDiscordAccount->remote_id . '>' : $parseAuthor->name;
 

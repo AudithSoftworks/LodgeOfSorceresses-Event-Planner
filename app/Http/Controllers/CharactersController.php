@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\Character\CharacterDeleting;
 use App\Models\Character;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
@@ -98,9 +99,9 @@ class CharactersController extends Controller
             $query
                 ->where('user_id', app('auth.driver')->id())
                 ->where('id', $char);
-        })->first(['id', 'name', 'class', 'role', 'sets']);
+        })->first(['id', 'name', 'class', 'role', 'sets', 'last_submitted_dps_amount']);
         if (!$character) {
-            return response()->json(['message' => 'Character not found! Redirecting to My Characters page...'])->setStatusCode(404);
+            return response()->json(['message' => 'Character not found!'])->setStatusCode(404);
         }
         $character->sets = array_map(static function ($item) {
             return (int)$item;
@@ -162,7 +163,9 @@ class CharactersController extends Controller
     public function destroy(int $char): JsonResponse
     {
         $this->authorize('delete', Character::class);
-        Character::destroy($char);
+        $character = Character::findOrFail($char)->first();
+//        app('events')->dispatch(new CharacterDeleting($character));
+        $character->delete();
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);
     }

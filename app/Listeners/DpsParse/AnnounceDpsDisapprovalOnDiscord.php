@@ -1,6 +1,6 @@
-<?php namespace App\Listeners\DpsParses;
+<?php namespace App\Listeners\DpsParse;
 
-use App\Events\DpsParses\DpsParseDisapproved;
+use App\Events\DpsParse\DpsParseDisapproved;
 use App\Models\EquipmentSet;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
@@ -19,7 +19,7 @@ class AnnounceDpsDisapprovalOnDiscord
     }
 
     /**
-     * @param \App\Events\DpsParses\DpsParseDisapproved $event
+     * @param \App\Events\DpsParse\DpsParseDisapproved $event
      *
      * @return bool
      */

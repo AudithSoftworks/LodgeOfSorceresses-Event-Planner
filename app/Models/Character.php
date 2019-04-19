@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Events\Character\CharacterDeleted;
+use App\Events\Character\CharacterDeleting;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -39,6 +41,17 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Character extends Model
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected $dispatchesEvents = [
+        'deleting' => CharacterDeleting::class,
+        'deleted' => CharacterDeleted::class,
+    ];
+
+    /**
+     * {@inheritdoc}
+     */
     protected $fillable = [
         'user_id',
         'name',
@@ -52,6 +65,14 @@ class Character extends Model
      */
     public function owner(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function dpsParses(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(DpsParse::class);
     }
 }

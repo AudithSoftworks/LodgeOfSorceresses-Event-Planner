@@ -1,4 +1,4 @@
-<?php namespace App\Events\DpsParses;
+<?php namespace App\Events\DpsParse;
 
 use App\Models\DpsParse;
 

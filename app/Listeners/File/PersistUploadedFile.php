@@ -1,6 +1,6 @@
-<?php namespace App\Listeners\Files;
+<?php namespace App\Listeners\File;
 
-use App\Events\Files\Uploaded;
+use App\Events\File\Uploaded;
 use App\Models\File;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Http\Response;
@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class PersistUploadedFile
 {
     /**
-     * @param \App\Events\Files\Uploaded $event
+     * @param \App\Events\File\Uploaded $event
      *
      * @return JsonResponse
      * @throws \Exception

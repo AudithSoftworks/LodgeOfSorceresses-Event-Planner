@@ -109,8 +109,8 @@ console.log('kaboom');
             item => {
                 const characterSets = item.sets.map(set => <a key={set['id']} href={'https://eso-sets.com/set/' + set['id']} className='badge badge-dark'>{set['name']}</a>);
                 item.actionList = {
-                    parses: item.role.indexOf('Damage') !== -1 ? <Link to={'/chars/' + item.id + '/parses'} title='Submit DPS Parse'><FontAwesomeIcon icon="tachometer-alt"/></Link> : null,
-                    edit: <Link to={'/chars/' + item.id + '/edit'} title='Edit Character'><FontAwesomeIcon icon="user-edit"/></Link>,
+                    parses: item['role'].indexOf('Damage') !== -1 ? <Link to={'/chars/' + item.id + '/parses'} title='Submit DPS Parse'><FontAwesomeIcon icon="tachometer-alt"/></Link> : null,
+                    edit: !item['last_submitted_dps_amount'] ? <Link to={'/chars/' + item.id + '/edit'} title='Edit Character'><FontAwesomeIcon icon="user-edit"/></Link> : null,
                     delete: <Link to={'/api/chars/' + item.id} onClick={this.handleDelete} data-id={item.id} title='Delete Character'><FontAwesomeIcon icon="trash-alt"/></Link>
                 };
                 let actionListRendered = [];
@@ -186,8 +186,9 @@ console.log('kaboom');
                     <b>Usage tips:</b>
                     <ul>
                         <li>Mouse-over the character name for action buttons to reveal to the right of row.</li>
-                        <li>Only Damage Dealers can submit DPS-parses.</li>
+                        <li>Only Damage Dealers can submit DPS-parses. Click <FontAwesomeIcon icon="tachometer-alt"/> icon to the right to create one for that Character.</li>
                         <li>When creating a Character, select all your available sets.</li>
+                        <li>Once a Character has an approved Parse, it can't be edited. Attempting to edit it will redirect you back to My Characters page.</li>
                     </ul>
                 </article>
                 <ul className='ne-corner'>{actionListRendered}</ul>

@@ -1,8 +1,8 @@
-<?php namespace App\Events\Users;
+<?php namespace App\Events\User;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 
-class RequestedResetPasswordLink
+class ResetPassword
 {
     /**
      * @var array|\Illuminate\Contracts\Auth\Authenticatable

@@ -1,6 +1,6 @@
 <?php namespace App\Services;
 
-use App\Events\Files\Uploaded;
+use App\Events\File\Uploaded;
 use App\Exceptions\FileStream as FileStreamExceptions;
 use App\Models\File;
 use ErrorException;

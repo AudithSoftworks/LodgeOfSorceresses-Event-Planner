@@ -1,13 +1,13 @@
-<?php namespace App\Listeners\Files;
+<?php namespace App\Listeners\File;
 
-use App\Events\Files\Uploaded;
+use App\Events\File\Uploaded;
 use App\Exceptions\FileStream as FileStreamExceptions;
 use Symfony\Component\HttpFoundation\File\File as SymfonyFile;
 
 class ValidateUploadRealMimeAgainstAllowedTypes
 {
     /**
-     * @param \App\Events\Files\Uploaded $event
+     * @param \App\Events\File\Uploaded $event
      *
      * @return bool
      */

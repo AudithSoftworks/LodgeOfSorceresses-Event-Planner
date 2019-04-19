@@ -36,6 +36,38 @@ class CharacterForm extends PureComponent {
 
     componentDidMount() {
         this.cancelTokenSource = Axios.CancelToken.source();
+
+        if (this.props.match.params.id) {
+            const charId = this.props.match.params.id;
+            Axios.get('/api/chars/' + charId, {
+                cancelToken: this.cancelTokenSource.token
+            }).then((response) => {
+                if (response.data) {
+                    if (response.data['last_submitted_dps_amount']) {
+                        this.props.history.push('/chars', this.state);
+                    }
+                    this.setState({
+                        characterLoaded: response.data,
+                    });
+                    this.cancelTokenSource = null;
+                }
+            }).catch((error) => {
+                if (!Axios.isCancel(error)) {
+                    this.setState({
+                        messages: [
+                            {
+                                type: "danger",
+                                message: error.response.data.message || error.response.statusText
+                            }
+                        ]
+                    })
+                }
+                if (error.response && error.response.status >= 400) {
+                    this.props.history.push('/chars', this.state);
+                }
+            });
+        }
+
         Axios.get('/api/sets', {
             cancelToken: this.cancelTokenSource.token
         }).then((response) => {
@@ -64,31 +96,6 @@ class CharacterForm extends PureComponent {
                 })
             }
         });
-
-        if (this.props.match.params.id) {
-            const charId = this.props.match.params.id;
-            Axios.get('/api/chars/' + charId, {
-                cancelToken: this.cancelTokenSource.token
-            }).then((response) => {
-                if (response.data) {
-                    this.setState({
-                        characterLoaded: response.data,
-                    });
-                    this.cancelTokenSource = null;
-                }
-            }).catch((error) => {
-                if (!Axios.isCancel(error)) {
-                    this.setState({
-                        messages: [
-                            {
-                                type: "danger",
-                                message: error.response.data.message || error.response.statusText
-                            }
-                        ]
-                    })
-                }
-            });
-        }
     };
 
     componentWillUnmount() {

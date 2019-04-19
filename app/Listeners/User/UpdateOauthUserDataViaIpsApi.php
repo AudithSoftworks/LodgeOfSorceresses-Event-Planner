@@ -1,6 +1,6 @@
 <?php namespace App\Listeners\User;
 
-use App\Events\Users\LoggedInViaIpsOauth;
+use App\Events\User\LoggedInViaIpsOauth;
 use Carbon\Carbon;
 
 class UpdateOauthUserDataViaIpsApi
@@ -8,7 +8,7 @@ class UpdateOauthUserDataViaIpsApi
     private const OAUTH_USER_UPDATE_TIMEOUT = 900; // in seconds
 
     /**
-     * @param \App\Events\Users\LoggedInViaIpsOauth $event
+     * @param \App\Events\User\LoggedInViaIpsOauth $event
      *
      * @return bool
      * @throws \Exception

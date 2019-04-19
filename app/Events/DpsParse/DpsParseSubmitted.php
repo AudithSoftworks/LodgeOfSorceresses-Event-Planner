@@ -1,8 +1,8 @@
-<?php namespace App\Events\DpsParses;
+<?php namespace App\Events\DpsParse;
 
 use App\Models\DpsParse;
 
-class DpsParseDisapproved
+class DpsParseSubmitted
 {
     /**
      * @var DpsParse
