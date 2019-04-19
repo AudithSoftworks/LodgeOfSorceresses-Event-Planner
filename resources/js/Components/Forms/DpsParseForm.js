@@ -282,7 +282,7 @@ class DpsParseForm extends PureComponent {
                 <article className='alert-info'>
                     <b>Usage tips:</b>
                     <ul>
-                        <li>Every new parse will renew your clearance level, thus sending lower DPS numbers can demote your character & revoke a clearance.</li>
+                        <li>Every new parse will renew your clearance level, i.e. sending lower DPS numbers can revoke its clearance and demote your account.</li>
                         <li>When creating a Parse, include only the sets used for that particular parse, removing everything else.</li>
                     </ul>
                 </article>

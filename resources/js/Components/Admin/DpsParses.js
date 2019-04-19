@@ -183,7 +183,10 @@ class DpsParses extends PureComponent {
                 return (
                     <tr key={'dpsParseRow-' + item.id}>
                         <td title={item.owner.name}>{item.owner.name}</td>
-                        <td title={item.character.name}>{item.character.name}</td>
+                        <td title={item.character.name}>
+                            {item.character.name}<br/>
+                            <small>{item.character.class} / {item.character.role}</small>
+                        </td>
                         <td>{characterSets.reduce((prev, curr) => [prev, ' ', curr])}</td>
                         <td className='text-right'>{item['dps_amount']}</td>
                         <td className='text-right'>
@@ -246,7 +249,17 @@ class DpsParses extends PureComponent {
 
         return [
             <section className="col-md-24 p-0 mb-4" key='dpsParseList'>
-                <h2 className="form-title col-md-24">Parses</h2>
+                <h2 className="form-title col-md-24">Parses Pending Approval</h2>
+                <article className='alert-info'>
+                    <b>DPS Parse Approval Checklist</b>
+                    <ul style={{listStyleType: 'circle'}}>
+                        <li>Do the Characters on both screenshots have the same name as the Character listed?</li>
+                        <li>Does Parse screenshot have the same DPS amount as it is listed in this table?</li>
+                        <li>Is parse in the screenshot the same Role (Stamina vs Magicka) as the Character listed?</li>
+                        <li>Is the gear listed in Superstar screenshot the same as in the Character listed?</li>
+                    </ul>
+                    If any of these fail, please Reject the Parse by clicking <FontAwesomeIcon icon="user-times"/> icon, and by stating the reason.
+                </article>
                 {parsesRendered}
             </section>
         ];

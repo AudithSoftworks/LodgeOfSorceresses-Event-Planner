@@ -23,6 +23,6 @@
     font-size: 0.75rem;
 
     > ul {
-        margin-bottom: 0;
+        margin: $grid-gutter-width / 4;
     }
 }

@@ -173,6 +173,10 @@ body {
                                     margin-left: $grid-gutter-width / 4;
                                 }
                             }
+
+                            > small {
+                                font-size: 0.75rem;
+                            }
                         }
 
                         &:hover {

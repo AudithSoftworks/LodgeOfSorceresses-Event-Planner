@@ -7,6 +7,8 @@ use App\Events\DpsParse\DpsParseDisapproved;
 use App\Http\Controllers\Controller;
 use App\Models\DpsParse;
 use App\Models\File;
+use App\Singleton\ClassTypes;
+use App\Singleton\RoleTypes;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use UnexpectedValueException;
@@ -33,6 +35,8 @@ class DpsParsesController extends Controller
                     return in_array($key, explode(',', $dpsParse->sets), false);
                 }, ARRAY_FILTER_USE_KEY);
                 $dpsParse->sets = array_values($characterEquipmentSets);
+                is_int($dpsParse->character->role) && $dpsParse->character->role = RoleTypes::getShortRoleText($dpsParse->character->role);
+                is_int($dpsParse->character->class) && $dpsParse->character->class = ClassTypes::getClassName($dpsParse->character->class);
                 $parseFile = File::whereHash($dpsParse->parse_file_hash)->first();
                 $superstarFile = File::whereHash($dpsParse->superstar_file_hash)->first();
                 if (!$parseFile || !$superstarFile) {

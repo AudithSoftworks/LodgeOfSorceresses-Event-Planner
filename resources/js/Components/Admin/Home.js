@@ -32,10 +32,10 @@ class Home extends PureComponent {
         return [
             <section className="col-md-24 p-0 mb-4" key='characterList'>
                 <h2 className="form-title col-md-24">Dashboard</h2>
-                <article>
-                    <h3>DPS Parses</h3>
+                <article className='col-md-24'>
+                    <h3>Available actions</h3>
                     <ul>
-                        <li><Link to='/admin/parses' title='Approve Parses'>Approve Parses</Link></li>
+                        <li><Link to='/admin/parses' title='Approve Parses'>DPS Parses pending Approval</Link></li>
                     </ul>
                 </article>
 
