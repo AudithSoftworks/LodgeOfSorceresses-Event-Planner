@@ -25,7 +25,7 @@ class DpsParsesController extends Controller
         $dpsParses = DpsParse::query()
             ->with(['owner', 'character'])
             ->whereNull('processed_by')
-            ->orderBy('id', 'desc')
+            ->orderBy('id')
             ->get();
         if ($dpsParses->count()) {
             app('cache.store')->has('equipmentSets'); // Trigger Recache listener.
