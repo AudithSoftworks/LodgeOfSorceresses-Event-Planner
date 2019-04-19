@@ -182,6 +182,14 @@ console.log('kaboom');
         return [
             <section className="col-md-24 p-0 mb-4" key='characterList'>
                 <h2 className="form-title col-md-24">My Characters</h2>
+                <article className='alert-info'>
+                    <b>Usage tips:</b>
+                    <ul>
+                        <li>Mouse-over the character name for action buttons to reveal to the right of row.</li>
+                        <li>Only Damage Dealers can submit DPS-parses.</li>
+                        <li>When creating a Character, select all your available sets.</li>
+                    </ul>
+                </article>
                 <ul className='ne-corner'>{actionListRendered}</ul>
                 {charactersRendered}
             </section>

@@ -14,3 +14,15 @@
         }
     }
 }
+
+[class*='alert-'] {
+    padding: $grid-gutter-width / 2;
+    margin: $grid-gutter-width / 2;
+    width: calc(100% - #{$grid-gutter-width});
+    font-family: "Open Sans", sans-serif;
+    font-size: 0.75rem;
+
+    > ul {
+        margin-bottom: 0;
+    }
+}

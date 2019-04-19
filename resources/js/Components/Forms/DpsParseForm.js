@@ -279,6 +279,13 @@ class DpsParseForm extends PureComponent {
         return (
             <form className='col-md-24 d-flex flex-row flex-wrap p-0' onSubmit={this.handleSubmit} key='dpsParseForm'>
                 <h2 className="form-title col-md-24">Submit Parse for Character</h2>
+                <article className='alert-info'>
+                    <b>Usage tips:</b>
+                    <ul>
+                        <li>Every new parse will renew your clearance level, thus sending lower DPS numbers can demote your character & revoke a clearance.</li>
+                        <li>When creating a Parse, include only the sets used for that particular parse, removing everything else.</li>
+                    </ul>
+                </article>
                 <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')}/>
                 <input type="hidden" name="parse_file_hash" value={this.state.parseScreenshotUploaded || ''}/>
                 <input type="hidden" name="superstar_file_hash" value={this.state.superstarScreenshotUploaded || ''}/>
