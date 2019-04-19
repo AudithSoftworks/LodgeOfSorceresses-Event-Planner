@@ -16,5 +16,6 @@ $router->middleware(['auth:api', 'throttle'])->group(static function (Router $ro
 });
 
 $router->middleware(['auth:api', 'throttle'])->prefix('admin')->group(static function (Router $router) {
+    $router->apiResource('/', 'Admin\HomeController')->only(['index']);
     $router->apiResource('parses', 'Admin\DpsParsesController')->except(['store']);
 });

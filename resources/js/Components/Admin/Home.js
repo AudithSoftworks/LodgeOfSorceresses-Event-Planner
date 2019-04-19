@@ -1,8 +1,38 @@
 import React, { Fragment, PureComponent } from 'react';
 import { Link } from "react-router-dom";
+import Axios from "../../vendor/Axios";
 import Notification from "../Notification";
 
 class Home extends PureComponent {
+    componentDidMount() {
+        this.cancelTokenSource = Axios.CancelToken.source();
+        Axios.get('/api/admin/', {
+            cancelToken: this.cancelTokenSource.token
+        }).then((response) => {
+            if (response.data) {
+                this.cancelTokenSource = null;
+            }
+        }).catch((error) => {
+            if (!Axios.isCancel(error)) {
+                this.setState({
+                    messages: [
+                        {
+                            type: "danger",
+                            message: error.response.statusText
+                        }
+                    ]
+                });
+                if (error.response && error.response.status === 403) {
+                    this.props.history.push('/', this.state);
+                }
+            }
+        });
+    };
+
+    componentWillUnmount() {
+        this.cancelTokenSource && this.cancelTokenSource.cancel('Unmount');
+    };
+
     renderFlashMessages = () => {
         if (this.props.history.location.state && this.props.history.location.state.messages) {
             const messages = this.props.history.location.state.messages;
