@@ -43,9 +43,6 @@ class CharacterForm extends PureComponent {
                 cancelToken: this.cancelTokenSource.token
             }).then((response) => {
                 if (response.data) {
-                    if (response.data['last_submitted_dps_amount']) {
-                        this.props.history.push('/chars', this.state);
-                    }
                     this.setState({
                         characterLoaded: response.data,
                     });
@@ -164,6 +161,7 @@ class CharacterForm extends PureComponent {
                         placeholder='Enter...'
                         defaultValue={this.state.characterLoaded ? this.state.characterLoaded.name : ''}
                         autoComplete='off'
+                        disabled={!!(this.state.characterLoaded && this.state.characterLoaded['last_submitted_dps_amount'])}
                         required
                     />
                 </fieldset>
@@ -177,6 +175,7 @@ class CharacterForm extends PureComponent {
                                 : this.classOptions[0]
                         }
                         components={Animated}
+                        isDisabled={!!(this.state.characterLoaded && this.state.characterLoaded['last_submitted_dps_amount'])}
                         name='class'
                     />
                 </fieldset>
@@ -190,6 +189,7 @@ class CharacterForm extends PureComponent {
                                 : this.roleOptions[0]
                         }
                         components={Animated}
+                        isDisabled={!!(this.state.characterLoaded && this.state.characterLoaded['last_submitted_dps_amount'])}
                         name='role'
                     />
                 </fieldset>

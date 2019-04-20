@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\Character\CharacterDeleting;
 use App\Models\Character;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
@@ -164,7 +163,6 @@ class CharactersController extends Controller
     {
         $this->authorize('delete', Character::class);
         $character = Character::findOrFail($char)->first();
-//        app('events')->dispatch(new CharacterDeleting($character));
         $character->delete();
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);

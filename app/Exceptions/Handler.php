@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Validation\ValidationException as IlluminateValidationException;
+use Laravel\Socialite\Two\InvalidStateException;
+use Symfony\Component\HttpFoundation\Response as SymfonyHttpResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -45,7 +47,7 @@ class Handler extends ExceptionHandler
      * @return void
      * @throws \Exception
      */
-    public function report(Exception $e)
+    public function report(Exception $e): void
     {
         parent::report($e);
     }
@@ -62,9 +64,13 @@ class Handler extends ExceptionHandler
     {
         if ($e instanceof ModelNotFoundException) {
             $e = new NotFoundHttpException($e->getMessage(), $e);
+        } elseif ($e instanceof InvalidStateException) {
+            return $request->expectsJson()
+                ? response()->json(['message' => 'Session Expired. Please refresh the page!'], 401)
+                : redirect()->guest(route('logout'));
         }
 
-        if ($request->method() != 'GET' && $request->header('content-type') == 'application/x-www-form-urlencoded') {
+        if ($request->method() !== 'GET' && $request->header('content-type') === 'application/x-www-form-urlencoded') {
             return redirect()->back()->withInput($request->all())->withErrors($e->getMessage());
         }
 
@@ -74,12 +80,12 @@ class Handler extends ExceptionHandler
     /**
      * Convert an authentication exception into an unauthenticated response.
      *
-     * @param  \Illuminate\Http\Request                 $request
-     * @param  \Illuminate\Auth\AuthenticationException $exception
+     * @param \Illuminate\Http\Request                 $request
+     * @param \Illuminate\Auth\AuthenticationException $exception
      *
-     * @return \Illuminate\Http\Response
+     * @return SymfonyHttpResponse
      */
-    protected function unauthenticated($request, AuthenticationException $exception)
+    protected function unauthenticated($request, AuthenticationException $exception): SymfonyHttpResponse
     {
         return $request->expectsJson()
             ? response()->json(['message' => 'Session Expired. Please refresh the page!'], 401)
