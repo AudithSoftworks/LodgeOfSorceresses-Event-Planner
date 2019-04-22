@@ -35,6 +35,7 @@ class FetchEventsUsingIpsApi extends Command
 
     /**
      * @return mixed
+     * @throws \Exception
      */
     public function handle(): bool
     {
@@ -62,6 +63,8 @@ class FetchEventsUsingIpsApi extends Command
 
     /**
      * @param array $events
+     *
+     * @throws \Exception
      */
     private function syncEvents(array $events): void
     {

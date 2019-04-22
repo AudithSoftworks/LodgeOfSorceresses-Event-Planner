@@ -1,7 +1,7 @@
 <?php namespace App\Http\Controllers\Auth;
 
 use App\Events\User\LoggedIn;
-use App\Events\User\LoggedInViaIpsOauth;
+use App\Events\User\LoggedInViaOauth;
 use App\Events\User\LoggedOut;
 use App\Events\User\Registered;
 use App\Exceptions\Common\ValidationException;
@@ -166,8 +166,8 @@ class LoginController extends Controller
             if ($provider === 'ips') {
                 app('auth.driver')->login($ownerAccount);
                 event(new LoggedIn($ownerAccount, $provider));
-                event(new LoggedInViaIpsOauth($owningOAuthAccount));
             }
+            event(new LoggedInViaOauth($owningOAuthAccount));
 
             return true;
         }
@@ -190,7 +190,6 @@ class LoginController extends Controller
         } else {
             $ownerAccount = app('auth.driver')->user();
         }
-
 
         if (!$ownerAccount) {
             $ownerAccount = User::create([
@@ -241,7 +240,7 @@ class LoginController extends Controller
             throw new LoginViaOauthFailedException();
         }
 
-        $provider === 'ips' && event(new LoggedInViaIpsOauth($linkedAccount->refresh(), true));
+        event(new LoggedInViaOauth($linkedAccount->refresh()));
 
         return $ownerAccount;
     }

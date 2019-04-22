@@ -2,7 +2,7 @@
 
 use App\Models\UserOAuth;
 
-class LoggedInViaIpsOauth
+class LoggedInViaOauth
 {
     /**
      * @var \App\Models\UserOAuth
@@ -16,11 +16,9 @@ class LoggedInViaIpsOauth
 
     /**
      * @param \App\Models\UserOAuth $oauthAccount
-     * @param bool                  $forceOauthUpdateViaApi
      */
-    public function __construct(UserOAuth $oauthAccount, $forceOauthUpdateViaApi = false)
+    public function __construct(UserOAuth $oauthAccount)
     {
         $this->oauthAccount = $oauthAccount;
-        $this->forceOauthUpdateViaApi = $forceOauthUpdateViaApi;
     }
 }

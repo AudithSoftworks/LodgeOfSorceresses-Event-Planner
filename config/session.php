@@ -66,7 +66,7 @@ return [
     | correspond to a connection in your database configuration options.
     |
     */
-    'connection' => env('SESSION_CONNECTION', null),
+    'connection' => env('SESSION_CONNECTION'),
 
     /*
     |--------------------------------------------------------------------------

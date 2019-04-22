@@ -45,8 +45,7 @@ class EventServiceProvider extends ServiceProvider
             Listeners\File\PersistUploadedFile::class
         ],
 
-        Events\User\LoggedIn::class => [],
-        Events\User\LoggedInViaIpsOauth::class => [
+        Events\User\LoggedInViaOauth::class => [
             Listeners\User\UpdateOauthUserDataViaIpsApi::class,
             Listeners\User\UpdateOauthUserDataViaDiscordApi::class,
         ],

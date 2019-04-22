@@ -41,14 +41,14 @@ class FetchSetsFromEsoSetsDotCom extends Command
         $data = [];
         for ($i = 1; $i < 500; $i++) {
             try {
-                $response = $this->client->request('GET', "$i");
+                $response = $this->client->request('GET', (string)$i);
             } catch (GuzzleException $e) {
                 break;
             }
             if ($response->getStatusCode() === 200) {
                 $body = $response->getBody()->getContents();
-                preg_match(preg_quote('#<meta property="og:title" content="') . '(.*)' . preg_quote('"/>') . '#i', $body, $setNameMatches);
-                preg_match(preg_quote('#<meta property="og:url" content="https://eso-sets.com/set/') . '(.*)' . preg_quote('"/>') . '#i', $body, $setSlugMatches);
+                preg_match('#' . preg_quote('<meta property="og:title" content="', '#') . '(.*)' . preg_quote('"/>', '#') . '#i', $body, $setNameMatches);
+                preg_match('#' . preg_quote('<meta property="og:url" content="https://eso-sets.com/set/', '#') . '(.*)' . preg_quote('"/>', '#') . '#i', $body, $setSlugMatches);
                 if (!empty($setNameMatches)) {
                     $setName = str_replace('’', '\'', $setNameMatches[1]);
                     if (($doWeHaveIrregularCharacters = preg_match("#^[a-z\'\s]+$#i", $setName, $a)) === 0 || $doWeHaveIrregularCharacters === false) {

@@ -57,6 +57,11 @@ class DiscordApi
      */
     private $discordGuildId;
 
+    /**
+     * @var array
+     */
+    private $lastResponseHeaders = [];
+
     public function __construct()
     {
         $botAccessToken = config('services.discord.bot_token');
@@ -70,9 +75,15 @@ class DiscordApi
         $this->discordGuildId = config('services.discord.guild_id');
     }
 
+    public function getLastResponseHeaders(): array
+    {
+        return $this->lastResponseHeaders;
+    }
+
     public function createMessageInChannel(string $channelId, array $params): array
     {
         $response = $this->discordClient->post('channels/' . $channelId . '/messages', $params);
+        $this->lastResponseHeaders = $response->getHeaders();
 
         return json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
     }
@@ -93,6 +104,7 @@ class DiscordApi
             } else {
                 $response = $this->discordClient->delete('channels/' . $channelId . '/messages/' . $messageIds[0]);
             }
+            $this->lastResponseHeaders = $response->getHeaders();
 
             return $response->getStatusCode() === Response::HTTP_NO_CONTENT;
         } catch (RequestException $e) {
@@ -103,6 +115,7 @@ class DiscordApi
     public function reactToMessageInChannel(string $channelId, string $messageId, string $reaction): bool
     {
         $response = $this->discordClient->put('channels/' . $channelId . '/messages/' . $messageId . '/reactions/' . $reaction . '/@me');
+        $this->lastResponseHeaders = $response->getHeaders();
 
         return $response->getStatusCode() === Response::HTTP_NO_CONTENT;
     }
@@ -110,6 +123,7 @@ class DiscordApi
     public function getGuildMember(string $memberId): array
     {
         $response = $this->discordClient->get('guilds/' . $this->discordGuildId . '/members/' . $memberId);
+        $this->lastResponseHeaders = $response->getHeaders();
 
         return json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
     }
@@ -117,7 +131,9 @@ class DiscordApi
     public function modifyGuildMember(string $memberId, array $params): bool
     {
         $response = $this->discordClient->patch('guilds/' . $this->discordGuildId . '/members/' . $memberId, [
-            RequestOptions::JSON => $params        ]);
+            RequestOptions::JSON => $params
+        ]);
+        $this->lastResponseHeaders = $response->getHeaders();
 
         return $response->getStatusCode() === Response::HTTP_NO_CONTENT;
     }
@@ -125,6 +141,7 @@ class DiscordApi
     public function getGuildRoles(): array
     {
         $response = $this->discordClient->get('guilds/' . $this->discordGuildId . '/roles');
+        $this->lastResponseHeaders = $response->getHeaders();
 
         return json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
     }
