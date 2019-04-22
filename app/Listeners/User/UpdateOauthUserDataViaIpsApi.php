@@ -13,6 +13,9 @@ class UpdateOauthUserDataViaIpsApi
     public function handle(LoggedInViaOauth $event): bool
     {
         $oauthAccount = $event->oauthAccount;
+        if ($oauthAccount->remote_provider !== 'ips') {
+            return true;
+        }
 
         $remoteUserDataFetchedThroughApi = app('ips.api')->getUser($oauthAccount->remote_id);
         $remoteSecondaryGroups = array_reduce($remoteUserDataFetchedThroughApi['secondaryGroups'], static function ($acc, $item) {
