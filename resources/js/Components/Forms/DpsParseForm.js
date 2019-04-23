@@ -284,6 +284,7 @@ class DpsParseForm extends PureComponent {
                     <ul>
                         <li>Every new parse will renew your clearance level, i.e. sending lower DPS numbers can revoke its clearance and demote your account.</li>
                         <li>When creating a Parse, include only the sets used for that particular parse, removing everything else.</li>
+                        <li>Each Parse needs to have both Combat Metrics and Superstar addon screenshots.</li>
                     </ul>
                 </article>
                 <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')}/>
