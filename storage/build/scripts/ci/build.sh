@@ -6,7 +6,7 @@ test -f .env || sed \
     -e "s/DB_USERNAME=.*/DB_USERNAME=${DB_USERNAME}/g" .env.example \
     | tee .env > /dev/null 2>&1;
 
-docker-compose exec nginx bash -c "cat /etc/hosts | sed s/localhost/localhost\ planner.lodgeofsorceresses.dev/g | tee /etc/hosts > /dev/null 2>&1";
+docker-compose exec nginx bash -c "cat /etc/hosts | sed s/localhost/localhost\ planner.lodgeofsorceresses.test/g | tee /etc/hosts > /dev/null 2>&1";
 
 docker-compose exec php bash -c "
     export NPM_CONFIG_LOGLEVEL=warn;
@@ -47,14 +47,13 @@ docker-compose exec php bash -c "
     ./storage/build/tools/css3_font_converter/convertFonts.sh --use-font-weight --output=public/fonts/opensans/stylesheet.css public/fonts/opensans/*.ttf;
     ./storage/build/tools/css3_font_converter/convertFonts.sh --use-font-weight --output=public/fonts/robotocondensed/stylesheet.css public/fonts/robotocondensed/*.ttf;
 
-    touch ./storage/logs/laravel.log;
-
     NODE_ENV=production npm run build;
     composer install --prefer-source --no-interaction;
 
     ./artisan key:generate;
     ./artisan passport:keys;
     ./artisan migrate;
+    ./artisan db:seed;
 
 #    ./vendor/bin/phpunit --debug --verbose --testsuite='Unit';
 #    ./artisan dusk -vvv;

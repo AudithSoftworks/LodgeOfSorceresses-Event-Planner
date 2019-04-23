@@ -6,5 +6,5 @@ class IlluminateTestCase extends BaseTestCase
 {
     use CreatesApplication;
 
-    protected $baseUrl = 'http://basis.audith.org';
+    protected $baseUrl = 'http://planner.lodgeofsorceresses.test';
 }
