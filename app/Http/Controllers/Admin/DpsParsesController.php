@@ -9,6 +9,7 @@ use App\Models\DpsParse;
 use App\Models\File;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use UnexpectedValueException;
@@ -24,6 +25,11 @@ class DpsParsesController extends Controller
         $this->authorize('admin', DpsParse::class);
         $dpsParses = DpsParse::query()
             ->with(['owner', 'character'])
+            ->whereHas('owner', static function (Builder $queryToGetOauthAccounts) {
+                $queryToGetOauthAccounts->whereHas('linkedAccounts', static function (Builder $queryToGetDiscordOauthAccounts) {
+                    $queryToGetDiscordOauthAccounts->where('remote_provider', '=', 'discord');
+                });
+            })
             ->whereNull('processed_by')
             ->orderBy('id')
             ->get();

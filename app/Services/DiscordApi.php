@@ -138,6 +138,17 @@ class DiscordApi
         return $response->getStatusCode() === Response::HTTP_NO_CONTENT;
     }
 
+    public function createDmChannel(string $recipientId): array
+    {
+        $response = $this->discordClient->post('users/@me/channels', [
+            RequestOptions::JSON => [
+                'recipient_id' => $recipientId,
+            ]
+        ]);
+
+        return json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
+    }
+
     public function getGuildRoles(): array
     {
         $response = $this->discordClient->get('guilds/' . $this->discordGuildId . '/roles');

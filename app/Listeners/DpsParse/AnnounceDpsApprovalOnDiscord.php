@@ -11,6 +11,10 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AnnounceDpsApprovalOnDiscord
 {
+    private const TOPIC_URLS_CORE_GUIDELINES = 'https://lodgeofsorceresses.com/topic/5506-pve-raid-core-guidelines/';
+
+    private const TOPIC_URLS_CORE_REQUIREMENTS = 'https://lodgeofsorceresses.com/topic/4887-pve-raid-core-requirements-to-join/';
+
     public function __construct()
     {
         \Cloudinary::config([
@@ -62,10 +66,12 @@ class AnnounceDpsApprovalOnDiscord
 
         $parseAuthor->loadMissing('linkedAccounts');
         $parseOwnersDiscordAccount = $parseAuthor->linkedAccounts()->where('remote_provider', 'discord')->first();
-        $mentionedName = $parseOwnersDiscordAccount ? '<@!' . $parseOwnersDiscordAccount->remote_id . '>' : $parseAuthor->name;
+        if (!$parseOwnersDiscordAccount) {
+            return false;
+        }
 
+        $mentionedName = '<@!' . $parseOwnersDiscordAccount->remote_id . '>';
         $mentionedAnnouncementsChannel = '<#' . $announcementsChannelId . '>';
-
         $discordMessageIdsToDelete = explode(',', $dpsParse->discord_notification_message_ids);
 
         /*------------------------------------
@@ -143,7 +149,7 @@ class AnnounceDpsApprovalOnDiscord
                             ])
                         ],
                         'footer' => [
-                            'text' => 'Sent via Lodge of Sorceresses Planner at: https://planner.lodgeofsorceresses.com'
+                            'text' => 'Sent via Lodge of Sorceresses Planner at: ' . env('APP_URL')
                         ]
                     ],
                 ]),
@@ -157,13 +163,14 @@ class AnnounceDpsApprovalOnDiscord
         $discordApi->reactToMessageInChannel($midgameDpsParsesChannelId, $responseDecoded['id'], '✅');
 
         /*-----------------------------------------------------------
-         | Post clearance announcement in #announcements channel
+         | Post clearance announcement as DM to the author
          *----------------------------------------------------------*/
 
         if ($characterClearanceTitle) {
             $guidanceMentioned = '<@&' . DiscordApi::ROLE_GUIDANCE . '>';
             $roleName = RoleTypes::getShortRoleText($character->role);
-            $discordApi->createMessageInChannel($announcementsChannelId, [
+            $dmChannel = $discordApi->createDmChannel($parseOwnersDiscordAccount->remote_id);
+            $discordApi->createMessageInChannel($dmChannel['id'], [
                 RequestOptions::FORM_PARAMS => [
                     'payload_json' => json_encode([
                         'content' => $mentionedName . ', you are cleared for ' . $characterClearanceTitle . ' on your ' . $className . ' ' . $roleName . ' named _' . $character->name . "_.\n"
@@ -191,15 +198,15 @@ class AnnounceDpsApprovalOnDiscord
                                 ],
                                 [
                                     'name' => 'Raid Core Guidelines',
-                                    'value' => 'Read [this topic](https://lodgeofsorceresses.com/topic/5506-pve-raid-core-guidelines/) as a preparation to join a Core',
+                                    'value' => 'Read [this topic](' . self::TOPIC_URLS_CORE_GUIDELINES . ') as a preparation to join a Core',
                                 ],
                                 [
                                     'name' => 'Raid Core Requirements to Join',
-                                    'value' => 'Read [this topic](https://lodgeofsorceresses.com/topic/4887-pve-raid-core-requirements-to-join/) as a preparation to join a Core',
+                                    'value' => 'Read [this topic](' . self::TOPIC_URLS_CORE_REQUIREMENTS . ') as a preparation to join a Core',
                                 ],
                             ],
                             'footer' => [
-                                'text' => 'Sent via Lodge of Sorceresses Planner at: https://planner.lodgeofsorceresses.com'
+                                'text' => 'Sent via Lodge of Sorceresses Planner at: ' . env('APP_URL')
                             ]
                         ],
                     ]),

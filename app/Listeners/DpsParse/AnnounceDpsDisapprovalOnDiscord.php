@@ -55,7 +55,7 @@ class AnnounceDpsDisapprovalOnDiscord
 
         $parseAuthor->load('linkedAccounts');
         $parseOwnersDiscordAccount = $parseAuthor->linkedAccounts()->where('remote_provider', 'discord')->first();
-        $mentionedName = $parseOwnersDiscordAccount ? '<@!' . $parseOwnersDiscordAccount->remote_id . '>' : $parseAuthor->name;
+        $mentionedName = '<@!' . $parseOwnersDiscordAccount->remote_id . '>';
 
         $discordMessageIdsToDelete = explode(',', $dpsParse->discord_notification_message_ids);
 
@@ -67,7 +67,7 @@ class AnnounceDpsDisapprovalOnDiscord
         $discordApi->deleteMessagesInChannel($channelId, $discordMessageIdsToDelete);
 
         /*------------------------------------
-         | Post the announcement
+         | Post as #announcements & DM
          *-----------------------------------*/
 
         $gearSets = $this->getGearSets($dpsParse->sets);
@@ -75,7 +75,7 @@ class AnnounceDpsDisapprovalOnDiscord
         foreach ($gearSets as $set) {
             $gearSetsParsed[] = '[' . $set->name . '](https://eso-sets.com/set/' . $set->id . ')';
         }
-        $responseDecoded = $discordApi->createMessageInChannel($channelId, [
+        $message = [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
                     'content' => $mentionedName . ': DPS parse you submitted has been **disapproved** by ' . $myMentionedName
@@ -129,7 +129,11 @@ class AnnounceDpsDisapprovalOnDiscord
                     ],
                 ]),
             ]
-        ]);
+        ];
+        $responseDecoded = $discordApi->createMessageInChannel($channelId, $message);
+
+        $dmChannel = $discordApi->createDmChannel($parseOwnersDiscordAccount->remote_id);
+        $discordApi->createMessageInChannel($dmChannel['id'], $message);
 
         /*------------------------------------
          | React with :x:
