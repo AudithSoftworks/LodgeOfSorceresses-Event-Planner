@@ -224,7 +224,7 @@ class DpsParses extends PureComponent {
                 <article className='alert-warning'>
                     <b>Important note:</b>
                     <ul>
-                        <li>Your Parses will not be evaluated until you link your Discord account!</li>
+                        <li>Your Parses will not be evaluated until <a href='/oauth/to/discord'>you link your Discord account</a>!</li>
                     </ul>
                 </article>
                 <ul className='ne-corner'>{actionListRendered}</ul>
