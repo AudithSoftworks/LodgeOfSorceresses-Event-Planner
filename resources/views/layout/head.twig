@@ -29,13 +29,4 @@
 
     {% block document_head_stylesheets %}{% endblock %}
     {% block document_head_javascripts %}{% endblock %}
-
-    {% if errors.any %}{% set flashMessage, flashType = errors.all, 'error' %}{% endif %}
-    {% if session_has('message') %}{% set flashMessage, flashType = session_get('message'), 'success' %}{% endif %}
-
-    {% if flashMessage %}
-        <script type="text/javascript">
-            appClient.Session.flashMessages({{ flashMessage|json_encode|raw }}, '{{ flashType }}');
-        </script>
-    {% endif %}
 {% endblock %}
