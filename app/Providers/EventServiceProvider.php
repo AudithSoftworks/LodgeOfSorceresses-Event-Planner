@@ -46,8 +46,7 @@ class EventServiceProvider extends ServiceProvider
         ],
 
         Events\User\LoggedInViaOauth::class => [
-            Listeners\User\UpdateOauthUserDataViaIpsApi::class,
-            Listeners\User\UpdateOauthUserDataViaDiscordApi::class,
+            Listeners\User\UpdateOauthUserData::class,
         ],
         Events\User\LoggedOut::class => [],
         Events\User\Registered::class => [],

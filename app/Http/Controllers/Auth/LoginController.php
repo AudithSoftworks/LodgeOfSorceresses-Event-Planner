@@ -14,7 +14,6 @@ use App\Models\UserOAuth;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
 use Laravel\Socialite\Contracts\Factory as SocialiteContract;
 use Laravel\Socialite\Two\User as OauthTwoUser;
 
@@ -30,16 +29,6 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest', ['except' => ['logout', 'handleOAuthRedirect', 'handleOAuthReturn']]);
-    }
-
-    /**
-     * Show the application login form.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function showLoginForm(): View
-    {
-        return view('auth/login');
     }
 
     /**
