@@ -20,8 +20,8 @@ sed -e "s/APP_ENV=.*/APP_ENV=production/g" \
     -e "s/DISCORD_CLIENT_ID=.*/DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}/g" \
     -e "s/DISCORD_CLIENT_SECRET=.*/DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}/g" \
     -e "s/DISCORD_BOT_TOKEN=.*/DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}/g" \
-    .env.example | tee .env;
+    .env.example | tee .env > /dev/null 2>&1;
 
-rm -rf ./.git* ./node_modules/ ./storage/build/tools ./tests/ ./deploy_rsa.enc ./.scrutinizer.yml ./.travis.yml ./_ide_helper.php old;
+rm -rf ./.git* ./node_modules/ ./storage/build/tools ./storage/coverage ./tests/ ./deploy_rsa.enc ./.scrutinizer.yml ./.travis.yml ./_ide_helper.php old;
 
 rsync -r --delete-after -e "ssh -o StrictHostKeyChecking=no" ${TRAVIS_BUILD_DIR}/ lodgeofsorceresses@lodgeofsorceresses.com:/opt/lodgeofsorceresses/subdomains/planner/${TRAVIS_JOB_ID}/

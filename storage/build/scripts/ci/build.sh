@@ -1,10 +1,20 @@
 #!/usr/bin/env bash
 
 test -f .env || sed \
+    -e "s/APP_ENV=.*/APP_ENV=testing/g" \
     -e "s/DB_CONNECTION=.*/DB_CONNECTION=${DB_CONNECTION}/g" \
     -e "s/DB_HOST=.*/DB_HOST=${DB_HOST}/g" \
-    -e "s/DB_USERNAME=.*/DB_USERNAME=${DB_USERNAME}/g" .env.example \
-    | tee .env > /dev/null 2>&1;
+    -e "s/DB_USERNAME=.*/DB_USERNAME=${DB_USERNAME}/g" \
+    -e "s/IPS_CLIENT_ID=.*/IPS_CLIENT_ID=${IPS_CLIENT_ID}/g" \
+    -e "s/IPS_CLIENT_SECRET=.*/IPS_CLIENT_SECRET=${IPS_CLIENT_SECRET}/g" \
+    -e "s/IPS_API_KEY=.*/IPS_API_KEY=${IPS_API_KEY}/g" \
+    -e "s/CLOUDINARY_CLOUD_NAME=.*/CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}/g" \
+    -e "s/CLOUDINARY_API_KEY=.*/CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}/g" \
+    -e "s/CLOUDINARY_API_SECRET=.*/CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}/g" \
+    -e "s/DISCORD_CLIENT_ID=.*/DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}/g" \
+    -e "s/DISCORD_CLIENT_SECRET=.*/DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}/g" \
+    -e "s/DISCORD_BOT_TOKEN=.*/DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}/g" \
+    .env.example | tee .env > /dev/null 2>&1;
 
 docker-compose exec nginx bash -c "cat /etc/hosts | sed s/localhost/localhost\ planner.lodgeofsorceresses.test/g | tee /etc/hosts > /dev/null 2>&1";
 
@@ -55,7 +65,7 @@ docker-compose exec php bash -c "
     ./artisan migrate;
     ./artisan db:seed;
 
-#    ./vendor/bin/phpunit --debug --verbose --testsuite='Unit';
+    ./vendor/bin/phpunit --debug --verbose --testsuite='Integration';
 #    ./artisan dusk -vvv;
 #    ./vendor/bin/phpcov merge ./storage/coverage --clover ./storage/coverage/coverage-clover-merged.xml
 #    ./vendor/bin/phpunit --debug --verbose --no-coverage --testsuite='SauceWebDriver';

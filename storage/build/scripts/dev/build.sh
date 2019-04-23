@@ -53,7 +53,7 @@ docker-compose exec php bash -c "
     ./artisan passport:keys;
     ./artisan db:seed;
 
-#    ./vendor/bin/phpunit --debug --verbose --testsuite='Unit';
+    ./vendor/bin/phpunit --debug --verbose --testsuite='Integration';
 #    ./artisan dusk -vvv;
 #    ./vendor/bin/phpcov merge ./storage/coverage --html ./storage/coverage/merged/;
 ";

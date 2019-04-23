@@ -145,6 +145,7 @@ class DiscordApi
                 'recipient_id' => $recipientId,
             ]
         ]);
+        $this->lastResponseHeaders = $response->getHeaders();
 
         return json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
     }
