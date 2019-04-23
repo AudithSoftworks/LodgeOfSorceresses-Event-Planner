@@ -188,7 +188,7 @@ console.log('kaboom');
                         <li>Mouse-over the character name for action buttons to reveal to the right of row.</li>
                         <li>Only Damage Dealers can submit DPS-parses. Click <FontAwesomeIcon icon="tachometer-alt"/> icon to the right to create one for such Character.</li>
                         <li>When creating a Character, select all your available sets.</li>
-                        <li>To have different Roles for the same Character, create a new Character with the same name, with different Roles.</li>
+                        <li>To have different Roles for the same Character, create a new Character with the same name, but a different Role.</li>
                         <li>Once a Character has an approved Parse, it can only be partially edited (i.e. only its gear-sets can be edited).</li>
                     </ul>
                 </article>
