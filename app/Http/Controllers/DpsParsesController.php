@@ -102,7 +102,8 @@ class DpsParsesController extends Controller
     public function show(int $char, int $parse): JsonResponse
     {
         $this->authorize('show', DpsParse::class);
-        $dpsParse = DpsParse::whereUserId(app('auth.driver')->id())
+        $dpsParse = DpsParse::query()
+            ->whereUserId(app('auth.driver')->id())
             ->whereCharacterId($char)
             ->whereNull('processed_by')
             ->whereId($parse)
@@ -126,7 +127,8 @@ class DpsParsesController extends Controller
     public function destroy(int $char, int $parse): JsonResponse
     {
         $this->authorize('delete', DpsParse::class);
-        $dpsParse = DpsParse::whereUserId(app('auth.driver')->id())
+        $dpsParse = DpsParse::query()
+            ->whereUserId(app('auth.driver')->id())
             ->whereCharacterId($char)
             ->whereNull('processed_by')
             ->whereId($parse)
