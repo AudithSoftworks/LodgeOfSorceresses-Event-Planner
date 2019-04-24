@@ -162,7 +162,11 @@ class CharactersController extends Controller
     public function destroy(int $char): JsonResponse
     {
         $this->authorize('delete', Character::class);
-        $character = Character::findOrFail($char)->first();
+        $character = Character::query()->where(static function (Builder $query) use ($char) {
+            $query
+                ->where('user_id', app('auth.driver')->id())
+                ->where('id', $char);
+        })->first();
         $character->delete();
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);
