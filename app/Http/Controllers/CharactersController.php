@@ -94,11 +94,10 @@ class CharactersController extends Controller
     public function show(int $char): JsonResponse
     {
         $this->authorize('view', Character::class);
-        $character = Character::query()->where(static function (Builder $query) use ($char) {
-            $query
-                ->where('user_id', app('auth.driver')->id())
-                ->where('id', $char);
-        })->first(['id', 'name', 'class', 'role', 'sets', 'last_submitted_dps_amount']);
+        $character = Character::query()
+            ->whereUserId(app('auth.driver')->id())
+            ->whereId($char)
+            ->first(['id', 'name', 'class', 'role', 'sets', 'last_submitted_dps_amount']);
         if (!$character) {
             return response()->json(['message' => 'Character not found!'])->setStatusCode(404);
         }
@@ -162,11 +161,10 @@ class CharactersController extends Controller
     public function destroy(int $char): JsonResponse
     {
         $this->authorize('delete', Character::class);
-        $character = Character::query()->where(static function (Builder $query) use ($char) {
-            $query
-                ->where('user_id', app('auth.driver')->id())
-                ->where('id', $char);
-        })->first();
+        $character = Character::query()
+            ->whereUserId(app('auth.driver')->id())
+            ->whereId($char)
+            ->first();
         $character->delete();
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);
