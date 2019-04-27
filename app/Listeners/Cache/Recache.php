@@ -1,6 +1,6 @@
 <?php namespace App\Listeners\Cache;
 
-use App\Models\EquipmentSet;
+use App\Models\Set;
 use Illuminate\Cache\Events\CacheMissed;
 
 class Recache
@@ -15,10 +15,10 @@ class Recache
     {
         $recache = [];
         switch ($cacheKey = $event->key) {
-            case 'equipmentSets':
+            case 'sets':
                 $recache = [
-                    'data' => EquipmentSet::query()->get()->keyBy('id')->toArray(),
-                    'ttl' => EquipmentSet::CACHE_TTL
+                    'data' => Set::query()->get()->keyBy('id')->toArray(),
+                    'ttl' => Set::CACHE_TTL
                 ];
                 break;
         }

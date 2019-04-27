@@ -26,8 +26,8 @@ class CharactersController extends Controller
             ->orderBy('id', 'desc')
             ->get();
         if ($characters->count()) {
-            app('cache.store')->has('equipmentSets'); // Trigger Recache listener.
-            $equipmentSets = app('cache.store')->get('equipmentSets');
+            app('cache.store')->has('sets'); // Trigger Recache listener.
+            $equipmentSets = app('cache.store')->get('sets');
             foreach ($characters as $character) {
                 $character->class = ClassTypes::getClassName($character->class);
                 $character->role = RoleTypes::getRoleName($character->role);
@@ -66,7 +66,7 @@ class CharactersController extends Controller
             'name' => 'required|string',
             'role' => 'required|integer|min:1|max:4',
             'class' => 'required|integer|min:1|max:6',
-            'sets.*' => 'sometimes|required|numeric|exists:equipment_sets,id',
+            'sets.*' => 'sometimes|required|numeric|exists:sets,id',
         ], $validatorErrorMessages);
         if ($validator->fails()) {
             throw new ValidationException($validator);
@@ -126,7 +126,7 @@ class CharactersController extends Controller
             'name' => 'required|string',
             'role' => 'required|integer|min:1|max:4',
             'class' => 'required|integer|min:1|max:6',
-            'sets.*' => 'sometimes|required|numeric|exists:equipment_sets,id',
+            'sets.*' => 'sometimes|required|numeric|exists:sets,id',
         ]);
         if ($validator->fails()) {
             throw new ValidationException($validator);

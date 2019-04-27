@@ -7,12 +7,12 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Console\Command;
 
-class FetchSetsFromEsoSetsDotCom extends Command
+class CrawlSetsFromEsoSetsDotCom extends Command
 {
     /**
      * @var string
      */
-    protected $signature = 'crawl:eso-sets';
+    protected $signature = 'crawler:sets';
 
     /**
      * @var string
@@ -41,8 +41,12 @@ class FetchSetsFromEsoSetsDotCom extends Command
         $data = [];
         for ($i = 1; $i < 500; $i++) {
             try {
+                $this->info('Crawling set #' . $i . '. So far acquired ' . count($data) . ' sets');
                 $response = $this->client->request('GET', (string)$i);
             } catch (GuzzleException $e) {
+                if ($e->getCode() === 404) {
+                    continue;
+                }
                 break;
             }
             if ($response->getStatusCode() === 200) {
@@ -68,8 +72,8 @@ class FetchSetsFromEsoSetsDotCom extends Command
      */
     private function syncSets(array $data): void
     {
-        app('db.connection')->table('equipment_sets')->truncate();
-        app('db.connection')->table('equipment_sets')->insert($data);
-        app('db.connection')->table('equipment_sets')->update(['created_at' => Carbon::now()]);
+        app('db.connection')->table('sets')->truncate();
+        app('db.connection')->table('sets')->insert($data);
+        app('db.connection')->table('sets')->update(['created_at' => Carbon::now()]);
     }
 }

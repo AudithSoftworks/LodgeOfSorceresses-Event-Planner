@@ -13,10 +13,10 @@ class SetsController extends Controller
      */
     public function index(): JsonResponse
     {
-        app('cache.store')->has('equipmentSets'); // Trigger Recache listener.
+        app('cache.store')->has('sets'); // Trigger Recache listener.
 
         return response()->json([
-            'sets' => app('cache.store')->get('equipmentSets')
+            'sets' => app('cache.store')->get('sets')
         ]);
     }
 }

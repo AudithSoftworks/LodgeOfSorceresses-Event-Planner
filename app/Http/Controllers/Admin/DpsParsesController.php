@@ -34,8 +34,8 @@ class DpsParsesController extends Controller
             ->orderBy('id')
             ->get();
         if ($dpsParses->count()) {
-            app('cache.store')->has('equipmentSets'); // Trigger Recache listener.
-            $equipmentSets = app('cache.store')->get('equipmentSets');
+            app('cache.store')->has('sets'); // Trigger Recache listener.
+            $equipmentSets = app('cache.store')->get('sets');
             foreach ($dpsParses as $dpsParse) {
                 $characterEquipmentSets = array_filter($equipmentSets, static function ($key) use ($dpsParse) {
                     return in_array($key, explode(',', $dpsParse->sets), false);

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dfacdc8276446653e3f60354329955c9",
+    "content-hash": "1751ba2b23b88aa2257cd7cd094a1e32",
     "packages": [
         {
             "name": "cloudinary/cloudinary_php",
@@ -1773,6 +1773,48 @@
                 "random"
             ],
             "time": "2018-07-02T15:55:56+00:00"
+        },
+        {
+            "name": "pathfindermediagroup/api-library",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PathfinderMediaGroup/api-library.git",
+                "reference": "183b62eec700acc7e2f0537d32712932e1e6d1f9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PathfinderMediaGroup/api-library/zipball/183b62eec700acc7e2f0537d32712932e1e6d1f9",
+                "reference": "183b62eec700acc7e2f0537d32712932e1e6d1f9",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "php": ">=7.2.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.14",
+                "phpunit/phpunit": "^7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PathfinderMediaGroup\\ApiLibrary\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Woeler",
+                    "email": "woeler@woeler.eu"
+                }
+            ],
+            "description": "A library that helps to interact with the PMG API",
+            "time": "2019-02-20T10:22:32+00:00"
         },
         {
             "name": "phpoption/phpoption",

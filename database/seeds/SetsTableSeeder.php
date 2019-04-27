@@ -12,7 +12,7 @@ class SetsTableSeeder extends Seeder
      */
     public function run(): void
     {
-        app('db.connection')->table('equipment_sets')->truncate();
+        app('db.connection')->table('sets')->truncate();
 
         $data = [
             ['id' => 1, 'slug' => 'deaths-wind', 'name' => "Death's Wind"],
@@ -381,7 +381,7 @@ class SetsTableSeeder extends Seeder
             ['id' => 364, 'slug' => 'gallant-charge', 'name' => 'Gallant Charge'],
             ['id' => 365, 'slug' => 'perfect-gallant-charge', 'name' => 'Perfect Gallant Charge']
         ];
-        app('db.connection')->table('equipment_sets')->insert($data);
-        app('db.connection')->table('equipment_sets')->update(['created_at' => Carbon::now()]);
+        app('db.connection')->table('sets')->insert($data);
+        app('db.connection')->table('sets')->update(['created_at' => Carbon::now()]);
     }
 }

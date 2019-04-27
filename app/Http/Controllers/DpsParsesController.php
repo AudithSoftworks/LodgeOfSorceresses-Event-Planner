@@ -30,8 +30,8 @@ class DpsParsesController extends Controller
             ->orderBy('id', 'desc')
             ->get();
         if ($dpsParses->count()) {
-            app('cache.store')->has('equipmentSets'); // Trigger Recache listener.
-            $equipmentSets = app('cache.store')->get('equipmentSets');
+            app('cache.store')->has('sets'); // Trigger Recache listener.
+            $equipmentSets = app('cache.store')->get('sets');
             foreach ($dpsParses as $dpsParse) {
                 $characterEquipmentSets = array_filter($equipmentSets, static function ($key) use ($dpsParse) {
                     return in_array($key, explode(',', $dpsParse->sets), false);
@@ -72,7 +72,7 @@ class DpsParsesController extends Controller
             'parse_file_hash' => 'required|string',
             'superstar_file_hash' => 'required|string',
             'dps_amount' => 'required|numeric',
-            'sets.*' => 'sometimes|required|numeric|exists:equipment_sets,id',
+            'sets.*' => 'sometimes|required|numeric|exists:sets,id',
         ], $validatorErrorMessages);
         if ($validator->fails()) {
             throw new ValidationException($validator);

@@ -3,7 +3,8 @@
 cd /opt/lodgeofsorceresses/subdomains/planner/$1;
 
 ./artisan migrate --force;
-./artisan db:seed --force;
+./artisan pmg:skills;
+./artisan crawler:sets;
 ./artisan config:cache;
 ./artisan route:cache;
 ./artisan storage:link
