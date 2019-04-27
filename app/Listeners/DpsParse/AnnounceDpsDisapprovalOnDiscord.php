@@ -1,7 +1,7 @@
 <?php namespace App\Listeners\DpsParse;
 
 use App\Events\DpsParse\DpsParseDisapproved;
-use App\Models\EquipmentSet;
+use App\Models\Set;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
 use GuzzleHttp\RequestOptions;
@@ -147,10 +147,10 @@ class AnnounceDpsDisapprovalOnDiscord
     /**
      * @param string $commaSeparatedSetIds
      *
-     * @return \App\Models\EquipmentSet[]
+     * @return \App\Models\Set[]
      */
     private function getGearSets(string $commaSeparatedSetIds): iterable
     {
-        return EquipmentSet::whereIn('id', explode(',', $commaSeparatedSetIds))->get();
+        return Set::whereIn('id', explode(',', $commaSeparatedSetIds))->get();
     }
 }
