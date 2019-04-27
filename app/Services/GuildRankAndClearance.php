@@ -7,56 +7,82 @@ class GuildRankAndClearance
 {
     public const RANK_SOULSHRIVEN = [
         'title' => 'Soulshriven',
-        'member_group_id' => IpsApi::MEMBER_GROUPS_SOULSHRIVEN,
-        'discord_role' => DiscordApi::ROLE_SOULSHRIVEN,
+        'ipsGroupId' => IpsApi::MEMBER_GROUPS_SOULSHRIVEN,
+        'discordRole' => DiscordApi::ROLE_SOULSHRIVEN,
+        'isMember' => false,
+        'isAdmin' => false,
     ];
 
     public const RANK_INITIATE = [
         'title' => 'Initiate',
-        'member_group_id' => IpsApi::MEMBER_GROUPS_INITIATE,
-        'discord_role' => DiscordApi::ROLE_INITIATE,
+        'ipsGroupId' => IpsApi::MEMBER_GROUPS_INITIATE,
+        'discordRole' => DiscordApi::ROLE_INITIATE,
+        'isMember' => true,
+        'isAdmin' => false,
     ];
 
     public const RANK_NEOPHYTE = [
         'title' => 'Neophyte',
-        'member_group_id' => IpsApi::MEMBER_GROUPS_NEOPHYTE,
-        'discord_role' => DiscordApi::ROLE_NEOPHYTE,
+        'ipsGroupId' => IpsApi::MEMBER_GROUPS_NEOPHYTE,
+        'discordRole' => DiscordApi::ROLE_NEOPHYTE,
+        'isMember' => true,
+        'isAdmin' => false,
     ];
 
     public const RANK_PRACTICUS = [
         'title' => 'Practicus',
-        'member_group_id' => IpsApi::MEMBER_GROUPS_PRACTICUS,
-        'discord_role' => DiscordApi::ROLE_PRACTICUS,
+        'ipsGroupId' => IpsApi::MEMBER_GROUPS_PRACTICUS,
+        'discordRole' => DiscordApi::ROLE_PRACTICUS,
+        'isMember' => true,
+        'isAdmin' => false,
     ];
 
     public const RANK_ADEPTUS_MINOR = [
         'title' => 'Adeptus Minor',
-        'member_group_id' => IpsApi::MEMBER_GROUPS_ADEPTUS_MINOR,
-        'discord_role' => DiscordApi::ROLE_ADEPTUS_MINOR,
+        'ipsGroupId' => IpsApi::MEMBER_GROUPS_ADEPTUS_MINOR,
+        'discordRole' => DiscordApi::ROLE_ADEPTUS_MINOR,
+        'isMember' => true,
+        'isAdmin' => false,
     ];
 
     public const RANK_ADEPTUS_MAJOR = [
         'title' => 'Adeptus Major',
-        'member_group_id' => IpsApi::MEMBER_GROUPS_ADEPTUS_MAJOR,
-        'discord_role' => DiscordApi::ROLE_ADEPTUS_MAJOR,
+        'ipsGroupId' => IpsApi::MEMBER_GROUPS_ADEPTUS_MAJOR,
+        'discordRole' => DiscordApi::ROLE_ADEPTUS_MAJOR,
+        'isMember' => true,
+        'isAdmin' => false,
     ];
 
     public const RANK_DOMINUS_LIMINIS = [
         'title' => 'Dominus Liminis',
-        'member_group_id' => IpsApi::MEMBER_GROUPS_DOMINUS_LIMINIS,
-        'discord_role' => DiscordApi::ROLE_DOMINUS_LIMINIS,
+        'ipsGroupId' => IpsApi::MEMBER_GROUPS_DOMINUS_LIMINIS,
+        'discordRole' => DiscordApi::ROLE_DOMINUS_LIMINIS,
+        'isMember' => true,
+        'isAdmin' => false,
     ];
 
     public const RANK_RECTOR = [
         'title' => 'Rector',
-        'member_group_id' => IpsApi::MEMBER_GROUPS_RECTOR,
-        'discord_role' => DiscordApi::ROLE_RECTOR,
+        'ipsGroupId' => IpsApi::MEMBER_GROUPS_RECTOR,
+        'discordRole' => DiscordApi::ROLE_RECTOR,
+        'isMember' => true,
+        'isAdmin' => false,
     ];
 
     public const RANK_MAGISTER_TEMPLI = [
         'title' => 'Magister Templi',
-        'member_group_id' => IpsApi::MEMBER_GROUPS_MAGISTER_TEMPLI,
-        'discord_role' => DiscordApi::ROLE_MAGISTER_TEMPLI,
+        'ipsGroupId' => IpsApi::MEMBER_GROUPS_MAGISTER_TEMPLI,
+        'discordRole' => DiscordApi::ROLE_MAGISTER_TEMPLI,
+        'isMember' => true,
+        'isAdmin' => true,
+    ];
+
+    public const RANK_IPSISSIMUS = [
+        'title' => 'Magister Templi',
+        'ipsGroupId' => IpsApi::MEMBER_GROUPS_IPSISSIMUS,
+        'discordRole' => DiscordApi::ROLE_MAGISTER_TEMPLI,
+        'isMember' => true,
+        'isAdmin' => true,
     ];
 
     public const CLEARANCE_MIDGAME = 'midgame';

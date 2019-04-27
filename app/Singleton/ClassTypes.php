@@ -14,53 +14,46 @@ class ClassTypes
 
     public const CLASS_NECROMANCER = 6;
 
+    public const TITLE_DRAGONKNIGHT = 'Dragonknight';
+
+    public const TITLE_NIGHTBLADE = 'Nightblade';
+
+    public const TITLE_SORCERER = 'Sorcerer';
+
+    public const TITLE_TEMPLAR = 'Templar';
+
+    public const TITLE_WARDEN = 'Warden';
+
+    public const TITLE_NECROMANCER = 'Necromancer';
+
+    public const CLASSES = [
+        self::CLASS_DRAGONKNIGHT => self::TITLE_DRAGONKNIGHT,
+        self::CLASS_NIGHTBLADE => self::TITLE_NIGHTBLADE,
+        self::CLASS_SORCERER => self::TITLE_SORCERER,
+        self::CLASS_TEMPLAR => self::TITLE_TEMPLAR,
+        self::CLASS_WARDEN => self::TITLE_WARDEN,
+        self::CLASS_NECROMANCER => self::TITLE_NECROMANCER,
+    ];
+
     /**
-     * @param string $class_name
+     * @param string $className
      *
      * @return int
      */
-    public static function getClassId(string $class_name): int
+    public static function getClassId(string $className): ?int
     {
-        switch ($class_name) {
-            case 'Dragonknight':
-                return self::CLASS_DRAGONKNIGHT;
-            case 'Sorcerer':
-                return self::CLASS_SORCERER;
-            case 'Nightblade':
-                return self::CLASS_NIGHTBLADE;
-            case 'Warden':
-                return self::CLASS_WARDEN;
-            case 'Templar':
-                return self::CLASS_TEMPLAR;
-            case 'Necromancer':
-                return self::CLASS_NECROMANCER;
-            default:
-                return 0;
-        }
+        $classId = array_search($className, self::CLASSES, true);
+
+        return $classId ?: null;
     }
 
     /**
-     * @param int $class_id
+     * @param int $classId
      *
      * @return string
      */
-    public static function getClassName(int $class_id): string
+    public static function getClassName(int $classId): string
     {
-        switch ($class_id) {
-            case self::CLASS_DRAGONKNIGHT:
-                return 'Dragonknight';
-            case self::CLASS_SORCERER:
-                return 'Sorcerer';
-            case self::CLASS_NIGHTBLADE:
-                return 'Nightblade';
-            case self::CLASS_WARDEN:
-                return 'Warden';
-            case self::CLASS_TEMPLAR:
-                return 'Templar';
-            case self::CLASS_NECROMANCER:
-                return 'Necromancer';
-            default:
-                return '';
-        }
+        return self::CLASSES[$classId] ?? '';
     }
 }

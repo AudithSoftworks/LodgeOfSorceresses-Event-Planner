@@ -119,15 +119,30 @@ body {
                 > li {
                     margin-left: 10px;
 
-                    > a {
-                        font-size: 1.3rem;
-
+                    > a, > button {
                         &.success {
                             color: $success;
                         }
 
                         &.danger {
                             color: #ff6666;
+                        }
+                    }
+
+                    > a {
+                        font-size: 1.3rem;
+                    }
+
+                    > button {
+                        outline: none;
+                        background-color: #edffed;
+                        border: #aaffaa 1px solid;
+                        //padding: 0;
+                        font-size: 1rem;
+
+                        &.inactive {
+                            background-color: #ffeded;
+                            border: #ffaaaa 1px solid;
                         }
                     }
                 }

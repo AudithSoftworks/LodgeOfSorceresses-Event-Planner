@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Character;
+use App\Models\File;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use UnexpectedValueException;
 
 class CharactersController extends Controller
 {
@@ -22,25 +26,41 @@ class CharactersController extends Controller
     {
         $this->authorize('view', Character::class);
         $characters = Character::query()
-            ->where('user_id', app('auth.driver')->id())
+            ->with(['dpsParses' => static function (HasMany $query) {
+                $query->whereNull('processed_by');
+            }])
+            ->whereUserId(app('auth.driver')->id())
             ->orderBy('id', 'desc')
             ->get();
         if ($characters->count()) {
             app('cache.store')->has('sets'); // Trigger Recache listener.
-            $equipmentSets = app('cache.store')->get('sets');
+            $sets = app('cache.store')->get('sets');
             foreach ($characters as $character) {
                 $character->class = ClassTypes::getClassName($character->class);
                 $character->role = RoleTypes::getRoleName($character->role);
-                $characterEquipmentSets = array_filter($equipmentSets, static function ($key) use ($character) {
+                $characterEquipmentSets = array_filter($sets, static function ($key) use ($character) {
                     return in_array($key, explode(',', $character->sets), false);
                 }, ARRAY_FILTER_USE_KEY);
                 $character->sets = array_values($characterEquipmentSets);
+
+                foreach ($character->dpsParses as $dpsParse) {
+                    $setsUsedInDpsParse = array_filter($sets, static function ($key) use ($dpsParse) {
+                        return in_array($key, explode(',', $dpsParse->sets), false);
+                    }, ARRAY_FILTER_USE_KEY);
+                    $dpsParse->sets = array_values($setsUsedInDpsParse);
+
+                    $parseFile = File::whereHash($dpsParse->parse_file_hash)->first();
+                    $superstarFile = File::whereHash($dpsParse->superstar_file_hash)->first();
+                    if (!$parseFile || !$superstarFile) {
+                        throw new UnexpectedValueException('Couldn\'t find screenshot file records!');
+                    }
+                    $dpsParse->parse_file_hash = app('filestream')->url($parseFile);
+                    $dpsParse->superstar_file_hash = app('filestream')->url($superstarFile);
+                }
             }
         }
 
-        return response()->json([
-            'characters' => $characters
-        ]);
+        return response()->json($characters);
     }
 
     /**
@@ -60,13 +80,13 @@ class CharactersController extends Controller
             'name.required' => 'Character name is required.',
             'role.required' => 'Choose a role.',
             'class.required' => 'Choose a class.',
-            'sets.*.required' => 'Select sets used during the parse.',
+            'sets.*.required' => 'Select all full sets your character has.',
         ];
         $validator = app('validator')->make($request->all(), [
             'name' => 'required|string',
             'role' => 'required|integer|min:1|max:4',
             'class' => 'required|integer|min:1|max:6',
-            'sets.*' => 'sometimes|required|numeric|exists:sets,id',
+            'sets.*' => 'required|numeric|exists:sets,id',
         ], $validatorErrorMessages);
         if ($validator->fails()) {
             throw new ValidationException($validator);
@@ -80,7 +100,7 @@ class CharactersController extends Controller
         $character->sets = !empty($request->get('sets')) ? implode(',', $request->get('sets')) : null;
         $character->save();
 
-        return response()->json(['success' => true], JsonResponse::HTTP_CREATED);
+        return response()->json(['lastInsertId' =>  $character->id], JsonResponse::HTTP_CREATED);
     }
 
     /**
@@ -95,15 +115,40 @@ class CharactersController extends Controller
     {
         $this->authorize('view', Character::class);
         $character = Character::query()
+            ->with(['dpsParses' => static function (HasMany $query) {
+                $query->whereNull('processed_by');
+            }])
             ->whereUserId(app('auth.driver')->id())
             ->whereId($char)
             ->first(['id', 'name', 'class', 'role', 'sets', 'last_submitted_dps_amount']);
         if (!$character) {
             return response()->json(['message' => 'Character not found!'])->setStatusCode(404);
         }
-        $character->sets = array_map(static function ($item) {
-            return (int)$item;
-        }, explode(',', $character->sets));
+
+        $character->class = ClassTypes::getClassName($character->class);
+        $character->role = RoleTypes::getRoleName($character->role);
+
+        app('cache.store')->has('sets'); // Trigger Recache listener.
+        $sets = app('cache.store')->get('sets');
+        $charactersSets = array_filter($sets, static function ($key) use ($character) {
+            return in_array($key, explode(',', $character->sets), false);
+        }, ARRAY_FILTER_USE_KEY);
+        $character->sets = array_values($charactersSets);
+
+        foreach ($character->dpsParses as $dpsParse) {
+            $setsUsedInDpsParse = array_filter($sets, static function ($key) use ($dpsParse) {
+                return in_array($key, explode(',', $dpsParse->sets), false);
+            }, ARRAY_FILTER_USE_KEY);
+            $dpsParse->sets = array_values($setsUsedInDpsParse);
+
+            $parseFile = File::whereHash($dpsParse->parse_file_hash)->first();
+            $superstarFile = File::whereHash($dpsParse->superstar_file_hash)->first();
+            if (!$parseFile || !$superstarFile) {
+                throw new UnexpectedValueException('Couldn\'t find screenshot file records!');
+            }
+            $dpsParse->parse_file_hash = app('filestream')->url($parseFile);
+            $dpsParse->superstar_file_hash = app('filestream')->url($superstarFile);
+        }
 
         return response()->json($character);
     }
@@ -122,12 +167,18 @@ class CharactersController extends Controller
     public function update(Request $request, int $char): JsonResponse
     {
         $this->authorize('update', Character::class);
+        $validatorErrorMessages = [
+            'name.required' => 'Character name can\'t be empty.',
+            'role.required' => 'Choose a role.',
+            'class.required' => 'Choose a class.',
+            'sets.*.required' => 'Select all full sets your character has.',
+        ];
         $validator = app('validator')->make($request->all(), [
-            'name' => 'required|string',
-            'role' => 'required|integer|min:1|max:4',
-            'class' => 'required|integer|min:1|max:6',
-            'sets.*' => 'sometimes|required|numeric|exists:sets,id',
-        ]);
+            'name' => 'sometimes|required|string',
+            'role' => 'sometimes|required|integer|min:1|max:4',
+            'class' => 'sometimes|required|integer|min:1|max:6',
+            'sets.*' => 'required|numeric|exists:sets,id',
+        ], $validatorErrorMessages);
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }
@@ -141,9 +192,9 @@ class CharactersController extends Controller
             return response()->json(['message' => 'Character not found!'])->setStatusCode(404);
         }
         $character->user_id = app('auth.driver')->id();
-        $character->name = $request->get('name');
-        $character->role = $request->get('role');
-        $character->class = $request->get('class');
+        $request->filled('name') && $character->name = $request->get('name');
+        $request->filled('role') && $character->role = $request->get('role');
+        $request->filled('class') && $character->class = $request->get('class');
         $character->sets = !empty($request->get('sets')) ? implode(',', $request->get('sets')) : null;
         $character->save();
 
@@ -157,15 +208,24 @@ class CharactersController extends Controller
      *
      * @return JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Exception
      */
     public function destroy(int $char): JsonResponse
     {
         $this->authorize('delete', Character::class);
         $character = Character::query()
             ->whereUserId(app('auth.driver')->id())
+            ->whereApprovedForMidgame(false)
+            ->whereApprovedForEndgameT0(false)
+            ->whereApprovedForEndgameT1(false)
+            ->whereApprovedForEndgameT2(false)
             ->whereId($char)
             ->first();
-        $character->delete();
+        if ($character) {
+            $character->delete();
+        } else {
+            throw new ModelNotFoundException('Character not found!');
+        }
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);
     }

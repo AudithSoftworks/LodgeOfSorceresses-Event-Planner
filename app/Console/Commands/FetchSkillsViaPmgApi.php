@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use PathfinderMediaGroup\ApiLibrary\Api\SkillApi;
+use PathfinderMediaGroup\ApiLibrary\Auth\TokenAuth;
 
 class FetchSkillsViaPmgApi extends Command
 {
@@ -17,16 +19,26 @@ class FetchSkillsViaPmgApi extends Command
      */
     protected $description = 'Fetches ESO skill list from PMG API.';
 
+    /**
+     * @throws \PathfinderMediaGroup\ApiLibrary\Exception\FailedPmgRequestException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
     public function handle(): void
     {
-        $skills = app('pmg.api')->getAllSkills();
+        $botAccessToken = config('services.pmg.api_token');
+        $tokenAuthObj = new TokenAuth($botAccessToken);
+        $skillApi = new SkillApi($tokenAuthObj);
+        $skills = $skillApi->getAll();
         foreach ($skills as &$skill) {
             $skill['skill_line'] = $skill['skillline'];
             unset($skill['skillline']);
         }
         unset($skill);
         $this->syncSkills($skills);
-        $this->info('Skills succesfully synced!');
+
+        app('cache.store')->delete('skills');
+
+        $this->info('Skills succesfully synced and Cache cleared!');
     }
 
     /**

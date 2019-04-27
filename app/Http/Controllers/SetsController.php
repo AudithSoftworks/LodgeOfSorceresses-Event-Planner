@@ -15,8 +15,6 @@ class SetsController extends Controller
     {
         app('cache.store')->has('sets'); // Trigger Recache listener.
 
-        return response()->json([
-            'sets' => app('cache.store')->get('sets')
-        ]);
+        return response()->json(app('cache.store')->get('sets'));
     }
 }

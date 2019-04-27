@@ -1,8 +1,8 @@
-import Axios from 'axios';
+import axios from 'axios';
 
-Axios.defaults.headers.common = {
+axios.defaults.headers.common = {
     'X-Requested-With': 'XMLHttpRequest',
     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
 };
 
-export default Axios;
+export default axios;

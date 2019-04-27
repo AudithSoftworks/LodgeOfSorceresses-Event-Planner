@@ -17,7 +17,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command(FetchEventsUsingIpsApi::class)->hourly();
-        $schedule->command(SyncDiscordOauthLinks::class)->everyFiveMinutes();
+        $schedule->command(SyncDiscordOauthLinks::class)->everyFiveMinutes()->withoutOverlapping();
     }
 
     /**

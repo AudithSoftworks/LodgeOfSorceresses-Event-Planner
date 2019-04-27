@@ -165,7 +165,6 @@ return [
         App\Providers\FileStreamServiceProvider::class,
         App\Providers\GuildRanksAndClearanceServiceProvider::class,
         App\Providers\IpsApiServiceProvider::class,
-        App\Providers\PmgApiServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
     ],
 

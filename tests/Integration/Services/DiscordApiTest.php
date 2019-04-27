@@ -117,8 +117,15 @@ class DiscordApiTest extends IlluminateTestCase
 
     public function testGetGuildMember(): array
     {
-        $memberId = '568032622404567060';
-        $result = $this->discordApi->getGuildMember($memberId);
+        sleep(1);
+        try {
+            $memberId = '568032622404567060';
+            $result = $this->discordApi->getGuildMember($memberId);
+        } catch (ClientException $e) {
+            $this->assertRegExp('/429 TOO MANY REQUESTS/', $e->getMessage());
+
+            return [];
+        }
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('user', $result);
@@ -136,11 +143,15 @@ class DiscordApiTest extends IlluminateTestCase
      */
     public function testModifyGuildMember(array $member): void
     {
-        $result = $this->discordApi->modifyGuildMember($member['user']['id'], [
-            'mute' => true
-        ]);
-
-        $this->assertTrue($result);
+        sleep(1);
+        try {
+            $result = $this->discordApi->modifyGuildMember($member['user']['id'], [
+                'roles' => [DiscordApi::ROLE_MEMBERS, DiscordApi::ROLE_INITIATE]
+            ]);
+            $this->assertTrue(true, $result);
+        } catch (ClientException $e) {
+            $this->assertRegExp('/429 TOO MANY REQUESTS/', $e->getMessage());
+        }
     }
 
     /**
@@ -150,6 +161,8 @@ class DiscordApiTest extends IlluminateTestCase
      */
     public function testCreateDmChannel(array $member): void
     {
+        sleep(1);
+
         $result = $this->discordApi->createDmChannel($member['user']['id']);
 
         $this->assertIsArray($result);
@@ -160,6 +173,8 @@ class DiscordApiTest extends IlluminateTestCase
 
     public function testGetGuildRoles(): void
     {
+        sleep(1);
+
         $result = $this->discordApi->getGuildRoles();
 
         $this->assertIsArray($result);

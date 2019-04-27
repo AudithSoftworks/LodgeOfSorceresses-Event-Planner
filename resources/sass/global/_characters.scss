@@ -1,0 +1,39 @@
+button {
+    &.midgame {
+        color: rgb(46, 204, 113);
+    }
+
+    &.endgame_tier_0 {
+        color: rgb(52, 152, 219);
+    }
+
+    &.endgame_tier_1 {
+        color: rgb(155, 89, 182);
+    }
+
+    &.endgame_tier_2 {
+        color: rgb(230, 126, 34);;
+    }
+}
+
+tr {
+    &.no_clearance {
+        background-color: rgba(150, 150, 150, 0.2);
+    }
+
+    &.midgame {
+        background-color: rgba(46, 204, 113, 0.2);
+    }
+
+    &.endgame_tier_0 {
+        background-color: rgba(52, 152, 219, 0.2);
+    }
+
+    &.endgame_tier_1 {
+        background-color: rgba(155, 89, 182, 0.2);
+    }
+
+    &.endgame_tier_2 {
+        background-color: rgba(230, 126, 34, 0.2);
+    }
+}

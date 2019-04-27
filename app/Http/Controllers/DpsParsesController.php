@@ -31,12 +31,12 @@ class DpsParsesController extends Controller
             ->get();
         if ($dpsParses->count()) {
             app('cache.store')->has('sets'); // Trigger Recache listener.
-            $equipmentSets = app('cache.store')->get('sets');
+            $sets = app('cache.store')->get('sets');
             foreach ($dpsParses as $dpsParse) {
-                $characterEquipmentSets = array_filter($equipmentSets, static function ($key) use ($dpsParse) {
+                $setsUsedInDpsParse = array_filter($sets, static function ($key) use ($dpsParse) {
                     return in_array($key, explode(',', $dpsParse->sets), false);
                 }, ARRAY_FILTER_USE_KEY);
-                $dpsParse->sets = array_values($characterEquipmentSets);
+                $dpsParse->sets = array_values($setsUsedInDpsParse);
                 $parseFile = File::whereHash($dpsParse->parse_file_hash)->first();
                 $superstarFile = File::whereHash($dpsParse->superstar_file_hash)->first();
                 if (!$parseFile || !$superstarFile) {
@@ -89,7 +89,7 @@ class DpsParsesController extends Controller
 
         app('events')->dispatch(new DpsParseSubmitted($dpsParse));
 
-        return response()->json([], JsonResponse::HTTP_CREATED);
+        return response()->json(['lastInsertId' => $dpsParse->id], JsonResponse::HTTP_CREATED);
     }
 
     /**
@@ -111,8 +111,22 @@ class DpsParsesController extends Controller
         if (!$dpsParse) {
             throw new ModelNotFoundException('Parse Not Found!');
         }
-        $dpsParse->parse_file_hash = File::whereHash($dpsParse->parse_file_hash)->get();
-        $dpsParse->superstar_file_hash = File::whereHash($dpsParse->superstar_file_hash)->get();
+
+        app('cache.store')->has('sets'); // Trigger Recache listener.
+        $sets = app('cache.store')->get('sets');
+
+        $setsUsedInDpsParse = array_filter($sets, static function ($key) use ($dpsParse) {
+            return in_array($key, explode(',', $dpsParse->sets), false);
+        }, ARRAY_FILTER_USE_KEY);
+        $dpsParse->sets = array_values($setsUsedInDpsParse);
+
+        $parseFile = File::whereHash($dpsParse->parse_file_hash)->first();
+        $superstarFile = File::whereHash($dpsParse->superstar_file_hash)->first();
+        if (!$parseFile || !$superstarFile) {
+            throw new UnexpectedValueException('Couldn\'t find screenshot file records!');
+        }
+        $dpsParse->parse_file_hash = app('filestream')->url($parseFile);
+        $dpsParse->superstar_file_hash = app('filestream')->url($superstarFile);
 
         return response()->json($dpsParse);
     }

@@ -7,9 +7,11 @@ use App\Events\DpsParse\DpsParseDisapproved;
 use App\Http\Controllers\Controller;
 use App\Models\DpsParse;
 use App\Models\File;
+use App\Models\User;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use UnexpectedValueException;
@@ -53,7 +55,7 @@ class DpsParsesController extends Controller
             }
         }
 
-        return response()->json(['dpsParses' => $dpsParses]);
+        return response()->json($dpsParses);
     }
 
     /**
@@ -69,7 +71,14 @@ class DpsParsesController extends Controller
         /** @var \App\Models\User $me */
         $me = app('auth.driver')->user();
 
-        $dpsParse = DpsParse::whereId($parse)->firstOrFail();
+        $dpsParse = DpsParse::query()
+            ->whereId($parse)
+            ->whereNull('processed_by')
+            ->first();
+
+        if (!$dpsParse) {
+            throw new ModelNotFoundException('Parse not found!');
+        }
 
         app('events')->dispatch(new DpsParseApproved($dpsParse));
 
@@ -89,7 +98,7 @@ class DpsParsesController extends Controller
      */
     public function destroy(Request $request, int $parse): JsonResponse
     {
-        $this->authorize('admin', DpsParse::class);
+        $this->authorize('admin', User::class);
 
         /** @var \App\Models\User $me */
         $me = app('auth.driver')->user();

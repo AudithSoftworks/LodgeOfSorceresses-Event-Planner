@@ -258,6 +258,6 @@ class LoginController extends Controller
             return response()->json();
         }
 
-        return redirect('/');
+        return redirect('https://lodgeofsorceresses.com');
     }
 }

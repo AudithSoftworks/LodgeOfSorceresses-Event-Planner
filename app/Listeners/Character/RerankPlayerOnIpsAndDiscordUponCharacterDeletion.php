@@ -56,7 +56,7 @@ class RerankPlayerOnIpsAndDiscordUponCharacterDeletion
             return;
         }
 
-        $memberGroupId = $clearanceLevel ? GuildRankAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['member_group_id'] : IpsApi::MEMBER_GROUPS_INITIATE;
+        $memberGroupId = $clearanceLevel ? GuildRankAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['ipsGroupId'] : IpsApi::MEMBER_GROUPS_INITIATE;
 
         app('ips.api')->editUser($remoteIpsUser->remote_id, ['group' => $memberGroupId]);
 
@@ -80,7 +80,7 @@ class RerankPlayerOnIpsAndDiscordUponCharacterDeletion
             DiscordApi::ROLE_CORE_TWO,
             DiscordApi::ROLE_CORE_THREE,
         ]);
-        $newRoleToAssign = $clearanceLevel ? GuildRankAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['discord_role'] : DiscordApi::ROLE_INITIATE;
+        $newRoleToAssign = $clearanceLevel ? GuildRankAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['discordRole'] : DiscordApi::ROLE_INITIATE;
         $rolesToAssign = array_merge($existingSpecialRoles, [$newRoleToAssign]);
         $result = app('discord.api')->modifyGuildMember($remoteDiscordUser->remote_id, ['roles' => $rolesToAssign]);
         if ($result) {
@@ -94,8 +94,8 @@ class RerankPlayerOnIpsAndDiscordUponCharacterDeletion
         $announcementsChannelId = config('services.discord.channels.announcements');
 
         $playerNewRankTitle = $playerClearance
-            ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['rank']['discord_role']
-            : GuildRankAndClearance::RANK_INITIATE['discord_role'];
+            ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['rank']['discordRole']
+            : GuildRankAndClearance::RANK_INITIATE['discordRole'];
 
         $discordApi->createMessageInChannel($announcementsChannelId, [
             RequestOptions::FORM_PARAMS => [
@@ -112,8 +112,8 @@ class RerankPlayerOnIpsAndDiscordUponCharacterDeletion
     {
         $officerChannelId = config('services.discord.channels.officer_hq');
 
-        $mentionedOfficerGroup = '<@&' . GuildRankAndClearance::RANK_MAGISTER_TEMPLI['discord_role'] . '>';
-        $rankTitle = $playerClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['rank']['discord_role'] : GuildRankAndClearance::RANK_INITIATE['discord_role'];
+        $mentionedOfficerGroup = '<@&' . GuildRankAndClearance::RANK_MAGISTER_TEMPLI['discordRole'] . '>';
+        $rankTitle = $playerClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['rank']['discordRole'] : GuildRankAndClearance::RANK_INITIATE['discordRole'];
 
         $discordApi->createMessageInChannel($officerChannelId, [
             RequestOptions::FORM_PARAMS => [

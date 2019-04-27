@@ -26,6 +26,19 @@ class CharacterPolicy
     /**
      * @return bool
      */
+    public function admin(): bool
+    {
+        return $this->oauthAccount
+            && (
+                $this->oauthAccount->remote_primary_group === IpsApi::MEMBER_GROUPS_IPSISSIMUS
+                || $this->oauthAccount->remote_primary_group === IpsApi::MEMBER_GROUPS_MAGISTER_TEMPLI
+                || in_array(IpsApi::MEMBER_GROUPS_MAGISTER_TEMPLI, $this->oauthAccount->remote_secondary_groups, false)
+            );
+    }
+
+    /**
+     * @return bool
+     */
     public function view(): bool
     {
         return $this->oauthAccount && $this->oauthAccount->remote_primary_group !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN;

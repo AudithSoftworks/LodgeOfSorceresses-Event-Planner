@@ -1,6 +1,7 @@
 <?php namespace App\Listeners\Cache;
 
 use App\Models\Set;
+use App\Models\Skill;
 use Illuminate\Cache\Events\CacheMissed;
 
 class Recache
@@ -18,6 +19,12 @@ class Recache
             case 'sets':
                 $recache = [
                     'data' => Set::query()->get()->keyBy('id')->toArray(),
+                    'ttl' => Set::CACHE_TTL
+                ];
+                break;
+            case 'skills':
+                $recache = [
+                    'data' => Skill::query()->get()->keyBy('id')->toArray(),
                     'ttl' => Set::CACHE_TTL
                 ];
                 break;

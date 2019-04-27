@@ -1,10 +1,15 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSpinner, faTachometerAlt, faThList, faUserCheck, faUserEdit, faUserPlus, faUserTimes } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { Fragment, PureComponent } from 'react';
-import { Link } from "react-router-dom";
-import Axios from '../../vendor/Axios';
-import Loading from "../Loading";
+import { faSpinner, faTachometerAlt, faThList, faUserCheck, faUserEdit, faUserPlus, faUserTimes } from '@fortawesome/pro-regular-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+import { connect } from 'react-redux';
+import { Link, Redirect } from 'react-router-dom';
+import { errorsAction, infosAction, successAction } from "../../actions/notifications";
+import { deletePendingDpsParse, getPendingDpsParses, updatePendingDpsParse } from '../../vendor/adminApi';
+import axios from '../../vendor/axios';
+import { user } from '../../vendor/data';
+import Loading from '../Loading';
 import Notification from '../Notification';
 
 library.add(faSpinner, faTachometerAlt, faThList, faUserCheck, faUserEdit, faUserPlus, faUserTimes);
@@ -13,272 +18,233 @@ class DpsParses extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            parsesLoaded: false,
-            dpsParses: [],
-            messages: [],
+            dpsParses: null,
         };
-    };
+    }
 
-    componentDidMount() {
-        this.cancelTokenSource = Axios.CancelToken.source();
-
-        Axios.get('/api/admin/parses', {
-            cancelToken: this.cancelTokenSource.token
-        }).then((response) => {
-            this.cancelTokenSource = null;
-            if (response.data) {
-                this.setState({
-                    parsesLoaded: true,
-                    dpsParses: response.data.dpsParses,
-                    messages: [
-                        {
-                            type: "success",
-                            message: "Parses loaded."
-                        }
-                    ]
-                });
-            }
-        }).catch(error => {
-            if (!Axios.isCancel(error)) {
-                this.setState({
-                    messages: [
-                        {
-                            type: "danger",
-                            message: error.response.data.message || error.response.statusText
-                        }
-                    ]
-                })
-            }
-            if (error.response && error.response.status > 400) {
-                this.props.history.push('/', this.state);
-            }
-        });
-    };
-
-    componentWillUnmount() {
+    componentWillUnmount = () => {
         this.cancelTokenSource && this.cancelTokenSource.cancel('Unmount');
     };
 
-    handleDisapprove = (event) => {
-        event.preventDefault();
-        if (confirm('Are you sure you want to **disapprove** this parse?')) {
-            let prompt = window.prompt('Please provide a reason for disapproval. This will be posted on Discord.');
-            if (prompt && prompt.length) {
-                this.cancelTokenSource = Axios.CancelToken.source();
-                let currentTarget = event.currentTarget;
-                const dpsParses = this.state.dpsParses;
-                Axios.delete('/api/admin/parses/' + currentTarget.getAttribute('data-id'), {
-                    cancelToken: this.cancelTokenSource.token,
-                    data: {
-                        reason_for_disapproval: prompt
-                    }
-                }).then((response) => {
+    componentDidMount = () => {
+        const { me } = this.props;
+        if (me) {
+            this.cancelTokenSource = axios.CancelToken.source();
+            getPendingDpsParses(this.cancelTokenSource)
+                .then(dpsParses => {
                     this.cancelTokenSource = null;
-                    if (response.status === 204) {
-                        dpsParses.forEach((item, idx) => {
-                            if (item.id === parseInt(currentTarget.getAttribute('data-id'))) {
-                                delete (dpsParses[idx]);
-                            }
-                        });
-                        this.setState({
-                            dpsParses: dpsParses,
-                            messages: [
-                                {
-                                    type: "success",
-                                    message: 'Parse disapproved!'
-                                }
-                            ],
-                        });
-                    }
-                }).catch(error => {
-                    if (!Axios.isCancel(error)) {
-                        this.setState({
-                            messages: [
-                                {
-                                    type: "danger",
-                                    message: error.response.data.message || error.response.statusText
-                                }
-                            ]
-                        })
-                    }
-                    if (error.response) {
-                        switch (error.response.status) {
-                            case 403:
-                                this.props.history.push('/', this.state);
-                                break;
-                            case 404:
-                                this.props.history.push('/admin/parses', this.state);
-                                break;
-                        }
+                    this.setState({ dpsParses });
+                })
+                .catch(error => {
+                    if (!axios.isCancel(error)) {
+                        const message = error.response.data.message || error.response.statusText || error.message;
+                        this.props.dispatch(errorsAction(message));
                     }
                 });
-            }
         }
     };
 
-    handleApprove = (event) => {
+    handleDisapprove = event => {
         event.preventDefault();
-        if (confirm('Are you sure you want to **approve** this parse?')) {
-            this.cancelTokenSource = Axios.CancelToken.source();
-            let currentTarget = event.currentTarget;
-            const dpsParses = this.state.dpsParses;
-            Axios.put('/api/admin/parses/' + currentTarget.getAttribute('data-id'), {
-                cancelToken: this.cancelTokenSource.token
-            }).then((response) => {
-                this.cancelTokenSource = null;
-                if (response.data) {
-                    dpsParses.forEach((item, idx) => {
-                        if (item.id === parseInt(currentTarget.getAttribute('data-id'))) {
-                            delete (dpsParses[idx]);
+        if (confirm('Are you sure you want to **disapprove** this parse?')) {
+            this.cancelTokenSource = axios.CancelToken.source();
+            let reasonForDisapproval = window.prompt('Please provide a reason for disapproval. This will be posted on Discord.');
+            if (reasonForDisapproval && reasonForDisapproval.length) {
+                const currentTarget = event.currentTarget;
+                const { dpsParses } = this.state;
+                const parseId = parseInt(currentTarget.getAttribute('data-id'));
+                deletePendingDpsParse(this.cancelTokenSource, parseId, reasonForDisapproval)
+                    .then(response => {
+                        this.cancelTokenSource = null;
+                        if (response === true) {
+                            delete (dpsParses.entities.dpsParses[parseId]);
+                            dpsParses.result = dpsParses.result.filter(value => value !== parseId);
+                            this.setState({ dpsParses });
+                            const message = 'Parse disapproved.';
+                            this.props.dispatch(successAction(message));
+                        }
+                    })
+                    .catch(error => {
+                        if (!axios.isCancel(error)) {
+                            const message = error.response.data.message || error.response.statusText || error.message;
+                            this.props.dispatch(errorsAction(message));
                         }
                     });
-                    this.setState({
-                        dpsParses: dpsParses,
-                        messages: [
-                            {
-                                type: "success",
-                                message: response.data.message
-                            }
-                        ],
-                    });
-                }
-            }).catch(error => {
-                if (!Axios.isCancel(error)) {
-                    this.setState({
-                        messages: [
-                            {
-                                type: "danger",
-                                message: error.response.data.message || error.response.statusText
-                            }
-                        ]
-                    })
-                }
-                if (error.response) {
-                    switch (error.response.status) {
-                        case 403:
-                            this.props.history.push('/', this.state);
-                            break;
-                        case 404:
-                            this.props.history.push('/admin/parses', this.state);
-                            break;
-                    }
-                }
-            });
+            }
         }
     };
 
-    renderList = (dpsParses) => {
-        let parsesRendered = dpsParses.map(
-            item => {
-                const characterSets = item.sets.map(set => <a key={set['id']} href={'https://eso-sets.com/set/' + set['id']} className='badge badge-dark'>{set['name']}</a>);
-                item.actionList = {
-                    approve: <Link to='' onClick={this.handleApprove} data-id={item.id} title='Approve this Parse'><FontAwesomeIcon icon="user-check"/></Link>,
-                    disapprove: <Link to='' onClick={this.handleDisapprove} data-id={item.id} title='Disapprove this Parse'><FontAwesomeIcon icon="user-times"/></Link>
-                };
-                let actionListRendered = [];
-                for (const [actionType, link] of Object.entries(item.actionList)) {
-                    actionListRendered.push(<li key={actionType}>{link}</li>);
-                }
+    handleApprove = event => {
+        event.preventDefault();
+        if (confirm('Are you sure you want to **approve** this parse?')) {
+            this.cancelTokenSource = axios.CancelToken.source();
+            const currentTarget = event.currentTarget;
+            const parseId = parseInt(currentTarget.getAttribute('data-id'));
+            const { dpsParses } = this.state;
+            updatePendingDpsParse(this.cancelTokenSource, parseId)
+                .then(response => {
+                    this.cancelTokenSource = null;
+                    if (response.data) {
+                        delete (dpsParses.entities.dpsParses[parseId]);
+                        dpsParses.result = dpsParses.result.filter(value => value !== parseId);
+                        this.setState({ dpsParses });
+                        const message = response.data.message;
+                        this.props.dispatch(successAction(message));
+                    }
+                })
+                .catch(error => {
+                    if (!axios.isCancel(error)) {
+                        const message = error.response.data.message || error.response.statusText || error.message;
+                        this.props.dispatch(errorsAction(message));
+                    }
+                });
+        }
+    };
 
-                return (
-                    <tr key={'dpsParseRow-' + item.id}>
-                        <td title={item.owner.name}>{item.owner.name}</td>
-                        <td title={item.character.name}>
-                            {item.character.name}<br/>
-                            <small>{item.character.class} / {item.character.role}</small>
-                        </td>
-                        <td>{characterSets.reduce((prev, curr) => [prev, ' ', curr])}</td>
-                        <td className='text-right'>{item['dps_amount']}</td>
-                        <td className='text-right'>
-                            <a href={item['parse_file_hash']['large']} target='_blank'>
-                                <img src={item['parse_file_hash']['thumbnail']} alt='Parse screenshot'/>
-                            </a>
-                        </td>
-                        <td className='text-right'>
-                            <a href={item['superstar_file_hash']['large']} target='_blank'>
-                                <img src={item['superstar_file_hash']['thumbnail']} alt='Superstar screenshot'/>
-                            </a>
-                        </td>
-                        <td>
-                            <ul className='actionList'>{actionListRendered}</ul>
-                        </td>
-                    </tr>
-                )
-            }
+    renderListItem(dpsParse) {
+        const characterSets = dpsParse.sets.map(set => (
+            <a key={set['id']} href={'https://eso-sets.com/set/' + set['id']} className="badge badge-dark">
+                {set['name']}
+            </a>
+        ));
+        dpsParse.actionList = {
+            approve: (
+                <Link to="" onClick={this.handleApprove} data-id={dpsParse['id']} title="Approve this Parse">
+                    <FontAwesomeIcon icon={['far', 'user-check']} />
+                </Link>
+            ),
+            disapprove: (
+                <Link to="" onClick={this.handleDisapprove} data-id={dpsParse['id']} title="Disapprove this Parse">
+                    <FontAwesomeIcon icon={['far', 'user-times']} />
+                </Link>
+            ),
+        };
+        let actionListRendered = [];
+        for (const [actionType, link] of Object.entries(dpsParse.actionList)) {
+            actionListRendered.push(<li key={actionType}>{link}</li>);
+        }
+
+        return (
+            <tr key={'dpsParseRow-' + dpsParse['id']}>
+                <td title={dpsParse['owner']['name']}>{dpsParse['owner']['name']}</td>
+                <td title={dpsParse['character']['name']}>
+                    {dpsParse['character']['name']}
+                    <br />
+                    <small>
+                        {dpsParse['character']['class']} / {dpsParse['character']['role']}
+                    </small>
+                </td>
+                <td>{characterSets.reduce((prev, curr) => [prev, ' ', curr])}</td>
+                <td className="text-right">{dpsParse['dps_amount']}</td>
+                <td className="text-right">
+                    <a href={dpsParse['parse_file_hash']['large']} target="_blank">
+                        <img src={dpsParse['parse_file_hash']['thumbnail']} alt="Parse screenshot" />
+                    </a>
+                </td>
+                <td className="text-right">
+                    <a href={dpsParse['superstar_file_hash']['large']} target="_blank">
+                        <img src={dpsParse['superstar_file_hash']['thumbnail']} alt="Superstar screenshot" />
+                    </a>
+                </td>
+                <td>
+                    <ul className="actionList">{actionListRendered}</ul>
+                </td>
+            </tr>
         );
+    }
+
+    renderList = dpsParses => {
+        let parsesRendered = dpsParses.result.map(itemId => {
+            const dpsParse = dpsParses.entities.dpsParses[itemId];
+            return this.renderListItem(dpsParse);
+        });
         if (parsesRendered.length) {
             parsesRendered = [
-                <table key="character-list-table" className='pl-2 pr-2 col-md-24'>
+                <table key="character-list-table" className="pl-2 pr-2 col-md-24">
                     <thead>
                         <tr>
-                            <th style={{width: '10%'}}>User</th>
-                            <th style={{width: '20%'}}>Character</th>
-                            <th style={{width: '25%'}}>Sets</th>
-                            <th style={{width: '10%', textAlign: 'right'}}>DPS Number</th>
-                            <th style={{width: '15%', textAlign: 'right'}}>Parse Screenshot</th>
-                            <th style={{width: '15%', textAlign: 'right'}}>Superstar Screenshot</th>
-                            <th style={{width: '5%'}}/>
+                            <th style={{ width: '10%' }}>User</th>
+                            <th style={{ width: '20%' }}>Character</th>
+                            <th style={{ width: '25%' }}>Sets</th>
+                            <th style={{ width: '10%', textAlign: 'right' }}>DPS Number</th>
+                            <th style={{ width: '15%', textAlign: 'right' }}>Parse Screenshot</th>
+                            <th style={{ width: '15%', textAlign: 'right' }}>Superstar Screenshot</th>
+                            <th style={{ width: '5%' }} />
                         </tr>
                     </thead>
                     <tbody>{parsesRendered}</tbody>
-                </table>
-            ];
-        } else {
-            const messages = [
-                {
-                    type: 'default',
-                    message: [
-                        <Fragment key='f-1'>Create a new parse, by clicking</Fragment>,
-                        <FontAwesomeIcon icon="user-plus" key='icon'/>,
-                        <Fragment key='f-2'>icon on top right corner.</Fragment>
-                    ].reduce((prev, curr) => [prev, ' ', curr])
-                }
-            ];
-
-            const options = {
-                container: 'bottom-center',
-                animationIn: ["animated", "bounceInDown"],
-                animationOut: ["animated", "bounceOutDown"],
-                dismiss: {duration: 30000},
-            };
-
-            parsesRendered = [
-                <Notification key='notifications' messages={messages} options={options}/>
+                </table>,
             ];
         }
 
         return [
-            <section className="col-md-24 p-0 mb-4" key='dpsParseList'>
+            <section className="col-md-24 p-0 mb-4" key="dpsParseList">
                 <h2 className="form-title col-md-24">Parses Pending Approval</h2>
-                <article className='alert-info'>
+                <article className="alert-info">
                     <b>DPS Parse Approval Checklist</b>
-                    <ul style={{listStyleType: 'circle'}}>
+                    <ul style={{ listStyleType: 'circle' }}>
                         <li>Do the Characters on both screenshots have the same name as the Character listed?</li>
                         <li>Does Parse screenshot have the same DPS amount as it is listed in this table?</li>
                         <li>Is parse in the screenshot the same Role (Stamina vs Magicka) as the Character listed?</li>
                         <li>Is the gear listed in Superstar screenshot the same as in the Character listed?</li>
                     </ul>
-                    If any of these fail, please Reject the Parse by clicking <FontAwesomeIcon icon="user-times"/> icon, and by stating the reason.
+                    If any of these fail, please Reject the Parse by clicking <FontAwesomeIcon icon={['far', 'user-times']} /> icon, and by stating the reason.
                 </article>
                 {parsesRendered}
-            </section>
+            </section>,
         ];
     };
 
+    renderNoPendingDpsParsesNotification = (dpsParses) => {
+        const { dispatch, notifications } = this.props;
+        if (dpsParses && !dpsParses.result.length && notifications.find(n => n.key === 'admin-no-pending-dps-parses') === undefined) {
+            const message = 'No pending Parses found!';
+            dispatch(
+                infosAction(
+                    message,
+                    {
+                        container: 'bottom-center',
+                        animationIn: ['animated', 'bounceInDown'],
+                        animationOut: ['animated', 'bounceOutDown'],
+                        dismiss: { duration: 30000 },
+                    },
+                    'admin-no-pending-dps-parses'
+                )
+            );
+        }
+    };
+
     render = () => {
-        const {parsesLoaded, dpsParses, messages} = this.state;
-        if (!parsesLoaded) {
-            return [
-                <Loading key='loading'/>,
-                <Notification key='notifications' messages={messages}/>
-            ]
+        const { me, location } = this.props;
+        if (!me) {
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
 
-        return [
-            this.renderList(dpsParses),
-            <Notification key='notifications' messages={messages}/>,
-        ]
+        const { dpsParses } = this.state;
+        if (!dpsParses) {
+            return [
+                <Loading message="Fetching the list of pending DPS parses..." key="loading" />,
+                <Notification key="notifications" />
+            ];
+        }
+        this.renderNoPendingDpsParsesNotification(dpsParses);
+
+        return [...this.renderList(dpsParses), <Notification key="notifications" />];
     };
 }
 
-export default DpsParses;
+DpsParses.propTypes = {
+    match: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
+
+    me: user,
+    notifications: PropTypes.array,
+};
+
+const mapStateToProps = state => ({
+    me: state.getIn(['me']),
+    notifications: state.getIn(['notifications']),
+});
+
+export default connect(mapStateToProps)(DpsParses);

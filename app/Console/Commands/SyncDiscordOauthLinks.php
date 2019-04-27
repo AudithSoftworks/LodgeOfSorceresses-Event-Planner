@@ -51,6 +51,7 @@ class SyncDiscordOauthLinks extends Command
         $oauthAccount = $oauthAccounts->shift();
         while ($oauthAccount) {
             $headers = $this->discordApi->getLastResponseHeaders();
+            $memberNameParsed = '[' . $oauthAccount->name . ']';
             if (isset($headers['X-RateLimit-Remaining']) && $headers['X-RateLimit-Remaining'] === '0') {
                 $sleepDuration = (int)$headers['X-RateLimit-Reset'] - time();
                 sleep($sleepDuration);
@@ -63,10 +64,20 @@ class SyncDiscordOauthLinks extends Command
                     : null;
                 $oauthAccount->touch();
                 $oauthAccount->save();
-                $this->info('Successfully synced ' . $oauthAccount->name);
+                $this->info($memberNameParsed . ' Successfully synced.');
             } catch (RequestException $e) {
-                $this->warn('RequestException occured for ' . $oauthAccount->name);
-                continue;
+                $errorMessage = $e->getMessage();
+                if (preg_match('/429 TOO MANY REQUESTS/', $errorMessage)) {
+                    preg_match('/"retry_after": (\d+)/', $errorMessage, $retryAfterMatch);
+                    $microSecondsToWait = (int)$retryAfterMatch[1] * 1000;
+                    usleep($microSecondsToWait);
+                    $this->warn($memberNameParsed . ' Being rated... Waiting for ' . $microSecondsToWait . ' microsecs.');
+                    continue;
+                }
+
+                if (preg_match('/404 NOT FOUND/', $errorMessage)) {
+                    $this->error($memberNameParsed . ' Member not found, skipping.');
+                }
             }
             $oauthAccount = $oauthAccounts->shift();
         }

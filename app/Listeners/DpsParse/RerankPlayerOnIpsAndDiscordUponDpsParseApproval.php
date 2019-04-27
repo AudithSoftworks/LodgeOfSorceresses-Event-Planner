@@ -43,7 +43,7 @@ class RerankPlayerOnIpsAndDiscordUponDpsParseApproval
             return;
         }
 
-        $memberGroupId = $clearanceLevel ? GuildRankAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['member_group_id'] : IpsApi::MEMBER_GROUPS_INITIATE;
+        $memberGroupId = $clearanceLevel ? GuildRankAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['ipsGroupId'] : IpsApi::MEMBER_GROUPS_INITIATE;
 
         app('ips.api')->editUser($remoteIpsUser->remote_id, ['group' => $memberGroupId]);
 
@@ -74,7 +74,7 @@ class RerankPlayerOnIpsAndDiscordUponDpsParseApproval
             DiscordApi::ROLE_CORE_TWO,
             DiscordApi::ROLE_CORE_THREE,
         ]);
-        $newRoleToAssign = $clearanceLevel ? GuildRankAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['discord_role'] : DiscordApi::ROLE_INITIATE;
+        $newRoleToAssign = $clearanceLevel ? GuildRankAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['discordRole'] : DiscordApi::ROLE_INITIATE;
         $rolesToAssign = array_merge($existingSpecialRoles, [$newRoleToAssign]);
         $result = app('discord.api')->modifyGuildMember($remoteDiscordUser->remote_id, ['roles' => $rolesToAssign]);
         if ($result) {

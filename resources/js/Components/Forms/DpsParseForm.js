@@ -1,285 +1,206 @@
 import FineUploaderTraditional from 'fine-uploader-wrappers';
+import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 
 import Loadable from 'react-loadable';
-import { Link, Redirect } from "react-router-dom";
+import { connect } from 'react-redux';
+import { Link, Redirect } from 'react-router-dom';
 import Select from 'react-select';
 import * as Animated from 'react-select/lib/animated';
-import Axios from '../../vendor/Axios';
-import Loading from "../Characters";
+import postMyDpsParseAction from '../../actions/post-my-dps-parse';
+import putMyDpsParseAction from '../../actions/put-my-dps-parse';
+import { characters, user } from '../../vendor/data';
+import Loading from '../Loading';
 import Notification from '../Notification';
 
 const Gallery = Loadable({
-    loader: () => import(
-        /* webpackPrefetch: true */
-        /* webpackChunkName: "react-fine-uploader" */
-        'react-fine-uploader'),
-    loading: () => <Loading/>
+    loader: () =>
+        import(
+            /* webpackPrefetch: true */
+            /* webpackChunkName: "react-fine-uploader" */
+            'react-fine-uploader'
+        ),
+    loading: () => <Loading />,
 });
 
 import(
     /* webpackPrefetch: true */
     /* webpackChunkName: "react-fine-uploader_gallery-css" */
-    '../../../sass/vendor/_fine-uploader-gallery.scss');
+    '../../../sass/vendor/_fine-uploader-gallery.scss'
+);
 
 class DpsParseForm extends PureComponent {
     classOptions = [
-        {value: 1, label: 'Dragonknight'},
-        {value: 2, label: 'Nightblade'},
-        {value: 3, label: 'Sorcerer'},
-        {value: 4, label: 'Templar'},
-        {value: 5, label: 'Warden'},
-        {value: 6, label: 'Necromancer'},
+        { value: 1, label: 'Dragonknight' },
+        { value: 2, label: 'Nightblade' },
+        { value: 3, label: 'Sorcerer' },
+        { value: 4, label: 'Templar' },
+        { value: 5, label: 'Warden' },
+        { value: 6, label: 'Necromancer' },
     ];
-    roleOptions = [
-        {value: 1, label: 'Tank'},
-        {value: 2, label: 'Healer'},
-        {value: 3, label: 'Damage Dealer (Magicka)'},
-        {value: 4, label: 'Damage Dealer (Stamina)'},
-    ];
+    roleOptions = [{ value: 1, label: 'Tank' }, { value: 2, label: 'Healer' }, { value: 3, label: 'Damage Dealer (Magicka)' }, { value: 4, label: 'Damage Dealer (Stamina)' }];
     parseScreenshotUploader = new FineUploaderTraditional({
         options: {
             request: {
                 endpoint: '/api/files',
                 customHeaders: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 },
                 params: {
-                    qqtag: 'parse-screenshot'
+                    qqtag: 'parse-screenshot',
                 },
             },
             validation: {
                 allowedExtensions: ['jpeg', 'jpg', 'png', 'gif'],
                 acceptFiles: 'image/*',
-                itemLimit: 1
+                itemLimit: 1,
             },
             chunking: {
                 enabled: true,
                 concurrent: {
-                    enabled: true
+                    enabled: true,
                 },
                 partSize: 1024000,
                 success: {
-                    endpoint: '/api/files?post-process=1'
-                }
+                    endpoint: '/api/files?post-process=1',
+                },
             },
             resume: {
                 enabled: true,
                 // recordsExpireIn: {{ config('filesystems.disks.local.chunks_expire_in') }}
-                recordsExpireIn: 604800
+                recordsExpireIn: 604800,
             },
             deleteFile: {
                 enabled: true,
                 endpoint: '/api/files',
                 params: {
-                    tag: 'parse-screenshot'
+                    tag: 'parse-screenshot',
                 },
                 customHeaders: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 },
             },
             callbacks: {
                 onComplete: (id, name, responseJson) => {
                     this.setState({
-                        parseScreenshotUploaded: responseJson.hash
+                        parseScreenshotHash: responseJson.hash,
                     });
                 },
                 onDeleteComplete: (id, xhr, isError) => {
                     if (!isError) {
                         this.setState({
-                            parseScreenshotUploaded: null
+                            parseScreenshotHash: null,
                         });
                     }
                 },
-            }
-        }
+            },
+        },
     });
     superstarScreenshotUploader = new FineUploaderTraditional({
         options: {
             request: {
                 endpoint: '/api/files',
                 customHeaders: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 },
                 params: {
-                    qqtag: 'superstar-screenshot'
+                    qqtag: 'superstar-screenshot',
                 },
             },
             validation: {
                 allowedExtensions: ['jpeg', 'jpg', 'png', 'gif'],
                 acceptFiles: 'image/*',
-                itemLimit: 1
+                itemLimit: 1,
             },
             chunking: {
                 enabled: true,
                 concurrent: {
-                    enabled: true
+                    enabled: true,
                 },
                 partSize: 1024000,
                 success: {
-                    endpoint: '/api/files?post-process=1'
-                }
+                    endpoint: '/api/files?post-process=1',
+                },
             },
             resume: {
                 enabled: true,
                 // recordsExpireIn: {{ config('filesystems.disks.local.chunks_expire_in') }}
-                recordsExpireIn: 604800
+                recordsExpireIn: 604800,
             },
             deleteFile: {
                 enabled: true,
                 endpoint: '/api/files',
                 params: {
-                    tag: 'superstar-screenshot'
+                    tag: 'superstar-screenshot',
                 },
                 customHeaders: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 },
             },
             callbacks: {
                 onComplete: (id, name, responseJson) => {
                     this.setState({
-                        superstarScreenshotUploaded: responseJson.hash
+                        superstarScreenshotHash: responseJson.hash,
                     });
                 },
                 onDeleteComplete: (id, xhr, isError) => {
                     if (!isError) {
                         this.setState({
-                            superstarScreenshotUploaded: null
+                            superstarScreenshotHash: null,
                         });
                     }
                 },
-            }
-        }
+            },
+        },
     });
 
     constructor(props) {
         super(props);
         this.state = {
-            dpsParseProcessed: null,
-            characterLoaded: null,
-            parseScreenshotUploaded: null,
-            superstarScreenshotUploaded: null,
-            sets: null,
-            messages: [],
+            parseScreenshotHash: null,
+            superstarScreenshotHash: null,
         };
-    };
+    }
 
-    componentDidMount() {
-        this.cancelTokenSource = Axios.CancelToken.source();
-        Axios.get('/api/sets', {
-            cancelToken: this.cancelTokenSource.token
-        }).then((response) => {
-            if (response.data) {
-                this.setState({
-                    sets: response.data.sets,
-                    messages: [
-                        {
-                            type: "success",
-                            message: "Form loaded."
-                        }
-                    ]
-                });
-                this.cancelTokenSource = null;
-            }
-        }).catch((error) => {
-            if (!Axios.isCancel(error)) {
-                this.setState({
-                    messages: [
-                        {
-                            type: "danger",
-                            message: error.response.statusText
-                        }
-                    ]
-                })
-            }
-        });
+    componentWillUnmount() {
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Unmount');
+    }
 
-        if (this.props.match.params.id) {
-            const charId = this.props.match.params.id;
-            Axios.get('/api/chars/' + charId, {
-                cancelToken: this.cancelTokenSource.token
-            }).then((response) => {
-                if (response.data) {
-                    this.setState({
-                        characterLoaded: response.data,
-                    });
-                    this.cancelTokenSource = null;
-                }
-            }).catch((error) => {
-                if (!Axios.isCancel(error)) {
-                    this.setState({
-                        messages: [
-                            {
-                                type: "danger",
-                                message: error.response.data.message || error.response.statusText
-                            }
-                        ]
-                    })
-                }
-                if (error.response) {
-                    switch (error.response.status) {
-                        case 403:
-                            this.props.history.push('/', this.state);
-                            break;
-                        case 404:
-                            this.props.history.push('/chars', this.state);
-                            break;
-                    }
-                }
-            });
+    componentWillUpdate = nextProps => {
+        // We had a change in Characters data: Redirect!
+        const { match } = this.props;
+        const characterId = match.params.id;
+        if (this.props.myCharacters !== nextProps.myCharacters) {
+            return this.props.history.push('/characters/' + characterId + '/parses');
         }
     };
 
-    componentWillUnmount() {
-        this.cancelTokenSource && this.cancelTokenSource.cancel('Unmount');
+    getCharacter = () => {
+        const { match, myCharacters } = this.props;
+        const characterId = match.params.id;
+
+        return myCharacters.find(item => item.id === parseInt(characterId));
     };
 
-    handleSubmit = (event) => {
+    handleSubmit = event => {
         event.preventDefault();
+        const { match, postMyDpsParseAction } = this.props;
+        const characterId = match.params.id;
         const data = new FormData(event.target);
-        this.cancelTokenSource = Axios.CancelToken.source();
-        let result = Axios.post(
-            '/api/chars/' + this.props.match.params.id + '/parses', data, {
-                cancelToken: this.cancelTokenSource.token
-            }
-        );
-        result.then((response) => {
-            this.setState({
-                dpsParseProcessed: response.status === 201,
-                messages: [
-                    {
-                        type: "success",
-                        message: 'Parse submitted!'
-                    }
-                ]
-            });
-            this.cancelTokenSource = null;
-        }).catch((error) => {
-            if (!Axios.isCancel(error)) {
-                const errorMessage = error.response.data.message || error.response.statusText;
-                this.setState({
-                    messages: Object.values(errorMessage.errors).map(item => {
-                        return {type: 'danger', message: item[0]}
-                    })
-                });
-            }
-            if (error.response) {
-                if (error.response.status >= 400) {
-                    this.props.history.push('/', this.state);
-                }
-            }
-        });
+
+        return postMyDpsParseAction(characterId, data);
     };
 
-    renderForm = (sets) => {
-        const setsOptions = Object.values(sets).map(
-            item => ({value: item.id, label: item.name})
-        );
+    renderForm = character => {
+        const { sets } = this.props;
+        const { parseScreenshotHash, superstarScreenshotHash } = this.state;
+        const setsOptions = Object.values(sets).map(item => ({ value: item.id, label: item.name }));
+        const charactersSetsIds = character ? Object.values(character.sets).map(item => item.id) : [];
 
         return (
-            <form className='col-md-24 d-flex flex-row flex-wrap p-0' onSubmit={this.handleSubmit} key='dpsParseForm'>
+            <form className="col-md-24 d-flex flex-row flex-wrap p-0" onSubmit={this.handleSubmit} key="dpsParseForm">
                 <h2 className="form-title col-md-24">Submit Parse for Character</h2>
-                <article className='alert-info'>
+                <article className="alert-info">
                     <b>Usage tips:</b>
                     <ul>
                         <li>Every new parse will renew your clearance level, i.e. sending lower DPS numbers can revoke its clearance and demote your account.</li>
@@ -287,94 +208,110 @@ class DpsParseForm extends PureComponent {
                         <li>Each Parse needs to have both Combat Metrics and Superstar addon screenshots.</li>
                     </ul>
                 </article>
-                <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')}/>
-                <input type="hidden" name="parse_file_hash" value={this.state.parseScreenshotUploaded || ''}/>
-                <input type="hidden" name="superstar_file_hash" value={this.state.superstarScreenshotUploaded || ''}/>
-                <fieldset className='form-group col-md-12'>
+                <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')} />
+                <input type="hidden" name="parse_file_hash" value={parseScreenshotHash || ''} />
+                <input type="hidden" name="superstar_file_hash" value={superstarScreenshotHash || ''} />
+                <fieldset className="form-group col-md-12">
                     <label>Sets worn during Parse:</label>
                     <Select
                         options={setsOptions}
-                        defaultValue={
-                            this.state.characterLoaded
-                                ? setsOptions.filter(option => this.state.characterLoaded.sets.includes(option.value))
-                                : null
-                        }
-                        placeholder='Full sets you have...'
+                        defaultValue={setsOptions.filter(option => charactersSetsIds.includes(option.value))}
+                        placeholder="Full sets you have..."
                         components={Animated}
-                        name='sets[]'
+                        name="sets[]"
                         isMulti
                     />
                 </fieldset>
-                <fieldset className='form-group col-md-4'>
+                <fieldset className="form-group col-md-4">
                     <label>Class:</label>
                     <Select
                         options={this.classOptions}
-                        defaultValue={
-                            this.state.characterLoaded
-                                ? this.classOptions.filter(option => option.value === this.state.characterLoaded.class)
-                                : this.classOptions[0]
-                        }
+                        defaultValue={this.classOptions.filter(option => option.label === character.class)}
                         isDisabled={true}
                         components={Animated}
-                        name='class'
+                        name="class"
                     />
                 </fieldset>
-                <fieldset className='form-group col-md-4'>
+                <fieldset className="form-group col-md-4">
                     <label>Role:</label>
                     <Select
                         options={this.roleOptions}
-                        defaultValue={
-                            this.state.characterLoaded
-                                ? this.roleOptions.filter(option => option.value === this.state.characterLoaded.role)
-                                : this.roleOptions[0]
-                        }
+                        defaultValue={this.roleOptions.filter(option => option.label === character.role)}
                         isDisabled={true}
                         components={Animated}
-                        name='role'
+                        name="role"
                     />
                 </fieldset>
-                <fieldset className='form-group col-md-4'>
-                    <label htmlFor='dpsAmount'>DPS amount:</label>
-                    <input
-                        type='number'
-                        name='dps_amount'
-                        id='dpsAmount'
-                        className='form-control form-control-md'
-                        placeholder='Enter...'
-                        autoComplete='off'
-                        required
-                    />
+                <fieldset className="form-group col-md-4">
+                    <label htmlFor="dpsAmount">DPS amount:</label>
+                    <input type="number" name="dps_amount" id="dpsAmount" className="form-control form-control-md" placeholder="Enter..." autoComplete="off" required />
                 </fieldset>
 
-                <fieldset className='form-group col-md-12'>
-                    <label htmlFor='parseFile'>Parse Screenshot:</label>
-                    <Gallery uploader={this.parseScreenshotUploader} className='uploader'/>
+                <fieldset className="form-group col-md-12">
+                    <label htmlFor="parseFile">Parse Screenshot:</label>
+                    <Gallery uploader={this.parseScreenshotUploader} className="uploader" />
                 </fieldset>
-                <fieldset className='form-group col-md-12'>
-                    <label htmlFor='parseFile'>Superstar Screenshot:</label>
-                    <Gallery uploader={this.superstarScreenshotUploader} className='uploader'/>
+                <fieldset className="form-group col-md-12">
+                    <label htmlFor="parseFile">Superstar Screenshot:</label>
+                    <Gallery uploader={this.superstarScreenshotUploader} className="uploader" />
                 </fieldset>
-                <fieldset className='form-group col-md-24 text-right'>
-                    <Link to={'/chars/' + this.props.match.params.id + '/parses'} className="btn btn-info btn-lg mr-1">Cancel</Link>
-                    <button className="btn btn-primary btn-lg" type="submit">Save</button>
+                <fieldset className="form-group col-md-24 text-right">
+                    <Link to={'/characters/' + character.id + '/parses'} className="btn btn-info btn-lg mr-1">
+                        Cancel
+                    </Link>
+                    <button className="btn btn-primary btn-lg" type="submit">
+                        Save
+                    </button>
                 </fieldset>
             </form>
         );
     };
 
     render = () => {
-        const {characterLoaded, dpsParseProcessed, sets, messages} = this.state;
-        if (dpsParseProcessed) {
-            return <Redirect to={'/chars/' + this.props.match.params.id + '/parses'}/>
-        } else if (sets && characterLoaded) {
-            return [
-                this.renderForm(sets),
-                <Notification key='notifications' messages={messages}/>
-            ];
+        const { me } = this.props;
+        if (!me) {
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
+        }
+        const character = this.getCharacter();
+        if (!character) {
+            return <Redirect to="/characters" />;
         }
 
-        return <Loading/>;
+        return [this.renderForm(character), <Notification key="notifications" />];
     };
 }
 
-export default DpsParseForm;
+DpsParseForm.propTypes = {
+    match: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
+
+    axiosCancelTokenSource: PropTypes.object,
+    me: user,
+    sets: PropTypes.array,
+    myCharacters: characters,
+    notifications: PropTypes.array,
+    parseScreenshotHash: PropTypes.string,
+    superstarScreenshotHash: PropTypes.string,
+
+    postMyDpsParseAction: PropTypes.func.isRequired,
+    putMyDpsParseAction: PropTypes.func.isRequired,
+};
+
+const mapStateToProps = state => ({
+    me: state.getIn(['me']),
+    sets: state.getIn(['sets']),
+    myCharacters: state.getIn(['myCharacters']),
+    notifications: state.getIn(['notifications']),
+});
+
+const mapDispatchToProps = dispatch => ({
+    dispatch,
+    postMyDpsParseAction: (characterId, data) => dispatch(postMyDpsParseAction(characterId, data)),
+    putMyDpsParseAction: (characterId, parseId, data) => dispatch(putMyDpsParseAction(characterId, parseId, data)),
+});
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(DpsParseForm);

@@ -19,7 +19,9 @@ const PATHS = {
 
 let common = {
     mode: devMode ? 'development' : 'production',
-    entry: path.join(PATHS.js, 'app.js'),
+    entry: [
+        path.join(PATHS.js, 'index.js'),
+    ],
     output: {
         path: PATHS.build,
         publicPath: '/build/',
@@ -42,8 +44,8 @@ let config;
 
 // Detect how npm is run and branch based on that
 config = devMode
-    ? merge(common, toolset.loadersAndPluginsForVariousTypes(), toolset.extractBundles())
-    : merge(common, toolset.loadersAndPluginsForVariousTypes(), toolset.extractBundles(), toolset.minify());
+    ? merge(common, {devtool: 'eval-source-map'}, toolset.loadersAndPluginsForVariousTypes(), toolset.extractBundles())
+    : merge(common, {devtool: 'hidden-source-map'}, toolset.loadersAndPluginsForVariousTypes(), toolset.extractBundles(), toolset.minify());
 
 /** @var {String} process.env.npm_lifecycle_event */
 if (process.env.npm_lifecycle_event !== 'watch') {

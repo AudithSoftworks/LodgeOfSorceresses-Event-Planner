@@ -1,5 +1,5 @@
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const UglifyJsWebpackPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 exports.extractBundles = function () {
     return {
@@ -46,10 +46,18 @@ exports.minify = function () {
     return {
         optimization: {
             minimizer: [
-                new UglifyJsWebpackPlugin({
+                new TerserPlugin({
                     cache: true,
                     parallel: true,
-                    sourceMap: true
+                    sourceMap: true,
+                    terserOptions: {
+                        output: {
+                            comments: false,
+                        },
+                        sourceMap: {
+                            url: 'inline'
+                        }
+                    }
                 }),
                 new OptimizeCSSAssetsPlugin({})
             ]

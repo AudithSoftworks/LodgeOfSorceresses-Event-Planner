@@ -1,88 +1,111 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCheckCircle, faExclamationCircle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { PureComponent } from 'react';
-import ReactNotification from "react-notifications-component";
+import { faCheckCircle, faExclamationCircle, faInfoCircle } from '@fortawesome/pro-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import ReactNotification from 'react-notifications-component';
+import { connect } from 'react-redux';
+import { dequeueAction } from '../actions/notifications';
 
 library.add(faCheckCircle, faInfoCircle, faExclamationCircle);
 
-class Notification extends PureComponent {
+class Notification extends Component {
     constructor(props) {
         super(props);
         this.notificationDOMRef = React.createRef();
-        this.getSnapshotBeforeUpdate = this.getSnapshotBeforeUpdate.bind(this);
-        this.add = (item) => {
-            if (!this.notificationDOMRef.current) {
-                return;
-            }
-            let icon = 'info-circle';
-            if (item.type === 'success') {
-                icon = 'check-circle';
-            } else if (item.type === 'danger') {
-                icon = 'exclamation-circle';
-            }
-            const options = this.props.options || {};
-            const {title, insert, container, animationIn, animationOut, dismiss, dismissable} = options;
-            this.notificationDOMRef.current.addNotification({
-                title: title || "",
-                message: item.message,
-                type: item.type,
-                content: (
-                    <div className={'notification-custom notification-' + item.type}>
-                        <div className="notification-icon">
-                            <FontAwesomeIcon icon={icon}/>
-                        </div>
-                        <div className="notification-content">
-                            <p className="notification-message">
-                                {item.message}
-                            </p>
-                        </div>
+    }
+
+    addNotification = ({ message, type, options }) => {
+        if (!this.notificationDOMRef.current) {
+            return;
+        }
+        let icon = 'info-circle';
+        if (type === 'success') {
+            icon = 'check-circle';
+        } else if (type === 'danger') {
+            icon = 'exclamation-circle';
+        }
+        const { title, insert, container, animationIn, animationOut, dismiss, dismissable, width } = options || {};
+        this.notificationDOMRef.current.addNotification({
+            title: title || '',
+            message,
+            type,
+            content: (
+                <div className={'notification-custom notification-' + type}>
+                    <div className="notification-icon">
+                        <FontAwesomeIcon icon={icon} />
                     </div>
-                ),
-                insert: insert || "top",
-                container: container || "top-right",
-                animationIn: animationIn || ["animated", "flash"],
-                animationOut: animationOut || ["animated", "fadeOut"],
-                dismiss: dismiss || {duration: 5000},
-                dismissable: dismissable || {click: true},
-            });
-        };
+                    <div className="notification-content">
+                        <p className="notification-message">{message}</p>
+                    </div>
+                </div>
+            ),
+            insert: insert || 'top',
+            container: container || 'top-right',
+            animationIn: animationIn || ['animated', 'flash'],
+            animationOut: animationOut || ['animated', 'fadeOut'],
+            dismiss: dismiss || { duration: 5000 },
+            dismissable: dismissable || { click: true },
+            width
+        });
     };
 
-    getSnapshotBeforeUpdate = (prevProps) => {
-        if (prevProps.messages !== this.props.messages) {
-            return this.props.messages;
-        }
-
-        return null;
+    getSnapshotBeforeUpdate = prevProps => {
+        return this.props.notifications.filter(n1 => !prevProps.notifications.includes(n1));
     };
 
-    componentDidMount() {
-        this.props.messages.map((item) => this.add(item));
+    componentDidUpdate = (prevProps, prevState, snapshot) => {
+        snapshot.map(notification => {
+            this.addNotification(notification);
+            if (notification.persist) {
+                this.props.dequeueAction(notification.key);
+            }
+        });
     };
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (snapshot && snapshot.length) {
-            snapshot.map((item) => {
-                setTimeout(this.add, 10, item)
-            });
-        }
+    componentDidMount = () => {
+        const { notifications } = this.props;
+        notifications.map(notification => {
+            this.addNotification(notification);
+            if (notification.persist) {
+                this.props.dequeueAction(notification.key);
+            }
+        });
     };
 
     render = () => {
         return (
-            <ReactNotification key='notifications'
-                               ref={this.notificationDOMRef}
-                               types={[
-                                   {
-                                       htmlClasses: ["notification-awesome"],
-                                       name: "awesome"
-                                   }
-                               ]}
-                               isMobile={true}
+            <ReactNotification
+                key="notifications"
+                ref={this.notificationDOMRef}
+                types={[
+                    {
+                        htmlClasses: ['notification-awesome'],
+                        name: 'awesome',
+                    },
+                ]}
+                isMobile={true}
             />
         );
-    }
+    };
 }
 
-export default Notification;
+Notification.propTypes = {
+    notifications: PropTypes.array,
+
+    dequeueAction: PropTypes.func.isRequired,
+};
+
+const mapStateToProps = state => ({
+    notifications: state.getIn(['notifications']),
+});
+
+const mapDispatchToProps = dispatch => ({
+    dispatch,
+    dequeueAction: uuidToRemove => dispatch(dequeueAction(uuidToRemove)),
+});
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Notification);

@@ -1,28 +1,27 @@
 <?php namespace App\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
-use Illuminate\View\View;
+use App\Services\IpsApi;
 
 class HomeController extends Controller
 {
-    public function index(): View
-    {
-        /** @var \App\Models\User $user */
-        $user = app('auth.driver')->user();
-        $name = $user->name;
-        $userType = self::TRANSLATION_TAG_REGISTERED_USER;
-
-        return view('index', ['userType' => $userType, 'name' => $name]);
-    }
-
-    public function getDiscordOauthAccount(): JsonResponse
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     */
+    public function index()
     {
         /** @var \App\Models\User $me */
         $me = app('auth.driver')->user();
         $me->load('linkedAccounts');
+        $oauthAccount = $me->linkedAccounts()->where('remote_provider', 'ips')->first();
+        if ($oauthAccount) {
+            $oauthAccount->remote_secondary_groups = explode(',', $oauthAccount->remote_secondary_groups);
+            if ($oauthAccount && $oauthAccount->remote_primary_group === IpsApi::MEMBER_GROUPS_SOULSHRIVEN) {
+                return redirect('https://lodgeofsorceresses.com');
+            }
+        } else {
+            return redirect('https://lodgeofsorceresses.com');
+        }
 
-        $discordOauthAccount = $me->linkedAccounts()->where('remote_provider', 'discord')->first();
-
-        return response()->json(['discordOauthAccount' => $discordOauthAccount]);
+        return view('index');
     }
 }

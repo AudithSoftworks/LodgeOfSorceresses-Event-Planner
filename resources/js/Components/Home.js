@@ -1,83 +1,36 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
-import Axios from "../vendor/Axios";
-import Notification from "./Notification";
+import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
+import { errorsAction } from '../actions/notifications';
+import { user } from '../vendor/data';
+import Notification from './Notification';
 
 library.add(faDiscord);
 
 class Home extends PureComponent {
-    constructor(props) {
-        super(props);
-        this.state = {
-            discordOauthAccount: null,
-            messages: [],
-        };
+    componentWillUnmount = () => {
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Unmount');
     };
 
-    componentDidMount() {
-        this.cancelTokenSource = Axios.CancelToken.source();
-
-        Axios.get('/api/discord-oauth-account', {
-            cancelToken: this.cancelTokenSource.token
-        }).then((response) => {
-            this.cancelTokenSource = null;
-            if (response.data) {
-                const stateObj = {
-                    discordOauthAccount: response.data.discordOauthAccount,
-                };
-                if (!response.data.discordOauthAccount) {
-                    stateObj.messages = [
-                        {
-                            type: 'default',
-                            message: [
-                                <Fragment key='f-1'>Discord not linked! Notifications are disabled! Click</Fragment>,
-                                <FontAwesomeIcon icon={['fab', 'discord']} key='icon'/>,
-                                <Fragment key='f-2'>icon to fix this.</Fragment>,
-                            ].reduce((prev, curr) => [prev, ' ', curr])
-                        }
-                    ];
-                }
-                this.setState(stateObj);
-            }
-        }).catch(error => {
-            if (!Axios.isCancel(error)) {
-                this.setState({
-                    messages: [
-                        {
-                            type: "danger",
-                            message: error.response.data.message || error.response.statusText
-                        }
-                    ]
-                })
-            }
-        });
-    };
-
-    componentWillUnmount() {
-        this.cancelTokenSource && this.cancelTokenSource.cancel('Unmount');
-    };
-
-    renderFlashMessages = () => {
-        if (this.props.history.location.state && this.props.history.location.state.messages) {
-            const messages = this.props.history.location.state.messages;
-            this.props.history.location.state.messages = [];
-            return <Notification key='flash-notifications' messages={messages}/>;
+    renderActionList = associatedDiscordAccount => {
+        let discordLink = (
+            <a href="/oauth/to/discord" className="ne-corner danger" title="Discord not linked!">
+                <FontAwesomeIcon icon={['fab', 'discord']} />
+            </a>
+        );
+        if (associatedDiscordAccount) {
+            discordLink = (
+                <a className="ne-corner success" title="Discord linked!">
+                    <FontAwesomeIcon icon={['fab', 'discord']} />
+                </a>
+            );
         }
-
-        return null;
-    };
-
-    render = () => {
-        const {discordOauthAccount, messages} = this.state;
-
         const actionList = {
-            create: discordOauthAccount
-                ? <a className='ne-corner success' title='Discord linked!'><FontAwesomeIcon icon={['fab', 'discord']}/></a>
-                : <a href="/oauth/to/discord"
-                     className='ne-corner danger'
-                     title='Discord not linked!'><FontAwesomeIcon icon={['fab', 'discord']}/></a>
+            create: discordLink,
         };
         let actionListRendered = [];
         for (const [actionType, link] of Object.entries(actionList)) {
@@ -85,27 +38,73 @@ class Home extends PureComponent {
                 actionListRendered.push(<li key={actionType}>{link}</li>);
             }
         }
+        return actionListRendered;
+    };
+
+    renderDiscordNotLinkedNotification = () => {
+        const { me, notifications } = this.props;
+        if (me && !me.linkedAccountsParsed.discord && notifications.find(n => n.key === 'no-discord-account-linked') === undefined) {
+            const message = [
+                <Fragment key="f-1"><b>Discord not linked!</b> Discord notifications are disabled! Additionally, your Parses won't be evaluated. Click</Fragment>,
+                <FontAwesomeIcon icon={['fab', 'discord']} key="icon" />,
+                <Fragment key="f-2">icon to the top right, to fix this.</Fragment>,
+            ].reduce((prev, curr) => [prev, ' ', curr]);
+            this.props.dispatch(
+                errorsAction(
+                    message,
+                    {
+                        container: 'bottom-center',
+                        animationIn: ['animated', 'bounceInDown'],
+                        animationOut: ['animated', 'bounceOutDown'],
+                        dismiss: { duration: 30000 },
+                        width: 350
+                    },
+                    'no-discord-account-linked'
+                )
+            );
+        }
+    };
+
+    render = () => {
+        const { me, location } = this.props;
+        if (!me) {
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
+        }
+        this.renderDiscordNotLinkedNotification();
+        const actionListRendered = this.renderActionList(me.linkedAccountsParsed.discord);
 
         return [
-            <section className="col-md-24 p-0 mb-4" key='dashboard'>
+            <section className="col-md-24 p-0 mb-4" key="dashboard">
                 <h2 className="form-title col-md-24">Dashboard</h2>
-                <article className='alert-info'>
+                <article className="alert-info">
                     <b>Tips:</b>
                     <ul>
-                        <li>Make sure you have linked your Discord account: watch for red colored <FontAwesomeIcon icon={['fab', 'discord']}/> icon on top right. When green, it means you've already linked your Discord account.</li>
+                        <li>
+                            Make sure you have linked your Discord account: watch for red colored <FontAwesomeIcon icon={['fab', 'discord']} /> icon on top right.
+                            When green, it means you've already linked your Discord account.
+                        </li>
                     </ul>
                 </article>
-                <ul className='ne-corner'>{actionListRendered}</ul>
+                <ul className="ne-corner">{actionListRendered}</ul>
             </section>,
-            this.renderFlashMessages(),
-            <Notification key='notifications' messages={messages} options={{
-                container: 'bottom-center',
-                animationIn: ["animated", "bounceInDown"],
-                animationOut: ["animated", "bounceOutDown"],
-                dismiss: {duration: 30000},
-            }}/>
+            <Notification key="notifications" />,
         ];
     };
 }
 
-export default Home;
+Home.propTypes = {
+    match: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
+
+    axiosCancelTokenSource: PropTypes.object,
+    me: user,
+    notifications: PropTypes.array,
+};
+
+const mapStateToProps = state => ({
+    me: state.getIn(['me']),
+    notifications: state.getIn(['notifications']),
+});
+
+export default connect(mapStateToProps)(Home);

@@ -1,34 +1,78 @@
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faHome, faUsers, faUsersCog } from '@fortawesome/pro-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { NavLink } from "react-router-dom";
+import { connect } from 'react-redux';
+import { NavLink, withRouter } from 'react-router-dom';
+import { characters, user } from '../../vendor/data';
+
+library.add(faHome, faUsers, faUsersCog);
 
 class Header extends Component {
-    renderNavLinks = (navLinks) => {
+    authorize = ({ me, groups }) => {
+        if (!me || !groups || !me.linkedAccountsParsed.ips) {
+            return;
+        }
+
+        const myGroup = Object.entries(groups).find(group => me.linkedAccountsParsed.ips.remote_primary_group === group[1]['ipsGroupId']);
+
+        return myGroup === undefined ? false : myGroup['1']['isAdmin'];
+    };
+
+    renderNavLinks = navLinks => {
         return navLinks.map((item, idx) => {
-            let className = 'nav-item';
-            if (item.props.className) {
-                className += ' ' + item.props.className;
+            let { className } = item.props;
+            let newClassName = 'nav-item';
+            if (className) {
+                newClassName += ' ' + className;
             }
 
-            return <li key={idx} className={className}>{item}</li>
+            return (
+                <li key={idx} className={newClassName}>
+                    {item}
+                </li>
+            );
         });
     };
 
     render = () => {
+        const { myCharacters } = this.props;
+        const navLinks = [];
+        if (myCharacters) {
+            navLinks.push(
+                <NavLink exact to="/dashboard" activeClassName="active" title="Dashboard">
+                    <FontAwesomeIcon icon="home" size="lg" />
+                </NavLink>
+            );
+            navLinks.push(
+                <NavLink to="/characters" activeClassName="active" title="Characters">
+                    <FontAwesomeIcon icon="users" size="lg" />
+                </NavLink>
+            );
+        }
+        if (this.authorize(this.props)) {
+            navLinks.push(
+                <NavLink to="/admin" activeClassName="active" className="pull-right" title="Officer Panel">
+                    <FontAwesomeIcon icon="users-cog" size="lg" />
+                </NavLink>
+            );
+        }
+
+        const navLinksRendered = this.renderNavLinks(navLinks);
+
         return (
             <header className="container">
                 <h1 className="col-md-16">Lodge of Sorceresses</h1>
                 <ul className="member-bar col-md-8">
                     <li>
                         <figure>
-                            <img alt='' src=''/>
+                            <img alt="" src="" />
                         </figure>
                     </li>
                 </ul>
                 <nav className="col-md-24">
-                    <ul className="nav-tabs">
-                        {this.renderNavLinks(this.props.navLinks)}
-                    </ul>
+                    <ul className="nav-tabs">{navLinksRendered}</ul>
                 </nav>
             </header>
         );
@@ -36,7 +80,23 @@ class Header extends Component {
 }
 
 Header.propTypes = {
-    navLinks: PropTypes.arrayOf(NavLink)
+    match: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
+
+    axiosCancelTokenSource: PropTypes.object,
+    me: user,
+    groups: PropTypes.object,
+    navLinks: PropTypes.arrayOf(NavLink),
+    myCharacters: characters,
+    notifications: PropTypes.array,
 };
 
-export default Header;
+const mapStateToProps = state => ({
+    me: state.getIn(['me']),
+    groups: state.getIn(['groups']),
+    myCharacters: state.getIn(['myCharacters']),
+    notifications: state.getIn(['notifications']),
+});
+
+export default withRouter(connect(mapStateToProps)(Header));

@@ -1,63 +1,22 @@
-import React, { Fragment, PureComponent } from 'react';
-import { Link } from "react-router-dom";
-import Axios from "../../vendor/Axios";
+import PropTypes from "prop-types";
+import React, { PureComponent } from 'react';
+import { connect } from "react-redux";
+import { Link, Redirect } from "react-router-dom";
+import adminAuthorize from "../../adminAuthorize";
+import { characters, user } from "../../vendor/data";
 import Notification from "../Notification";
 
 class Home extends PureComponent {
-    componentDidMount() {
-        this.cancelTokenSource = Axios.CancelToken.source();
-        Axios.get('/api/admin/', {
-            cancelToken: this.cancelTokenSource.token
-        }).then((response) => {
-            if (response.data) {
-                this.cancelTokenSource = null;
-            }
-        }).catch((error) => {
-            if (!Axios.isCancel(error)) {
-                this.setState({
-                    messages: [
-                        {
-                            type: "danger",
-                            message: error.response.statusText
-                        }
-                    ]
-                });
-                if (error.response && error.response.status === 403) {
-                    this.props.history.push('/', this.state);
-                }
-            }
-        });
-    };
-
-    componentWillUnmount() {
-        this.cancelTokenSource && this.cancelTokenSource.cancel('Unmount');
-    };
-
-    renderFlashMessages = () => {
-        if (this.props.history.location.state && this.props.history.location.state.messages) {
-            const messages = this.props.history.location.state.messages;
-            this.props.history.location.state.messages = [];
-            return <Notification key='flash-notifications' messages={messages}/>;
-        }
-
-        return null;
+    componentWillUnmount = () => {
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Unmount');
     };
 
     render = () => {
-        const messages = [
-            {
-                type: 'default',
-                message: [
-                    <Fragment key='f-1'>Dashboard coming soon!</Fragment>,
-                ].reduce((prev, curr) => [prev, ' ', curr])
-            }
-        ];
-        const options = {
-            container: 'bottom-center',
-            animationIn: ["animated", "bounceInDown"],
-            animationOut: ["animated", "bounceOutDown"],
-            dismiss: {duration: 30000},
-        };
+        const { me, location } = this.props;
+        if (!me) {
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />
+        }
+        adminAuthorize(this.props);
 
         return [
             <section className="col-md-24 p-0 mb-4" key='characterList'>
@@ -65,15 +24,35 @@ class Home extends PureComponent {
                 <article className='col-md-24'>
                     <h3>Available actions</h3>
                     <ul>
+                        <li><Link to='/admin/characters' title='Character List'>Character List</Link></li>
                         <li><Link to='/admin/parses' title='Approve Parses'>DPS Parses pending Approval</Link></li>
                     </ul>
                 </article>
-
-                {this.renderFlashMessages()}
-                <Notification key='notifications' messages={messages} options={options}/>
+                <Notification key='notifications' />
             </section>
         ];
     };
 }
 
-export default Home;
+Home.propTypes = {
+    match: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
+
+    axiosCancelTokenSource: PropTypes.object,
+    me: user,
+    groups: PropTypes.object,
+    notifications: PropTypes.array,
+
+    allCharacters: characters,
+};
+
+const mapStateToProps = state => ({
+    me: state.getIn(['me']),
+    groups: state.getIn(['groups']),
+    notifications: state.getIn(['notifications']),
+
+    allCharacters: state.getIn(['allCharacters']),
+});
+
+export default connect(mapStateToProps)(Home);

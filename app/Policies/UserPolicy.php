@@ -26,9 +26,18 @@ class UserPolicy
     /**
      * @return bool
      */
+    public function user(): bool
+    {
+        return $this->oauthAccount && $this->oauthAccount->remote_primary_group !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN;
+    }
+
+    /**
+     * @return bool
+     */
     public function admin(): bool
     {
         return $this->oauthAccount
+            && $this->oauthAccount->remote_primary_group !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN
             && (
                 $this->oauthAccount->remote_primary_group === IpsApi::MEMBER_GROUPS_IPSISSIMUS
                 || $this->oauthAccount->remote_primary_group === IpsApi::MEMBER_GROUPS_MAGISTER_TEMPLI

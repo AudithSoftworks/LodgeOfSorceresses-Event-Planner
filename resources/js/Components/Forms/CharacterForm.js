@@ -1,243 +1,172 @@
+import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { Link, Redirect } from "react-router-dom";
+import { connect } from 'react-redux';
+import { Link, Redirect } from 'react-router-dom';
 import Select from 'react-select';
 import * as Animated from 'react-select/lib/animated';
-import Axios from '../../vendor/Axios';
-import Loading from "../Characters";
+import postMyCharacterAction from '../../actions/post-my-character';
+import putMyCharacterAction from '../../actions/put-my-character';
+import { characters, user } from '../../vendor/data';
 import Notification from '../Notification';
 
 class CharacterForm extends PureComponent {
     classOptions = [
-        {value: 1, label: 'Dragonknight'},
-        {value: 2, label: 'Nightblade'},
-        {value: 3, label: 'Sorcerer'},
-        {value: 4, label: 'Templar'},
-        {value: 5, label: 'Warden'},
-        {value: 6, label: 'Necromancer'},
+        { value: 1, label: 'Dragonknight' },
+        { value: 2, label: 'Nightblade' },
+        { value: 3, label: 'Sorcerer' },
+        { value: 4, label: 'Templar' },
+        { value: 5, label: 'Warden' },
+        { value: 6, label: 'Necromancer' },
     ];
 
-    roleOptions = [
-        {value: 1, label: 'Tank'},
-        {value: 2, label: 'Healer'},
-        {value: 3, label: 'Damage Dealer (Magicka)'},
-        {value: 4, label: 'Damage Dealer (Stamina)'},
-    ];
+    roleOptions = [{ value: 1, label: 'Tank' }, { value: 2, label: 'Healer' }, { value: 3, label: 'Damage Dealer (Magicka)' }, { value: 4, label: 'Damage Dealer (Stamina)' }];
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            setsLoaded: false,
-            characterLoaded: null,
-            characterProcessed: null,
-            sets: null,
-            messages: [],
-        };
+    componentWillUnmount = () => {
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Unmount');
     };
 
-    componentDidMount() {
-        this.cancelTokenSource = Axios.CancelToken.source();
+    componentWillUpdate = nextProps => {
+        // We had a change in Characters data: Redirect!
+        if (nextProps.myCharacters.length !== this.props.myCharacters.length) {
+            return this.props.history.push('/characters');
+        }
+        const { match } = this.props;
+        if (match.params && match.params.id) {
+            if (this.props.myCharacters !== nextProps.myCharacters) {
+                return this.props.history.push('/characters');
+            }
+        }
+    };
 
-        if (this.props.match.params.id) {
-            const charId = this.props.match.params.id;
-            Axios.get('/api/chars/' + charId, {
-                cancelToken: this.cancelTokenSource.token
-            }).then((response) => {
-                if (response.data) {
-                    this.setState({
-                        characterLoaded: response.data,
-                    });
-                    this.cancelTokenSource = null;
-                }
-            }).catch((error) => {
-                if (!Axios.isCancel(error)) {
-                    this.setState({
-                        messages: [
-                            {
-                                type: "danger",
-                                message: error.response.data.message || error.response.statusText
-                            }
-                        ]
-                    })
-                }
-                if (error.response && error.response.status >= 400) {
-                    this.props.history.push('/chars', this.state);
-                }
-            });
+    getCharacter = () => {
+        const { match, myCharacters } = this.props;
+        if (match.params && match.params.id) {
+            const characterId = match.params.id;
+
+            return myCharacters.find(item => item.id === parseInt(characterId));
         }
 
-        Axios.get('/api/sets', {
-            cancelToken: this.cancelTokenSource.token
-        }).then((response) => {
-            if (response.data) {
-                this.setState({
-                    setsLoaded: true,
-                    sets: response.data.sets,
-                    messages: [
-                        {
-                            type: "success",
-                            message: "Form loaded."
-                        }
-                    ]
-                });
-                this.cancelTokenSource = null;
-            }
-        }).catch((error) => {
-            if (!Axios.isCancel(error)) {
-                this.setState({
-                    messages: [
-                        {
-                            type: "danger",
-                            message: error.response.data.message || error.response.statusText
-                        }
-                    ]
-                })
-            }
-        });
+        return undefined;
     };
 
-    componentWillUnmount() {
-        this.cancelTokenSource && this.cancelTokenSource.cancel('Unmount');
-    };
-
-    handleSubmit = (event) => {
+    handleSubmit = event => {
         event.preventDefault();
+        const { match, postMyCharacterAction, putMyCharacterAction } = this.props;
         const data = new FormData(event.target);
-        this.cancelTokenSource = Axios.CancelToken.source();
-        let result = this.props.match.params.id
-            ? Axios.post(
-                '/api/chars/' + this.props.match.params.id, data, {
-                    cancelToken: this.cancelTokenSource.token,
-                    headers: {
-                        'X-HTTP-Method-Override': 'PUT'
-                    }
-                }
-            )
-            : Axios.post(
-                '/api/chars', data, {
-                    cancelToken: this.cancelTokenSource.token
-                }
-            );
-        result.then((response) => {
-            this.setState({
-                characterProcessed: this.props.match.params.id ? response.status === 204 : response.status === 201,
-                messages: [
-                    {
-                        type: "success",
-                        message: response.statusText
-                    }
-                ]
-            });
-            this.cancelTokenSource = null;
-        }).catch((error) => {
-            if (!Axios.isCancel(error)) {
-                this.setState({
-                    messages: [
-                        {
-                            type: "danger",
-                            message: error.response.data.message || error.response.statusText
-                        }
-                    ]
-                })
-            }
-        });
+        if (match.params && match.params.id) {
+            const characterId = match.params.id;
+
+            return putMyCharacterAction(characterId, data);
+        }
+
+        return postMyCharacterAction(data);
     };
 
-    renderForm = (sets) => {
-        const setsOptions = Object.values(sets).map(
-            item => ({value: item.id, label: item.name})
-        );
-
+    renderForm = character => {
+        const { match, sets } = this.props;
+        const setsOptions = Object.values(sets).map(item => ({ value: item.id, label: item.name }));
+        const charactersSetsIds = character ? Object.values(character.sets).map(item => item.id) : [];
         return (
-            <form className='col-md-24 d-flex flex-row flex-wrap p-0' onSubmit={this.handleSubmit} key='characterCreationForm'>
-                <h2 className="form-title col-md-24">{this.props.match.params.id ? 'Edit' : 'Create'} Character</h2>
-                <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')}/>
-                <fieldset className='form-group col-md-6'>
-                    <label htmlFor='characterName'>Character Name:</label>
+            <form className="col-md-24 d-flex flex-row flex-wrap p-0" onSubmit={this.handleSubmit} key="characterCreationForm">
+                <h2 className="form-title col-md-24">{match.params.id ? 'Edit' : 'Create'} Character</h2>
+                <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')} />
+                <fieldset className="form-group col-md-6">
+                    <label htmlFor="characterName">Character Name:</label>
                     <input
-                        type='text'
-                        name='name'
-                        id='characterName'
-                        className='form-control form-control-md'
-                        placeholder='Enter...'
-                        defaultValue={this.state.characterLoaded ? this.state.characterLoaded.name : ''}
-                        autoComplete='off'
-                        disabled={!!(this.state.characterLoaded && this.state.characterLoaded['last_submitted_dps_amount'])}
+                        type="text"
+                        name="name"
+                        id="characterName"
+                        className="form-control form-control-md"
+                        placeholder="Enter..."
+                        defaultValue={character ? character.name : ''}
+                        autoComplete="off"
+                        disabled={!!(character && character.last_submitted_dps_amount)}
                         required
                     />
                 </fieldset>
-                <fieldset className='form-group col-md-6'>
+                <fieldset className="form-group col-md-6">
                     <label>Class:</label>
                     <Select
                         options={this.classOptions}
-                        defaultValue={
-                            this.state.characterLoaded
-                                ? this.classOptions.filter(option => option.value === this.state.characterLoaded.class)
-                                : this.classOptions[0]
-                        }
+                        defaultValue={character ? this.classOptions.filter(option => option.label === character.class) : this.classOptions[0]}
                         components={Animated}
-                        isDisabled={!!(this.state.characterLoaded && this.state.characterLoaded['last_submitted_dps_amount'])}
-                        name='class'
+                        isDisabled={!!(character && character.last_submitted_dps_amount)}
+                        name="class"
                     />
                 </fieldset>
-                <fieldset className='form-group col-md-6'>
+                <fieldset className="form-group col-md-6">
                     <label>Role:</label>
                     <Select
                         options={this.roleOptions}
-                        defaultValue={
-                            this.state.characterLoaded
-                                ? this.roleOptions.filter(option => option.value === this.state.characterLoaded.role)
-                                : this.roleOptions[0]
-                        }
+                        defaultValue={character ? this.roleOptions.filter(option => option.label === character.role) : this.roleOptions[0]}
                         components={Animated}
-                        isDisabled={!!(this.state.characterLoaded && this.state.characterLoaded['last_submitted_dps_amount'])}
-                        name='role'
+                        isDisabled={!!(character && character.last_submitted_dps_amount)}
+                        name="role"
                     />
                 </fieldset>
-                <fieldset className='form-group col-md-6'>
-                    <label>Supportive Sets:</label>
+                <fieldset className="form-group col-md-6">
+                    <label>Full Sets Character Has:</label>
                     <Select
                         options={setsOptions}
-                        defaultValue={
-                            this.state.characterLoaded
-                                ? setsOptions.filter(option => this.state.characterLoaded.sets.includes(option.value))
-                                : null
-                        }
-                        placeholder='Full sets you have...'
+                        defaultValue={character ? setsOptions.filter(option => charactersSetsIds.includes(option.value)) : charactersSetsIds}
+                        placeholder="Full sets you have..."
                         components={Animated}
-                        name='sets[]'
+                        name="sets[]"
                         isMulti
                     />
                 </fieldset>
-                <fieldset className='form-group col-md-24 text-right'>
-                    <Link to="/chars" className="btn btn-info btn-lg mr-1">Cancel</Link>
-                    <button className="btn btn-primary btn-lg" type="submit">Save</button>
+                <fieldset className="form-group col-md-24 text-right">
+                    <Link to="/characters" className="btn btn-info btn-lg mr-1">
+                        Cancel
+                    </Link>
+                    <button className="btn btn-primary btn-lg" type="submit">
+                        Save
+                    </button>
                 </fieldset>
             </form>
         );
     };
 
     render = () => {
-        const {setsLoaded, characterLoaded, characterProcessed, sets, messages} = this.state;
-        let formBasicsLoaded = setsLoaded && sets;
-        let editFormCharacterLoaded = true;
-
-        if (this.props.match.params.id) {
-            if (!characterLoaded) {
-                editFormCharacterLoaded = false;
-            }
+        const { me } = this.props;
+        if (!me) {
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
+        const character = this.getCharacter();
 
-        if (characterProcessed) {
-            return <Redirect to="/chars"/>
-        } else if (formBasicsLoaded && editFormCharacterLoaded) {
-            return [
-                this.renderForm(sets),
-                <Notification key='notifications' messages={messages}/>
-            ];
-        }
-
-        return <Loading/>;
+        return [this.renderForm(character), <Notification key="notifications" />];
     };
 }
 
-export default CharacterForm;
+CharacterForm.propTypes = {
+    match: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
+
+    axiosCancelTokenSource: PropTypes.object,
+    me: user,
+    sets: PropTypes.array,
+    myCharacters: characters,
+    notifications: PropTypes.array,
+
+    postMyCharacterAction: PropTypes.func.isRequired,
+    putMyCharacterAction: PropTypes.func.isRequired,
+};
+
+const mapStateToProps = state => ({
+    me: state.getIn(['me']),
+    sets: state.getIn(['sets']),
+    myCharacters: state.getIn(['myCharacters']),
+    notifications: state.getIn(['notifications']),
+});
+
+const mapDispatchToProps = dispatch => ({
+    dispatch,
+    postMyCharacterAction: data => dispatch(postMyCharacterAction(data)),
+    putMyCharacterAction: (characterId, data) => dispatch(putMyCharacterAction(characterId, data)),
+});
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(CharacterForm);

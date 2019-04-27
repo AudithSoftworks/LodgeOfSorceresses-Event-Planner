@@ -63,6 +63,14 @@ class DpsParsePolicy
     /**
      * @return bool
      */
+    public function show(): bool
+    {
+        return $this->oauthAccount && $this->oauthAccount->remote_primary_group !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN;
+    }
+
+    /**
+     * @return bool
+     */
     public function delete(): bool
     {
         return $this->oauthAccount && $this->oauthAccount->remote_primary_group !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN;

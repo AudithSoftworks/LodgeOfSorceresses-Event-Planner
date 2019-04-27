@@ -29,16 +29,6 @@ class Handler extends ExceptionHandler
     ];
 
     /**
-     * A list of the inputs that are never flashed for validation exceptions.
-     *
-     * @var array
-     */
-    protected $dontFlash = [
-        'password',
-        'password_confirmation',
-    ];
-
-    /**
      * Report or log an exception.
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
      *
@@ -67,6 +57,10 @@ class Handler extends ExceptionHandler
         } elseif ($e instanceof InvalidStateException) {
             return $request->expectsJson()
                 ? response()->json(['message' => 'Session Expired. Please refresh the page!'], 401)
+                : redirect()->guest(route('logout'));
+        } elseif ($e instanceof AuthorizationException) {
+            return $request->expectsJson()
+                ? response()->json(['message' => 'Access Denied!'], 403)
                 : redirect()->guest(route('logout'));
         }
 

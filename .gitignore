@@ -11,5 +11,9 @@
 !.git*
 !.*rc
 !*.yml
+.gitsecret/keys/random_seed
 _ide_helper.php
+source-map-explorer-tree.html
+database/seeds/SetsTableSeeder.php
+database/seeds/SkillsTableSeeder.php
 old
