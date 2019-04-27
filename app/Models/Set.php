@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class EquipmentSet extends Model
 {
-    public const CACHE_TTL = 7 * 86400;
+    public const CACHE_TTL = 604800; // Week in secs
 
     protected $dates = ['deleted_at'];
 }

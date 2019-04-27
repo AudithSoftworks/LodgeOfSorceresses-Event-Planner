@@ -9,8 +9,9 @@ class DatabaseSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $this->call(EquipmentSetsTableSeeder::class);
+        $this->call(SkillsTableSeeder::class);
     }
 }

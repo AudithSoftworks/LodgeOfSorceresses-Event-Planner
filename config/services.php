@@ -60,4 +60,7 @@ return [
             'endgame_dps_parses' => env('APP_ENV') === 'production' ? env('DISCORD_ENDGAME_DPS_PARSES_CHANNEL_ID') : env('DISCORD_TEST_CHANNEL_ID'),
         ],
     ],
+    'pmg' => [
+        'api_token' => env('PMG_API_TOKEN'),
+    ],
 ];
