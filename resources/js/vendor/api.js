@@ -55,6 +55,18 @@ export const getSkills = (cancelToken) => axios.get('/api/skills', {
     throw error;
 });
 
+export const getContent = (cancelToken) => axios.get('/api/content', {
+    cancelToken: cancelToken.token
+}).then(response => {
+    if (response.data) {
+        return normalize(response.data, schema.listOfContent);
+    }
+
+    return null;
+}).catch(error => {
+    throw error;
+});
+
 export const getMyCharacters = (cancelToken) => axios.get('/api/characters', {
     cancelToken: cancelToken.token
 }).then(response => {

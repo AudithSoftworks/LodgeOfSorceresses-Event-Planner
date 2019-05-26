@@ -11,6 +11,7 @@ $router->middleware(['auth:api', 'throttle'])->group(static function (Router $ro
     $router->apiResource('files', 'FilesController')->only(['store', 'destroy']);
     $router->apiResource('sets', 'SetsController')->only(['index']);
     $router->apiResource('skills', 'SkillsController')->only(['index']);
+    $router->apiResource('content', 'ContentController')->only(['index']);
 });
 
 $router->middleware(['auth:api', 'throttle'])->group(static function (Router $router) {

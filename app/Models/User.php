@@ -1,27 +1,32 @@
 <?php namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
 /**
- * @property int                             $id
- * @property string|null                     $name
- * @property string                          $email
- * @property string|null                     $email_verified_at
- * @property string                          $password
- * @property string|null                     $remember_token
+ * @property int $id
+ * @property string|null $name
+ * @property string $email
+ * @property string|null $email_verified_at
+ * @property string $password
+ * @property string|null $remember_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Passport\Client[]                                       $clients
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\File[]                                               $files
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserOAuth[]                                          $linkedAccounts
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
- * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Passport\Token[]                                        $tokens
+ * @property-read Collection|\Laravel\Passport\Client[] $clients
+ * @property-read Collection|\App\Models\File[] $files
+ * @property-read Collection|\App\Models\UserOAuth[] $linkedAccounts
+ * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
+ * @property-read Collection|\Laravel\Passport\Token[] $tokens
+ * @property-read Collection|\App\Models\Character[] $characters
+ * @property-read Collection|\App\Models\Content[] $content
  * @method static bool|null forceDelete()
  * @method static EloquentBuilder|User newModelQuery()
  * @method static EloquentBuilder|User newQuery()

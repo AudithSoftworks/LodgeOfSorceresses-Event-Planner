@@ -8,6 +8,9 @@ export const listOfSets = new schema.Array(set);
 export const skill = new schema.Entity('skills');
 export const listOfSkills = new schema.Array(skill);
 
+export const content = new schema.Entity('content');
+export const listOfContent = new schema.Array(content);
+
 export const character = new schema.Entity('characters');
 export const listOfCharacters = new schema.Array(character);
 

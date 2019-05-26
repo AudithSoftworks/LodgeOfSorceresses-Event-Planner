@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
+import getContentAction from "../actions/get-content";
 import getGroupsAction from '../actions/get-groups';
 import getMyCharactersAction from '../actions/get-my-characters';
 import getSetsAction from '../actions/get-sets';
@@ -17,7 +18,7 @@ library.add(faDiscord);
 
 class Init extends PureComponent {
     componentDidMount = () => {
-        const { me, groups, myCharacters, sets, skills } = this.props;
+        const { me, groups, myCharacters, sets, skills, content } = this.props;
         if (!me) {
             this.props.getUserAction();
         }
@@ -33,6 +34,9 @@ class Init extends PureComponent {
         if (!skills) {
             this.props.getSkillsAction();
         }
+        if (!content) {
+            this.props.getContentAction();
+        }
     };
 
     componentWillUnmount = () => {
@@ -40,13 +44,15 @@ class Init extends PureComponent {
     };
 
     render = () => {
-        const { associatedDiscordAccount, location, myCharacters, sets, skills } = this.props;
+        const { associatedDiscordAccount, location, myCharacters, sets, skills, content } = this.props;
         if (associatedDiscordAccount === null) {
             return [<Loading key="loading" message="Fetching account details..." />, <Notification key="notifications" />];
         } else if (sets === null) {
             return [<Loading key="loading" message="Fetching Sets..." />, <Notification key="notifications" />];
         } else if (skills === null) {
             return [<Loading key="loading" message="Fetching Skills..." />, <Notification key="notifications" />];
+        } else if (content === null) {
+            return [<Loading key="loading" message="Fetching Content Data..." />, <Notification key="notifications" />];
         } else if (myCharacters === null) {
             return [<Loading key="loading" message="Fetching your Characters..." />, <Notification key="notifications" />];
         } else {
@@ -76,6 +82,7 @@ Init.propTypes = {
     getGroupsAction: PropTypes.func.isRequired,
     getSetsAction: PropTypes.func.isRequired,
     getSkillsAction: PropTypes.func.isRequired,
+    getContentAction: PropTypes.func.isRequired,
     getMyCharactersAction: PropTypes.func.isRequired,
 };
 
@@ -84,6 +91,7 @@ const mapStateToProps = state => ({
     groups: state.getIn(['groups']),
     sets: state.getIn(['sets']),
     skills: state.getIn(['skills']),
+    content: state.getIn(['content']),
     myCharacters: state.getIn(['myCharacters']),
 });
 
@@ -93,6 +101,7 @@ const mapDispatchToProps = dispatch => ({
     getGroupsAction: () => dispatch(getGroupsAction()),
     getSetsAction: () => dispatch(getSetsAction()),
     getSkillsAction: () => dispatch(getSkillsAction()),
+    getContentAction: () => dispatch(getContentAction()),
     getMyCharactersAction: () => dispatch(getMyCharactersAction()),
 });
 

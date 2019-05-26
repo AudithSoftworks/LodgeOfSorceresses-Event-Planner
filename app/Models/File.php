@@ -35,10 +35,6 @@ class File extends Model
 
     public $incrementing = false;
 
-    protected $guarded = ['*'];
-
-    protected $dates = ['deleted_at'];
-
     /**
      * @param \Illuminate\Database\Query\Builder $query
      * @param string                             $type
@@ -46,7 +42,7 @@ class File extends Model
      * @return \Illuminate\Database\Query\Builder
      * @throws \Exception
      */
-    public function scopeOfType($query, $type = 'image')
+    public function scopeOfType($query, $type = 'image'): \Illuminate\Database\Query\Builder
     {
         if (!in_array($type, ['plain', 'image', 'audio', 'video', 'application'])) {
             throw new \Exception();
@@ -58,7 +54,7 @@ class File extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function uploaders()
+    public function uploaders(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(User::class, 'files_users', 'file_hash', 'user_id')->withTimestamps()->withPivot(['id', 'qquuid', 'original_client_name', 'tag']);
     }

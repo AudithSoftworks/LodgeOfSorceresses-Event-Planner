@@ -28,20 +28,28 @@ class CharactersController extends Controller
         $characters = Character::query()
             ->with(['dpsParses' => static function (HasMany $query) {
                 $query->whereNull('processed_by');
-            }])
+            }, 'content'])
             ->whereUserId(app('auth.driver')->id())
             ->orderBy('id', 'desc')
             ->get();
         if ($characters->count()) {
             app('cache.store')->has('sets'); // Trigger Recache listener.
             $sets = app('cache.store')->get('sets');
+            app('cache.store')->has('skills'); // Trigger Recache listener.
+            $skills = app('cache.store')->get('skills');
             foreach ($characters as $character) {
                 $character->class = ClassTypes::getClassName($character->class);
                 $character->role = RoleTypes::getRoleName($character->role);
-                $characterEquipmentSets = array_filter($sets, static function ($key) use ($character) {
+
+                $characterSets = array_filter($sets, static function ($key) use ($character) {
                     return in_array($key, explode(',', $character->sets), false);
                 }, ARRAY_FILTER_USE_KEY);
-                $character->sets = array_values($characterEquipmentSets);
+                $character->sets = array_values($characterSets);
+
+                $characterSkills = array_filter($skills, static function ($key) use ($character) {
+                    return in_array($key, explode(',', $character->skills), false);
+                }, ARRAY_FILTER_USE_KEY);
+                $character->skills = array_values($characterSkills);
 
                 foreach ($character->dpsParses as $dpsParse) {
                     $setsUsedInDpsParse = array_filter($sets, static function ($key) use ($dpsParse) {
@@ -80,13 +88,17 @@ class CharactersController extends Controller
             'name.required' => 'Character name is required.',
             'role.required' => 'Choose a role.',
             'class.required' => 'Choose a class.',
-            'sets.*.required' => 'Select all full sets your character has.',
+            'content.*.required' => 'Select all content this Character has cleared.',
+            'sets.*.required' => 'Select all full sets your Character has.',
+            'skills.*.required' => 'Select all support skills your Character has unlocked and fully leveled.',
         ];
         $validator = app('validator')->make($request->all(), [
             'name' => 'required|string',
             'role' => 'required|integer|min:1|max:4',
             'class' => 'required|integer|min:1|max:6',
+            'content.*' => 'nullable|numeric|exists:content,id',
             'sets.*' => 'required|numeric|exists:sets,id',
+            'skills.*' => 'required|numeric|exists:skills,id',
         ], $validatorErrorMessages);
         if ($validator->fails()) {
             throw new ValidationException($validator);
@@ -98,6 +110,10 @@ class CharactersController extends Controller
         $character->role = $request->get('role');
         $character->class = $request->get('class');
         $character->sets = !empty($request->get('sets')) ? implode(',', $request->get('sets')) : null;
+        $character->skills = !empty($request->get('skills')) ? implode(',', $request->get('skills')) : null;
+        $character->save();
+
+        $character->content()->sync($request->get('content'));
         $character->save();
 
         return response()->json(['lastInsertId' =>  $character->id], JsonResponse::HTTP_CREATED);
@@ -117,10 +133,10 @@ class CharactersController extends Controller
         $character = Character::query()
             ->with(['dpsParses' => static function (HasMany $query) {
                 $query->whereNull('processed_by');
-            }])
+            }, 'content'])
             ->whereUserId(app('auth.driver')->id())
             ->whereId($char)
-            ->first(['id', 'name', 'class', 'role', 'sets', 'last_submitted_dps_amount']);
+            ->first(['id', 'name', 'class', 'role', 'sets', 'skills', 'last_submitted_dps_amount']);
         if (!$character) {
             return response()->json(['message' => 'Character not found!'])->setStatusCode(404);
         }
@@ -134,6 +150,13 @@ class CharactersController extends Controller
             return in_array($key, explode(',', $character->sets), false);
         }, ARRAY_FILTER_USE_KEY);
         $character->sets = array_values($charactersSets);
+
+        app('cache.store')->has('skills'); // Trigger Recache listener.
+        $skills = app('cache.store')->get('skills');
+        $charactersSkills = array_filter($skills, static function ($key) use ($character) {
+            return in_array($key, explode(',', $character->skills), false);
+        }, ARRAY_FILTER_USE_KEY);
+        $character->skills = array_values($charactersSkills);
 
         foreach ($character->dpsParses as $dpsParse) {
             $setsUsedInDpsParse = array_filter($sets, static function ($key) use ($dpsParse) {
@@ -171,13 +194,17 @@ class CharactersController extends Controller
             'name.required' => 'Character name can\'t be empty.',
             'role.required' => 'Choose a role.',
             'class.required' => 'Choose a class.',
-            'sets.*.required' => 'Select all full sets your character has.',
+            'content.*.required' => 'Select all content this Character has cleared.',
+            'sets.*.required' => 'Select all full sets your Character has.',
+            'skills.*.required' => 'Select all support skills your Character has unlocked and fully leveled.',
         ];
         $validator = app('validator')->make($request->all(), [
             'name' => 'sometimes|required|string',
             'role' => 'sometimes|required|integer|min:1|max:4',
             'class' => 'sometimes|required|integer|min:1|max:6',
+            'content.*' => 'nullable|numeric|exists:content,id',
             'sets.*' => 'required|numeric|exists:sets,id',
+            'skills.*' => 'required|numeric|exists:skills,id',
         ], $validatorErrorMessages);
         if ($validator->fails()) {
             throw new ValidationException($validator);
@@ -196,6 +223,8 @@ class CharactersController extends Controller
         $request->filled('role') && $character->role = $request->get('role');
         $request->filled('class') && $character->class = $request->get('class');
         $character->sets = !empty($request->get('sets')) ? implode(',', $request->get('sets')) : null;
+        $character->skills = !empty($request->get('skills')) ? implode(',', $request->get('skills')) : null;
+        $character->content()->sync($request->get('content'));
         $character->save();
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);

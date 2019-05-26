@@ -13,12 +13,11 @@ const postMyDpsParseSendAction = (characterId, data) => ({
     data,
 });
 
-const postMyDpsParseFailureAction = error => {
-    return {
-        type: TYPE_POST_MY_DPS_PARSE_FAILURE,
-        message: error.response.data.message || error.response.statusText || error.message,
-    };
-};
+const postMyDpsParseFailureAction = error => ({
+    type: TYPE_POST_MY_DPS_PARSE_FAILURE,
+    message: error.response.data.message || error.response.statusText || error.message,
+    errors: error.response.data.errors || {},
+});
 
 const postMyDpsParseAction = (characterId, data) => (dispatch, getState) => {
     dispatch(postMyDpsParseSendAction(characterId, data));

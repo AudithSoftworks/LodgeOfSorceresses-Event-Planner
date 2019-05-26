@@ -12,12 +12,11 @@ const postMyCharacterSendAction = data => ({
     data,
 });
 
-const postMyCharacterFailureAction = error => {
-    return {
-        type: TYPE_POST_MY_CHARACTER_FAILURE,
-        message: error.response.data.message || error.response.statusText || error.message,
-    };
-};
+const postMyCharacterFailureAction = error => ({
+    type: TYPE_POST_MY_CHARACTER_FAILURE,
+    message: error.response.data.message || error.response.statusText || error.message,
+    errors: error.response.data.errors || {},
+});
 
 const postMyCharacterAction = data => (dispatch, getState) => {
     dispatch(postMyCharacterSendAction(data));

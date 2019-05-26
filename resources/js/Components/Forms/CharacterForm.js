@@ -6,7 +6,7 @@ import Select from 'react-select';
 import * as Animated from 'react-select/lib/animated';
 import postMyCharacterAction from '../../actions/post-my-character';
 import putMyCharacterAction from '../../actions/put-my-character';
-import { characters, user } from '../../vendor/data';
+import { characters, user, sets, skills, content } from '../../vendor/data';
 import Notification from '../Notification';
 
 class CharacterForm extends PureComponent {
@@ -63,9 +63,37 @@ class CharacterForm extends PureComponent {
     };
 
     renderForm = character => {
-        const { match, sets } = this.props;
+        const { match, sets, skills, content } = this.props;
         const setsOptions = Object.values(sets).map(item => ({ value: item.id, label: item.name }));
+        const skillsIdsFiltered = [
+            372, // Elemental Drain
+            637, // Necrotic Orb
+            638, // Mystic Orb
+            639, // Energy Orb
+            642, // War Horn
+            666, // Purge
+            667, // Efficient Purge
+        ];
+        const skillsOptions = skills
+            .filter(item => skillsIdsFiltered.includes(item.id))
+            .map(item => ({ value: item.id, label: item.name }))
+            .sort((a, b) => {
+                const nameA = a.label;
+                const nameB = b.label;
+                if (nameA < nameB) {
+                    return -1;
+                }
+                if (nameA > nameB) {
+                    return 1;
+                }
+
+                return 0;
+            });
+        const contentOptions = Object.values(content).map(item => ({ value: item.id, label: item.version ? item.short_name + ' ' + item.version : item.short_name}));
         const charactersSetsIds = character ? Object.values(character.sets).map(item => item.id) : [];
+        const charactersSkillsIds = character ? Object.values(character.skills).map(item => item.id) : [];
+        const charactersContentIds = character ? Object.values(character.content).map(item => item.id) : [];
+
         return (
             <form className="col-md-24 d-flex flex-row flex-wrap p-0" onSubmit={this.handleSubmit} key="characterCreationForm">
                 <h2 className="form-title col-md-24">{match.params.id ? 'Edit' : 'Create'} Character</h2>
@@ -84,7 +112,7 @@ class CharacterForm extends PureComponent {
                         required
                     />
                 </fieldset>
-                <fieldset className="form-group col-md-6">
+                <fieldset className="form-group col-md-4">
                     <label>Class:</label>
                     <Select
                         options={this.classOptions}
@@ -104,14 +132,36 @@ class CharacterForm extends PureComponent {
                         name="role"
                     />
                 </fieldset>
-                <fieldset className="form-group col-md-6">
+                <fieldset className="form-group col-md-8">
+                    <label>Content Cleared</label>
+                    <Select
+                        options={contentOptions}
+                        defaultValue={character ? contentOptions.filter(option => charactersContentIds.includes(option.value)) : charactersContentIds}
+                        placeholder="Content cleared, where you actively progressed (no carries)..."
+                        components={Animated}
+                        name="content[]"
+                        isMulti
+                    />
+                </fieldset>
+                <fieldset className="form-group col-md-12">
                     <label>Full Sets Character Has:</label>
                     <Select
                         options={setsOptions}
                         defaultValue={character ? setsOptions.filter(option => charactersSetsIds.includes(option.value)) : charactersSetsIds}
-                        placeholder="Full sets you have..."
+                        placeholder="List full sets only (2/2 or 5/5 etc)..."
                         components={Animated}
                         name="sets[]"
+                        isMulti
+                    />
+                </fieldset>
+                <fieldset className="form-group col-md-12">
+                    <label>Support Skills Unlocked</label>
+                    <Select
+                        options={skillsOptions}
+                        defaultValue={character ? skillsOptions.filter(option => charactersSkillsIds.includes(option.value)) : charactersSkillsIds}
+                        placeholder="All support skills you've unlocked and fully leveled..."
+                        components={Animated}
+                        name="skills[]"
                         isMulti
                     />
                 </fieldset>
@@ -145,7 +195,9 @@ CharacterForm.propTypes = {
 
     axiosCancelTokenSource: PropTypes.object,
     me: user,
-    sets: PropTypes.array,
+    sets,
+    skills,
+    content,
     myCharacters: characters,
     notifications: PropTypes.array,
 
@@ -156,6 +208,8 @@ CharacterForm.propTypes = {
 const mapStateToProps = state => ({
     me: state.getIn(['me']),
     sets: state.getIn(['sets']),
+    skills: state.getIn(['skills']),
+    content: state.getIn(['content']),
     myCharacters: state.getIn(['myCharacters']),
     notifications: state.getIn(['notifications']),
 });

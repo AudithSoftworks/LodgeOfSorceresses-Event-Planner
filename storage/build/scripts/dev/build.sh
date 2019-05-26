@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#docker-compose pull;
+docker-compose pull;
 docker-compose down;
 docker system prune --force;
 docker-compose up -d;

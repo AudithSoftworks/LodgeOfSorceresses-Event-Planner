@@ -4,11 +4,19 @@ import * as actions from '../actions/notifications';
 
 const notificationsReducer = (state = [], action) => {
     let listOfNotifications = [...state];
-    let { type, key, message, options, uuidToRemove } = action;
+    let { type, key, message, errors, options, uuidToRemove } = action;
     listOfNotifications = listOfNotifications.filter(n => n.persist === true);
-    const notificationProps = { persist: true };
     if (type === actions.TYPE_TRIGGER_ERROR || type.indexOf('_FAILURE') !== -1) {
-        if (message) {
+        if (errors && Object.keys(errors)) {
+            Object.values(errors).forEach(error => {
+                const notificationProps = { persist: true };
+                notificationProps.message = error;
+                notificationProps.key = key || v4();
+                notificationProps.type = 'danger';
+                listOfNotifications.push({ ...notificationProps, options });
+            });
+        } else if (message) {
+            const notificationProps = { persist: true };
             notificationProps.message = message;
             notificationProps.key = key || v4();
             notificationProps.type = 'danger';
@@ -16,6 +24,7 @@ const notificationsReducer = (state = [], action) => {
         }
     } else if (type === actions.TYPE_TRIGGER_WARNING) {
         if (message) {
+            const notificationProps = { persist: true };
             notificationProps.message = message;
             notificationProps.key = key || v4();
             notificationProps.type = 'warning';
@@ -23,6 +32,7 @@ const notificationsReducer = (state = [], action) => {
         }
     } else if (type === actions.TYPE_TRIGGER_INFO) {
         if (message) {
+            const notificationProps = { persist: true };
             notificationProps.message = message;
             notificationProps.key = key || v4();
             notificationProps.type = 'info';
@@ -30,6 +40,7 @@ const notificationsReducer = (state = [], action) => {
         }
     } else if (type === actions.TYPE_TRIGGER_SUCCESS || type.indexOf('_SUCCESS') !== -1) {
         if (message) {
+            const notificationProps = { persist: true };
             notificationProps.message = message;
             notificationProps.key = key || v4();
             notificationProps.type = 'success';

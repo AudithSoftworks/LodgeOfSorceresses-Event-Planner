@@ -15,12 +15,11 @@ const putMyCharacterSendAction = (characterId, data) => ({
     data,
 });
 
-const putMyCharacterFailureAction = error => {
-    return {
-        type: TYPE_PUT_MY_CHARACTER_FAILURE,
-        message: error.response.data.message || error.response.statusText || error.message,
-    };
-};
+const putMyCharacterFailureAction = error => ({
+    type: TYPE_PUT_MY_CHARACTER_FAILURE,
+    message: error.response.data.message || error.response.statusText || error.message,
+    errors: error.response.data.errors || {},
+});
 
 const putMyCharacterAction = (characterId, data) => (dispatch, getState) => {
     dispatch(putMyCharacterSendAction(characterId, data));

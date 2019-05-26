@@ -33,10 +33,45 @@ export const user = PropTypes.shape({
     deleted_at: PropTypes.string,
 });
 
+export const skills = PropTypes.arrayOf(
+    PropTypes.shape({
+        id: PropTypes.number,
+        name: PropTypes.string,
+        slug: PropTypes.string,
+        skill_line: PropTypes.number,
+        parent: PropTypes.number,
+        type: PropTypes.number,
+        effect_1: PropTypes.string,
+        effect_2: PropTypes.string,
+        cost: PropTypes.string,
+        icon: PropTypes.string,
+        pts: PropTypes.number,
+        cast_time: PropTypes.string,
+        target: PropTypes.string,
+        range: PropTypes.string,
+        unlocks_at: PropTypes.number,
+        created_at: PropTypes.string,
+        updated_at: PropTypes.string,
+    })
+);
+
 export const sets = PropTypes.arrayOf(
     PropTypes.shape({
         id: PropTypes.number,
         name: PropTypes.string,
+    })
+);
+
+export const content = PropTypes.arrayOf(
+    PropTypes.shape({
+        id: PropTypes.number,
+        name: PropTypes.string,
+        short_name: PropTypes.string,
+        version: PropTypes.string,
+        type: PropTypes.string,
+        tier: PropTypes.string,
+        created_at: PropTypes.string,
+        updated_at: PropTypes.string,
     })
 );
 
@@ -71,7 +106,9 @@ export const characters = PropTypes.arrayOf(
         name: PropTypes.string,
         role: PropTypes.string,
         class: PropTypes.string,
-        sets: sets,
+        sets,
+        skills,
+        content,
         approved_for_midgame: PropTypes.number,
         approved_for_endgame_t0: PropTypes.number,
         approved_for_endgame_t1: PropTypes.number,
