@@ -26,9 +26,12 @@ class CharactersController extends Controller
     {
         $this->authorize('view', Character::class);
         $characters = Character::query()
-            ->with(['dpsParses' => static function (HasMany $query) {
-                $query->whereNull('processed_by');
-            }, 'content'])
+            ->with([
+                'dpsParses' => static function (HasMany $query) {
+                    $query->whereNull('processed_by');
+                },
+                'content'
+            ])
             ->whereUserId(app('auth.driver')->id())
             ->orderBy('id', 'desc')
             ->get();
@@ -113,10 +116,15 @@ class CharactersController extends Controller
         $character->skills = !empty($request->get('skills')) ? implode(',', $request->get('skills')) : null;
         $character->save();
 
-        $character->content()->sync($request->get('content'));
-        $character->save();
+        $charactersContent = array_filter($request->get('content'), static function ($item) {
+            return !empty($item);
+        });
+        if (!empty($charactersContent)) {
+            $character->content()->sync($charactersContent);
+            $character->save();
+        }
 
-        return response()->json(['lastInsertId' =>  $character->id], JsonResponse::HTTP_CREATED);
+        return response()->json(['lastInsertId' => $character->id], JsonResponse::HTTP_CREATED);
     }
 
     /**
@@ -131,12 +139,15 @@ class CharactersController extends Controller
     {
         $this->authorize('view', Character::class);
         $character = Character::query()
-            ->with(['dpsParses' => static function (HasMany $query) {
-                $query->whereNull('processed_by');
-            }, 'content'])
+            ->with([
+                'dpsParses' => static function (HasMany $query) {
+                    $query->whereNull('processed_by');
+                },
+                'content'
+            ])
             ->whereUserId(app('auth.driver')->id())
             ->whereId($char)
-            ->first(['id', 'name', 'class', 'role', 'sets', 'skills', 'last_submitted_dps_amount']);
+            ->first();
         if (!$character) {
             return response()->json(['message' => 'Character not found!'])->setStatusCode(404);
         }
@@ -224,7 +235,14 @@ class CharactersController extends Controller
         $request->filled('class') && $character->class = $request->get('class');
         $character->sets = !empty($request->get('sets')) ? implode(',', $request->get('sets')) : null;
         $character->skills = !empty($request->get('skills')) ? implode(',', $request->get('skills')) : null;
-        $character->content()->sync($request->get('content'));
+
+        $charactersContent = array_filter($request->get('content'), static function ($item) {
+            return !empty($item);
+        });
+        if (!empty($charactersContent)) {
+            $character->content()->sync($charactersContent);
+        }
+
         $character->save();
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);
