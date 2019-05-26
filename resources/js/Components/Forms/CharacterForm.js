@@ -98,7 +98,7 @@ class CharacterForm extends PureComponent {
             <form className="col-md-24 d-flex flex-row flex-wrap p-0" onSubmit={this.handleSubmit} key="characterCreationForm">
                 <h2 className="form-title col-md-24">{match.params.id ? 'Edit' : 'Create'} Character</h2>
                 <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')} />
-                <fieldset className="form-group col-md-6">
+                <fieldset className="form-group col-md-4">
                     <label htmlFor="characterName">Character Name:</label>
                     <input
                         type="text"
@@ -132,7 +132,7 @@ class CharacterForm extends PureComponent {
                         name="role"
                     />
                 </fieldset>
-                <fieldset className="form-group col-md-8">
+                <fieldset className="form-group col-md-10">
                     <label>Content Cleared</label>
                     <Select
                         options={contentOptions}
