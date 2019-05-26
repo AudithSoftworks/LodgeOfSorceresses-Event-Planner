@@ -98,7 +98,7 @@ class CharactersController extends Controller
             'class' => 'required|integer|min:1|max:6',
             'content.*' => 'nullable|numeric|exists:content,id',
             'sets.*' => 'required|numeric|exists:sets,id',
-            'skills.*' => 'required|numeric|exists:skills,id',
+            'skills.*' => 'nullable|numeric|exists:skills,id',
         ], $validatorErrorMessages);
         if ($validator->fails()) {
             throw new ValidationException($validator);
@@ -204,7 +204,7 @@ class CharactersController extends Controller
             'class' => 'sometimes|required|integer|min:1|max:6',
             'content.*' => 'nullable|numeric|exists:content,id',
             'sets.*' => 'required|numeric|exists:sets,id',
-            'skills.*' => 'required|numeric|exists:skills,id',
+            'skills.*' => 'nullable|numeric|exists:skills,id',
         ], $validatorErrorMessages);
         if ($validator->fails()) {
             throw new ValidationException($validator);

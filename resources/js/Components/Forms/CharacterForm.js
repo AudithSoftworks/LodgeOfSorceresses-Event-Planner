@@ -6,7 +6,7 @@ import Select from 'react-select';
 import * as Animated from 'react-select/lib/animated';
 import postMyCharacterAction from '../../actions/post-my-character';
 import putMyCharacterAction from '../../actions/put-my-character';
-import { characters, user, sets, skills, content } from '../../vendor/data';
+import { characters, content, sets, skills, user } from '../../vendor/data';
 import Notification from '../Notification';
 
 class CharacterForm extends PureComponent {
@@ -62,20 +62,11 @@ class CharacterForm extends PureComponent {
         return postMyCharacterAction(data);
     };
 
-    renderForm = character => {
-        const { match, sets, skills, content } = this.props;
-        const setsOptions = Object.values(sets).map(item => ({ value: item.id, label: item.name }));
-        const skillsIdsFiltered = [
-            372, // Elemental Drain
-            637, // Necrotic Orb
-            638, // Mystic Orb
-            639, // Energy Orb
-            642, // War Horn
-            666, // Purge
-            667, // Efficient Purge
-        ];
-        const skillsOptions = skills
-            .filter(item => skillsIdsFiltered.includes(item.id))
+    parseSkillOptions = skillIds => {
+        const { skills } = this.props;
+
+        return skills
+            .filter(item => skillIds.includes(item.id))
             .map(item => ({ value: item.id, label: item.name }))
             .sort((a, b) => {
                 const nameA = a.label;
@@ -89,7 +80,48 @@ class CharacterForm extends PureComponent {
 
                 return 0;
             });
-        const contentOptions = Object.values(content).map(item => ({ value: item.id, label: item.version ? item.short_name + ' ' + item.version : item.short_name}));
+    };
+
+    renderForm = character => {
+        const { match, sets, content } = this.props;
+
+        const setsOptions = Object.values(sets).map(item => ({ value: item.id, label: item.name }));
+
+        // const tankSkillIds = [
+        //     362, // Destruction Staff, Force Shock > Crushing Shock
+        //     366, // Destruction Staff, Wall of Elements > Elemental Blockade
+        //     372, // Destruction Staff, Weakness to Elements > Elemental Drain
+        //     409, // One Handed, Puncture > Pierce Armor
+        //     412, // One Handed, Low Slash > Heroic Slash
+        //     415, // One Handed, Defensive Posture > Absorb Magic
+        //     416, // One Handed, Shield Charge
+        //     539, // Vampire, Drain Essence > Invigorating Drain
+        //     541, // Vampire, Mist Form
+        //     596, // Mages Guild, Balance
+        //     617, // Psijic, Meditate
+        //     625, // Undaunted, Blood Altar
+        //     632, // Undaunted, Inner Fire > Inner Rage
+        //     639, // Undaunted, Necrotic Orb > Energy Orb
+        //     643, // Alliance War, Assault, Ultimate: War Horn > Aggressive Horn
+        //     648, // Alliance War, Assault, Vigor
+        //     661, // Alliance War, Support, Barrier > Replenishing Barrier
+        //     667, // Alliance War, Support, Purge > Efficient Purge
+        // ];
+        const supportSkillIds = [
+            372, // Destruction Staff, Weakness to Elements > Elemental Drain
+            443, // Siphon Spirit
+            444, // Quick Siphon
+            626, // Undaunted, Blood Altar > Sanguine Altar
+            627, // Undaunted, Blood Altar > Overflowing Altar
+            636, // Bone Surge
+            638, // Undaunted, Necrotic Orb > Mystic Orb
+            639, // Undaunted, Necrotic Orb > Energy Orb
+            643, // Alliance War, Assault, Ultimate: War Horn > Aggressive Horn
+            667, // Alliance War, Support, Purge > Efficient Purge
+            668, // Alliance War, Support, Purge > Cleanse
+        ];
+        const skillsOptions = this.parseSkillOptions(supportSkillIds);
+        const contentOptions = Object.values(content).map(item => ({ value: item.id, label: item.version ? item.short_name + ' ' + item.version : item.short_name }));
         const charactersSetsIds = character ? Object.values(character.sets).map(item => item.id) : [];
         const charactersSkillsIds = character ? Object.values(character.skills).map(item => item.id) : [];
         const charactersContentIds = character ? Object.values(character.content).map(item => item.id) : [];
