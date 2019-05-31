@@ -168,6 +168,7 @@ class Characters extends PureComponent {
                         animationIn: ['animated', 'bounceInDown'],
                         animationOut: ['animated', 'bounceOutDown'],
                         dismiss: { duration: 30000 },
+                        width: 250,
                     },
                     'no-characters-create-one'
                 )

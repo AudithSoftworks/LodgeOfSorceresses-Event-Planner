@@ -63,8 +63,8 @@ class Header extends Component {
 
         return (
             <header className="container">
-                <h1 className="col-md-16">Lodge of Sorceresses</h1>
-                <ul className="member-bar col-md-8">
+                <h1 className="col-xs-24 col-md-18">Lodge of Sorceresses</h1>
+                <ul className="member-bar d-none">
                     <li>
                         <figure>
                             <img alt="" src="" />

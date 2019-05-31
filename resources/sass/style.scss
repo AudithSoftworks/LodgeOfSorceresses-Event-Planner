@@ -9,8 +9,18 @@
 
 //noinspection CssUnknownTarget
 body {
-    background: black url('/images/loadscreen_aldmerimanor_01.jpg') fixed no-repeat 50% 0;
-    background-size: 100% auto;
+    background: black url('/images/bg-sm.jpg') fixed no-repeat 50% 0;
+    background-size: auto 100%;
+    @include media-breakpoint-up(sm) {
+        background-size: 100% auto;
+    }
+    @include media-breakpoint-up(md) {
+        background: black url('/images/bg-md.jpg') fixed no-repeat 50% 0;
+        background-size: 100% auto;
+    }
+    @include media-breakpoint-up(lg) {
+        background: black url('/images/bg-xl.jpg') fixed no-repeat 50% 0;
+    }
     font-size: 16px;
 
     > header.container {
@@ -23,12 +33,23 @@ body {
         padding-right: 0;
 
         > h1 {
-            height: 130px;
-            background: url('/images/logo.png') no-repeat 0 50%;
-            margin-bottom: 0;
+            height: calc(100vw * 121 / 561);
+            background: url('/images/logo.png') no-repeat 100% 50%;
+            background-size: 124vw auto;
+            margin: 3vw 0;
             padding-left: 0;
             padding-right: 0;
             text-indent: -99999px;
+
+            @include media-breakpoint-up(sm) {
+                height: 130px;
+                background: url('/images/logo.png') no-repeat 0 50%;
+                background-size: auto 90%;
+                margin: 0;
+            }
+            @include media-breakpoint-up(xl) {
+                background: url('/images/logo.png') no-repeat 0 50%;
+            }
         }
 
         > ul.member-bar {
@@ -91,17 +112,38 @@ body {
                             color: inherit;
                         }
                     }
+
+                    @include media-breakpoint-only(xs) {
+                        &:first-of-type {
+                            > a {
+                                border-radius: 0 6px 0 0;
+                            }
+                        }
+
+                        &:last-of-type {
+                            > a {
+                                border-radius: 6px 0 0 0;
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 
     > main.container {
-        min-height: calc(100vh - 186px - 80px);
         background-color: rgba(white, 0.85);
         border-radius: 0 0 6px 6px;
         padding-top: $grid-gutter-width;
         padding-bottom: $grid-gutter-width;
+        min-height: calc(100vh - 186px - 80px);
+        @include media-breakpoint-only(xs) {
+            min-height: calc(100vh - 186px - 60px);
+        }
+
+        @include media-breakpoint-only(xs) {
+            border-radius: 0;
+        }
 
         > section, > form {
             position: relative;
@@ -232,5 +274,11 @@ body {
         padding-right: 0;
         color: white;
         font-size: 0.875rem;
+
+        @include media-breakpoint-only(xs) {
+            height: 60px;
+            font-size: 1.25rem;
+            text-align: center;
+        }
     }
 }

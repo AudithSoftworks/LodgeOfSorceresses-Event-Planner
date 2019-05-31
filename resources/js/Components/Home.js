@@ -57,7 +57,7 @@ class Home extends PureComponent {
                         animationIn: ['animated', 'bounceInDown'],
                         animationOut: ['animated', 'bounceOutDown'],
                         dismiss: { duration: 30000 },
-                        width: 350
+                        width: 350,
                     },
                     'no-discord-account-linked'
                 )
