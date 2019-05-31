@@ -9,76 +9,70 @@ table {
             > th {
                 @include media-breakpoint-up(xs) {
                     &:nth-of-type(1) {
-                        width: 40%;
-                    }
-                    &:nth-of-type(2) {
-                        width: 40%;
+                        width: 30%;
                     }
                     &:nth-of-type(4) {
+                        width: 40%;
+                    }
+                    &:nth-of-type(5) {
                         width: 20%;
                     }
-                    &:nth-of-type(3) {
+                    &:nth-of-type(2), &:nth-of-type(3) {
                         display: none;
                     }
                 }
 
                 @include media-breakpoint-up(sm) {
                     &:nth-of-type(1) {
-                        width: 40%;
-                    }
-                    &:nth-of-type(2) {
-                        width: 45%;
+                        width: 35%;
                     }
                     &:nth-of-type(4) {
+                        width: 50%;
+                    }
+                    &:nth-of-type(5) {
                         width: 15%;
                     }
                 }
 
                 @include media-breakpoint-up(md) {
                     &:nth-of-type(1) {
-                        width: 25%;
-                    }
-                    &:nth-of-type(2) {
                         width: 30%;
                     }
-                    &:nth-of-type(3) {
-                        display: table-cell;
-                        width: 40%;
-                    }
                     &:nth-of-type(4) {
-                        width: 5%;
+                        width: 60%;
+                    }
+                    &:nth-of-type(5) {
+                        width: 10%;
                     }
                 }
 
                 @include media-breakpoint-up(lg) {
                     &:nth-of-type(1) {
-                        width: 25%;
+                        width: 15%;
                     }
                     &:nth-of-type(2) {
-                        width: 25%;
+                        width: 15%;
                     }
                     &:nth-of-type(3) {
-                        display: table-cell;
-                        width: 45%;
+                        width: 20%;
                     }
                     &:nth-of-type(4) {
-                        width: 5%;
+                        width: 40%;
+                    }
+                    &:nth-of-type(5) {
+                        width: 10%;
+                    }
+                    &:nth-of-type(2), &:nth-of-type(3) {
+                        display: table-cell;
                     }
                 }
 
                 @include media-breakpoint-up(xl) {
-                    &:nth-of-type(1) {
-                        width: 25%;
-                    }
-                    &:nth-of-type(2) {
-                        width: 22%;
-                    }
-                    &:nth-of-type(3) {
-                        display: table-cell;
-                        width: 50%;
-                    }
                     &:nth-of-type(4) {
-                        width: 3%;
+                        width: 43%;
+                    }
+                    &:nth-of-type(5) {
+                        width: 7%;
                     }
                 }
             }
@@ -89,36 +83,18 @@ table {
         > tr {
             > td {
                 @include media-breakpoint-up(xs) {
-                    &:nth-of-type(3) {
+                    &:nth-of-type(2), &:nth-of-type(3) {
                         display: none;
                     }
                 }
 
-                @include media-breakpoint-up(md) {
-                    &:nth-of-type(3) {
+                @include media-breakpoint-up(lg) {
+                    &:nth-of-type(2), &:nth-of-type(3) {
                         display: table-cell;
                     }
                 }
             }
         }
-    }
-}
-
-button {
-    &.midgame {
-        color: rgb(46, 204, 113);
-    }
-
-    &.endgame_tier_0 {
-        color: rgb(52, 152, 219);
-    }
-
-    &.endgame_tier_1 {
-        color: rgb(155, 89, 182);
-    }
-
-    &.endgame_tier_2 {
-        color: rgb(230, 126, 34);;
     }
 }
 

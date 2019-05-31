@@ -187,10 +187,10 @@ class Characters extends PureComponent {
                 <table key="character-list-table" className="pl-2 pr-2 col-md-24">
                     <thead>
                         <tr>
-                            <th style={{ width: '20%' }}>Player Name</th>
-                            <th style={{ width: '20%' }}>Character Name</th>
-                            <th style={{ width: '55%' }}>Sets</th>
-                            <th style={{ width: '5%' }} />
+                            <th scope='col'>Player Name</th>
+                            <th scope='col'>Character Name</th>
+                            <th scope='col'>Sets</th>
+                            <th scope='col' />
                         </tr>
                     </thead>
                     <tbody>{charactersRendered}</tbody>

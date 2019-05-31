@@ -1,7 +1,7 @@
 import(
     /* webpackPrefetch: true */
-    /* webpackChunkName: "characters-scss" */
-    '../../sass/_characters.scss'
+    /* webpackChunkName: "my_characters-scss" */
+    '../../sass/_my_characters.scss'
 );
 
 import { library } from '@fortawesome/fontawesome-svg-core';
