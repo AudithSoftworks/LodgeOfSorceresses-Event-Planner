@@ -1,3 +1,9 @@
+import(
+    /* webpackPrefetch: true */
+    /* webpackChunkName: "dps-parses-scss" */
+    '../../sass/_dps_parses.scss'
+    );
+
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSpinner, faTachometerAlt, faThList, faTrashAlt, faUserEdit, faUserPlus } from '@fortawesome/pro-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -80,10 +86,10 @@ class DpsParses extends PureComponent {
                 <table key="character-list-table" className="pl-2 pr-2 col-md-24">
                     <thead>
                         <tr>
-                            <th style={{ width: '60%' }}>Sets</th>
-                            <th style={{ width: '10%' }}>DPS Number</th>
-                            <th style={{ width: '15%' }}>Parse Screenshot</th>
-                            <th style={{ width: '15%' }}>Superstar Screenshot</th>
+                            <th scope='col'>Sets</th>
+                            <th scope='col'>DPS Number</th>
+                            <th scope='col'>Parse Screenshot</th>
+                            <th scope='col'>Superstar Screenshot</th>
                         </tr>
                     </thead>
                     <tbody>{parsesRendered}</tbody>
