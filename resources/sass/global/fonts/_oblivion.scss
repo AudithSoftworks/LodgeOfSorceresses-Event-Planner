@@ -1,0 +1,4 @@
+@include font-face(Oblivion, $font-public-path + oblivion/Oblivion-Regular, 400, normal, eot woff2 woff ttf);
+@include font-face(OblivionWorn, $font-public-path + oblivion/Oblivion-Worn-Regular, 400, normal, eot woff2 woff ttf);
+@include font-face(OblivionScript, $font-public-path + oblivion/OblivionScript-Regular, 400, normal, eot woff2 woff ttf);
+@include font-face(OblivionScriptWorn, $font-public-path + oblivion/OblivionScript-Worn-Regular, 400, normal, eot woff2 woff ttf);

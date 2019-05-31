@@ -75,7 +75,7 @@ class Home extends PureComponent {
 
         return [
             <section className="col-md-24 p-0 mb-4" key="dashboard">
-                <h2 className="form-title col-md-24">Dashboard</h2>
+                <h2 className="form-title col-md-24" title='Dashboard'>Dashboard</h2>
                 <article className="alert-info">
                     <b>Tips:</b>
                     <ul>

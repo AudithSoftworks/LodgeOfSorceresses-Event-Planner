@@ -1,0 +1,4 @@
+@include font-face(Planewalker, $font-public-path + planewalker/Planewalker, 400, normal, eot woff2 woff ttf);
+@include font-face(Planewalker, $font-public-path + planewalker/Planewalker-Italic, 400, italic, eot woff2 woff ttf);
+@include font-face(Planewalker, $font-public-path + planewalker/Planewalker-Bold, 700, normal, eot woff2 woff ttf);
+@include font-face(Planewalker, $font-public-path + planewalker/Planewalker-BoldItalic, 700, italic, eot woff2 woff ttf);

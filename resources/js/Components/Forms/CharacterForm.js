@@ -125,10 +125,11 @@ class CharacterForm extends PureComponent {
         const charactersSetsIds = character ? Object.values(character.sets).map(item => item.id) : [];
         const charactersSkillsIds = character ? Object.values(character.skills).map(item => item.id) : [];
         const charactersContentIds = character ? Object.values(character.content).map(item => item.id) : [];
+        const heading = (match.params.id ? 'Edit' : 'Create') + ' Character';
 
         return (
             <form className="col-md-24 d-flex flex-row flex-wrap p-0" onSubmit={this.handleSubmit} key="characterCreationForm">
-                <h2 className="form-title col-md-24">{match.params.id ? 'Edit' : 'Create'} Character</h2>
+                <h2 className="form-title col-md-24" title={heading}>{heading}</h2>
                 <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')} />
                 <fieldset className="form-group col-md-4">
                     <label htmlFor="characterName">Character Name:</label>
