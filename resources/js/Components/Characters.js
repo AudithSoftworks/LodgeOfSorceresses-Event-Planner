@@ -105,14 +105,14 @@ class Characters extends PureComponent {
             .map(character => this.renderListItem(character));
         if (charactersRendered.length) {
             charactersRendered = [
-                <table key="character-list-table" className="pl-2 pr-2 col-md-24">
+                <table key="character-list-table" className="pl-2 pr-2 col-md-24 character-list-table">
                     <thead>
                         <tr>
-                            <th style={{ width: '20%' }}>Name</th>
-                            <th style={{ width: '10%' }}>Class</th>
-                            <th style={{ width: '20%' }}>Role</th>
-                            <th style={{ width: '40%' }}>Sets</th>
-                            <th style={{ width: '10%' }} />
+                            <th scope='col'>Name</th>
+                            <th scope='col'>Class</th>
+                            <th scope='col'>Role</th>
+                            <th scope='col'>Sets</th>
+                            <th scope='col' />
                         </tr>
                     </thead>
                     <tbody>{charactersRendered}</tbody>
@@ -133,7 +133,7 @@ class Characters extends PureComponent {
         }
 
         return [
-            <section className="col-md-24 p-0 mb-4" key="characterList">
+            <section className="col-md-24 p-0 mb-4 table-responsive" key="characterList">
                 <h2 className="form-title col-md-24" title='My Characters'>My Characters</h2>
                 <article className="alert-info">
                     <b>Usage tips:</b>
