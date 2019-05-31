@@ -41,10 +41,20 @@ docker-compose exec php bash -c "
     cp -r ./node_modules/.google-fonts/apache/opensans ./public/fonts/opensans;
     cp -r ./node_modules/.google-fonts/apache/robotocondensed ./public/fonts/robotocondensed;
     cp -r ./node_modules/.google-fonts/ofl/asapcondensed ./public/fonts/asapcondensed;
+    cp -r ./resources/fonts/oblivion ./public/fonts/oblivion;
+    cp -r ./resources/fonts/oblivion-script ./public/fonts/oblivion-script;
+    cp -r ./resources/fonts/planewalker ./public/fonts/planewalker;
+    cp -r ./resources/fonts/skyrim-daedra ./public/fonts/skyrim-daedra;
+    cp -r ./resources/fonts/sovngarde ./public/fonts/sovngarde;
 
     convertFonts.sh --use-font-weight --output=public/fonts/asapcondensed/stylesheet.css public/fonts/asapcondensed/*.ttf;
     convertFonts.sh --use-font-weight --output=public/fonts/opensans/stylesheet.css public/fonts/opensans/*.ttf;
     convertFonts.sh --use-font-weight --output=public/fonts/robotocondensed/stylesheet.css public/fonts/robotocondensed/*.ttf;
+    convertFonts.sh --use-font-weight --output=public/fonts/oblivion/stylesheet.css public/fonts/oblivion/*.ttf;
+    convertFonts.sh --use-font-weight --output=public/fonts/oblivion-script/stylesheet.css public/fonts/oblivion-script/*.ttf;
+    convertFonts.sh --use-font-weight --output=public/fonts/planewalker/stylesheet.css public/fonts/planewalker/*.otf;
+    convertFonts.sh --use-font-weight --output=public/fonts/skyrim-daedra/stylesheet.css public/fonts/skyrim-daedra/*.ttf;
+    convertFonts.sh --use-font-weight --output=public/fonts/sovngarde/stylesheet.css public/fonts/sovngarde/*.ttf;
 
     NODE_ENV=production npm run build;
     composer install --prefer-source --no-interaction;
