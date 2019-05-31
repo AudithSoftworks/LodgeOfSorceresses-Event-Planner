@@ -211,7 +211,7 @@ class DpsParseForm extends PureComponent {
                 <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')} />
                 <input type="hidden" name="parse_file_hash" value={parseScreenshotHash || ''} />
                 <input type="hidden" name="superstar_file_hash" value={superstarScreenshotHash || ''} />
-                <fieldset className="form-group col-md-12">
+                <fieldset className="form-group col-md-24 col-lg-12">
                     <label>Sets worn during Parse:</label>
                     <Select
                         options={setsOptions}
@@ -222,7 +222,7 @@ class DpsParseForm extends PureComponent {
                         isMulti
                     />
                 </fieldset>
-                <fieldset className="form-group col-md-4">
+                <fieldset className="form-group col-md-8 col-lg-4">
                     <label>Class:</label>
                     <Select
                         options={this.classOptions}
@@ -232,7 +232,7 @@ class DpsParseForm extends PureComponent {
                         name="class"
                     />
                 </fieldset>
-                <fieldset className="form-group col-md-4">
+                <fieldset className="form-group col-md-8 col-lg-4">
                     <label>Role:</label>
                     <Select
                         options={this.roleOptions}
@@ -242,7 +242,7 @@ class DpsParseForm extends PureComponent {
                         name="role"
                     />
                 </fieldset>
-                <fieldset className="form-group col-md-4">
+                <fieldset className="form-group col-md-8 col-lg-4">
                     <label htmlFor="dpsAmount">DPS amount:</label>
                     <input type="number" name="dps_amount" id="dpsAmount" className="form-control form-control-md" placeholder="Enter..." autoComplete="off" required />
                 </fieldset>
