@@ -131,13 +131,13 @@ class CharacterForm extends PureComponent {
             <form className="col-md-24 d-flex flex-row flex-wrap p-0" onSubmit={this.handleSubmit} key="characterCreationForm">
                 <h2 className="form-title col-md-24" title={heading}>{heading}</h2>
                 <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')} />
-                <fieldset className="form-group col-md-4">
+                <fieldset className="form-group col-md-8 col-xl-4">
                     <label htmlFor="characterName">Character Name:</label>
                     <input
                         type="text"
                         name="name"
                         id="characterName"
-                        className="form-control form-control-md"
+                        className="form-control form-control-sm"
                         placeholder="Enter..."
                         defaultValue={character ? character.name : ''}
                         autoComplete="off"
@@ -145,7 +145,7 @@ class CharacterForm extends PureComponent {
                         required
                     />
                 </fieldset>
-                <fieldset className="form-group col-md-4">
+                <fieldset className="form-group col-md-8 col-xl-4">
                     <label>Class:</label>
                     <Select
                         options={this.classOptions}
@@ -155,7 +155,7 @@ class CharacterForm extends PureComponent {
                         name="class"
                     />
                 </fieldset>
-                <fieldset className="form-group col-md-6">
+                <fieldset className="form-group col-md-8 col-xl-6">
                     <label>Role:</label>
                     <Select
                         options={this.roleOptions}
@@ -165,18 +165,18 @@ class CharacterForm extends PureComponent {
                         name="role"
                     />
                 </fieldset>
-                <fieldset className="form-group col-md-10">
+                <fieldset className="form-group col-md-24 col-xl-10">
                     <label>Content Cleared</label>
                     <Select
                         options={contentOptions}
                         defaultValue={character ? contentOptions.filter(option => charactersContentIds.includes(option.value)) : charactersContentIds}
-                        placeholder="Content cleared, where you actively progressed (no carries)..."
+                        placeholder="Content which you actively progressed and cleared (no carries)..."
                         components={Animated}
                         name="content[]"
                         isMulti
                     />
                 </fieldset>
-                <fieldset className="form-group col-md-12">
+                <fieldset className="form-group col-md-10 col-xl-12">
                     <label>Full Sets Character Has:</label>
                     <Select
                         options={setsOptions}
@@ -187,7 +187,7 @@ class CharacterForm extends PureComponent {
                         isMulti
                     />
                 </fieldset>
-                <fieldset className="form-group col-md-12">
+                <fieldset className="form-group col-md-14 col-xl-12">
                     <label>Support Skills Unlocked</label>
                     <Select
                         options={skillsOptions}
