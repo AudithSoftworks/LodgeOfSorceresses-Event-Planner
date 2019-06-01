@@ -1,0 +1,13 @@
+@import "./global/variables";
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins/breakpoints";
+@import "global/fonts/sovngarde";
+
+nav > .nav-tabs > .nav-item > a {
+    font-family: Sovngarde;
+
+    > svg {
+        padding-right: 3px;
+    }
+}

@@ -1,3 +1,9 @@
+import(
+    /* webpackPrefetch: true */
+    /* webpackChunkName: "header-scss" */
+    '../../../sass/_header.scss'
+    );
+
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faHome, faUsers, faUsersCog } from '@fortawesome/pro-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -41,20 +47,20 @@ class Header extends Component {
         const navLinks = [];
         if (myCharacters) {
             navLinks.push(
-                <NavLink exact to="/dashboard" activeClassName="active" title="Dashboard">
-                    <FontAwesomeIcon icon="home" size="lg" />
+                <NavLink exact to="/dashboard" activeClassName="active" title="Home">
+                    <FontAwesomeIcon icon="home" size="lg" /> Home
                 </NavLink>
             );
             navLinks.push(
-                <NavLink to="/characters" activeClassName="active" title="Characters">
-                    <FontAwesomeIcon icon="users" size="lg" />
+                <NavLink to="/characters" activeClassName="active" title="My Characters">
+                    <FontAwesomeIcon icon="users" size="lg" /> My Characters
                 </NavLink>
             );
         }
         if (this.authorize(this.props)) {
             navLinks.push(
                 <NavLink to="/admin" activeClassName="active" className="pull-right" title="Officer Panel">
-                    <FontAwesomeIcon icon="users-cog" size="lg" />
+                    <FontAwesomeIcon icon="users-cog" size="lg" /> Officer CP
                 </NavLink>
             );
         }
