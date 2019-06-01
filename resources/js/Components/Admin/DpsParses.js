@@ -1,3 +1,9 @@
+import(
+    /* webpackPrefetch: true */
+    /* webpackChunkName: "pending-parses-scss" */
+    '../../../sass/_pending_dps_parses.scss'
+    );
+
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSpinner, faTachometerAlt, faThList, faUserCheck, faUserEdit, faUserPlus, faUserTimes } from '@fortawesome/pro-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -160,16 +166,16 @@ class DpsParses extends PureComponent {
         });
         if (parsesRendered.length) {
             parsesRendered = [
-                <table key="character-list-table" className="pl-2 pr-2 col-md-24">
+                <table key="pending-dps-parses-table" className="pl-2 pr-2 col-md-24">
                     <thead>
                         <tr>
-                            <th style={{ width: '10%' }}>User</th>
-                            <th style={{ width: '20%' }}>Character</th>
-                            <th style={{ width: '25%' }}>Sets</th>
-                            <th style={{ width: '10%', textAlign: 'right' }}>DPS Number</th>
-                            <th style={{ width: '15%', textAlign: 'right' }}>Parse Screenshot</th>
-                            <th style={{ width: '15%', textAlign: 'right' }}>Superstar Screenshot</th>
-                            <th style={{ width: '5%' }} />
+                            <th scope='col'>User</th>
+                            <th scope='col'>Character</th>
+                            <th scope='col'>Sets</th>
+                            <th scope='col' style={{ textAlign: 'right' }}>DPS</th>
+                            <th scope='col' style={{ textAlign: 'right' }}>Parse Screenshot</th>
+                            <th scope='col' style={{ textAlign: 'right' }}>Superstar Screenshot</th>
+                            <th scope='col' />
                         </tr>
                     </thead>
                     <tbody>{parsesRendered}</tbody>

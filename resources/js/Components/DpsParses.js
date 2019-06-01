@@ -1,7 +1,7 @@
 import(
     /* webpackPrefetch: true */
     /* webpackChunkName: "dps-parses-scss" */
-    '../../sass/_dps_parses.scss'
+    '../../sass/_my_dps_parses.scss'
     );
 
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -83,7 +83,7 @@ class DpsParses extends PureComponent {
         let parsesRendered = dpsParses.map(dpsParse => this.renderListItem(dpsParse, character));
         if (parsesRendered.length) {
             parsesRendered = [
-                <table key="character-list-table" className="pl-2 pr-2 col-md-24">
+                <table key="my-dps-parses-table" className="pl-2 pr-2 col-md-24">
                     <thead>
                         <tr>
                             <th scope='col'>Sets</th>

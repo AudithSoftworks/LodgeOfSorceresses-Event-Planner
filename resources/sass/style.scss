@@ -15,11 +15,10 @@ body {
         background-size: 100% auto;
     }
     @include media-breakpoint-up(md) {
-        background: black url('/images/bg-md.jpg') fixed no-repeat 50% 0;
-        background-size: 100% auto;
+        background-image: url('/images/bg-md.jpg');
     }
     @include media-breakpoint-up(lg) {
-        background: black url('/images/bg-xl.jpg') fixed no-repeat 50% 0;
+        background-image: url('/images/bg-xl.jpg');
     }
     font-size: 16px;
 

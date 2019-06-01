@@ -1,0 +1,147 @@
+@import "./global/variables";
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins/breakpoints";
+
+table {
+    > thead {
+        > tr {
+            > th {
+                @include media-breakpoint-up(xs) {
+                    &:nth-of-type(3), &:nth-of-type(5), &:nth-of-type(6), &:nth-of-type(7) {
+                        display: none;
+                    }
+                    &:nth-of-type(1) {
+                        width: 33%;
+                    }
+                    &:nth-of-type(2) {
+                        width: 34%;
+                    }
+                    &:nth-of-type(4) {
+                        width: 33%;
+                    }
+                }
+
+                @include media-breakpoint-up(sm) {
+                    &:nth-of-type(1) {
+                        width: 35%;
+                    }
+                    &:nth-of-type(2) {
+                        width: 18%;
+                    }
+                    &:nth-of-type(4) {
+                        width: 12%;
+                    }
+                    &:nth-of-type(5) {
+                        display: table-cell;
+                        width: 35%;
+                    }
+                }
+
+                @include media-breakpoint-up(md) {
+                    &:nth-of-type(6), &:nth-of-type(7) {
+                        display: table-cell;
+                    }
+                    &:nth-of-type(1) {
+                        width: 15%;
+                    }
+                    &:nth-of-type(2) {
+                        width: 15%;
+                    }
+                    &:nth-of-type(4) {
+                        width: 8%;
+                    }
+                    &:nth-of-type(5) {
+                        width: 18%;
+                    }
+                    &:nth-of-type(6) {
+                        width: 18%;
+                    }
+                    &:nth-of-type(7) {
+                        width: 6%;
+                    }
+                }
+
+                @include media-breakpoint-up(lg) {
+                    &:nth-of-type(1) {
+                        width: 15%;
+                    }
+                    &:nth-of-type(2) {
+                        width: 16%;
+                    }
+                    &:nth-of-type(3) {
+                        display: table-cell;
+                        width: 21%;
+                    }
+                    &:nth-of-type(4) {
+                        width: 8%;
+                    }
+                    &:nth-of-type(5) {
+                        width: 17%;
+                    }
+                    &:nth-of-type(6) {
+                        width: 17%;
+                    }
+                    &:nth-of-type(7) {
+                        width: 6%;
+                    }
+                }
+
+                @include media-breakpoint-up(xl) {
+                    &:nth-of-type(1) {
+                        display: table-cell;
+                        width: 10%;
+                    }
+                    &:nth-of-type(2) {
+                        width: 20%;
+                    }
+                    &:nth-of-type(3) {
+                        width: 25%;
+                    }
+                    &:nth-of-type(4) {
+                        width: 10%;
+                    }
+                    &:nth-of-type(5) {
+                        width: 15%;
+                    }
+                    &:nth-of-type(6) {
+                        width: 15%;
+                    }
+                    &:nth-of-type(7) {
+                        width: 5%;
+                    }
+                }
+            }
+        }
+    }
+
+    > tbody {
+        > tr {
+            > td {
+                @include media-breakpoint-up(xs) {
+                    &:nth-of-type(3), &:nth-of-type(5), &:nth-of-type(6), &:nth-of-type(7) {
+                        display: none;
+                    }
+                }
+
+                @include media-breakpoint-up(sm) {
+                    &:nth-of-type(5) {
+                        display: table-cell;
+                    }
+                }
+
+                @include media-breakpoint-up(md) {
+                    &:nth-of-type(6), &:nth-of-type(7) {
+                        display: table-cell;
+                    }
+                }
+
+                @include media-breakpoint-up(lg) {
+                    &:nth-of-type(3) {
+                        display: table-cell;
+                    }
+                }
+            }
+        }
+    }
+}
