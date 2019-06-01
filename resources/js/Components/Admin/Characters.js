@@ -10,6 +10,8 @@ import {
     faBowArrow,
     faShieldAlt,
     faSpinner,
+    faSunrise,
+    faSunset,
     faSwords,
     faTachometerAlt,
     faTachometerAltAverage,
@@ -25,9 +27,10 @@ import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
-import { errorsAction, infosAction } from '../../actions/notifications';
+import { errorsAction, infosAction, successAction } from '../../actions/notifications';
 import Notification from '../../Components/Notification';
-import { getAllCharacters } from "../../vendor/adminApi";
+import { deletePendingDpsParse, getAllCharacters, updatePendingDpsParse } from "../../vendor/adminApi";
+import { updateCharacter } from "../../vendor/adminApi";
 import axios from "../../vendor/axios";
 import { characters, user } from '../../vendor/data';
 import Loading from '../Loading';
@@ -37,6 +40,8 @@ library.add(
     faBowArrow,
     faShieldAlt,
     faSpinner,
+    faSunrise,
+    faSunset,
     faSwords,
     faTachometerAlt,
     faTachometerAltAverage,
@@ -79,6 +84,35 @@ class Characters extends PureComponent {
                 .then(allCharacters => {
                     this.cancelTokenSource = null;
                     this.setState({ allCharacters })
+                })
+                .catch(error => {
+                    if (!axios.isCancel(error)) {
+                        const message = error.response.data.message || error.response.statusText || error.message;
+                        this.props.dispatch(errorsAction(message));
+                    }
+                });
+        }
+    };
+
+    handleRerank = event => {
+        event.preventDefault();
+        if (confirm('Are you sure you want to **approve** this parse?')) {
+            this.cancelTokenSource = axios.CancelToken.source();
+            const currentTarget = event.currentTarget;
+            const characterId = parseInt(currentTarget.getAttribute('data-id'));
+            const action = currentTarget.getAttribute('data-action');
+            const { allCharacters } = this.state;
+            updateCharacter(this.cancelTokenSource, characterId, {action})
+                .then(response => {
+console.log(response);
+                    this.cancelTokenSource = null;
+                    if (response.data) {
+                        // delete (allCharacters.entities.characters[characterId]);
+                        // dpsParses.result = dpsParses.result.filter(value => value !== characterId);
+                        // this.setState({ dpsParses });
+                        const message = response.data.message;
+                        this.props.dispatch(successAction(message));
+                    }
                 })
                 .catch(error => {
                     if (!axios.isCancel(error)) {
@@ -134,6 +168,18 @@ class Characters extends PureComponent {
             </a>
         ));
         character.actionList = {
+            promote:
+                character['role'].indexOf('DD') === -1 ? (
+                    <a href='#' onClick={this.handleRerank} data-id={character.id} data-action='promote' title="Promote Character">
+                        <FontAwesomeIcon icon={['far', 'sunrise']} />
+                    </a>
+                ) : null,
+            demote:
+                character['role'].indexOf('DD') === -1 ? (
+                    <a href='#' onClick={this.handleRerank} data-id={character.id} data-action='demote' title="Demote Character">
+                        <FontAwesomeIcon icon={['far', 'sunset']} />
+                    </a>
+                ) : null,
             parses:
                 character['role'].indexOf('DD') !== -1 ? (
                     <Link to={'/admin/characters/' + character.id} title="DPS Parses">

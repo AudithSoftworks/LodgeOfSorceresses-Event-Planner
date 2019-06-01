@@ -1,7 +1,9 @@
 <?php namespace App\Services;
 
 use App\Models\Character;
+use App\Models\DpsParse;
 use App\Models\User;
+use UnexpectedValueException;
 
 class GuildRankAndClearance
 {
@@ -146,5 +148,78 @@ class GuildRankAndClearance
         }
 
         return $topClearanceExisting;
+    }
+
+    /**
+     * @param \App\Models\DpsParse $dpsParse
+     *
+     * @return bool
+     */
+    public function processDpsParse(DpsParse $dpsParse): bool
+    {
+        $dpsParse->load('character');
+        /** @var \App\Models\Character $character */
+        $character = $dpsParse->character()->first();
+        $class = $character->class;
+        $role = $character->role;
+
+        $dpsRequirementsMap = config('dps_clearance');
+        $dpsRequirement = $dpsRequirementsMap[$class][$role] ?? null;
+        if (!$dpsRequirement) {
+            throw new UnexpectedValueException('Invalid class or role value encountered!');
+        }
+
+        foreach (self::CLEARANCE_LEVELS as $clearanceLevel => $clearanceLevelDetails) {
+            if ($dpsParse->dps_amount < $dpsRequirement[$clearanceLevel]) {
+                if ($character->{'approved_for_' . $clearanceLevel}) {
+                    $character->{'approved_for_' . $clearanceLevel} = false;
+                }
+                continue;
+            }
+            if (!$character->{'approved_for_' . $clearanceLevel}) {
+                $character->{'approved_for_' . $clearanceLevel} = true;
+            }
+        }
+        $character->last_submitted_dps_amount = $dpsParse->dps_amount;
+        $character->save();
+
+        return true;
+    }
+
+    public function promoteCharacter(Character $character): bool
+    {
+        $promoted = false;
+        foreach (self::CLEARANCE_LEVELS as $clearanceLevel => $clearanceLevelDetails) {
+            if (!$character->{'approved_for_' . $clearanceLevel}) {
+                $character->{'approved_for_' . $clearanceLevel} = true;
+                $promoted = true;
+                break;
+            }
+        }
+
+        if (!$promoted) {
+            throw new UnexpectedValueException('Character Not Promoted! Maybe they already have the top clearance level?');
+        }
+
+        return $character->save();
+    }
+
+    public function demoteCharacter(Character $character): bool
+    {
+        $demoted = false;
+        $clearanceLevelsInReverse = array_reverse(self::CLEARANCE_LEVELS);
+        foreach ($clearanceLevelsInReverse as $clearanceLevel => $clearanceLevelDetails) {
+            if ($character->{'approved_for_' . $clearanceLevel}) {
+                $character->{'approved_for_' . $clearanceLevel} = false;
+                $demoted = true;
+                break;
+            }
+        }
+
+        if (!$demoted) {
+            throw new UnexpectedValueException('Character Not Demoted! Maybe they already have the lowest clearance level?');
+        }
+
+        return $character->save();
     }
 }

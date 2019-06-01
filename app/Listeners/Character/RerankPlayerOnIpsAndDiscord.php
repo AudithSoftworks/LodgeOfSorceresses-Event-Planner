@@ -1,13 +1,13 @@
 <?php namespace App\Listeners\Character;
 
-use App\Events\Character\CharacterDeleted;
+use App\Events\Character\CharacterInterface;
 use App\Models\UserOAuth;
 use App\Services\DiscordApi;
 use App\Services\GuildRankAndClearance;
 use App\Services\IpsApi;
 use GuzzleHttp\RequestOptions;
 
-class RerankPlayerOnIpsAndDiscordUponCharacterDeletion
+class RerankPlayerOnIpsAndDiscord
 {
     public function __construct()
     {
@@ -19,17 +19,17 @@ class RerankPlayerOnIpsAndDiscordUponCharacterDeletion
     }
 
     /**
-     * @param \App\Events\Character\CharacterDeleted $event
+     * @param \App\Events\Character\CharacterInterface $event
      *
      * @return bool|int
      */
-    public function handle(CharacterDeleted $event)
+    public function handle(CharacterInterface $event)
     {
-        $character = $event->character;
+        $character = $event->getCharacter();
         $character->refresh();
         $character->loadMissing(['owner']);
 
-        $parseAuthor = $event->owner;
+        $parseAuthor = $event->getOwner();
         $parseAuthor->refresh();
         $parseAuthor->loadMissing(['linkedAccounts', 'characters']);
 

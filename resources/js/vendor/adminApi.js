@@ -19,6 +19,17 @@ export const getAllCharacters = (cancelToken) => axios.get('/api/admin/character
     throw error;
 });
 
+export const updateCharacter = (cancelToken, characterId, data) => axios.post('/api/admin/characters/' + characterId, data, {
+    cancelToken: cancelToken.token,
+    headers: {
+        'X-HTTP-Method-Override': 'PUT'
+    }
+}).then(
+    response => response
+).catch(error => {
+    throw error;
+});
+
 export const getPendingDpsParses = (cancelToken) => axios.get('/api/admin/parses', {
     cancelToken: cancelToken.token
 }).then(response => {

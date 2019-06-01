@@ -17,11 +17,13 @@ class EventServiceProvider extends ServiceProvider
             Listeners\Cache\Recache::class
         ],
 
+        Events\Character\CharacterPromoted::class => [],
+        Events\Character\CharacterDemoted::class => [],
         Events\Character\CharacterDeleting::class => [
             Listeners\DpsParse\DeleteDpsParsesOfDeletingCharacter::class
         ],
         Events\Character\CharacterDeleted::class => [
-            Listeners\Character\RerankPlayerOnIpsAndDiscordUponCharacterDeletion::class
+            Listeners\Character\RerankPlayerOnIpsAndDiscord::class
         ],
 
         Events\DpsParse\DpsParseSubmitted::class => [

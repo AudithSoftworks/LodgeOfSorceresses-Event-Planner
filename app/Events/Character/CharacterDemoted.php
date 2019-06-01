@@ -3,7 +3,7 @@
 use App\Models\Character;
 use App\Models\User;
 
-class CharacterDeleting implements CharacterInterface
+class CharacterDemoted implements CharacterInterface
 {
     /**
      * @var \App\Models\Character

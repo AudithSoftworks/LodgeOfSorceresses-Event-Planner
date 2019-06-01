@@ -1,8 +1,9 @@
 <?php namespace App\Events\Character;
 
 use App\Models\Character;
+use App\Models\User;
 
-class CharacterDeleted
+class CharacterDeleted implements CharacterInterface
 {
     /**
      * @var \App\Models\Character
@@ -23,5 +24,15 @@ class CharacterDeleted
         $character->refresh();
         $character->loadMissing(['owner']);
         $this->owner = $character->owner()->first();
+    }
+
+    public function getCharacter(): Character
+    {
+        return $this->character;
+    }
+
+    public function getOwner(): User
+    {
+        return $this->owner;
     }
 }

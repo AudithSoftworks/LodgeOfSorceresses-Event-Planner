@@ -85,7 +85,7 @@ class DpsParsesController extends Controller
         $dpsParse->processed_by = $me->id;
         $dpsParse->save();
 
-        return response()->json(['message' => 'Parse approved!']);
+        return response()->json(['message' => 'Parse approved.']);
     }
 
     /**
