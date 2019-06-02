@@ -8,6 +8,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import {
     faAmbulance,
     faBowArrow,
+    faPortrait,
     faShieldAlt,
     faSpinner,
     faSunrise,
@@ -29,8 +30,8 @@ import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { errorsAction, infosAction, successAction } from '../../actions/notifications';
 import Notification from '../../Components/Notification';
+import { getAllCharacters, getCharacter } from "../../vendor/api";
 import { updateCharacter } from "../../vendor/api/admin";
-import { getCharacter, getAllCharacters } from "../../vendor/api";
 import axios from "../../vendor/axios";
 import { characters, user } from '../../vendor/data';
 import Loading from '../Loading';
@@ -38,6 +39,7 @@ import Loading from '../Loading';
 library.add(
     faAmbulance,
     faBowArrow,
+    faPortrait,
     faShieldAlt,
     faSpinner,
     faSunrise,
@@ -102,7 +104,7 @@ class Characters extends PureComponent {
             const characterId = parseInt(currentTarget.getAttribute('data-id'));
             const action = currentTarget.getAttribute('data-action');
             const { allCharacters } = this.state;
-            updateCharacter(this.cancelTokenSource, characterId, {action})
+            updateCharacter(this.cancelTokenSource, characterId, { action })
                 .then(response => {
                     if (response.status === 200) {
                         const message = response.data.message;
@@ -147,22 +149,12 @@ class Characters extends PureComponent {
         if (character['approved_for_endgame_t2'] && !this.state.filters.endgame_tier_2) return null;
         if (!character['approved_for_endgame_t2'] && character['approved_for_endgame_t1'] && !this.state.filters.endgame_tier_1) return null;
         if (!character['approved_for_endgame_t2'] && !character['approved_for_endgame_t1'] && character['approved_for_endgame_t0'] && !this.state.filters.endgame_tier_0) return null;
-        if (
-            !character['approved_for_endgame_t2'] &&
-            !character['approved_for_endgame_t1'] &&
-            !character['approved_for_endgame_t0'] &&
-            character['approved_for_midgame'] &&
-            !this.state.filters.midgame
-        )
+        if (!character['approved_for_endgame_t2'] && !character['approved_for_endgame_t1'] && !character['approved_for_endgame_t0'] && character['approved_for_midgame'] && !this.state.filters.midgame) {
             return null;
-        if (
-            !character['approved_for_endgame_t2'] &&
-            !character['approved_for_endgame_t1'] &&
-            !character['approved_for_endgame_t0'] &&
-            !character['approved_for_midgame'] &&
-            !this.state.filters.no_clearance
-        )
+        }
+        if (!character['approved_for_endgame_t2'] && !character['approved_for_endgame_t1'] && !character['approved_for_endgame_t0'] && !character['approved_for_midgame'] && !this.state.filters.no_clearance) {
             return null;
+        }
         const characterSets = character.sets.map(set => (
             <a key={set['id']} href={'https://eso-sets.com/set/' + set['id']} className="badge badge-dark">
                 {set['name']}
@@ -181,12 +173,10 @@ class Characters extends PureComponent {
                         <FontAwesomeIcon icon={['far', 'sunset']} />
                     </a>
                 ) : null,
-            parses:
-                character['role'].indexOf('DD') === -2 ? (
-                    <Link to={'/admin/characters/' + character.id} title="DPS Parses">
-                        <FontAwesomeIcon icon={['far', 'tachometer-alt']} />
-                    </Link>
-                ) : null,
+            view:
+                <Link to={'/characters/' + character.id} title="Character Sheet">
+                    <FontAwesomeIcon icon={['far', 'portrait']} />
+                </Link>
         };
         let actionListRendered = [];
         for (const [actionType, link] of Object.entries(character.actionList)) {

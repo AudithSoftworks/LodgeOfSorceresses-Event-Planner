@@ -99,12 +99,12 @@ class DpsParses extends PureComponent {
 
         const actionList = {
             return: (
-                <Link to={'/characters'} title="Back to My Characters">
+                <Link to={'/@me/characters'} title="Back to My Characters">
                     <FontAwesomeIcon icon={['far', 'th-list']} />
                 </Link>
             ),
             create: (
-                <Link to={'/characters/' + this.props.match.params.id + '/parses/create'} title="Submit a Parse">
+                <Link to={'/@me/characters/' + this.props.match.params.id + '/parses/create'} title="Submit a Parse">
                     <FontAwesomeIcon icon={['far', 'user-plus']} />
                 </Link>
             ),
@@ -173,7 +173,7 @@ class DpsParses extends PureComponent {
         }
         const character = this.getCharacter();
         if (!character) {
-            return <Redirect to="/characters" />;
+            return <Redirect to="/@me/characters" />;
         }
         this.renderNoDpsParsesCreateOneNotification();
         const dpsParses = character.dps_parses;

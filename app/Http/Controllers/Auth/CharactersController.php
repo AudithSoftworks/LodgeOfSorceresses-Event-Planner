@@ -242,9 +242,7 @@ class CharactersController extends Controller
         $charactersContent = array_filter($request->get('content'), static function ($item) {
             return !empty($item);
         });
-        if (!empty($charactersContent)) {
-            $character->content()->sync($charactersContent);
-        }
+        $character->content()->sync($charactersContent);
 
         $character->save();
 

@@ -5,7 +5,6 @@ const contentReducer = (state = null, action) => {
         let newState = undefined;
         if (action.response.result.length) {
             newState = [];
-console.log(action.response);
             Object.keys(action.response.entities.content).forEach(key => {
                 newState.push(action.response.entities.content[key]);
             });

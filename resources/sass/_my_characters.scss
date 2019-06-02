@@ -27,10 +27,10 @@ table {
                         width: 35%;
                     }
                     &:nth-of-type(4) {
-                        width: 50%;
+                        width: 45%;
                     }
                     &:nth-of-type(5) {
-                        width: 15%;
+                        width: 20%;
                     }
                 }
 
@@ -39,10 +39,10 @@ table {
                         width: 30%;
                     }
                     &:nth-of-type(4) {
-                        width: 60%;
+                        width: 57%;
                     }
                     &:nth-of-type(5) {
-                        width: 10%;
+                        width: 13%;
                     }
                 }
 
@@ -69,10 +69,10 @@ table {
 
                 @include media-breakpoint-up(xl) {
                     &:nth-of-type(4) {
-                        width: 43%;
+                        width: 40%;
                     }
                     &:nth-of-type(5) {
-                        width: 7%;
+                        width: 10%;
                     }
                 }
             }

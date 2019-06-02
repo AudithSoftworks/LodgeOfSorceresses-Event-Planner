@@ -28,12 +28,12 @@ class CharacterForm extends PureComponent {
     componentWillUpdate = nextProps => {
         // We had a change in Characters data: Redirect!
         if (nextProps.myCharacters.length !== this.props.myCharacters.length) {
-            return this.props.history.push('/characters');
+            return this.props.history.push('/@me/characters');
         }
         const { match } = this.props;
         if (match.params && match.params.id) {
             if (this.props.myCharacters !== nextProps.myCharacters) {
-                return this.props.history.push('/characters');
+                return this.props.history.push('/@me/characters');
             }
         }
     };
@@ -199,7 +199,7 @@ class CharacterForm extends PureComponent {
                     />
                 </fieldset>
                 <fieldset className="form-group col-md-24 text-right">
-                    <Link to="/characters" className="btn btn-info btn-lg mr-1">
+                    <Link to="/@me/characters" className="btn btn-info btn-lg mr-1">
                         Cancel
                     </Link>
                     <button className="btn btn-primary btn-lg" type="submit">

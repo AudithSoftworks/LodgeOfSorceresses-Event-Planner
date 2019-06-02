@@ -53,7 +53,7 @@ class Header extends Component {
                 </NavLink>
             );
             navLinks.push(
-                <NavLink to="/characters" activeClassName="active" title="My Characters">
+                <NavLink to="/@me/characters" activeClassName="active" title="My Characters">
                     <FontAwesomeIcon icon="users" size="lg" />
                     <span className='d-none d-sm-inline-block'>My Characters</span>
                 </NavLink>

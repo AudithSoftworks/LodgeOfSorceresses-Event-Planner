@@ -17,10 +17,17 @@ const Home = React.lazy(() =>
         '../Home'
     )
 );
+const Character = React.lazy(() =>
+    import(
+        /* webpackPrefetch: true */
+        /* webpackChunkName: "components-character-sheet" */
+        '../Character'
+    )
+);
 const Characters = React.lazy(() =>
     import(
         /* webpackPrefetch: true */
-        /* webpackChunkName: "components-characters" */
+        /* webpackChunkName: "components-my-characters" */
         '../Characters'
     )
 );
@@ -60,13 +67,6 @@ const AdminCharacters = React.lazy(() =>
         '../Admin/Characters'
     )
 );
-const AdminCharacter = React.lazy(() =>
-    import(
-        /* webpackPrefetch: true */
-        /* webpackChunkName: "components-admin-character" */
-        '../Admin/Character'
-    )
-);
 const AdminDpsParses = React.lazy(() =>
     import(
         /* webpackPrefetch: true */
@@ -83,8 +83,9 @@ class Main extends Component {
                     <Switch>
                         <Route exact path="/" component={props => <Init {...props} />} />
                         <Route exact path="/dashboard" component={props => <Home {...props} />} />
+                        <Route exact path="/characters/:id" component={props => <Character {...props} />} />
                         <Route
-                            path="/characters"
+                            path="/@me/characters"
                             render={({ match: { url } }) => (
                                 <Fragment>
                                     <Route exact path={url} component={props => <Characters {...props} />} />
@@ -101,7 +102,6 @@ class Main extends Component {
                                 <Fragment>
                                     <Route exact path={url} component={props => <AdminHome {...props} />} />
                                     <Route exact path={url + '/characters'} component={props => <AdminCharacters {...props} />} />
-                                    <Route path={url + '/characters/:id'} component={props => <AdminCharacter {...props} />} />
                                     <Route path={url + '/parses'} component={props => <AdminDpsParses {...props} />} />
                                 </Fragment>
                             )}

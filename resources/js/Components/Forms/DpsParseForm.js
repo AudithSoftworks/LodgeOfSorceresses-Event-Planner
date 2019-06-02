@@ -171,7 +171,7 @@ class DpsParseForm extends PureComponent {
         const { match } = this.props;
         const characterId = match.params.id;
         if (this.props.myCharacters !== nextProps.myCharacters) {
-            return this.props.history.push('/characters/' + characterId + '/parses');
+            return this.props.history.push('/@me/characters/' + characterId + '/parses');
         }
     };
 
@@ -260,7 +260,7 @@ class DpsParseForm extends PureComponent {
                     <Gallery uploader={this.superstarScreenshotUploader} className="uploader" />
                 </fieldset>
                 <fieldset className="form-group col-md-24 text-right">
-                    <Link to={'/characters/' + character.id + '/parses'} className="btn btn-info btn-lg mr-1">
+                    <Link to={'/@me/characters/' + character.id + '/parses'} className="btn btn-info btn-lg mr-1">
                         Cancel
                     </Link>
                     <button className="btn btn-primary btn-lg" type="submit">
@@ -278,7 +278,7 @@ class DpsParseForm extends PureComponent {
         }
         const character = this.getCharacter();
         if (!character) {
-            return <Redirect to="/characters" />;
+            return <Redirect to="/@me/characters" />;
         }
 
         return [this.renderForm(character), <Notification key="notifications" />];

@@ -5,7 +5,7 @@ import(
 );
 
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSpinner, faTachometerAlt, faTrashAlt, faUserEdit, faUserPlus } from '@fortawesome/pro-regular-svg-icons';
+import { faPortrait, faSpinner, faTachometerAlt, faTrashAlt, faUserEdit, faUserPlus } from '@fortawesome/pro-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
@@ -16,7 +16,7 @@ import { infosAction } from '../actions/notifications';
 import { characters, user } from '../vendor/data';
 import Notification from './Notification';
 
-library.add(faSpinner, faTachometerAlt, faTrashAlt, faUserEdit, faUserPlus);
+library.add(faPortrait, faSpinner, faTachometerAlt, faTrashAlt, faUserEdit, faUserPlus);
 
 class Characters extends PureComponent {
     componentWillUnmount() {
@@ -41,14 +41,18 @@ class Characters extends PureComponent {
             </a>
         ));
         character.actionList = {
+            view:
+                <Link to={'/characters/' + character.id} title="Character Sheet">
+                    <FontAwesomeIcon icon={['far', 'portrait']} />
+                </Link>,
             parses:
                 character['role'].indexOf('Damage') !== -1 ? (
-                    <Link to={'/characters/' + character.id + '/parses'} title="DPS Parses">
+                    <Link to={'/@me/characters/' + character.id + '/parses'} title="DPS Parses">
                         <FontAwesomeIcon icon={['far', 'tachometer-alt']} />
                     </Link>
                 ) : null,
             edit: (
-                <Link to={'/characters/' + character.id + '/edit'} title="Edit Character">
+                <Link to={'/@me/characters/' + character.id + '/edit'} title="Edit Character">
                     <FontAwesomeIcon icon={['far', 'user-edit']} />
                 </Link>
             ),
@@ -122,7 +126,7 @@ class Characters extends PureComponent {
 
         const actionList = {
             create: (
-                <Link to="/characters/create" className="ne-corner" title="Submit a Character">
+                <Link to="/@me/characters/create" className="ne-corner" title="Submit a Character">
                     <FontAwesomeIcon icon={['far', 'user-plus']} />
                 </Link>
             ),
