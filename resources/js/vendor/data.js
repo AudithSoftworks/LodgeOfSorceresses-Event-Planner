@@ -69,7 +69,7 @@ export const content = PropTypes.arrayOf(
         short_name: PropTypes.string,
         version: PropTypes.string,
         type: PropTypes.string,
-        tier: PropTypes.string,
+        tier: PropTypes.number,
         created_at: PropTypes.string,
         updated_at: PropTypes.string,
     })
