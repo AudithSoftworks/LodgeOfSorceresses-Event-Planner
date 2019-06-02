@@ -40,7 +40,6 @@ class EventServiceProvider extends ServiceProvider
             Listeners\DpsParse\ProcessDpsParse::class,
             Listeners\RerankPlayerOnIpsAndDiscord::class,
             Listeners\DpsParse\AnnounceDpsApprovalOnDiscord::class,
-            Listeners\DpsParse\AnnouncePromotionsOnDiscordOfficerChannel::class,
         ],
         Events\DpsParse\DpsParseDisapproved::class => [
             Listeners\DpsParse\AnnounceDpsDisapprovalOnDiscord::class

@@ -34,7 +34,6 @@ class AnnounceDpsApprovalOnDiscord
          | Prelim
          *-----------------------------------*/
 
-        $announcementsChannelId = config('services.discord.channels.announcements');
         $midgameDpsParsesChannelId = config('services.discord.channels.midgame_dps_parses');
 
         $dpsParse = $event->dpsParse;
@@ -70,7 +69,6 @@ class AnnounceDpsApprovalOnDiscord
         }
 
         $mentionedName = '<@!' . $parseOwnersDiscordAccount->remote_id . '>';
-        $mentionedAnnouncementsChannel = '<#' . $announcementsChannelId . '>';
         $discordMessageIdsToDelete = explode(',', $dpsParse->discord_notification_message_ids);
 
         /*------------------------------------
@@ -89,7 +87,7 @@ class AnnounceDpsApprovalOnDiscord
         foreach ($gearSets as $set) {
             $gearSetsParsed[] = '[' . $set->name . '](https://eso-sets.com/set/' . $set->id . ')';
         }
-        $rankTitle = $playerClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['rank']['discordRole'] : GuildRankAndClearance::RANK_INITIATE['discordRole'];
+        $rankTitle = $playerClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['rank']['title'] : GuildRankAndClearance::RANK_INITIATE['title'];
         $playerClearanceTitle = $playerClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['title'] : null;
         $characterClearanceTitle = $characterClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$characterClearance]['title'] : null;
         $className = ClassTypes::getClassName($character->class);
@@ -98,8 +96,8 @@ class AnnounceDpsApprovalOnDiscord
                 'payload_json' => json_encode([
                     'content' => $mentionedName . ': DPS parse you submitted has been **approved** by ' . $myMentionedName . ".\n"
                         . ($characterClearanceTitle ? '**Your character is cleared for ' . $characterClearanceTitle . '.**' : '**You character wasn\'t cleared for any content!**')
-                        . "\nYour current guild rank (based on all your cleared characters) is <@&" . $rankTitle . '>.'
-                        . ($characterClearanceTitle ? "\nPlease also expect additional " . $mentionedAnnouncementsChannel : '')
+                        . "\nYour current guild rank (based on all your cleared characters) is **" . $rankTitle . '**.'
+                        . ($characterClearanceTitle ? "\nPlease also expect a DM from our bot with additional information." : '')
                         . "\nDetails regarding your parse is listed below. The original Discord post of Parse submit created earlier (which should be above), is deleted now to avoid duplicates.",
                     'tts' => false,
                     'embed' => [
@@ -118,7 +116,7 @@ class AnnounceDpsApprovalOnDiscord
                             ],
                             [
                                 'name' => 'Updated Player Clearance',
-                                'value' => '<@&' . $rankTitle . '>' . ($playerClearanceTitle ? ', cleared for ' . $playerClearanceTitle : ', no clearance') . '.',
+                                'value' => '_' . $rankTitle . '_' . ($playerClearanceTitle ? ', cleared for ' . $playerClearanceTitle : ', no clearance') . '.',
                             ],
                             [
                                 'name' => 'DPS Amount',
