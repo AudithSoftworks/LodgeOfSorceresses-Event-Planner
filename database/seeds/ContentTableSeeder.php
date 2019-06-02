@@ -25,7 +25,7 @@ class ContentTableSeeder extends Seeder
             ['id' => 8, 'name' => 'Veteran Maw of Lorkhaj', 'short_name' => 'vMOL', 'version' => 'HM', 'type' => 'endgame', 'tier' => 4],
             ['id' => 9, 'name' => 'Veteran Asylum Sanctorium', 'short_name' => 'vAS', 'version' => null, 'type' => 'endgame', 'tier' => 2],
             ['id' => 10, 'name' => 'Veteran Asylum Sanctorium', 'short_name' => 'vAS', 'version' => '+1 Poison', 'type' => 'endgame', 'tier' => 3],
-            ['id' => 11, 'name' => 'Veteran Asylum Sanctorium', 'short_name' => 'vAS', 'version' => '+1 Lightning', 'type' => 'endgame', 'tier' => 3],
+            ['id' => 11, 'name' => 'Veteran Asylum Sanctorium', 'short_name' => 'vAS', 'version' => '+1 Assassin', 'type' => 'endgame', 'tier' => 3],
             ['id' => 12, 'name' => 'Veteran Asylum Sanctorium', 'short_name' => 'vAS', 'version' => '+2', 'type' => 'endgame', 'tier' => 4],
             ['id' => 13, 'name' => 'Veteran Halls of Fabrication', 'short_name' => 'vHOF', 'version' => null, 'type' => 'endgame', 'tier' => 3],
             ['id' => 14, 'name' => 'Veteran Halls of Fabrication', 'short_name' => 'vHOF', 'version' => 'HM', 'type' => 'endgame', 'tier' => 4],
