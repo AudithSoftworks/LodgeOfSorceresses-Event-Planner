@@ -24,7 +24,7 @@ class DpsParsesController extends Controller
      */
     public function index(): JsonResponse
     {
-        $this->authorize('admin', DpsParse::class);
+        $this->authorize('admin', User::class);
         $dpsParses = DpsParse::query()
             ->with(['owner', 'character'])
             ->whereHas('owner', static function (Builder $queryToGetOauthAccounts) {
@@ -66,7 +66,7 @@ class DpsParsesController extends Controller
      */
     public function update(int $parse): JsonResponse
     {
-        $this->authorize('admin', DpsParse::class);
+        $this->authorize('admin', User::class);
 
         /** @var \App\Models\User $me */
         $me = app('auth.driver')->user();

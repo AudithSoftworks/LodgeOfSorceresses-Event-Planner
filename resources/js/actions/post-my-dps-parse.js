@@ -1,4 +1,4 @@
-import * as api from '../vendor/api';
+import * as api from '../vendor/api/auth';
 import getMyDpsParseAction from './get-my-dps-parse';
 
 export const TYPE_POST_MY_DPS_PARSE_SEND = 'POST_MY_DPS_PARSE_SEND';

@@ -9,13 +9,13 @@ table {
             > th {
                 @include media-breakpoint-up(xs) {
                     &:nth-of-type(1) {
-                        width: 40%;
+                        width: 43%;
                     }
                     &:nth-of-type(2) {
-                        width: 40%;
+                        width: 43%;
                     }
                     &:nth-of-type(4) {
-                        width: 20%;
+                        width: 14%;
                     }
                     &:nth-of-type(3) {
                         display: none;
@@ -24,13 +24,13 @@ table {
 
                 @include media-breakpoint-up(sm) {
                     &:nth-of-type(1) {
-                        width: 40%;
+                        width: 45%;
                     }
                     &:nth-of-type(2) {
                         width: 45%;
                     }
                     &:nth-of-type(4) {
-                        width: 15%;
+                        width: 10%;
                     }
                 }
 
@@ -39,14 +39,14 @@ table {
                         width: 25%;
                     }
                     &:nth-of-type(2) {
-                        width: 30%;
+                        width: 28%;
                     }
                     &:nth-of-type(3) {
                         display: table-cell;
                         width: 40%;
                     }
                     &:nth-of-type(4) {
-                        width: 5%;
+                        width: 7%;
                     }
                 }
 
@@ -55,14 +55,14 @@ table {
                         width: 25%;
                     }
                     &:nth-of-type(2) {
-                        width: 25%;
+                        width: 23%;
                     }
                     &:nth-of-type(3) {
                         display: table-cell;
                         width: 45%;
                     }
                     &:nth-of-type(4) {
-                        width: 5%;
+                        width: 7%;
                     }
                 }
 
@@ -71,14 +71,14 @@ table {
                         width: 25%;
                     }
                     &:nth-of-type(2) {
-                        width: 22%;
+                        width: 20%;
                     }
                     &:nth-of-type(3) {
                         display: table-cell;
                         width: 50%;
                     }
                     &:nth-of-type(4) {
-                        width: 3%;
+                        width: 5%;
                     }
                 }
             }
@@ -124,22 +124,32 @@ button {
 
 tr {
     &.no_clearance {
-        background-color: rgba(150, 150, 150, 0.2);
+        > td {
+            background-color: rgba(150, 150, 150, 0.2);
+        }
     }
 
     &.midgame {
-        background-color: rgba(46, 204, 113, 0.2);
+        > td {
+            background-color: rgba(46, 204, 113, 0.2);
+        }
     }
 
     &.endgame_tier_0 {
-        background-color: rgba(52, 152, 219, 0.2);
+        > td {
+            background-color: rgba(52, 152, 219, 0.2);
+        }
     }
 
     &.endgame_tier_1 {
-        background-color: rgba(155, 89, 182, 0.2);
+        > td {
+            background-color: rgba(155, 89, 182, 0.2);
+        }
     }
 
     &.endgame_tier_2 {
-        background-color: rgba(230, 126, 34, 0.2);
+        > td {
+            background-color: rgba(230, 126, 34, 0.2);
+        }
     }
 }

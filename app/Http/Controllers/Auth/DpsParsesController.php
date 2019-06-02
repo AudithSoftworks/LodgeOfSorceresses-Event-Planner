@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
 use App\Events\DpsParse\DpsParseDeleted;
 use App\Events\DpsParse\DpsParseSubmitted;
+use App\Http\Controllers\Controller;
 use App\Models\DpsParse;
 use App\Models\File;
+use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,7 +24,7 @@ class DpsParsesController extends Controller
      */
     public function index(int $char): JsonResponse
     {
-        $this->authorize('view', DpsParse::class);
+        $this->authorize('user', User::class);
         $dpsParses = DpsParse::query()
             ->whereUserId(app('auth.driver')->id())
             ->whereCharacterId($char)
@@ -61,7 +63,7 @@ class DpsParsesController extends Controller
      */
     public function store(Request $request, int $char): JsonResponse
     {
-        $this->authorize('create', DpsParse::class);
+        $this->authorize('user', User::class);
         $validatorErrorMessages = [
             'parse_file_hash.required' => 'Parse screenshot needs to be uploaded.',
             'superstar_file_hash.required' => 'Superstar screenshot needs to be uploaded.',
@@ -101,7 +103,7 @@ class DpsParsesController extends Controller
      */
     public function show(int $char, int $parse): JsonResponse
     {
-        $this->authorize('show', DpsParse::class);
+        $this->authorize('user', User::class);
         $dpsParse = DpsParse::query()
             ->whereUserId(app('auth.driver')->id())
             ->whereCharacterId($char)
@@ -140,7 +142,7 @@ class DpsParsesController extends Controller
      */
     public function destroy(int $char, int $parse): JsonResponse
     {
-        $this->authorize('delete', DpsParse::class);
+        $this->authorize('user', User::class);
         $dpsParse = DpsParse::query()
             ->whereUserId(app('auth.driver')->id())
             ->whereCharacterId($char)
@@ -148,7 +150,7 @@ class DpsParsesController extends Controller
             ->whereId($parse)
             ->first();
         if (!$dpsParse) {
-            throw new ModelNotFoundException('Parse Not Found!');
+            throw new ModelNotFoundException('Parse not found (or already processed)!');
         }
         $dpsParse->delete();
         app('events')->dispatch(new DpsParseDeleted($dpsParse));

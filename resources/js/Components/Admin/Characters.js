@@ -29,8 +29,8 @@ import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { errorsAction, infosAction, successAction } from '../../actions/notifications';
 import Notification from '../../Components/Notification';
-import { deletePendingDpsParse, getAllCharacters, updatePendingDpsParse } from "../../vendor/adminApi";
-import { updateCharacter } from "../../vendor/adminApi";
+import { updateCharacter } from "../../vendor/api/admin";
+import { getCharacter, getAllCharacters } from "../../vendor/api";
 import axios from "../../vendor/axios";
 import { characters, user } from '../../vendor/data';
 import Loading from '../Loading';
@@ -96,7 +96,7 @@ class Characters extends PureComponent {
 
     handleRerank = event => {
         event.preventDefault();
-        if (confirm('Are you sure you want to **approve** this parse?')) {
+        if (confirm('Are you sure you want to **Rerank** this Character?')) {
             this.cancelTokenSource = axios.CancelToken.source();
             const currentTarget = event.currentTarget;
             const characterId = parseInt(currentTarget.getAttribute('data-id'));
@@ -104,14 +104,15 @@ class Characters extends PureComponent {
             const { allCharacters } = this.state;
             updateCharacter(this.cancelTokenSource, characterId, {action})
                 .then(response => {
-console.log(response);
-                    this.cancelTokenSource = null;
-                    if (response.data) {
-                        // delete (allCharacters.entities.characters[characterId]);
-                        // dpsParses.result = dpsParses.result.filter(value => value !== characterId);
-                        // this.setState({ dpsParses });
+                    if (response.status === 200) {
                         const message = response.data.message;
-                        this.props.dispatch(successAction(message));
+                        getCharacter(this.cancelTokenSource, characterId)
+                            .then(response => {
+                                delete (allCharacters.entities.characters[characterId]);
+                                allCharacters.entities.characters[response.result] = response.entities.characters[response.result];
+                                this.setState({ allCharacters });
+                                this.props.dispatch(successAction(message));
+                            });
                     }
                 })
                 .catch(error => {
@@ -181,7 +182,7 @@ console.log(response);
                     </a>
                 ) : null,
             parses:
-                character['role'].indexOf('DD') !== -1 ? (
+                character['role'].indexOf('DD') === -2 ? (
                     <Link to={'/admin/characters/' + character.id} title="DPS Parses">
                         <FontAwesomeIcon icon={['far', 'tachometer-alt']} />
                     </Link>

@@ -2,7 +2,6 @@
 
 use App\Events\DpsParse\DpsParseApproved;
 use App\Models\Set;
-use App\Services\DiscordApi;
 use App\Services\GuildRankAndClearance;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
@@ -167,19 +166,18 @@ class AnnounceDpsApprovalOnDiscord
          *----------------------------------------------------------*/
 
         if ($characterClearanceTitle) {
-            $guidanceMentioned = '<@&' . DiscordApi::ROLE_GUIDANCE . '>';
             $roleName = RoleTypes::getShortRoleText($character->role);
             $dmChannel = $discordApi->createDmChannel($parseOwnersDiscordAccount->remote_id);
             $discordApi->createMessageInChannel($dmChannel['id'], [
                 RequestOptions::FORM_PARAMS => [
                     'payload_json' => json_encode([
-                        'content' => $mentionedName . ', you are cleared for ' . $characterClearanceTitle . ' on your ' . $className . ' ' . $roleName . ' named _' . $character->name . "_.\n"
+                        'content' => $mentionedName . ', you are cleared for **' . $characterClearanceTitle . '** on your ' . $className . ' ' . $roleName . ' named _' . $character->name . "_.\n"
                             . 'Please start doing content with folks and let the guild get to know you and vice versa (3 day event attendance is in effect). '
                             . 'It is very important for our community! '
-                            . '_Midgame_, _DPS Trainings_ & _Endgame_ are eligible content towards your attendance. '
-                            . 'Additionally, please do not forget to constantly improve and keep sending your improved parses regularly. '
-                            . 'Refer to ' . $guidanceMentioned . ", should you need any assistance with training or any other questions! Good luck!\n"
-                            . '_P.S.:_ Feel free to find important links listed below for your convenience. _Please emote this message upon reading!_'
+                            . "Depending on your clearance, _Midgame_, _DPS Trainings_ & _Endgame_ are potentially eligible content towards your attendance.\n"
+                            . 'Additionally, please do not forget to constantly improve and keep sending your improved DPS Parses at least every 15 days. Otherwise your Clearance might get revoked. '
+                            . "Refer to our _Guidance team_, should you need any assistance with training or any other questions! Good luck!\n"
+                            . '_P.S.:_ Feel free to find important links listed below for your convenience.'
                         ,
                         'tts' => false,
                         'embed' => [

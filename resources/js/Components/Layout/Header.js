@@ -48,19 +48,22 @@ class Header extends Component {
         if (myCharacters) {
             navLinks.push(
                 <NavLink exact to="/dashboard" activeClassName="active" title="Home">
-                    <FontAwesomeIcon icon="home" size="lg" /> Home
+                    <FontAwesomeIcon icon="home" size="lg" />
+                    <span className='d-none d-sm-inline-block'>Home</span>
                 </NavLink>
             );
             navLinks.push(
                 <NavLink to="/characters" activeClassName="active" title="My Characters">
-                    <FontAwesomeIcon icon="users" size="lg" /> My Characters
+                    <FontAwesomeIcon icon="users" size="lg" />
+                    <span className='d-none d-sm-inline-block'>My Characters</span>
                 </NavLink>
             );
         }
         if (this.authorize(this.props)) {
             navLinks.push(
-                <NavLink to="/admin" activeClassName="active" className="pull-right" title="Officer Panel">
-                    <FontAwesomeIcon icon="users-cog" size="lg" /> Officer CP
+                <NavLink to="/admin" activeClassName="active" className="pull-right" title="Officer">
+                    <FontAwesomeIcon icon="users-cog" size="lg" />
+                    <span className='d-none d-sm-inline-block'>Officer</span>
                 </NavLink>
             );
         }

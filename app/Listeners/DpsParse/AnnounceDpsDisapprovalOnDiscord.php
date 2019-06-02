@@ -78,9 +78,9 @@ class AnnounceDpsDisapprovalOnDiscord
         $message = [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
-                    'content' => $mentionedName . ': DPS parse you submitted has been **disapproved** by ' . $myMentionedName
-                        . "\nPlease fix your parse and re-submit! DPS Parse rules can be found here: https://lodgeofsorceresses.com/topic/5158-pve-raid-core-dps-parse-rules/\n"
-                        . 'Details regarding your parse is listed below. The original Discord post of Parse submit created earlier (which should be above), is deleted now to avoid duplicates.',
+                    'content' => $mentionedName . ': DPS parse you submitted has been **disapproved** by ' . $myMentionedName . "\n"
+                        . 'Please fix your parse and re-submit! Details regarding your parse is listed below. '
+                        . 'The original Discord post of Parse submit created earlier (which should be above), is deleted now to avoid duplicates.',
                     'tts' => false,
                     'embed' => [
                         'color' => 0x880000,

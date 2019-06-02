@@ -97,19 +97,19 @@ class GuildRankAndClearance
 
     public const CLEARANCE_LEVELS = [
         self::CLEARANCE_MIDGAME => [
-            'title' => 'Midgame',
+            'title' => 'Tier-1 Content',
             'rank' => self::RANK_NEOPHYTE,
         ],
         self::CLEARANCE_ENDGAME_TIER_0 => [
-            'title' => 'Craglorn vTrials',
+            'title' => 'Tier-2 Content',
             'rank' => self::RANK_PRACTICUS,
         ],
         self::CLEARANCE_ENDGAME_TIER_1 => [
-            'title' => 'Tier-1 Endgame',
+            'title' => 'Tier-3 Content',
             'rank' => self::RANK_ADEPTUS_MINOR,
         ],
         self::CLEARANCE_ENDGAME_TIER_2 => [
-            'title' => 'Tier-2 Endgame',
+            'title' => 'Tier-4 Content',
             'rank' => self::RANK_ADEPTUS_MAJOR,
         ],
     ];

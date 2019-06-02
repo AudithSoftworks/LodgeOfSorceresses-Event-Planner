@@ -1,14 +1,18 @@
 <?php namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Services\IpsApi;
 
 class HomeController extends Controller
 {
     /**
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function index()
     {
+        $this->authorize('user', User::class);
+
         /** @var \App\Models\User $me */
         $me = app('auth.driver')->user();
         $me->load('linkedAccounts');

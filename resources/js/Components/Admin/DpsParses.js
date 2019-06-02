@@ -12,7 +12,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { errorsAction, infosAction, successAction } from "../../actions/notifications";
-import { deletePendingDpsParse, getPendingDpsParses, updatePendingDpsParse } from '../../vendor/adminApi';
+import { deletePendingDpsParse, getPendingDpsParses, updatePendingDpsParse } from '../../vendor/api/admin';
 import axios from '../../vendor/axios';
 import { user } from '../../vendor/data';
 import Loading from '../Loading';

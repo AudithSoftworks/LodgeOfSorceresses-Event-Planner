@@ -1,4 +1,4 @@
-<?php namespace App\Http\Controllers\Auth;
+<?php namespace App\Http\Controllers;
 
 use App\Events\User\LoggedIn;
 use App\Events\User\LoggedInViaOauth;
@@ -8,7 +8,6 @@ use App\Exceptions\Common\ValidationException;
 use App\Exceptions\Users\LoginNotValidException;
 use App\Exceptions\Users\LoginViaOauthFailedException;
 use App\Extensions\Socialite\IpsUser;
-use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\UserOAuth;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;

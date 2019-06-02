@@ -1,4 +1,4 @@
-import * as api from '../vendor/api';
+import * as api from '../vendor/api/auth';
 
 export const TYPE_DELETE_MY_DPS_PARSE_SEND = 'DELETE_MY_DPS_PARSE_SEND';
 
@@ -24,7 +24,7 @@ export const deleteMyDpsParseSuccessAction = (response, message, characterId, pa
 
 export const deleteMyDpsParseFailureAction = error => ({
     type: TYPE_DELETE_MY_DPS_PARSE_FAILURE,
-    message: error.message || error.response.data.message || error.response.statusText,
+    message: error.response.data.message || error.response.statusText || error.message,
 });
 
 const deleteMyDpsParseAction = (characterId, parseId) => (dispatch, getState) => {

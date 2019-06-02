@@ -1,4 +1,4 @@
-import * as api from '../vendor/api';
+import * as api from '../vendor/api/auth';
 
 export const TYPE_DELETE_MY_CHARACTER_SEND = 'DELETE_MY_CHARACTER_SEND';
 

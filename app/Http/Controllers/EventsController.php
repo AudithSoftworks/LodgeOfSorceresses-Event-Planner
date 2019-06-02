@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -36,9 +37,12 @@ class EventsController extends Controller
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function index()
+    public function index(): \Illuminate\Http\JsonResponse
     {
+        $this->authorize('user', User::class);
+
         $events = Event::where(function (Builder $query) {
             $query
                 ->whereBetween('start_time', [$this->timeIntervalStart->toDateTimeString(), $this->timeIntervalEnd->toDateTimeString()])
@@ -52,10 +56,8 @@ class EventsController extends Controller
         foreach ($events as $event) {
             if (empty($event->recurrence)) {
                 $nonRecurringEvents[] = $event;
-            } else {
-                if (!empty($parsedEvent = $this->parseRecurringEvent($event))) {
-                    $recurringEvents[] = $parsedEvent;
-                }
+            } elseif (!empty($parsedEvent = $this->parseRecurringEvent($event))) {
+                $recurringEvents[] = $parsedEvent;
             }
         }
 
@@ -71,6 +73,7 @@ class EventsController extends Controller
      * @param \App\Models\Event $event
      *
      * @return null|array
+     * @throws \Exception
      */
     private function parseRecurringEvent(Event $event): ?array
     {
@@ -88,7 +91,7 @@ class EventsController extends Controller
             }
         }
 
-        settype($recurrenceParsed['INTERVAL'], 'int');
+        $recurrenceParsed['INTERVAL'] = (int)$recurrenceParsed['INTERVAL'];
         isset($recurrenceParsed['COUNT']) && settype($recurrenceParsed['COUNT'], 'int');
 
         if (!$this->checkIfRecurringEventHappensThisWeek($event, $recurrenceParsed)) {
@@ -104,6 +107,7 @@ class EventsController extends Controller
      * @param array             $recurrenceParsed
      *
      * @return bool
+     * @throws \Exception
      */
     private function checkIfRecurringEventHappensThisWeek(Event $event, array &$recurrenceParsed): bool
     {

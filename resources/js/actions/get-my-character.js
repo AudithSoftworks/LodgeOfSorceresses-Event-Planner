@@ -1,4 +1,4 @@
-import * as api from '../vendor/api';
+import * as api from '../vendor/api/auth';
 
 export const TYPE_GET_MY_CHARACTER_SEND = 'GET_MY_CHARACTER_SEND';
 

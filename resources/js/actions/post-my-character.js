@@ -1,4 +1,4 @@
-import * as api from '../vendor/api';
+import * as api from '../vendor/api/auth';
 import getMyCharacterAction from './get-my-character';
 
 export const TYPE_POST_MY_CHARACTER_SEND = 'POST_MY_CHARACTER_SEND';

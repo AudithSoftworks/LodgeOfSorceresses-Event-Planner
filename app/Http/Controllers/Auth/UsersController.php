@@ -1,14 +1,19 @@
-<?php namespace App\Http\Controllers;
+<?php namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 
 class UsersController extends Controller
 {
     /**
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function me(): JsonResponse
     {
+        $this->authorize('user', User::class);
+
         /** @var \App\Models\User $me */
         $me = app('auth.driver')->user();
         $me->load('linkedAccounts');

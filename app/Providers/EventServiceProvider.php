@@ -17,13 +17,17 @@ class EventServiceProvider extends ServiceProvider
             Listeners\Cache\Recache::class
         ],
 
-        Events\Character\CharacterPromoted::class => [],
-        Events\Character\CharacterDemoted::class => [],
+        Events\Character\CharacterPromoted::class => [
+            Listeners\RerankPlayerOnIpsAndDiscord::class
+        ],
+        Events\Character\CharacterDemoted::class => [
+            Listeners\RerankPlayerOnIpsAndDiscord::class
+        ],
         Events\Character\CharacterDeleting::class => [
             Listeners\DpsParse\DeleteDpsParsesOfDeletingCharacter::class
         ],
         Events\Character\CharacterDeleted::class => [
-            Listeners\Character\RerankPlayerOnIpsAndDiscord::class
+            Listeners\RerankPlayerOnIpsAndDiscord::class
         ],
 
         Events\DpsParse\DpsParseSubmitted::class => [
@@ -34,7 +38,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         Events\DpsParse\DpsParseApproved::class => [
             Listeners\DpsParse\ProcessDpsParse::class,
-            Listeners\DpsParse\RerankPlayerOnIpsAndDiscordUponDpsParseApproval::class,
+            Listeners\RerankPlayerOnIpsAndDiscord::class,
             Listeners\DpsParse\AnnounceDpsApprovalOnDiscord::class,
             Listeners\DpsParse\AnnouncePromotionsOnDiscordOfficerChannel::class,
         ],

@@ -53,12 +53,18 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $e)
     {
         if ($e instanceof ModelNotFoundException) {
-            $e = new NotFoundHttpException($e->getMessage(), $e);
-        } elseif ($e instanceof InvalidStateException) {
+            return $request->expectsJson()
+                ? response()->json(['message' => $e->getMessage() ?? 'Not found!'], 404)
+                : redirect()->guest(route('logout'));
+        }
+
+        if ($e instanceof InvalidStateException) {
             return $request->expectsJson()
                 ? response()->json(['message' => 'Session Expired. Please refresh the page!'], 401)
                 : redirect()->guest(route('logout'));
-        } elseif ($e instanceof AuthorizationException) {
+        }
+
+        if ($e instanceof AuthorizationException) {
             return $request->expectsJson()
                 ? response()->json(['message' => 'Access Denied!'], 403)
                 : redirect()->guest(route('logout'));

@@ -1,6 +1,7 @@
-<?php namespace App\Listeners\Character;
+<?php namespace App\Listeners;
 
 use App\Events\Character\CharacterInterface;
+use App\Events\Character\DpsParseInterface;
 use App\Models\UserOAuth;
 use App\Services\DiscordApi;
 use App\Services\GuildRankAndClearance;
@@ -19,18 +20,30 @@ class RerankPlayerOnIpsAndDiscord
     }
 
     /**
-     * @param \App\Events\Character\CharacterInterface $event
+     * @param \App\Events\Character\CharacterInterface|\App\Events\Character\DpsParseInterface $event
      *
      * @return bool|int
      */
-    public function handle(CharacterInterface $event)
+    public function handle($event)
     {
-        $character = $event->getCharacter();
-        $character->refresh();
-        $character->loadMissing(['owner']);
+        $parseAuthor = null;
+        if ($event instanceof CharacterInterface) {
+            $character = $event->getCharacter();
+            $character->refresh();
+            $character->loadMissing(['owner']);
+            $parseAuthor = $event->getOwner();
+            $parseAuthor->refresh();
+        } elseif ($event instanceof DpsParseInterface) {
+            $dpsParse = $event->getDpsParse();
+            $dpsParse->refresh();
+            $dpsParse->load(['owner']);
+            /** @var \App\Models\User $parseAuthor */
+            $parseAuthor = $dpsParse->owner()->first();
+        }
+        if (!$parseAuthor) {
+            return false;
+        }
 
-        $parseAuthor = $event->getOwner();
-        $parseAuthor->refresh();
         $parseAuthor->loadMissing(['linkedAccounts', 'characters']);
 
         $discordApi = app('discord.api');
@@ -43,8 +56,7 @@ class RerankPlayerOnIpsAndDiscord
         $mentionedName = $parseOwnersDiscordAccount ? '<@!' . $parseOwnersDiscordAccount->remote_id . '>' : $parseAuthor->name;
         $parseOwnersIpsAccount && $this->rerankUserOnIps($parseOwnersIpsAccount, $topClearanceExisting);
         $parseOwnersDiscordAccount && $this->rerankUserOnDiscord($parseOwnersDiscordAccount, $topClearanceExisting);
-
-        $this->announceRerankOnPublicDiscord($discordApi, $mentionedName, $topClearanceExisting);
+        $parseOwnersDiscordAccount && $this->announceRerankToThePlayerViaDiscordDm($discordApi, $parseOwnersDiscordAccount, $mentionedName, $topClearanceExisting);
         $this->announceRerankInOfficerChannelOnDiscord($discordApi, $mentionedName, $topClearanceExisting);
 
         return true;
@@ -89,19 +101,18 @@ class RerankPlayerOnIpsAndDiscord
         }
     }
 
-    private function announceRerankOnPublicDiscord(DiscordApi $discordApi, string $mentionedName, ?string $playerClearance): void
+    private function announceRerankToThePlayerViaDiscordDm(DiscordApi $discordApi, UserOAuth $remoteDiscordUser,  string $mentionedName, ?string $playerClearance): void
     {
-        $announcementsChannelId = config('services.discord.channels.announcements');
-
         $playerNewRankTitle = $playerClearance
-            ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['rank']['discordRole']
-            : GuildRankAndClearance::RANK_INITIATE['discordRole'];
+            ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['rank']['title']
+            : GuildRankAndClearance::RANK_INITIATE['title'];
 
-        $discordApi->createMessageInChannel($announcementsChannelId, [
+        $dmChannel = $discordApi->createDmChannel($remoteDiscordUser->remote_id);
+        $discordApi->createMessageInChannel($dmChannel['id'], [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
-                    'content' => $mentionedName . ", you recently deleted a Character on Planner!\n"
-                        . 'As a result of this deletion, your current member rank was updated to <@&' . $playerNewRankTitle . '>',
+                    'content' => $mentionedName . ', recent activities of your Characters (DPS approval, Tank/Healer clearance, Character deletion etc) on Planner triggered a Reranking!'
+                        . ' As a result of this, your current member rank was updated to **' . $playerNewRankTitle . '**',
                     'tts' => false,
                 ]),
             ]
@@ -113,12 +124,12 @@ class RerankPlayerOnIpsAndDiscord
         $officerChannelId = config('services.discord.channels.officer_hq');
 
         $mentionedOfficerGroup = '<@&' . GuildRankAndClearance::RANK_MAGISTER_TEMPLI['discordRole'] . '>';
-        $rankTitle = $playerClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['rank']['discordRole'] : GuildRankAndClearance::RANK_INITIATE['discordRole'];
+        $rankTitle = $playerClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['rank']['title'] : GuildRankAndClearance::RANK_INITIATE['title'];
 
         $discordApi->createMessageInChannel($officerChannelId, [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
-                    'content' => $mentionedOfficerGroup . ': ' . $mentionedName . ' needs to have in-game guild rank of ' . '<@&' . $rankTitle . '>' . '. Please promote/demote them accordingly!',
+                    'content' => $mentionedOfficerGroup . ': ' . $mentionedName . ' needs to have in-game guild rank of **' . $rankTitle . '**. Please promote/demote them accordingly!',
                     'tts' => false,
                 ]),
             ]
