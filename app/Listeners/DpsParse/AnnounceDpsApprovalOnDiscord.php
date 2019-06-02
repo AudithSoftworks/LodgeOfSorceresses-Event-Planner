@@ -146,7 +146,7 @@ class AnnounceDpsApprovalOnDiscord
                             ])
                         ],
                         'footer' => [
-                            'text' => 'Sent via Lodge of Sorceresses Planner at: ' . env('APP_URL')
+                            'text' => 'Sent via Lodge of Sorceresses Planner at: https://planner.lodgeofsorceresses.com'
                         ]
                     ],
                 ]),
@@ -202,7 +202,7 @@ class AnnounceDpsApprovalOnDiscord
                                 ],
                             ],
                             'footer' => [
-                                'text' => 'Sent via Lodge of Sorceresses Planner at: ' . env('APP_URL')
+                                'text' => 'Sent via Lodge of Sorceresses Planner at: https://planner.lodgeofsorceresses.com'
                             ]
                         ],
                     ]),
