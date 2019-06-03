@@ -74,4 +74,18 @@ return [
             'endgame_t2' => 75000,
         ],
     ],
+    ClassTypes::CLASS_NECROMANCER => [
+        RoleTypes::ROLE_MAGICKA_DD => [
+            'midgame' => 40000,
+            'endgame_t0' => 50000,
+            'endgame_t1' => 65000,
+            'endgame_t2' => 75000,
+        ],
+        RoleTypes::ROLE_STAMINA_DD => [
+            'midgame' => 40000,
+            'endgame_t0' => 50000,
+            'endgame_t1' => 65000,
+            'endgame_t2' => 75000,
+        ],
+    ],
 ];
