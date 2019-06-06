@@ -181,7 +181,7 @@ class Character extends PureComponent {
                 </article>
                 <article className='col-lg-24 mt-5'>
                     <h3>DPS Parses Approved</h3>
-                    <List character={character} dpsParses={character.dps_parses} />
+                    <List character={character} dpsParses={character.dps_parses.slice(0, 10)} />
                 </article>
             </section>,
         ];
