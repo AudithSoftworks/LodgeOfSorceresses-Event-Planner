@@ -116,6 +116,17 @@ class Character extends PureComponent {
         }
     };
 
+    renderDpsParses = character => {
+        return character.dps_parses.length
+            ? (
+                <article className='col-lg-24 mt-5'>
+                    <h3>DPS Parses Approved</h3>
+                    <List character={character} dpsParses={character.dps_parses.slice(0, 10)} />
+                </article>
+            )
+            : null;
+    };
+
     renderCharacter = character => {
         const actionList = {
             promote:
@@ -179,10 +190,7 @@ class Character extends PureComponent {
                     <h3>Skills Leveled</h3>
                     {characterSkills.length ? <ul>{characterSkills}</ul> : 'None'}
                 </article>
-                <article className='col-lg-24 mt-5'>
-                    <h3>DPS Parses Approved</h3>
-                    <List character={character} dpsParses={character.dps_parses.slice(0, 10)} />
-                </article>
+                {this.renderDpsParses(character)}
             </section>,
         ];
     };
