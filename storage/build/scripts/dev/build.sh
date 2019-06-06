@@ -50,6 +50,8 @@ docker-compose exec php bash -c "
     ./artisan migrate;
     ./artisan passport:keys;
     ./artisan db:seed;
+    ./artisan pmg:skills;
+    ./artisan pmg:sets;
 
     ./vendor/bin/phpunit --debug --verbose --testsuite='Integration';
 #    ./artisan dusk -vvv;
