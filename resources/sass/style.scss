@@ -191,7 +191,7 @@ body {
                 }
             }
 
-            > table {
+            table {
                 border-collapse: separate;
                 table-layout: fixed;
 
@@ -245,6 +245,13 @@ body {
                             }
                         }
                     }
+                }
+            }
+
+            > article {
+                > table {
+                    padding-left: 0 !important;
+                    padding-right: 0 !important;
                 }
             }
 

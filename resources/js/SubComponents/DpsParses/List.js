@@ -1,0 +1,36 @@
+import PropTypes from "prop-types";
+import React, { PureComponent } from 'react';
+import { character, dpsParses } from '../../vendor/data';
+import Item from './Item';
+
+class List extends PureComponent {
+    render = () => {
+        const { character, dpsParses, onDeleteHandler } = this.props;
+        let parsesRendered = dpsParses.map(dpsParse => <Item key={dpsParse.id} dpsParse={dpsParse} character={character} onDeleteHandler={onDeleteHandler} />);
+        if (parsesRendered.length) {
+            parsesRendered = (
+                <table key="dps-parses-table" className="pl-2 pr-2 col-md-24">
+                    <thead>
+                        <tr>
+                            <th scope='col'>Sets</th>
+                            <th scope='col'>DPS Number</th>
+                            <th scope='col'>Parse Screenshot</th>
+                            <th scope='col'>Superstar Screenshot</th>
+                        </tr>
+                    </thead>
+                    <tbody>{parsesRendered}</tbody>
+                </table>
+            );
+        }
+
+        return parsesRendered;
+    };
+}
+
+List.propTypes = {
+    character,
+    dpsParses,
+    onDeleteHandler: PropTypes.func, // based on existense of this param, we render Delete button inside <Item>
+};
+
+export default List;

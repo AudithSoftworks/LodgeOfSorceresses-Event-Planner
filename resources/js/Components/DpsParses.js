@@ -5,7 +5,7 @@ import(
     );
 
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSpinner, faTachometerAlt, faThList, faTrashAlt, faUserEdit, faUserPlus } from '@fortawesome/pro-regular-svg-icons';
+import { faThList, faUserPlus } from '@fortawesome/pro-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
@@ -13,10 +13,11 @@ import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import deleteMyDpsParseAction from '../actions/delete-my-dps-parse';
 import { infosAction } from '../actions/notifications';
+import List from '../SubComponents/DpsParses/List';
 import { characters, user } from '../vendor/data';
 import Notification from './Notification';
 
-library.add(faSpinner, faTachometerAlt, faThList, faTrashAlt, faUserEdit, faUserPlus);
+library.add(faThList, faUserPlus);
 
 class DpsParses extends PureComponent {
     componentWillUnmount() {
@@ -42,108 +43,8 @@ class DpsParses extends PureComponent {
         }
     };
 
-    renderListItem = (dpsParse, character) => {
-        const characterSets = character.sets.map(set => (
-            <a key={set.id} href={'https://eso-sets.com/set/' + set.id} className="badge badge-dark">
-                {set.name}
-            </a>
-        ));
-        dpsParse.actionList = {
-            delete: (
-                <Link to="#" onClick={this.handleDelete} data-id={dpsParse.id} title="Delete this Parse">
-                    <FontAwesomeIcon icon={['far', 'trash-alt']} />
-                </Link>
-            ),
-        };
-        let actionListRendered = [];
-        for (const [actionType, link] of Object.entries(dpsParse.actionList)) {
-            actionListRendered.push(<li key={actionType}>{link}</li>);
-        }
-
-        return (
-            <tr key={'dpsParseRow-' + dpsParse.id}>
-                <td>{characterSets.reduce((prev, curr) => [prev, ' ', curr])}</td>
-                <td>{dpsParse.dps_amount}</td>
-                <td>
-                    <a href={dpsParse.parse_file_hash.large} target="_blank">
-                        <img src={dpsParse.parse_file_hash.thumbnail} alt="Parse screenshot" />
-                    </a>
-                </td>
-                <td>
-                    <a href={dpsParse.superstar_file_hash.large} target="_blank">
-                        <img src={dpsParse.superstar_file_hash.thumbnail} alt="Superstar screenshot" />
-                    </a>
-                    <ul className="actionList">{actionListRendered}</ul>
-                </td>
-            </tr>
-        );
-    };
-
-    renderList = (dpsParses, character) => {
-        let parsesRendered = dpsParses.map(dpsParse => this.renderListItem(dpsParse, character));
-        if (parsesRendered.length) {
-            parsesRendered = [
-                <table key="my-dps-parses-table" className="pl-2 pr-2 col-md-24">
-                    <thead>
-                        <tr>
-                            <th scope='col'>Sets</th>
-                            <th scope='col'>DPS Number</th>
-                            <th scope='col'>Parse Screenshot</th>
-                            <th scope='col'>Superstar Screenshot</th>
-                        </tr>
-                    </thead>
-                    <tbody>{parsesRendered}</tbody>
-                </table>,
-            ];
-        }
-
-        const actionList = {
-            return: (
-                <Link to={'/@me/characters'} title="Back to My Characters">
-                    <FontAwesomeIcon icon={['far', 'th-list']} />
-                </Link>
-            ),
-            create: (
-                <Link to={'/@me/characters/' + this.props.match.params.id + '/parses/create'} title="Submit a Parse">
-                    <FontAwesomeIcon icon={['far', 'user-plus']} />
-                </Link>
-            ),
-        };
-        let actionListRendered = [];
-        for (const [actionType, link] of Object.entries(actionList)) {
-            actionListRendered.push(<li key={actionType}>{link}</li>);
-        }
-
-        const { associatedDiscordAccount } = this.props;
-        let discordLinkWarning = null;
-        if (associatedDiscordAccount && !associatedDiscordAccount.length) {
-            discordLinkWarning = (
-                <article className="alert-danger">
-                    <b>Important note:</b>
-                    <ul>
-                        <li>
-                            Your Parses will not be evaluated until <a href="/oauth/to/discord">you link your Discord account</a>!
-                        </li>
-                    </ul>
-                </article>
-            );
-        }
-
-        return [
-            <section className="col-md-24 p-0 mb-4" key="dpsParsesList">
-                <h2 className="form-title col-md-24">
-                    Parses for <i>{character.name}</i> Pending Approval
-                </h2>
-                {discordLinkWarning}
-                <ul className="ne-corner">{actionListRendered}</ul>
-                {parsesRendered}
-            </section>,
-        ];
-    };
-
-    renderNoDpsParsesCreateOneNotification = () => {
+    renderNotificationForNoDpsParses = character => {
         const { dispatch, notifications } = this.props;
-        const character = this.getCharacter();
         const dpsParses = character.dps_parses;
         if (dpsParses && !dpsParses.length && notifications.find(n => n.key === 'no-dps-parses-create-one') === undefined) {
             const message = [
@@ -166,6 +67,43 @@ class DpsParses extends PureComponent {
         }
     };
 
+    renderWarningForLackingDiscordOauthAccount = associatedDiscordAccount => {
+        let discordLinkWarning = null;
+        if (associatedDiscordAccount && !associatedDiscordAccount.length) {
+            discordLinkWarning = (
+                <article className="alert-danger">
+                    <b>Important note:</b>
+                    <ul>
+                        <li>
+                            Your Parses will not be evaluated until <a href="/oauth/to/discord">you link your Discord account</a>!
+                        </li>
+                    </ul>
+                </article>
+            );
+        }
+        return discordLinkWarning;
+    };
+
+    renderActionList = () => {
+        const actionList = {
+            return: (
+                <Link to={'/@me/characters'} title="Back to My Characters">
+                    <FontAwesomeIcon icon={['far', 'th-list']} />
+                </Link>
+            ),
+            create: (
+                <Link to={'/@me/characters/' + this.props.match.params.id + '/parses/create'} title="Submit a Parse">
+                    <FontAwesomeIcon icon={['far', 'user-plus']} />
+                </Link>
+            ),
+        };
+        let actionListRendered = [];
+        for (const [actionType, link] of Object.entries(actionList)) {
+            actionListRendered.push(<li key={actionType}>{link}</li>);
+        }
+        return actionListRendered;
+    };
+
     render = () => {
         const { me } = this.props;
         if (!me) {
@@ -175,10 +113,25 @@ class DpsParses extends PureComponent {
         if (!character) {
             return <Redirect to="/@me/characters" />;
         }
-        this.renderNoDpsParsesCreateOneNotification();
+        this.renderNotificationForNoDpsParses(character);
+
         const dpsParses = character.dps_parses;
 
-        return [...this.renderList(dpsParses, character), <Notification key="notifications" />];
+        const { associatedDiscordAccount } = this.props;
+        const discordLinkWarning = this.renderWarningForLackingDiscordOauthAccount(associatedDiscordAccount);
+        const actionListRendered = this.renderActionList();
+
+        return [
+            <section className="col-md-24 p-0 mb-4" key="dpsParsesList">
+                <h2 className="form-title col-md-24">
+                    Parses for <i>{character.name}</i> Pending Approval
+                </h2>
+                <ul className="ne-corner">{actionListRendered}</ul>
+                {discordLinkWarning}
+                <List character={character} dpsParses={dpsParses} onDeleteHandler={this.handleDelete} />
+            </section>,
+            <Notification key="notifications" />
+        ];
     };
 }
 

@@ -1,3 +1,9 @@
+import(
+    /* webpackPrefetch: true */
+    /* webpackChunkName: "dps-parses-scss" */
+    '../../sass/_my_dps_parses.scss'
+    );
+
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
     faAmbulance,
@@ -20,9 +26,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import { Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { errorsAction, successAction } from '../actions/notifications';
 import Notification from '../Components/Notification';
+import List from "../SubComponents/DpsParses/List";
 import { getCharacter } from "../vendor/api";
 import { updateCharacter } from "../vendor/api/admin";
 import axios from "../vendor/axios";
@@ -87,7 +94,7 @@ class Character extends PureComponent {
             const characterId = parseInt(currentTarget.getAttribute('data-id'));
             const action = currentTarget.getAttribute('data-action');
             const { allCharacters } = this.state;
-            updateCharacter(this.cancelTokenSource, characterId, {action})
+            updateCharacter(this.cancelTokenSource, characterId, { action })
                 .then(response => {
                     if (response.status === 200) {
                         const message = response.data.message;
@@ -132,7 +139,7 @@ class Character extends PureComponent {
         }
 
         const characterContent = character.content
-            .map(content => ({id: content.id, name: content.name.concat(' ', content.version || '')}))
+            .map(content => ({ id: content.id, name: content.name.concat(' ', content.version || '') }))
             .reduce((acc, curr) => [acc, ' ', <li key={curr.id}>{curr.name}</li>], '');
         const characterSets = character.sets
             .map(set => (
@@ -171,6 +178,10 @@ class Character extends PureComponent {
                 <article className='col-lg-5'>
                     <h3>Skills Leveled</h3>
                     {characterSkills.length ? <ul>{characterSkills}</ul> : 'None'}
+                </article>
+                <article className='col-lg-24 mt-5'>
+                    <h3>DPS Parses Approved</h3>
+                    <List character={character} dpsParses={character.dps_parses} />
                 </article>
             </section>,
         ];
