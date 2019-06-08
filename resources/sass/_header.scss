@@ -4,10 +4,118 @@
 @import "~bootstrap/scss/mixins/breakpoints";
 @import "global/fonts/sovngarde";
 
-nav > .nav-tabs > .nav-item > a {
-    font-family: Sovngarde;
+//noinspection CssUnknownTarget
+body {
+    > header.container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-start;
+        padding-left: 0;
+        padding-right: 0;
 
-    > svg {
-        padding-right: 3px;
+        > h1 {
+            height: calc(100vw * 121 / 561);
+            background: url('/images/logo.png') no-repeat 100% 50%;
+            background-size: 124vw auto;
+            margin: 3vw 0;
+            padding-left: 0;
+            padding-right: 0;
+            text-indent: -99999px;
+
+            @include media-breakpoint-up(sm) {
+                height: 130px;
+                background: url('/images/logo.png') no-repeat 0 50%;
+                background-size: auto 90%;
+                margin: 0;
+            }
+            @include media-breakpoint-up(xl) {
+                background: url('/images/logo.png') no-repeat 0 50%;
+            }
+        }
+
+        > ul.member-bar {
+            margin-bottom: 0;
+            padding-left: 0;
+            padding-right: 0;
+
+            > li {
+                > figure {
+                    margin-bottom: 0;
+                }
+            }
+        }
+
+        > nav {
+            padding-left: 0;
+            padding-right: 0;
+            font-family: $font-family-sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+
+            > ul {
+                margin-bottom: 0;
+                padding-left: 0;
+                list-style: none;
+
+                &.nav-tabs {
+                    border-bottom: none;
+                }
+
+                > li {
+                    float: left;
+                    margin-right: 0.3em;
+                    line-height: 56px;
+
+                    &.pull-right {
+                        float: right;
+                        margin-right: 0;
+                        margin-left: 0.3em;
+                    }
+
+                    &.nav-item {
+                        margin-bottom: unset;
+                        font-family: Sovngarde;
+                    }
+
+                    > a {
+                        display: inline-block;
+                        width: 100%;
+                        height: 100%;
+                        padding: 0 0.7em;
+                        border: none !important;
+                        border-radius: 6px 6px 0 0;
+                        background-color: rgba(white, 0.5);
+                        text-decoration: none;
+                        color: #666666;
+
+                        &.active {
+                            background-color: rgba(white, 0.85);
+                            color: inherit;
+                        }
+
+                        > svg {
+                            padding-right: 0.25em;
+                        }
+                    }
+
+                    @include media-breakpoint-only(xs) {
+                        &:first-of-type {
+                            > a {
+                                border-radius: 0 6px 0 0;
+                            }
+                        }
+
+                        &:last-of-type {
+                            > a {
+                                border-radius: 6px 0 0 0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
