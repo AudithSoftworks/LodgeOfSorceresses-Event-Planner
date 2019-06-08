@@ -9,11 +9,6 @@ use GuzzleHttp\RequestOptions;
 
 class PostNewDpsParseToDiscord
 {
-    /**
-     * @var \Illuminate\Config\Repository
-     */
-    private $discordChannels;
-
     public function __construct()
     {
         \Cloudinary::config([
@@ -21,8 +16,6 @@ class PostNewDpsParseToDiscord
             'api_key' => config('filesystems.disks.cloudinary.key'),
             'api_secret' => config('filesystems.disks.cloudinary.secret'),
         ]);
-
-        $this->discordChannels = config('services.discord.channels');
     }
 
     /**
