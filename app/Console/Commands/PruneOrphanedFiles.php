@@ -57,8 +57,18 @@ class PruneOrphanedFiles extends Command
         foreach ($files as $file) {
             $uploaders = $file->uploaders;
             if ($uploaders->count() === 0) {
-                $this->info($file->hash . ' Orphaned.');
+                $this->warn($file->hash . ' Orphaned (no uploader).');
                 $hashesToDelete[] = $file->hash;
+                continue;
+            }
+
+            $asParseScreenshotOfDpsParse = $file->asParseScreenshotOfDpsParse;
+            $asInfoScreenshotOfDpsParse = $file->asInfoScreenshotOfDpsParse;
+            if ($asParseScreenshotOfDpsParse->count() === 0 && $asInfoScreenshotOfDpsParse->count() === 0) {
+                $this->warn($file->hash . ' Orphaned (no usage).');
+                $hashesToDelete[] = $file->hash;
+            } else {
+                $this->info($file->hash . ' Used.');
             }
         }
 
@@ -67,6 +77,7 @@ class PruneOrphanedFiles extends Command
             try {
                 $this->cloudinaryApi->delete_resources($chunk);
                 $this->info('Pruned Chunk #' . $id . ' with ' . count($chunk) . ' files');
+                File::destroy(collect($hashesToDelete));
             } catch (\Cloudinary\Api\GeneralError $e) {
                 $this->error('Failed to prune Chunk #' . $id . ' with ' . count($chunk) . ' files: ' . $e->getMessage());
             }

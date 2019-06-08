@@ -2,30 +2,36 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property string $hash
- * @property string $disk
- * @property string $path
- * @property string $mime
- * @property int $size
- * @property string|null $metadata
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $uploaders
- * @method static \Illuminate\Database\Eloquent\Builder|File newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|File newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|File ofType($type = 'image')
- * @method static \Illuminate\Database\Eloquent\Builder|File query()
- * @method static \Illuminate\Database\Eloquent\Builder|File whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|File whereDisk($value)
- * @method static \Illuminate\Database\Eloquent\Builder|File whereHash($value)
- * @method static \Illuminate\Database\Eloquent\Builder|File whereMetadata($value)
- * @method static \Illuminate\Database\Eloquent\Builder|File whereMime($value)
- * @method static \Illuminate\Database\Eloquent\Builder|File wherePath($value)
- * @method static \Illuminate\Database\Eloquent\Builder|File whereSize($value)
- * @method static \Illuminate\Database\Eloquent\Builder|File whereUpdatedAt($value)
+ * @property string                             $hash
+ * @property string                             $disk
+ * @property string                             $path
+ * @property string                             $mime
+ * @property int                                $size
+ * @property string|null                        $metadata
+ * @property \Illuminate\Support\Carbon|null    $created_at
+ * @property \Illuminate\Support\Carbon|null    $updated_at
+ *
+ * @property-read EloquentCollection|DpsParse[]         $asInfoScreenshotOfDpsParse
+ * @property-read EloquentCollection|DpsParse[]         $asParseScreenshotOfDpsParse
+ * @property-read EloquentCollection|\App\Models\User[] $uploaders
+ *
+ * @method static EloquentBuilder|File newModelQuery()
+ * @method static EloquentBuilder|File newQuery()
+ * @method static EloquentBuilder|File ofType($type = 'image')
+ * @method static EloquentBuilder|File query()
+ * @method static EloquentBuilder|File whereCreatedAt($value)
+ * @method static EloquentBuilder|File whereDisk($value)
+ * @method static EloquentBuilder|File whereHash($value)
+ * @method static EloquentBuilder|File whereMetadata($value)
+ * @method static EloquentBuilder|File whereMime($value)
+ * @method static EloquentBuilder|File wherePath($value)
+ * @method static EloquentBuilder|File whereSize($value)
+ * @method static EloquentBuilder|File whereUpdatedAt($value)
  */
 class File extends Model
 {
@@ -57,5 +63,21 @@ class File extends Model
     public function uploaders(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(User::class, 'files_users', 'file_hash', 'user_id')->withTimestamps()->withPivot(['id', 'qquuid', 'original_client_name', 'tag']);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function asParseScreenshotOfDpsParse(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(DpsParse::class, 'parse_file_hash', 'hash');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function asInfoScreenshotOfDpsParse(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(DpsParse::class, 'superstar_file_hash', 'hash');
     }
 }
