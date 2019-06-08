@@ -109,7 +109,7 @@ class Characters extends PureComponent {
             .map(character => this.renderListItem(character));
         if (charactersRendered.length) {
             charactersRendered = [
-                <table key="character-list-table" className="pl-2 pr-2 col-md-24 character-list-table">
+                <table key="my-character-list-table" className="pl-2 pr-2 col-md-24 my-character-list-table">
                     <thead>
                         <tr>
                             <th scope='col'>Name</th>

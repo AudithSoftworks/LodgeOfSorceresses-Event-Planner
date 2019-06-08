@@ -1,9 +1,3 @@
-import(
-    /* webpackPrefetch: true */
-    /* webpackChunkName: "dps-parses-scss" */
-    '../../sass/_my_dps_parses.scss'
-    );
-
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
     faAmbulance,

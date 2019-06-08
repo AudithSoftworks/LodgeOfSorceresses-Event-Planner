@@ -221,7 +221,7 @@ class Characters extends PureComponent {
         });
         if (charactersRendered.length) {
             charactersRendered = [
-                <table key="character-list-table" className="pl-2 pr-2 col-md-24">
+                <table key="character-list-table" className="character-list-table pl-2 pr-2 col-md-24">
                     <thead>
                         <tr>
                             <th scope='col'>Player Name</th>

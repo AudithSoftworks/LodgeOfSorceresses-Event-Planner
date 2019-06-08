@@ -1,3 +1,9 @@
+import(
+    /* webpackPrefetch: true */
+    /* webpackChunkName: "dps-parses-scss" */
+    '../../../sass/_my_dps_parses.scss'
+    );
+
 import PropTypes from "prop-types";
 import React, { PureComponent } from 'react';
 import { character, dpsParses } from '../../vendor/data';
@@ -9,7 +15,7 @@ class List extends PureComponent {
         let parsesRendered = dpsParses.map(dpsParse => <Item key={dpsParse.id} dpsParse={dpsParse} character={character} onDeleteHandler={onDeleteHandler} />);
         if (parsesRendered.length) {
             parsesRendered = (
-                <table key="dps-parses-table" className="pl-2 pr-2 col-md-24">
+                <table key="dps-parses-table" className="dps-parses-table pl-2 pr-2 col-md-24">
                     <thead>
                         <tr>
                             <th scope='col'>Sets</th>

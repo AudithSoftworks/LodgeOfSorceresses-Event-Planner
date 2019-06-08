@@ -3,7 +3,7 @@
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/mixins/breakpoints";
 
-table {
+table.my-character-list-table {
     > thead {
         > tr {
             > th {
