@@ -76,7 +76,16 @@ class SyncDiscordOauthLinks extends Command
                 }
 
                 if (preg_match('/404 NOT FOUND/', $errorMessage)) {
-                    $this->error($memberNameParsed . ' Member not found, skipping.');
+                    $this->error($memberNameParsed . ' Member not found, deleting account...');
+                    $user = $oauthAccount->owner;
+                    if ($user) {
+                        try {
+                            $user->forceDelete();
+                            $this->warn($memberNameParsed . ' Deleted.');
+                        } catch (\Exception $e) {
+                            $this->error($memberNameParsed . ' Failed to delete: ' . $e->getMessage());
+                        }
+                    }
                 }
             }
             $oauthAccount = $oauthAccounts->shift();
