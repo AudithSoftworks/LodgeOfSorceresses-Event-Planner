@@ -114,7 +114,7 @@ class Character extends PureComponent {
         return character.dps_parses.length
             ? (
                 <article className='col-lg-24 mt-5'>
-                    <h3>DPS Parses Approved</h3>
+                    <h3>Latest 10 DPS Parses Approved</h3>
                     <List character={character} dpsParses={character.dps_parses.slice(0, 10)} />
                 </article>
             )

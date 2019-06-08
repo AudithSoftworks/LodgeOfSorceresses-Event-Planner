@@ -146,8 +146,8 @@ class Characters extends PureComponent {
                         <li>Only Damage Dealers can submit DPS-parses. Click <FontAwesomeIcon icon={['far', 'tachometer-alt']} /> icon to the right to create one for such Character.</li>
                         <li>When creating a Character, select <b>all</b> your available sets.</li>
                         <li>To have different Roles for the same Character, create a new Character with the same name, but a different Role.</li>
-                        <li>Once a Character has an approved Parse, it can only be partially edited (i.e. only its gear-sets can be edited).</li>
-                        <li>Once a Character has a clearance (Mid- or Endgame one), it cannot be deleted.</li>
+                        <li>Once a Character has an approved Parse, it can only be partially edited (i.e. its name, class and role can't be edited).</li>
+                        <li>Once a Character has a Clearance (Tier-1 and above), it cannot be deleted.</li>
                     </ul>
                 </article>
                 <ul className="ne-corner">{actionListRendered}</ul>
