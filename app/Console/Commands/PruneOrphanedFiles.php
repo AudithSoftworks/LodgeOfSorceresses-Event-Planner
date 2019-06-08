@@ -3,8 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Models\File;
-use App\Models\UserOAuth;
-use GuzzleHttp\Exception\RequestException;
 use Illuminate\Console\Command;
 
 class PruneOrphanedFiles extends Command
@@ -68,8 +66,9 @@ class PruneOrphanedFiles extends Command
         foreach ($chunksOfHashesToDelete as $id => $chunk) {
             try {
                 $this->cloudinaryApi->delete_resources($chunk);
+                $this->info('Pruned Chunk #' . $id . ' with ' . count($chunk) . ' files');
             } catch (\Cloudinary\Api\GeneralError $e) {
-                $this->error('Failed to delete Chunk #' . $id . ' with ' . count($chunk) . ' files: ' . $e->getMessage());
+                $this->error('Failed to prune Chunk #' . $id . ' with ' . count($chunk) . ' files: ' . $e->getMessage());
             }
         }
         $this->info('Processed deletion of ' . count($hashesToDelete) . ' Orphaned Files from Cloudinary.');
