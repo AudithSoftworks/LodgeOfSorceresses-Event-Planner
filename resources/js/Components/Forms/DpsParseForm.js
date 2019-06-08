@@ -1,7 +1,6 @@
 import FineUploaderTraditional from 'fine-uploader-wrappers';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-
 import Loadable from 'react-loadable';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
@@ -54,6 +53,11 @@ class DpsParseForm extends PureComponent {
                 allowedExtensions: ['jpeg', 'jpg', 'png', 'gif'],
                 acceptFiles: 'image/*',
                 itemLimit: 1,
+            },
+            scaling: {
+                sendOriginal: false,
+                includeExif: true,
+                sizes: [{ name: '', maxSize: 1280 }],
             },
             chunking: {
                 enabled: true,
@@ -111,6 +115,11 @@ class DpsParseForm extends PureComponent {
                 allowedExtensions: ['jpeg', 'jpg', 'png', 'gif'],
                 acceptFiles: 'image/*',
                 itemLimit: 1,
+            },
+            scaling: {
+                sendOriginal: false,
+                includeExif: true,
+                sizes: [{ name: '', maxSize: 1280 }],
             },
             chunking: {
                 enabled: true,
@@ -206,9 +215,11 @@ class DpsParseForm extends PureComponent {
                         <li>Every new parse will renew your clearance level, i.e. sending lower DPS numbers can revoke its clearance and demote your account.</li>
                         <li>When creating a Parse, include only the sets used for that particular parse, removing everything else.</li>
                         <li>Each Parse needs to have both Combat Metrics and Superstar addon screenshots.</li>
-                        <li>Use the exact setup you will be using in Trials. And use reasonable food/potion you would use in Trials. E.g.: the usage of food that has no HP-buff to it (a case which in most
-                            cases wouldn't be realistic to Trial conditions) is not allowed! Unless your Base HP is within acceptable raiding ranges of course. Yes, we realize this kinda scenarios can be
-                            tricky, so we will also check your Superstar screenshots for Base-HP and other values, overall to decide whether the certain Parse looks cheesy or not.</li>
+                        <li>
+                            Use the exact setup you will be using in Trials. And use reasonable food/potion you would use in Trials. E.g.: the usage of food that has no HP-buff to it (a case which in
+                            most cases wouldn't be realistic to Trial conditions) is not allowed! Unless your Base HP is within acceptable raiding ranges of course. Yes, we realize this kinda
+                            scenarios can be tricky, so we will also check your Superstar screenshots for Base-HP and other values, overall to decide whether the certain Parse looks cheesy or not.
+                        </li>
                         <li>Every Character needs to send a fresh Parse every 15 days, latest. Failing to do so will revoke your Clearance automatically.</li>
                     </ul>
                 </article>
@@ -228,23 +239,11 @@ class DpsParseForm extends PureComponent {
                 </fieldset>
                 <fieldset className="form-group col-md-8 col-lg-4">
                     <label>Class:</label>
-                    <Select
-                        options={this.classOptions}
-                        defaultValue={this.classOptions.filter(option => option.label === character.class)}
-                        isDisabled={true}
-                        components={Animated}
-                        name="class"
-                    />
+                    <Select options={this.classOptions} defaultValue={this.classOptions.filter(option => option.label === character.class)} isDisabled={true} components={Animated} name="class" />
                 </fieldset>
                 <fieldset className="form-group col-md-8 col-lg-4">
                     <label>Role:</label>
-                    <Select
-                        options={this.roleOptions}
-                        defaultValue={this.roleOptions.filter(option => option.label === character.role)}
-                        isDisabled={true}
-                        components={Animated}
-                        name="role"
-                    />
+                    <Select options={this.roleOptions} defaultValue={this.roleOptions.filter(option => option.label === character.role)} isDisabled={true} components={Animated} name="role" />
                 </fieldset>
                 <fieldset className="form-group col-md-8 col-lg-4">
                     <label htmlFor="dpsAmount">DPS amount:</label>
