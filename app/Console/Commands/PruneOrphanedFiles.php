@@ -69,7 +69,7 @@ class PruneOrphanedFiles extends Command
             try {
                 $this->cloudinaryApi->delete_resources($chunk);
             } catch (\Cloudinary\Api\GeneralError $e) {
-                $this->error('Failed to delete Chunk #' . $id . ' with ' . count($chunk) . ' files.');
+                $this->error('Failed to delete Chunk #' . $id . ' with ' . count($chunk) . ' files: ' . $e->getMessage());
             }
         }
         $this->info('Processed deletion of ' . count($hashesToDelete) . ' Orphaned Files from Cloudinary.');
