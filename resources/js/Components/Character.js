@@ -23,6 +23,7 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { errorsAction, successAction } from '../actions/notifications';
 import Notification from '../Components/Notification';
+import { amIAdmin } from "../helpers";
 import List from "../SubComponents/DpsParses/List";
 import { getCharacter } from "../vendor/api";
 import { updateCharacter } from "../vendor/api/admin";
@@ -124,13 +125,13 @@ class Character extends PureComponent {
     renderCharacter = character => {
         const actionList = {
             promote:
-                character['role'].indexOf('Damage Dealer') === -1 ? (
+                amIAdmin(this.props) && character['role'].indexOf('Damage Dealer') === -1 ? (
                     <a href='#' onClick={this.handleRerank} data-id={character.id} data-action='promote' title="Promote Character">
                         <FontAwesomeIcon icon={['far', 'sunrise']} />
                     </a>
                 ) : null,
             demote:
-                character['role'].indexOf('Damage Dealer') === -1 ? (
+                amIAdmin(this.props) && character['role'].indexOf('Damage Dealer') === -1 ? (
                     <a href='#' onClick={this.handleRerank} data-id={character.id} data-action='demote' title="Demote Character">
                         <FontAwesomeIcon icon={['far', 'sunset']} />
                     </a>
@@ -215,11 +216,13 @@ Character.propTypes = {
 
     axiosCancelTokenSource: PropTypes.object,
     me: user,
+    groups: PropTypes.object,
     notifications: PropTypes.array,
 };
 
 const mapStateToProps = state => ({
     me: state.getIn(['me']),
+    groups: state.getIn(['groups']),
     notifications: state.getIn(['notifications']),
 });
 
