@@ -13,7 +13,7 @@ import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import deleteMyCharacterAction from '../actions/delete-my-character';
 import { infosAction } from '../actions/notifications';
-import List from "../Components/Characters/List";
+import List from '../Components/Characters/List';
 import { characters, user } from '../vendor/data';
 import Notification from '../Components/Notification';
 
@@ -84,22 +84,28 @@ class Characters extends PureComponent {
 
         return [
             <section className="col-md-24 p-0 mb-4 table-responsive" key="characterList">
-                <h2 className="form-title col-md-24" title='My Characters'>My Characters</h2>
+                <h2 className="form-title col-md-24" title="My Characters">
+                    My Characters
+                </h2>
                 <article className="alert-info">
                     <b>Usage tips:</b>
                     <ul>
                         <li>Mouse-over the character name for action buttons to reveal to the right of row.</li>
-                        <li>Only Damage Dealers can submit DPS-parses. Click <FontAwesomeIcon icon={['far', 'tachometer-alt']} /> icon to the right to create one for such Character.</li>
-                        <li>When creating a Character, select <b>all</b> your available sets.</li>
+                        <li>
+                            Only Damage Dealers can submit DPS-parses. Click <FontAwesomeIcon icon={['far', 'tachometer-alt']} /> icon to the right to create one for such Character.
+                        </li>
+                        <li>
+                            When creating a Character, select <b>all</b> your available sets.
+                        </li>
                         <li>To have different Roles for the same Character, create a new Character with the same name, but a different Role.</li>
                         <li>Once a Character has an approved Parse, it can only be partially edited (i.e. its name, class and role can't be edited).</li>
                         <li>Once a Character has a Clearance (Tier-1 and above), it cannot be deleted.</li>
                     </ul>
                 </article>
                 <ul className="ne-corner">{this.renderActionList()}</ul>
-                <List characters={myCharacters} onDeleteHandler={this.handleDelete} className='my-character-list-table' />
+                <List characters={myCharacters} onDeleteHandler={this.handleDelete} className="my-character-list-table" />
             </section>,
-            <Notification key="notifications" />
+            <Notification key="notifications" />,
         ];
     };
 }

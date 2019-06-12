@@ -1,7 +1,7 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faPortrait, faTachometerAlt, faTrashAlt, faUserEdit } from '@fortawesome/pro-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { character } from '../../vendor/data';
@@ -19,10 +19,11 @@ class Item extends PureComponent {
         ));
 
         character.actionList = {
-            view:
+            view: (
                 <Link to={'/characters/' + character.id} title="Character Sheet">
                     <FontAwesomeIcon icon={['far', 'portrait']} />
-                </Link>,
+                </Link>
+            ),
             parses:
                 character['role'].indexOf('Damage') !== -1 ? (
                     <Link to={'/@me/characters/' + character.id + '/parses'} title="DPS Parses">
@@ -35,7 +36,11 @@ class Item extends PureComponent {
                 </Link>
             ),
             delete:
-                (typeof onDeleteHandler === 'function') && !character.approved_for_midgame && !character.approved_for_endgame_t0 && !character.approved_for_endgame_t1 && !character.approved_for_endgame_t2 ? (
+                typeof onDeleteHandler === 'function' &&
+                !character.approved_for_midgame &&
+                !character.approved_for_endgame_t0 &&
+                !character.approved_for_endgame_t1 &&
+                !character.approved_for_endgame_t2 ? (
                     <Link to="#" onClick={onDeleteHandler} data-id={character.id} title="Delete Character">
                         <FontAwesomeIcon icon={['far', 'trash-alt']} />
                     </Link>

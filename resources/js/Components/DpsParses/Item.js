@@ -1,7 +1,7 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTrashAlt } from '@fortawesome/pro-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { character, dpsParse } from '../../vendor/data';
@@ -19,13 +19,12 @@ class Item extends PureComponent {
         ));
 
         dpsParse.actionList = {
-            delete: (typeof onDeleteHandler === 'function')
-                ? (
+            delete:
+                typeof onDeleteHandler === 'function' ? (
                     <Link to="#" onClick={onDeleteHandler} data-id={dpsParse.id} title="Delete this Parse">
                         <FontAwesomeIcon icon={['far', 'trash-alt']} />
                     </Link>
-                )
-                : null,
+                ) : null,
         };
         let actionListRendered = [];
         for (const [actionType, link] of Object.entries(dpsParse.actionList)) {

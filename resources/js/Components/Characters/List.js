@@ -1,7 +1,7 @@
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { characters } from '../../vendor/data';
-import Item from "../Characters/Item";
+import Item from '../Characters/Item';
 
 class List extends PureComponent {
     render = () => {
@@ -24,11 +24,11 @@ class List extends PureComponent {
                 <table key="character-list-table" className={'pl-2 pr-2 col-md-24 ' + className}>
                     <thead>
                         <tr>
-                            <th scope='col'>Name</th>
-                            <th scope='col'>Class</th>
-                            <th scope='col'>Role</th>
-                            <th scope='col'>Sets</th>
-                            <th scope='col' />
+                            <th scope="col">Name</th>
+                            <th scope="col">Class</th>
+                            <th scope="col">Role</th>
+                            <th scope="col">Sets</th>
+                            <th scope="col" />
                         </tr>
                     </thead>
                     <tbody>{charactersRendered}</tbody>

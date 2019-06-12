@@ -45,7 +45,9 @@ class Home extends PureComponent {
         const { me, notifications } = this.props;
         if (me && !me.linkedAccountsParsed.discord && notifications.find(n => n.key === 'no-discord-account-linked') === undefined) {
             const message = [
-                <Fragment key="f-1"><b>Discord not linked!</b> Discord notifications are disabled! Additionally, your Parses won't be evaluated. Click</Fragment>,
+                <Fragment key="f-1">
+                    <b>Discord not linked!</b> Discord notifications are disabled! Additionally, your Parses won't be evaluated. Click
+                </Fragment>,
                 <FontAwesomeIcon icon={['fab', 'discord']} key="icon" />,
                 <Fragment key="f-2">icon to the top right, to fix this.</Fragment>,
             ].reduce((prev, curr) => [prev, ' ', curr]);
@@ -75,13 +77,15 @@ class Home extends PureComponent {
 
         return [
             <section className="col-md-24 p-0 mb-4" key="dashboard">
-                <h2 className="form-title col-md-24" title='Dashboard'>Dashboard</h2>
+                <h2 className="form-title col-md-24" title="Dashboard">
+                    Dashboard
+                </h2>
                 <article className="alert-info">
                     <b>Tips:</b>
                     <ul>
                         <li>
-                            Make sure you have linked your Discord account: watch for red colored <FontAwesomeIcon icon={['fab', 'discord']} /> icon on top right.
-                            When green, it means you've already linked your Discord account.
+                            Make sure you have linked your Discord account: watch for red colored <FontAwesomeIcon icon={['fab', 'discord']} /> icon on top right. When green, it means you've already
+                            linked your Discord account.
                         </li>
                     </ul>
                 </article>

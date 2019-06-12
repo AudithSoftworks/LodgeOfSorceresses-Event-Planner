@@ -124,7 +124,7 @@ class DpsParses extends PureComponent {
                 {discordLinkWarning}
                 <List character={character} dpsParses={dpsParses} onDeleteHandler={this.handleDelete} />
             </section>,
-            <Notification key="notifications" />
+            <Notification key="notifications" />,
         ];
     };
 }

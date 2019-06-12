@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
-import getContentAction from "../actions/get-content";
+import getContentAction from '../actions/get-content';
 import getGroupsAction from '../actions/get-groups';
 import getMyCharactersAction from '../actions/get-my-characters';
 import getSetsAction from '../actions/get-sets';

@@ -16,17 +16,17 @@ import {
     faUser,
     faUsers,
 } from '@fortawesome/pro-regular-svg-icons';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { errorsAction, successAction } from '../actions/notifications';
-import List from "../Components/DpsParses/List";
-import { amIAdmin } from "../helpers";
-import { getCharacter } from "../vendor/api";
-import { updateCharacter } from "../vendor/api/admin";
-import axios from "../vendor/axios";
+import List from '../Components/DpsParses/List';
+import { amIAdmin } from '../helpers';
+import { getCharacter } from '../vendor/api';
+import { updateCharacter } from '../vendor/api/admin';
+import axios from '../vendor/axios';
 import { user } from '../vendor/data';
 import Notification from './../Components/Notification';
 import Loading from '../Components/Loading';
@@ -70,7 +70,7 @@ class Character extends PureComponent {
                 .then(characters => {
                     this.cancelTokenSource = null;
                     const character = characters.entities.characters[characterId];
-                    this.setState({ character })
+                    this.setState({ character });
                 })
                 .catch(error => {
                     if (!axios.isCancel(error)) {
@@ -93,13 +93,12 @@ class Character extends PureComponent {
                 .then(response => {
                     if (response.status === 200) {
                         const message = response.data.message;
-                        getCharacter(this.cancelTokenSource, characterId)
-                            .then(response => {
-                                delete (allCharacters.entities.characters[characterId]);
-                                allCharacters.entities.characters[response.result] = response.entities.characters[response.result];
-                                this.setState({ allCharacters });
-                                this.props.dispatch(successAction(message));
-                            });
+                        getCharacter(this.cancelTokenSource, characterId).then(response => {
+                            delete allCharacters.entities.characters[characterId];
+                            allCharacters.entities.characters[response.result] = response.entities.characters[response.result];
+                            this.setState({ allCharacters });
+                            this.props.dispatch(successAction(message));
+                        });
                     }
                 })
                 .catch(error => {
@@ -112,27 +111,25 @@ class Character extends PureComponent {
     };
 
     renderDpsParses = character => {
-        return character.dps_parses.length
-            ? (
-                <article className='col-lg-24 mt-5'>
-                    <h3>Latest 10 DPS Parses Approved</h3>
-                    <List character={character} dpsParses={character.dps_parses.slice(0, 10)} />
-                </article>
-            )
-            : null;
+        return character.dps_parses.length ? (
+            <article className="col-lg-24 mt-5">
+                <h3>Latest 10 DPS Parses Approved</h3>
+                <List character={character} dpsParses={character.dps_parses.slice(0, 10)} />
+            </article>
+        ) : null;
     };
 
     renderCharacter = character => {
         const actionList = {
             promote:
                 amIAdmin(this.props) && character['role'].indexOf('Damage Dealer') === -1 ? (
-                    <a href='#' onClick={this.handleRerank} data-id={character.id} data-action='promote' title="Promote Character">
+                    <a href="#" onClick={this.handleRerank} data-id={character.id} data-action="promote" title="Promote Character">
                         <FontAwesomeIcon icon={['far', 'sunrise']} />
                     </a>
                 ) : null,
             demote:
                 amIAdmin(this.props) && character['role'].indexOf('Damage Dealer') === -1 ? (
-                    <a href='#' onClick={this.handleRerank} data-id={character.id} data-action='demote' title="Demote Character">
+                    <a href="#" onClick={this.handleRerank} data-id={character.id} data-action="demote" title="Demote Character">
                         <FontAwesomeIcon icon={['far', 'sunset']} />
                     </a>
                 ) : null,
@@ -149,14 +146,14 @@ class Character extends PureComponent {
             .reduce((acc, curr) => [acc, ' ', <li key={curr.id}>{curr.name}</li>], '');
         const characterSets = character.sets
             .map(set => (
-                <a key={set['id']} href={'https://eso-sets.com/set/' + set['slug']} className="badge badge-dark" target='_blank'>
+                <a key={set['id']} href={'https://eso-sets.com/set/' + set['slug']} className="badge badge-dark" target="_blank">
                     {set['name']}
                 </a>
             ))
             .reduce((acc, curr) => [acc, ' ', <li key={curr.key}>{curr}</li>], '');
         const characterSkills = character.skills
             .map(skill => (
-                <a key={skill['id']} href={'https://eso-skillbook.com/skill/' + skill['slug']} className="badge badge-dark" target='_blank'>
+                <a key={skill['id']} href={'https://eso-skillbook.com/skill/' + skill['slug']} className="badge badge-dark" target="_blank">
                     {skill['name']}
                 </a>
             ))
@@ -166,22 +163,22 @@ class Character extends PureComponent {
             <section className="col-md-24 p-0 mb-4 d-flex flex-wrap" key="character">
                 <h2 className="form-title col-md-24">{character.name}</h2>
                 <ul className="ne-corner">{actionListRendered}</ul>
-                <dl className='col-lg-8'>
+                <dl className="col-lg-8">
                     <dt>Class</dt>
                     <dd>{character.class}</dd>
 
                     <dt>Role</dt>
                     <dd>{character.role}</dd>
                 </dl>
-                <article className='col-lg-6'>
+                <article className="col-lg-6">
                     <h3>Content Cleared</h3>
                     {characterContent.length ? <ul>{characterContent}</ul> : 'None'}
                 </article>
-                <article className='col-lg-5'>
+                <article className="col-lg-5">
                     <h3>Sets Acquired</h3>
                     {characterSets.length ? <ul>{characterSets}</ul> : 'None'}
                 </article>
-                <article className='col-lg-5'>
+                <article className="col-lg-5">
                     <h3>Skills Leveled</h3>
                     {characterSkills.length ? <ul>{characterSkills}</ul> : 'None'}
                 </article>
@@ -198,11 +195,7 @@ class Character extends PureComponent {
 
         const { character } = this.state;
         if (!character) {
-            return [
-                <Loading message="Fetching Character..." key="loading" />,
-                <Notification key="notifications" />
-            ];
-
+            return [<Loading message="Fetching Character..." key="loading" />, <Notification key="notifications" />];
         }
 
         return [...this.renderCharacter(character), <Notification key="notifications" />];

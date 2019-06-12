@@ -2,7 +2,7 @@ import(
     /* webpackPrefetch: true */
     /* webpackChunkName: "pending-parses-scss" */
     '../../../sass/_pending_dps_parses.scss'
-    );
+);
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSpinner, faTachometerAlt, faThList, faUserCheck, faUserEdit, faUserPlus, faUserTimes } from '@fortawesome/pro-regular-svg-icons';
@@ -11,8 +11,8 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
-import { errorsAction, infosAction, successAction } from "../../actions/notifications";
-import { amIAdmin } from "../../helpers";
+import { errorsAction, infosAction, successAction } from '../../actions/notifications';
+import { amIAdmin } from '../../helpers';
 import { deletePendingDpsParse, getPendingDpsParses, updatePendingDpsParse } from '../../vendor/api/admin';
 import axios from '../../vendor/axios';
 import { user } from '../../vendor/data';
@@ -64,7 +64,7 @@ class DpsParses extends PureComponent {
                     .then(response => {
                         this.cancelTokenSource = null;
                         if (response === true) {
-                            delete (dpsParses.entities.dpsParses[parseId]);
+                            delete dpsParses.entities.dpsParses[parseId];
                             dpsParses.result = dpsParses.result.filter(value => value !== parseId);
                             this.setState({ dpsParses });
                             const message = 'Parse disapproved.';
@@ -92,7 +92,7 @@ class DpsParses extends PureComponent {
                 .then(response => {
                     this.cancelTokenSource = null;
                     if (response.data) {
-                        delete (dpsParses.entities.dpsParses[parseId]);
+                        delete dpsParses.entities.dpsParses[parseId];
                         dpsParses.result = dpsParses.result.filter(value => value !== parseId);
                         this.setState({ dpsParses });
                         const message = response.data.message;
@@ -170,13 +170,19 @@ class DpsParses extends PureComponent {
                 <table key="pending-dps-parses-table" className="pl-2 pr-2 col-md-24">
                     <thead>
                         <tr>
-                            <th scope='col'>User</th>
-                            <th scope='col'>Character</th>
-                            <th scope='col'>Sets</th>
-                            <th scope='col' style={{ textAlign: 'right' }}>DPS</th>
-                            <th scope='col' style={{ textAlign: 'right' }}>Parse Screenshot</th>
-                            <th scope='col' style={{ textAlign: 'right' }}>Superstar Screenshot</th>
-                            <th scope='col' />
+                            <th scope="col">User</th>
+                            <th scope="col">Character</th>
+                            <th scope="col">Sets</th>
+                            <th scope="col" style={{ textAlign: 'right' }}>
+                                DPS
+                            </th>
+                            <th scope="col" style={{ textAlign: 'right' }}>
+                                Parse Screenshot
+                            </th>
+                            <th scope="col" style={{ textAlign: 'right' }}>
+                                Superstar Screenshot
+                            </th>
+                            <th scope="col" />
                         </tr>
                     </thead>
                     <tbody>{parsesRendered}</tbody>
@@ -202,7 +208,7 @@ class DpsParses extends PureComponent {
         ];
     };
 
-    renderNoPendingDpsParsesNotification = (dpsParses) => {
+    renderNoPendingDpsParsesNotification = dpsParses => {
         const { dispatch, notifications } = this.props;
         if (dpsParses && !dpsParses.result.length && notifications.find(n => n.key === 'admin-no-pending-dps-parses') === undefined) {
             const message = 'No pending Parses found!';
@@ -214,7 +220,7 @@ class DpsParses extends PureComponent {
                         animationIn: ['animated', 'bounceInDown'],
                         animationOut: ['animated', 'bounceOutDown'],
                         dismiss: { duration: 30000 },
-                        width: 250
+                        width: 250,
                     },
                     'admin-no-pending-dps-parses'
                 )
@@ -234,10 +240,7 @@ class DpsParses extends PureComponent {
 
         const { dpsParses } = this.state;
         if (!dpsParses) {
-            return [
-                <Loading message="Fetching the list of pending DPS parses..." key="loading" />,
-                <Notification key="notifications" />
-            ];
+            return [<Loading message="Fetching the list of pending DPS parses..." key="loading" />, <Notification key="notifications" />];
         }
         this.renderNoPendingDpsParsesNotification(dpsParses);
 

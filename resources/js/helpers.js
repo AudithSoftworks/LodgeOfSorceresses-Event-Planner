@@ -1,4 +1,4 @@
-export const amIAdmin = ({me, groups}) => {
+export const amIAdmin = ({ me, groups }) => {
     if (!me || !groups || !me.linkedAccountsParsed.ips) {
         return;
     }

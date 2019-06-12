@@ -2,7 +2,7 @@ import(
     /* webpackPrefetch: true */
     /* webpackChunkName: "characters-scss" */
     '../../../sass/_characters.scss'
-    );
+);
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -29,11 +29,11 @@ import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { errorsAction, infosAction, successAction } from '../../actions/notifications';
-import { amIAdmin } from "../../helpers";
+import { amIAdmin } from '../../helpers';
 import Notification from '../../Components/Notification';
-import { getAllCharacters, getCharacter } from "../../vendor/api";
-import { updateCharacter } from "../../vendor/api/admin";
-import axios from "../../vendor/axios";
+import { getAllCharacters, getCharacter } from '../../vendor/api';
+import { updateCharacter } from '../../vendor/api/admin';
+import axios from '../../vendor/axios';
 import { characters, user } from '../../vendor/data';
 import Loading from '../../Components/Loading';
 
@@ -86,7 +86,7 @@ class Characters extends PureComponent {
             getAllCharacters(this.cancelTokenSource)
                 .then(allCharacters => {
                     this.cancelTokenSource = null;
-                    this.setState({ allCharacters })
+                    this.setState({ allCharacters });
                 })
                 .catch(error => {
                     if (!axios.isCancel(error)) {
@@ -109,13 +109,12 @@ class Characters extends PureComponent {
                 .then(response => {
                     if (response.status === 200) {
                         const message = response.data.message;
-                        getCharacter(this.cancelTokenSource, characterId)
-                            .then(response => {
-                                delete (allCharacters.entities.characters[characterId]);
-                                allCharacters.entities.characters[response.result] = response.entities.characters[response.result];
-                                this.setState({ allCharacters });
-                                this.props.dispatch(successAction(message));
-                            });
+                        getCharacter(this.cancelTokenSource, characterId).then(response => {
+                            delete allCharacters.entities.characters[characterId];
+                            allCharacters.entities.characters[response.result] = response.entities.characters[response.result];
+                            this.setState({ allCharacters });
+                            this.props.dispatch(successAction(message));
+                        });
                     }
                 })
                 .catch(error => {
@@ -150,10 +149,22 @@ class Characters extends PureComponent {
         if (character['approved_for_endgame_t2'] && !this.state.filters.endgame_tier_2) return null;
         if (!character['approved_for_endgame_t2'] && character['approved_for_endgame_t1'] && !this.state.filters.endgame_tier_1) return null;
         if (!character['approved_for_endgame_t2'] && !character['approved_for_endgame_t1'] && character['approved_for_endgame_t0'] && !this.state.filters.endgame_tier_0) return null;
-        if (!character['approved_for_endgame_t2'] && !character['approved_for_endgame_t1'] && !character['approved_for_endgame_t0'] && character['approved_for_midgame'] && !this.state.filters.midgame) {
+        if (
+            !character['approved_for_endgame_t2'] &&
+            !character['approved_for_endgame_t1'] &&
+            !character['approved_for_endgame_t0'] &&
+            character['approved_for_midgame'] &&
+            !this.state.filters.midgame
+        ) {
             return null;
         }
-        if (!character['approved_for_endgame_t2'] && !character['approved_for_endgame_t1'] && !character['approved_for_endgame_t0'] && !character['approved_for_midgame'] && !this.state.filters.no_clearance) {
+        if (
+            !character['approved_for_endgame_t2'] &&
+            !character['approved_for_endgame_t1'] &&
+            !character['approved_for_endgame_t0'] &&
+            !character['approved_for_midgame'] &&
+            !this.state.filters.no_clearance
+        ) {
             return null;
         }
         const characterSets = character.sets.map(set => (
@@ -164,20 +175,21 @@ class Characters extends PureComponent {
         character.actionList = {
             promote:
                 character['role'].indexOf('DD') === -1 ? (
-                    <a href='#' onClick={this.handleRerank} data-id={character.id} data-action='promote' title="Promote Character">
+                    <a href="#" onClick={this.handleRerank} data-id={character.id} data-action="promote" title="Promote Character">
                         <FontAwesomeIcon icon={['far', 'sunrise']} />
                     </a>
                 ) : null,
             demote:
                 character['role'].indexOf('DD') === -1 ? (
-                    <a href='#' onClick={this.handleRerank} data-id={character.id} data-action='demote' title="Demote Character">
+                    <a href="#" onClick={this.handleRerank} data-id={character.id} data-action="demote" title="Demote Character">
                         <FontAwesomeIcon icon={['far', 'sunset']} />
                     </a>
                 ) : null,
-            view:
+            view: (
                 <Link to={'/characters/' + character.id} title="Character Sheet">
                     <FontAwesomeIcon icon={['far', 'portrait']} />
                 </Link>
+            ),
         };
         let actionListRendered = [];
         for (const [actionType, link] of Object.entries(character.actionList)) {
@@ -225,10 +237,10 @@ class Characters extends PureComponent {
                 <table key="character-list-table" className="character-list-table pl-2 pr-2 col-md-24">
                     <thead>
                         <tr>
-                            <th scope='col'>Player Name</th>
-                            <th scope='col'>Character Name</th>
-                            <th scope='col'>Sets</th>
-                            <th scope='col' />
+                            <th scope="col">Player Name</th>
+                            <th scope="col">Character Name</th>
+                            <th scope="col">Sets</th>
+                            <th scope="col" />
                         </tr>
                     </thead>
                     <tbody>{charactersRendered}</tbody>
@@ -239,74 +251,62 @@ class Characters extends PureComponent {
         let { filters } = this.state;
         const filterList = {
             no_clearance: (
-                <button type="button"
-                        onClick={event => this.filter(event, 'no_clearance')}
-                        className={"ne-corner " + (filters.no_clearance || 'inactive')}
-                        title="Filter No-Clearance">
+                <button type="button" onClick={event => this.filter(event, 'no_clearance')} className={'ne-corner ' + (filters.no_clearance || 'inactive')} title="Filter No-Clearance">
                     <FontAwesomeIcon icon={['far', 'tachometer-alt-slowest']} />
                 </button>
             ),
             midgame: (
-                <button type="button"
-                        onClick={event => this.filter(event, 'midgame')}
-                        className={"ne-corner midgame " + (filters.midgame || 'inactive')}
-                        title="Filter Midgame-cleared">
+                <button type="button" onClick={event => this.filter(event, 'midgame')} className={'ne-corner midgame ' + (filters.midgame || 'inactive')} title="Filter Midgame-cleared">
                     <FontAwesomeIcon icon={['far', 'tachometer-alt-slow']} />
                 </button>
             ),
             endgame_tier0: (
-                <button type="button"
-                        onClick={event => this.filter(event, 'endgame_tier_0')}
-                        className={"ne-corner endgame_tier_0 " + (filters.endgame_tier_0 || 'inactive')}
-                        title="Filter Endgame Tier-0-cleared">
+                <button
+                    type="button"
+                    onClick={event => this.filter(event, 'endgame_tier_0')}
+                    className={'ne-corner endgame_tier_0 ' + (filters.endgame_tier_0 || 'inactive')}
+                    title="Filter Endgame Tier-0-cleared"
+                >
                     <FontAwesomeIcon icon={['far', 'tachometer-alt-average']} />
                 </button>
             ),
             endgame_tier1: (
-                <button type="button"
-                        onClick={event => this.filter(event, 'endgame_tier_1')}
-                        className={"ne-corner endgame_tier_1 " + (filters.endgame_tier_1 || 'inactive')}
-                        title="Filter Endgame Tier-1-cleared">
+                <button
+                    type="button"
+                    onClick={event => this.filter(event, 'endgame_tier_1')}
+                    className={'ne-corner endgame_tier_1 ' + (filters.endgame_tier_1 || 'inactive')}
+                    title="Filter Endgame Tier-1-cleared"
+                >
                     <FontAwesomeIcon icon={['far', 'tachometer-alt-fast']} />
                 </button>
             ),
             endgame_tier2: (
-                <button type="button"
-                        onClick={event => this.filter(event, 'endgame_tier_2')}
-                        className={"ne-corner endgame_tier_2 " + (filters.endgame_tier_2 || 'inactive')}
-                        title="Filter Endgame Tier-2-cleared">
+                <button
+                    type="button"
+                    onClick={event => this.filter(event, 'endgame_tier_2')}
+                    className={'ne-corner endgame_tier_2 ' + (filters.endgame_tier_2 || 'inactive')}
+                    title="Filter Endgame Tier-2-cleared"
+                >
                     <FontAwesomeIcon icon={['far', 'tachometer-alt-fastest']} />
                 </button>
             ),
             role_1: (
-                <button type="button"
-                        onClick={event => this.filter(event, 'role_1')}
-                        className={"ne-corner " + (filters.role_1 || 'inactive')}
-                        title="Filter Tanks">
+                <button type="button" onClick={event => this.filter(event, 'role_1')} className={'ne-corner ' + (filters.role_1 || 'inactive')} title="Filter Tanks">
                     <FontAwesomeIcon icon={['far', 'shield-alt']} />
                 </button>
             ),
             role_2: (
-                <button type="button"
-                        onClick={event => this.filter(event, 'role_2')}
-                        className={"ne-corner " + (filters.role_2 || 'inactive')}
-                        title="Filter Healers">
+                <button type="button" onClick={event => this.filter(event, 'role_2')} className={'ne-corner ' + (filters.role_2 || 'inactive')} title="Filter Healers">
                     <FontAwesomeIcon icon={['far', 'ambulance']} />
                 </button>
             ),
             role_3: (
-                <button type="button"
-                        onClick={event => this.filter(event, 'role_3')}
-                        className={"ne-corner " + (filters.role_3 || 'inactive')}
-                        title="Filter Magicka DDs">
+                <button type="button" onClick={event => this.filter(event, 'role_3')} className={'ne-corner ' + (filters.role_3 || 'inactive')} title="Filter Magicka DDs">
                     <FontAwesomeIcon icon={['far', 'bow-arrow']} />
                 </button>
             ),
             role_4: (
-                <button type="button"
-                        onClick={event => this.filter(event, 'role_4')}
-                        className={"ne-corner " + (filters.role_4 || 'inactive')}
-                        title="Filter Stamina DDs">
+                <button type="button" onClick={event => this.filter(event, 'role_4')} className={'ne-corner ' + (filters.role_4 || 'inactive')} title="Filter Stamina DDs">
                     <FontAwesomeIcon icon={['far', 'swords']} />
                 </button>
             ),
@@ -334,7 +334,7 @@ class Characters extends PureComponent {
         ];
     };
 
-    renderNoCharactersFoundNotification = (allCharacters) => {
+    renderNoCharactersFoundNotification = allCharacters => {
         const { dispatch, notifications } = this.props;
         if (allCharacters && !allCharacters.result.length && notifications.find(n => n.key === 'admin-no-characters-found') === undefined) {
             const message = [<Fragment key="f-1">No Characters Found!</Fragment>].reduce((acc, curr) => [acc, ' ', curr]);
@@ -365,11 +365,7 @@ class Characters extends PureComponent {
 
         const { allCharacters } = this.state;
         if (!allCharacters) {
-            return [
-                <Loading message="Fetching the list of all Characters..." key="loading" />,
-                <Notification key="notifications" />
-            ];
-
+            return [<Loading message="Fetching the list of all Characters..." key="loading" />, <Notification key="notifications" />];
         }
         this.renderNoCharactersFoundNotification(allCharacters);
 

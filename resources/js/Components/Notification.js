@@ -46,7 +46,7 @@ class Notification extends Component {
             animationOut: animationOut || ['animated', 'fadeOut'],
             dismiss: dismiss || { duration: 5000 },
             dismissable: dismissable || { click: true },
-            width
+            width,
         });
     };
 
