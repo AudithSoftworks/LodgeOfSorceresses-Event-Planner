@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import deleteMyDpsParseAction from '../actions/delete-my-dps-parse';
 import { infosAction } from '../actions/notifications';
-import List from '../SubComponents/DpsParses/List';
+import List from '../Components/DpsParses/List';
 import { characters, user } from '../vendor/data';
 import Notification from './Notification';
 

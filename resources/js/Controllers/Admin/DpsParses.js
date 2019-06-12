@@ -12,6 +12,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { errorsAction, infosAction, successAction } from "../../actions/notifications";
+import { amIAdmin } from "../../helpers";
 import { deletePendingDpsParse, getPendingDpsParses, updatePendingDpsParse } from '../../vendor/api/admin';
 import axios from '../../vendor/axios';
 import { user } from '../../vendor/data';
@@ -227,6 +228,10 @@ class DpsParses extends PureComponent {
             return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
 
+        if (!amIAdmin(this.props)) {
+            return history.push('/');
+        }
+
         const { dpsParses } = this.state;
         if (!dpsParses) {
             return [
@@ -246,11 +251,13 @@ DpsParses.propTypes = {
     history: PropTypes.object.isRequired,
 
     me: user,
+    groups: PropTypes.object,
     notifications: PropTypes.array,
 };
 
 const mapStateToProps = state => ({
     me: state.getIn(['me']),
+    groups: state.getIn(['groups']),
     notifications: state.getIn(['notifications']),
 });
 

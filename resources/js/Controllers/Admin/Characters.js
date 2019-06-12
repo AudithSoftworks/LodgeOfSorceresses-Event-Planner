@@ -29,7 +29,8 @@ import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { errorsAction, infosAction, successAction } from '../../actions/notifications';
-import Notification from '../../Components/Notification';
+import { amIAdmin } from "../../helpers";
+import Notification from '../Notification';
 import { getAllCharacters, getCharacter } from "../../vendor/api";
 import { updateCharacter } from "../../vendor/api/admin";
 import axios from "../../vendor/axios";
@@ -358,6 +359,10 @@ class Characters extends PureComponent {
             return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
 
+        if (!amIAdmin(this.props)) {
+            return history.push('/');
+        }
+
         const { allCharacters } = this.state;
         if (!allCharacters) {
             return [
@@ -379,11 +384,13 @@ Characters.propTypes = {
 
     axiosCancelTokenSource: PropTypes.object,
     me: user,
+    groups: PropTypes.object,
     notifications: PropTypes.array,
 };
 
 const mapStateToProps = state => ({
     me: state.getIn(['me']),
+    groups: state.getIn(['groups']),
     notifications: state.getIn(['notifications']),
 });
 

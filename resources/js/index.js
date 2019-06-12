@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import '../sass/style.scss';
-import Application from './Components/Application';
+import Application from './Controllers/Application';
 import configureStore, { history } from './configureStore';
 
 import(
