@@ -1,55 +1,55 @@
 import React, { Component, Fragment, Suspense } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import Loading from '../Loading';
-import NoMatch from '../NoMatch';
+import NoMatch from '../../Controllers/NoMatch';
 
 const Init = React.lazy(() =>
     import(
         /* webpackPrefetch: true */
         /* webpackChunkName: "controllers-init" */
-        '../Init'
+        '../../Controllers/Init'
     )
 );
 const Home = React.lazy(() =>
     import(
         /* webpackPrefetch: true */
         /* webpackChunkName: "controllers-home" */
-        '../Home'
+        '../../Controllers/Home'
     )
 );
 const Character = React.lazy(() =>
     import(
         /* webpackPrefetch: true */
         /* webpackChunkName: "controllers-character-sheet" */
-        '../Character'
+        '../../Controllers/Character'
     )
 );
 const Characters = React.lazy(() =>
     import(
         /* webpackPrefetch: true */
         /* webpackChunkName: "controllers-my-characters" */
-        '../Characters'
+        '../../Controllers/Characters'
     )
 );
 const CharacterForm = React.lazy(() =>
     import(
         /* webpackPrefetch: true */
         /* webpackChunkName: "controllers-character_form" */
-        '../Forms/CharacterForm'
+        '../../Controllers/Forms/CharacterForm'
     )
 );
 const DpsParses = React.lazy(() =>
     import(
         /* webpackPrefetch: true */
         /* webpackChunkName: "controllers-dps-parses" */
-        '../DpsParses'
+        '../../Controllers/DpsParses'
     )
 );
 const DpsParseForm = React.lazy(() =>
     import(
         /* webpackPrefetch: true */
         /* webpackChunkName: "controllers-dps_parse_form" */
-        '../Forms/DpsParseForm'
+        '../../Controllers/Forms/DpsParseForm'
     )
 );
 
@@ -57,21 +57,21 @@ const AdminHome = React.lazy(() =>
     import(
         /* webpackPrefetch: true */
         /* webpackChunkName: "controllers-admin-home" */
-        '../Admin/Home'
+        '../../Controllers/Admin/Home'
     )
 );
 const AdminCharacters = React.lazy(() =>
     import(
         /* webpackPrefetch: true */
         /* webpackChunkName: "controllers-admin-characters" */
-        '../Admin/Characters'
+        '../../Controllers/Admin/Characters'
     )
 );
 const AdminDpsParses = React.lazy(() =>
     import(
         /* webpackPrefetch: true */
         /* webpackChunkName: "controllers-admin-dps-parses" */
-        '../Admin/DpsParses'
+        '../../Controllers/Admin/DpsParses'
     )
 );
 

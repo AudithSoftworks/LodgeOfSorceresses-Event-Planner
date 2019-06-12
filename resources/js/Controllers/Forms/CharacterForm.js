@@ -7,7 +7,7 @@ import * as Animated from 'react-select/lib/animated';
 import postMyCharacterAction from '../../actions/post-my-character';
 import putMyCharacterAction from '../../actions/put-my-character';
 import { characters, content, sets, skills, user } from '../../vendor/data';
-import Notification from '../Notification';
+import Notification from '../../Components/Notification';
 
 class CharacterForm extends PureComponent {
     classOptions = [

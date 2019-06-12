@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { Link, Redirect } from "react-router-dom";
 import { amIAdmin } from "../../helpers";
 import { characters, user } from "../../vendor/data";
-import Notification from "../Notification";
+import Notification from "../../Components/Notification";
 
 class Home extends PureComponent {
     componentWillUnmount = () => {

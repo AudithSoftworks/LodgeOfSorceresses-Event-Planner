@@ -15,7 +15,7 @@ import deleteMyCharacterAction from '../actions/delete-my-character';
 import { infosAction } from '../actions/notifications';
 import List from "../Components/Characters/List";
 import { characters, user } from '../vendor/data';
-import Notification from './Notification';
+import Notification from '../Components/Notification';
 
 library.add(faTachometerAlt, faUserPlus);
 

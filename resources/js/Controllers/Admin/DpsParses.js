@@ -16,8 +16,8 @@ import { amIAdmin } from "../../helpers";
 import { deletePendingDpsParse, getPendingDpsParses, updatePendingDpsParse } from '../../vendor/api/admin';
 import axios from '../../vendor/axios';
 import { user } from '../../vendor/data';
-import Loading from '../Loading';
-import Notification from '../Notification';
+import Loading from '../../Components/Loading';
+import Notification from '../../Components/Notification';
 
 library.add(faSpinner, faTachometerAlt, faThList, faUserCheck, faUserEdit, faUserPlus, faUserTimes);
 

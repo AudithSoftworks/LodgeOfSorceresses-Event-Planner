@@ -22,14 +22,14 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { errorsAction, successAction } from '../actions/notifications';
-import Notification from './/Notification';
-import { amIAdmin } from "../helpers";
 import List from "../Components/DpsParses/List";
+import { amIAdmin } from "../helpers";
 import { getCharacter } from "../vendor/api";
 import { updateCharacter } from "../vendor/api/admin";
 import axios from "../vendor/axios";
 import { user } from '../vendor/data';
-import Loading from './Loading';
+import Notification from './../Components/Notification';
+import Loading from '../Components/Loading';
 
 library.add(
     faAmbulance,

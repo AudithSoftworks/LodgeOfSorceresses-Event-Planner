@@ -9,7 +9,7 @@ import deleteMyDpsParseAction from '../actions/delete-my-dps-parse';
 import { infosAction } from '../actions/notifications';
 import List from '../Components/DpsParses/List';
 import { characters, user } from '../vendor/data';
-import Notification from './Notification';
+import Notification from '../Components/Notification';
 
 library.add(faThList, faUserPlus);
 

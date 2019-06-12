@@ -30,12 +30,12 @@ import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { errorsAction, infosAction, successAction } from '../../actions/notifications';
 import { amIAdmin } from "../../helpers";
-import Notification from '../Notification';
+import Notification from '../../Components/Notification';
 import { getAllCharacters, getCharacter } from "../../vendor/api";
 import { updateCharacter } from "../../vendor/api/admin";
 import axios from "../../vendor/axios";
 import { characters, user } from '../../vendor/data';
-import Loading from '../Loading';
+import Loading from '../../Components/Loading';
 
 library.add(
     faAmbulance,

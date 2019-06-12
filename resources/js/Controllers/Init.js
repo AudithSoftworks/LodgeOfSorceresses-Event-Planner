@@ -11,8 +11,8 @@ import getSetsAction from '../actions/get-sets';
 import getSkillsAction from '../actions/get-skills';
 import getUserAction from '../actions/get-user';
 import { characters, user } from '../vendor/data';
-import Loading from './Loading';
-import Notification from './Notification';
+import Loading from '../Components/Loading';
+import Notification from '../Components/Notification';
 
 library.add(faDiscord);
 

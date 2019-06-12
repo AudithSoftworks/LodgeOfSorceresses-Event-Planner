@@ -9,8 +9,8 @@ import * as Animated from 'react-select/lib/animated';
 import postMyDpsParseAction from '../../actions/post-my-dps-parse';
 import putMyDpsParseAction from '../../actions/put-my-dps-parse';
 import { characters, user } from '../../vendor/data';
-import Loading from '../Loading';
-import Notification from '../Notification';
+import Loading from '../../Components/Loading';
+import Notification from '../../Components/Notification';
 
 const Gallery = Loadable({
     loader: () =>

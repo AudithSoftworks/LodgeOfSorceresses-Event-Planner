@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { errorsAction } from '../actions/notifications';
 import { user } from '../vendor/data';
-import Notification from './Notification';
+import Notification from '../Components/Notification';
 
 library.add(faDiscord);
 

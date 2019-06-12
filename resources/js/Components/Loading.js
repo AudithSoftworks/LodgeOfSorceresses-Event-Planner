@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSpinner } from '@fortawesome/pro-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome/index';
+import { library } from '@fortawesome/fontawesome-svg-core/index';
+import { faSpinner } from '@fortawesome/pro-solid-svg-icons/index';
 
 library.add(faSpinner);
 
