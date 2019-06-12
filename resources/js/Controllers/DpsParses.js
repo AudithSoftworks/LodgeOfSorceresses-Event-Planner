@@ -95,6 +95,7 @@ class DpsParses extends PureComponent {
         for (const [actionType, link] of Object.entries(actionList)) {
             actionListRendered.push(<li key={actionType}>{link}</li>);
         }
+
         return actionListRendered;
     };
 
@@ -113,14 +114,13 @@ class DpsParses extends PureComponent {
 
         const { associatedDiscordAccount } = this.props;
         const discordLinkWarning = this.renderWarningForLackingDiscordOauthAccount(associatedDiscordAccount);
-        const actionListRendered = this.renderActionList();
 
         return [
             <section className="col-md-24 p-0 mb-4" key="dpsParsesList">
                 <h2 className="form-title col-md-24">
                     Parses for <i>{character.name}</i> Pending Approval
                 </h2>
-                <ul className="ne-corner">{actionListRendered}</ul>
+                <ul className="ne-corner">{this.renderActionList()}</ul>
                 {discordLinkWarning}
                 <List character={character} dpsParses={dpsParses} onDeleteHandler={this.handleDelete} />
             </section>,
