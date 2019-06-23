@@ -124,7 +124,7 @@ class AnnounceDpsApprovalOnDiscord
                             ],
                             [
                                 'name' => 'Character',
-                                'value' => $character->name,
+                                'value' => sprintf('[%s](https://planner.lodgeofsorceresses.com/characters/%s)', $character->name, $character->id),
                             ],
                             [
                                 'name' => 'Role',
