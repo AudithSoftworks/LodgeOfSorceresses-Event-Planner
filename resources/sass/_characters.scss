@@ -105,19 +105,19 @@ table.character-list-table {
 }
 
 button {
-    &.midgame {
+    &.tier_1 {
         color: rgb(46, 204, 113);
     }
 
-    &.endgame_tier_0 {
+    &.tier_2 {
         color: rgb(52, 152, 219);
     }
 
-    &.endgame_tier_1 {
+    &.tier_3 {
         color: rgb(155, 89, 182);
     }
 
-    &.endgame_tier_2 {
+    &.tier_4 {
         color: rgb(230, 126, 34);;
     }
 }
@@ -129,25 +129,25 @@ tr {
         }
     }
 
-    &.midgame {
+    &.tier_1 {
         > td {
             background-color: rgba(46, 204, 113, 0.2);
         }
     }
 
-    &.endgame_tier_0 {
+    &.tier_2 {
         > td {
             background-color: rgba(52, 152, 219, 0.2);
         }
     }
 
-    &.endgame_tier_1 {
+    &.tier_3 {
         > td {
             background-color: rgba(155, 89, 182, 0.2);
         }
     }
 
-    &.endgame_tier_2 {
+    &.tier_4 {
         > td {
             background-color: rgba(230, 126, 34, 0.2);
         }

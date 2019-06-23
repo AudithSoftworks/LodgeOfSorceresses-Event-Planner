@@ -62,10 +62,10 @@ class Characters extends PureComponent {
         this.state = {
             filters: {
                 no_clearance: false,
-                midgame: false,
-                endgame_tier_0: true,
-                endgame_tier_1: true,
-                endgame_tier_2: true,
+                tier_1: false,
+                tier_2: true,
+                tier_3: true,
+                tier_4: true,
                 role_1: false,
                 role_2: false,
                 role_3: true,
@@ -146,23 +146,23 @@ class Characters extends PureComponent {
         if (character.role === 'Healer' && !this.state.filters.role_2) return null;
         if (character.role === 'Magicka DD' && !this.state.filters.role_3) return null;
         if (character.role === 'Stamina DD' && !this.state.filters.role_4) return null;
-        if (character['approved_for_endgame_t2'] && !this.state.filters.endgame_tier_2) return null;
-        if (!character['approved_for_endgame_t2'] && character['approved_for_endgame_t1'] && !this.state.filters.endgame_tier_1) return null;
-        if (!character['approved_for_endgame_t2'] && !character['approved_for_endgame_t1'] && character['approved_for_endgame_t0'] && !this.state.filters.endgame_tier_0) return null;
+        if (character['approved_for_t4'] && !this.state.filters.tier_4) return null;
+        if (!character['approved_for_t4'] && character['approved_for_t3'] && !this.state.filters.tier_3) return null;
+        if (!character['approved_for_t4'] && !character['approved_for_t3'] && character['approved_for_t2'] && !this.state.filters.tier_2) return null;
         if (
-            !character['approved_for_endgame_t2'] &&
-            !character['approved_for_endgame_t1'] &&
-            !character['approved_for_endgame_t0'] &&
-            character['approved_for_midgame'] &&
-            !this.state.filters.midgame
+            !character['approved_for_t4'] &&
+            !character['approved_for_t3'] &&
+            !character['approved_for_t2'] &&
+            character['approved_for_t1'] &&
+            !this.state.filters.tier_1
         ) {
             return null;
         }
         if (
-            !character['approved_for_endgame_t2'] &&
-            !character['approved_for_endgame_t1'] &&
-            !character['approved_for_endgame_t0'] &&
-            !character['approved_for_midgame'] &&
+            !character['approved_for_t4'] &&
+            !character['approved_for_t3'] &&
+            !character['approved_for_t2'] &&
+            !character['approved_for_t1'] &&
             !this.state.filters.no_clearance
         ) {
             return null;
@@ -199,14 +199,14 @@ class Characters extends PureComponent {
         }
 
         let rowBgColor = 'no_clearance';
-        if (character['approved_for_endgame_t2']) {
-            rowBgColor = 'endgame_tier_2';
-        } else if (character['approved_for_endgame_t1']) {
-            rowBgColor = 'endgame_tier_1';
-        } else if (character['approved_for_endgame_t0']) {
-            rowBgColor = 'endgame_tier_0';
-        } else if (character['approved_for_midgame']) {
-            rowBgColor = 'midgame';
+        if (character['approved_for_t4']) {
+            rowBgColor = 'tier_4';
+        } else if (character['approved_for_t3']) {
+            rowBgColor = 'tier_3';
+        } else if (character['approved_for_t2']) {
+            rowBgColor = 'tier_2';
+        } else if (character['approved_for_t1']) {
+            rowBgColor = 'tier_1';
         }
 
         return (
@@ -255,36 +255,36 @@ class Characters extends PureComponent {
                     <FontAwesomeIcon icon={['far', 'tachometer-alt-slowest']} />
                 </button>
             ),
-            midgame: (
-                <button type="button" onClick={event => this.filter(event, 'midgame')} className={'ne-corner midgame ' + (filters.midgame || 'inactive')} title="Filter Midgame-cleared">
+            tier_1: (
+                <button type="button" onClick={event => this.filter(event, 'tier_1')} className={'ne-corner tier_1 ' + (filters.tier_1 || 'inactive')} title="Filter Midgame-cleared">
                     <FontAwesomeIcon icon={['far', 'tachometer-alt-slow']} />
                 </button>
             ),
-            endgame_tier0: (
+            tier_2: (
                 <button
                     type="button"
-                    onClick={event => this.filter(event, 'endgame_tier_0')}
-                    className={'ne-corner endgame_tier_0 ' + (filters.endgame_tier_0 || 'inactive')}
+                    onClick={event => this.filter(event, 'tier_2')}
+                    className={'ne-corner tier_2 ' + (filters.tier_2 || 'inactive')}
                     title="Filter Endgame Tier-0-cleared"
                 >
                     <FontAwesomeIcon icon={['far', 'tachometer-alt-average']} />
                 </button>
             ),
-            endgame_tier1: (
+            tier_3: (
                 <button
                     type="button"
-                    onClick={event => this.filter(event, 'endgame_tier_1')}
-                    className={'ne-corner endgame_tier_1 ' + (filters.endgame_tier_1 || 'inactive')}
+                    onClick={event => this.filter(event, 'tier_3')}
+                    className={'ne-corner tier_3 ' + (filters.tier_3 || 'inactive')}
                     title="Filter Endgame Tier-1-cleared"
                 >
                     <FontAwesomeIcon icon={['far', 'tachometer-alt-fast']} />
                 </button>
             ),
-            endgame_tier2: (
+            tier_4: (
                 <button
                     type="button"
-                    onClick={event => this.filter(event, 'endgame_tier_2')}
-                    className={'ne-corner endgame_tier_2 ' + (filters.endgame_tier_2 || 'inactive')}
+                    onClick={event => this.filter(event, 'tier_4')}
+                    className={'ne-corner tier_4 ' + (filters.tier_4 || 'inactive')}
                     title="Filter Endgame Tier-2-cleared"
                 >
                     <FontAwesomeIcon icon={['far', 'tachometer-alt-fastest']} />

@@ -37,10 +37,10 @@ class Item extends PureComponent {
             ),
             delete:
                 typeof onDeleteHandler === 'function' &&
-                !character.approved_for_midgame &&
-                !character.approved_for_endgame_t0 &&
-                !character.approved_for_endgame_t1 &&
-                !character.approved_for_endgame_t2 ? (
+                !character.approved_for_t1 &&
+                !character.approved_for_t2 &&
+                !character.approved_for_t3 &&
+                !character.approved_for_t4 ? (
                     <Link to="#" onClick={onDeleteHandler} data-id={character.id} title="Delete Character">
                         <FontAwesomeIcon icon={['far', 'trash-alt']} />
                     </Link>
@@ -53,14 +53,14 @@ class Item extends PureComponent {
             }
         }
         let rowBgColor = 'no_clearance';
-        if (character['approved_for_endgame_t2']) {
-            rowBgColor = 'endgame_tier_2';
-        } else if (character['approved_for_endgame_t1']) {
-            rowBgColor = 'endgame_tier_1';
-        } else if (character['approved_for_endgame_t0']) {
-            rowBgColor = 'endgame_tier_0';
-        } else if (character['approved_for_midgame']) {
-            rowBgColor = 'midgame';
+        if (character['approved_for_t4']) {
+            rowBgColor = 'tier_4';
+        } else if (character['approved_for_t3']) {
+            rowBgColor = 'tier_3';
+        } else if (character['approved_for_t2']) {
+            rowBgColor = 'tier_2';
+        } else if (character['approved_for_t1']) {
+            rowBgColor = 'tier_1';
         }
 
         return (

@@ -16,10 +16,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $sets
  * @property string|null $skills
  * @property string|null $content
- * @property int $approved_for_midgame
- * @property int $approved_for_endgame_t0
- * @property int $approved_for_endgame_t1
- * @property int $approved_for_endgame_t2
+ * @property int $approved_for_t1
+ * @property int $approved_for_t2
+ * @property int $approved_for_t3
+ * @property int $approved_for_t4
  * @property int|null $last_submitted_dps_amount
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at

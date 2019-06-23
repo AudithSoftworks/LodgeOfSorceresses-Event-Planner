@@ -19,10 +19,6 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
  * @property string|null                     $superstar_file_hash
  * @property string|null                     $discord_notification_message_ids
  * @property int                             $processed_by
- * @property int                             $approved_for_midgame
- * @property int                             $approved_for_endgame_t0
- * @property int                             $approved_for_endgame_t1
- * @property int                             $approved_for_endgame_t2
  * @property string|null                     $reason_for_disapproval
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -38,10 +34,6 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
  * @method static QueryBuilder|DpsParse onlyTrashed()
  * @method static EloquentBuilder|DpsParse query()
  * @method static bool|null restore()
- * @method static EloquentBuilder|DpsParse whereApprovedForEndgameT0($value)
- * @method static EloquentBuilder|DpsParse whereApprovedForEndgameT1($value)
- * @method static EloquentBuilder|DpsParse whereApprovedForEndgameT2($value)
- * @method static EloquentBuilder|DpsParse whereApprovedForMidgame($value)
  * @method static EloquentBuilder|DpsParse whereCharacterId($value)
  * @method static EloquentBuilder|DpsParse whereCreatedAt($value)
  * @method static EloquentBuilder|DpsParse whereDeletedAt($value)

@@ -103,19 +103,19 @@ tr {
         background-color: rgba(150, 150, 150, 0.2);
     }
 
-    &.midgame {
+    &.tier_1 {
         background-color: rgba(46, 204, 113, 0.2);
     }
 
-    &.endgame_tier_0 {
+    &.tier_2 {
         background-color: rgba(52, 152, 219, 0.2);
     }
 
-    &.endgame_tier_1 {
+    &.tier_3 {
         background-color: rgba(155, 89, 182, 0.2);
     }
 
-    &.endgame_tier_2 {
+    &.tier_4 {
         background-color: rgba(230, 126, 34, 0.2);
     }
 }

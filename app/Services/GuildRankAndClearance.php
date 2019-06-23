@@ -87,28 +87,28 @@ class GuildRankAndClearance
         'isAdmin' => true,
     ];
 
-    public const CLEARANCE_MIDGAME = 'midgame';
+    public const CLEARANCE_TIER_1 = 't1';
 
-    public const CLEARANCE_ENDGAME_TIER_0 = 'endgame_t0';
+    public const CLEARANCE_TIER_2 = 't2';
 
-    public const CLEARANCE_ENDGAME_TIER_1 = 'endgame_t1';
+    public const CLEARANCE_TIER_3 = 't3';
 
-    public const CLEARANCE_ENDGAME_TIER_2 = 'endgame_t2';
+    public const CLEARANCE_TIER_4 = 't4';
 
     public const CLEARANCE_LEVELS = [
-        self::CLEARANCE_MIDGAME => [
+        self::CLEARANCE_TIER_1 => [
             'title' => 'Tier-1 Content',
             'rank' => self::RANK_NEOPHYTE,
         ],
-        self::CLEARANCE_ENDGAME_TIER_0 => [
+        self::CLEARANCE_TIER_2 => [
             'title' => 'Tier-2 Content',
             'rank' => self::RANK_PRACTICUS,
         ],
-        self::CLEARANCE_ENDGAME_TIER_1 => [
+        self::CLEARANCE_TIER_3 => [
             'title' => 'Tier-3 Content',
             'rank' => self::RANK_ADEPTUS_MINOR,
         ],
-        self::CLEARANCE_ENDGAME_TIER_2 => [
+        self::CLEARANCE_TIER_4 => [
             'title' => 'Tier-4 Content',
             'rank' => self::RANK_ADEPTUS_MAJOR,
         ],
