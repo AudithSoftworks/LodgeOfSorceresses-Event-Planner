@@ -57,7 +57,7 @@ class DpsParseForm extends PureComponent {
             scaling: {
                 sendOriginal: false,
                 includeExif: true,
-                sizes: [{ name: '', maxSize: 1280 }],
+                sizes: [{ name: '', maxSize: 1024 }],
             },
             chunking: {
                 enabled: true,
@@ -119,7 +119,7 @@ class DpsParseForm extends PureComponent {
             scaling: {
                 sendOriginal: false,
                 includeExif: true,
-                sizes: [{ name: '', maxSize: 1280 }],
+                sizes: [{ name: '', maxSize: 1024 }],
             },
             chunking: {
                 enabled: true,
