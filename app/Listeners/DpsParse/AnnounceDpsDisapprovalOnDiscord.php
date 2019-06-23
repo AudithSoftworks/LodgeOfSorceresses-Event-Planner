@@ -33,7 +33,7 @@ class AnnounceDpsDisapprovalOnDiscord
 
         $dpsParse = $event->dpsParse;
         $dpsParse->refresh();
-        $dpsParse->load(['owner', 'character']);
+        $dpsParse->loadMissing(['owner', 'character']);
 
         $parseAuthor = $dpsParse->owner()->first();
         if (!$parseAuthor) {
@@ -53,7 +53,7 @@ class AnnounceDpsDisapprovalOnDiscord
         $myDiscordAccount = $me->linkedAccounts()->where('remote_provider', 'discord')->first();
         $myMentionedName = $myDiscordAccount ? '<@!' . $myDiscordAccount->remote_id . '>' : $me->name;
 
-        $parseAuthor->load('linkedAccounts');
+        $parseAuthor->loadMissing('linkedAccounts');
         $parseOwnersDiscordAccount = $parseAuthor->linkedAccounts()->where('remote_provider', 'discord')->first();
         $mentionedName = '<@!' . $parseOwnersDiscordAccount->remote_id . '>';
 

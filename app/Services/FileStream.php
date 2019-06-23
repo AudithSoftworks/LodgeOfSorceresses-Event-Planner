@@ -282,7 +282,7 @@ class FileStream
             /** @noinspection PhpUndefinedFieldInspection */
             if ($pivot->qquuid === $qquuid && $tagCheck) {
                 $pivot->delete();
-                $file->load('uploaders');
+                $file->loadMissing('uploaders');
                 !$file->uploaders->count() && app('filesystem')->disk($file->disk)->delete($file->path) && $file->delete();
             }
         }

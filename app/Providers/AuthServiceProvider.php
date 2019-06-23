@@ -2,11 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\Character;
-use App\Models\DpsParse;
 use App\Models\User;
-use App\Policies\CharacterPolicy;
-use App\Policies\DpsParsePolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Laravel\Passport\Passport;
@@ -20,8 +16,6 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         User::class => UserPolicy::class,
-        Character::class => CharacterPolicy::class,
-        DpsParse::class => DpsParsePolicy::class,
     ];
 
     /**

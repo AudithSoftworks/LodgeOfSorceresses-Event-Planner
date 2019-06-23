@@ -38,7 +38,7 @@ class PostNewDpsParseToDiscord
             $gearSetsParsed[] = '[' . $set->name . '](https://eso-sets.com/set/' . $set->id . ')';
         }
 
-        $me->load('linkedAccounts');
+        $me->loadMissing('linkedAccounts');
         $discordAccount = $me->linkedAccounts()->where('remote_provider', 'discord')->first();
         $mentionedName = $discordAccount ? '<@!' . $discordAccount->remote_id . '>' : $me->name;
 

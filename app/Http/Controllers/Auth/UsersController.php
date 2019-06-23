@@ -16,7 +16,7 @@ class UsersController extends Controller
 
         /** @var \App\Models\User $me */
         $me = app('auth.driver')->user();
-        $me->load('linkedAccounts');
+        $me->loadMissing('linkedAccounts');
         /** @noinspection PhpUndefinedFieldInspection */
         $me->linkedAccountsParsed = $me->linkedAccounts->keyBy('remote_provider');
         $me->makeVisible(['linkedAccountsParsed']);

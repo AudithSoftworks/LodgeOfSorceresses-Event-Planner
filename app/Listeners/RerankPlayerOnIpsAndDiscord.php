@@ -42,7 +42,7 @@ class RerankPlayerOnIpsAndDiscord
         } elseif ($event instanceof DpsParseInterface) {
             $dpsParse = $event->getDpsParse();
             $dpsParse->refresh();
-            $dpsParse->load(['owner', 'character']);
+            $dpsParse->loadMissing(['owner', 'character']);
             $this->character = $dpsParse->character()->first();
             /** @var \App\Models\User $parseAuthor */
             $parseAuthor = $dpsParse->owner()->first();

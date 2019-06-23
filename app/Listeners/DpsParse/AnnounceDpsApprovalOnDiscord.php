@@ -38,7 +38,7 @@ class AnnounceDpsApprovalOnDiscord
 
         $dpsParse = $event->dpsParse;
         $dpsParse->refresh();
-        $dpsParse->load(['owner', 'character']);
+        $dpsParse->loadMissing(['owner', 'character']);
 
         /** @var \App\Models\User $parseAuthor */
         $parseAuthor = $dpsParse->owner()->first();

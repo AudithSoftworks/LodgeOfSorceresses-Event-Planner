@@ -152,7 +152,7 @@ class GuildRankAndClearance
 
     public function processDpsParse(DpsParse $dpsParse): bool
     {
-        $dpsParse->load('character');
+        $dpsParse->loadMissing('character');
         /** @var \App\Models\Character $character */
         $character = $dpsParse->character()->first();
         $class = $character->class;
