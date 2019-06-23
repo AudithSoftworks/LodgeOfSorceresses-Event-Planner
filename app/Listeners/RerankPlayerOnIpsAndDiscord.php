@@ -6,10 +6,16 @@ use App\Models\UserOAuth;
 use App\Services\DiscordApi;
 use App\Services\GuildRankAndClearance;
 use App\Services\IpsApi;
+use App\Singleton\RoleTypes;
 use GuzzleHttp\RequestOptions;
 
 class RerankPlayerOnIpsAndDiscord
 {
+    /**
+     * @var \App\Models\Character
+     */
+    private $character;
+
     public function __construct()
     {
         \Cloudinary::config([
@@ -28,15 +34,16 @@ class RerankPlayerOnIpsAndDiscord
     {
         $parseAuthor = null;
         if ($event instanceof CharacterInterface) {
-            $character = $event->getCharacter();
-            $character->refresh();
-            $character->loadMissing(['owner']);
+            $this->character = $event->getCharacter();
+            $this->character->refresh();
+            $this->character->loadMissing(['owner']);
             $parseAuthor = $event->getOwner();
             $parseAuthor->refresh();
         } elseif ($event instanceof DpsParseInterface) {
             $dpsParse = $event->getDpsParse();
             $dpsParse->refresh();
-            $dpsParse->load(['owner']);
+            $dpsParse->load(['owner', 'character']);
+            $this->character = $dpsParse->character()->first();
             /** @var \App\Models\User $parseAuthor */
             $parseAuthor = $dpsParse->owner()->first();
         }
@@ -78,7 +85,8 @@ class RerankPlayerOnIpsAndDiscord
 
     private function rerankUserOnDiscord(UserOAuth $remoteDiscordUser, ?string $clearanceLevel): void
     {
-        $existingSpecialRoles = array_intersect(explode(',', $remoteDiscordUser->remote_secondary_groups), [
+        $usersDiscordRoles = explode(',', $remoteDiscordUser->remote_secondary_groups);
+        $existingSpecialRoles = array_intersect($usersDiscordRoles, [
             DiscordApi::ROLE_DAMAGE_DEALER,
             DiscordApi::ROLE_TANK,
             DiscordApi::ROLE_HEALER,
@@ -92,6 +100,28 @@ class RerankPlayerOnIpsAndDiscord
             DiscordApi::ROLE_CORE_TWO,
             DiscordApi::ROLE_CORE_THREE,
         ]);
+        $discordRole = null;
+        switch ($this->character->role) {
+            case RoleTypes::ROLE_TANK:
+                $discordRole = DiscordApi::ROLE_TANK;
+                break;
+            case RoleTypes::ROLE_HEALER:
+                $discordRole = DiscordApi::ROLE_HEALER;
+                break;
+            case RoleTypes::ROLE_MAGICKA_DD:
+            case RoleTypes::ROLE_STAMINA_DD:
+                $discordRole = DiscordApi::ROLE_DAMAGE_DEALER;
+                break;
+        }
+        if ($discordRole) {
+            $keyInDiscordRoleArray = array_search($discordRole, $existingSpecialRoles, true);
+            if ($clearanceLevel !== null && !$keyInDiscordRoleArray) {
+                $existingSpecialRoles[] = $discordRole;
+            } elseif ($clearanceLevel === null && $keyInDiscordRoleArray) {
+                unset($existingSpecialRoles[$keyInDiscordRoleArray]);
+            }
+        }
+
         $newRoleToAssign = $clearanceLevel ? GuildRankAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['discordRole'] : DiscordApi::ROLE_INITIATE;
         $rolesToAssign = array_merge($existingSpecialRoles, [$newRoleToAssign]);
         $result = app('discord.api')->modifyGuildMember($remoteDiscordUser->remote_id, ['roles' => $rolesToAssign]);
@@ -101,7 +131,7 @@ class RerankPlayerOnIpsAndDiscord
         }
     }
 
-    private function announceRerankToThePlayerViaDiscordDm(DiscordApi $discordApi, UserOAuth $remoteDiscordUser,  string $mentionedName, ?string $playerClearance): void
+    private function announceRerankToThePlayerViaDiscordDm(DiscordApi $discordApi, UserOAuth $remoteDiscordUser, string $mentionedName, ?string $playerClearance): void
     {
         $playerNewRankTitle = $playerClearance
             ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['rank']['title']

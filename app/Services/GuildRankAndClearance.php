@@ -150,11 +150,6 @@ class GuildRankAndClearance
         return $topClearanceExisting;
     }
 
-    /**
-     * @param \App\Models\DpsParse $dpsParse
-     *
-     * @return bool
-     */
     public function processDpsParse(DpsParse $dpsParse): bool
     {
         $dpsParse->load('character');
