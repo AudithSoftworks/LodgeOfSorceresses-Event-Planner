@@ -263,10 +263,10 @@ class CharactersController extends Controller
         $this->authorize('user', User::class);
         $character = Character::query()
             ->whereUserId(app('auth.driver')->id())
-            ->whereApprovedForMidgame(false)
-            ->whereApprovedForEndgameT0(false)
-            ->whereApprovedForEndgameT1(false)
-            ->whereApprovedForEndgameT2(false)
+            ->whereApprovedForT1(false)
+            ->whereApprovedForT2(false)
+            ->whereApprovedForT3(false)
+            ->whereApprovedForT4(false)
             ->whereId($char)
             ->first();
         if ($character) {
