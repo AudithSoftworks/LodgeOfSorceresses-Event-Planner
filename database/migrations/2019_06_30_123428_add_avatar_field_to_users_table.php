@@ -14,7 +14,7 @@ class AddAvatarFieldToUsersTable extends Migration
     public function up(): void
     {
         Schema::table('users', static function (Blueprint $table) {
-            $table->mediumText('avatar')->after('email');
+            $table->mediumText('avatar')->nullable()->after('email');
         });
     }
 
