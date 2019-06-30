@@ -96,7 +96,7 @@ class Header extends Component {
         ) : (
             <li className="chevron">
                 <figure>
-                    <img alt={email || 'The Soulless One'} src={me ? me.avatar : "/images/touch-icon-ipad.png"} />
+                    <img alt={email || 'The Soulless One'} src={me && me.avatar ? me.avatar : "/images/touch-icon-ipad.png"} />
                     <figcaption>Welcome, Soulless One!</figcaption>
                 </figure>
             </li>
