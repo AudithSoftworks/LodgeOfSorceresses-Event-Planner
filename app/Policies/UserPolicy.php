@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Services\DiscordApi;
 use App\Services\IpsApi;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -14,34 +15,48 @@ class UserPolicy
      */
     private $oauthAccount;
 
-    public function __construct()
+    public function admin(): bool
     {
         /** @var \App\Models\User $me */
         $me = app('auth.driver')->user();
         $me->loadMissing('linkedAccounts');
-        $this->oauthAccount = $me->linkedAccounts()->where('remote_provider', 'ips')->first();
-        $this->oauthAccount->remote_secondary_groups = explode(',', $this->oauthAccount->remote_secondary_groups);
+        $oauthAccount = $me->linkedAccounts()->where('remote_provider', 'ips')->first();
+        if ($oauthAccount && !empty($oauthAccount->remote_secondary_groups)) {
+            $oauthAccount->remote_secondary_groups = explode(',', $oauthAccount->remote_secondary_groups);
+        }
+
+        return $oauthAccount
+            && $oauthAccount->remote_primary_group !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN
+            && (
+                $oauthAccount->remote_primary_group === IpsApi::MEMBER_GROUPS_IPSISSIMUS
+                || $oauthAccount->remote_primary_group === IpsApi::MEMBER_GROUPS_MAGISTER_TEMPLI
+                || in_array(IpsApi::MEMBER_GROUPS_MAGISTER_TEMPLI, $oauthAccount->remote_secondary_groups, false)
+            );
     }
 
-    /**
-     * @return bool
-     */
     public function user(): bool
     {
-        return $this->oauthAccount && $this->oauthAccount->remote_primary_group !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN;
+        /** @var \App\Models\User $me */
+        $me = app('auth.driver')->user();
+        $me->loadMissing('linkedAccounts');
+        $oauthAccount = $me->linkedAccounts()->where('remote_provider', 'discord')->first();
+        if ($oauthAccount) {
+            if (!empty($oauthAccount->remote_secondary_groups)) {
+                $oauthAccount->remote_secondary_groups = explode(',', $oauthAccount->remote_secondary_groups);
+            }
+
+            return !empty($oauthAccount->remote_secondary_groups)
+                && (
+                    in_array(DiscordApi::ROLE_SOULSHRIVEN, $oauthAccount->remote_secondary_groups, true)
+                    || in_array(DiscordApi::ROLE_MEMBERS, $oauthAccount->remote_secondary_groups, true)
+                );
+        }
+
+        return false;
     }
 
-    /**
-     * @return bool
-     */
-    public function admin(): bool
+    public function limited(): bool
     {
-        return $this->oauthAccount
-            && $this->oauthAccount->remote_primary_group !== IpsApi::MEMBER_GROUPS_SOULSHRIVEN
-            && (
-                $this->oauthAccount->remote_primary_group === IpsApi::MEMBER_GROUPS_IPSISSIMUS
-                || $this->oauthAccount->remote_primary_group === IpsApi::MEMBER_GROUPS_MAGISTER_TEMPLI
-                || in_array(IpsApi::MEMBER_GROUPS_MAGISTER_TEMPLI, $this->oauthAccount->remote_secondary_groups, false)
-            );
+        return app('auth.driver')->check();
     }
 }

@@ -11,7 +11,7 @@ class GuildRankAndClearance
         'title' => 'Soulshriven',
         'ipsGroupId' => IpsApi::MEMBER_GROUPS_SOULSHRIVEN,
         'discordRole' => DiscordApi::ROLE_SOULSHRIVEN,
-        'isMember' => false,
+        'isMember' => true,
         'isAdmin' => false,
     ];
 

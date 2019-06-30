@@ -29,7 +29,7 @@ import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { errorsAction, infosAction, successAction } from '../../actions/notifications';
-import { amIAdmin } from '../../helpers';
+import { authorizeAdmin } from '../../helpers';
 import Notification from '../../Components/Notification';
 import { getAllCharacters, getCharacter } from '../../vendor/api';
 import { updateCharacter } from '../../vendor/api/admin';
@@ -359,7 +359,7 @@ class Characters extends PureComponent {
             return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
 
-        if (!amIAdmin(this.props)) {
+        if (!authorizeAdmin(this.props)) {
             return history.push('/');
         }
 

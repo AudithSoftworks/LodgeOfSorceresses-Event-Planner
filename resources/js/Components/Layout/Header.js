@@ -11,21 +11,12 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { NavLink, withRouter } from 'react-router-dom';
+import { authorizeAdmin, authorizeUser } from "../../helpers";
 import { characters, user } from '../../vendor/data';
 
 library.add(faHome, faUsers, faUsersCog);
 
 class Header extends Component {
-    authorize = ({ me, groups }) => {
-        if (!me || !groups || !me.linkedAccountsParsed.ips) {
-            return;
-        }
-
-        const myGroup = Object.entries(groups).find(group => me.linkedAccountsParsed.ips.remote_primary_group === group[1]['ipsGroupId']);
-
-        return myGroup === undefined ? false : myGroup['1']['isAdmin'];
-    };
-
     renderNavLinks = navLinks => {
         return navLinks.map((item, idx) => {
             let { className } = item.props;
@@ -43,15 +34,17 @@ class Header extends Component {
     };
 
     render = () => {
-        const { myCharacters } = this.props;
+        const { me } = this.props;
         const navLinks = [];
-        if (myCharacters) {
+        if (me) {
             navLinks.push(
                 <NavLink exact to="/dashboard" activeClassName="active" title="Home">
                     <FontAwesomeIcon icon="home" size="lg" />
                     <span className="d-none d-sm-inline-block">Home</span>
                 </NavLink>
             );
+        }
+        if (authorizeUser(this.props)) {
             navLinks.push(
                 <NavLink to="/@me/characters" activeClassName="active" title="My Characters">
                     <FontAwesomeIcon icon="users" size="lg" />
@@ -59,7 +52,7 @@ class Header extends Component {
                 </NavLink>
             );
         }
-        if (this.authorize(this.props)) {
+        if (authorizeAdmin(this.props)) {
             navLinks.push(
                 <NavLink to="/admin" activeClassName="active" className="pull-right" title="Officer">
                     <FontAwesomeIcon icon="users-cog" size="lg" />

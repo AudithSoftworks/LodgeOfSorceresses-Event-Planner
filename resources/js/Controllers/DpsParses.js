@@ -112,8 +112,7 @@ class DpsParses extends PureComponent {
 
         const dpsParses = character.dps_parses;
 
-        const { associatedDiscordAccount } = this.props;
-        const discordLinkWarning = this.renderWarningForLackingDiscordOauthAccount(associatedDiscordAccount);
+        const discordLinkWarning = this.renderWarningForLackingDiscordOauthAccount(me.linkedAccountsParsed.discord);
 
         return [
             <section className="col-md-24 p-0 mb-4" key="dpsParsesList">

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
-import { amIAdmin } from '../../helpers';
+import { authorizeAdmin } from '../../helpers';
 import { characters, user } from '../../vendor/data';
 import Notification from '../../Components/Notification';
 
@@ -17,7 +17,7 @@ class Home extends PureComponent {
             return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
 
-        if (!amIAdmin(this.props)) {
+        if (!authorizeAdmin(this.props)) {
             return history.push('/');
         }
 

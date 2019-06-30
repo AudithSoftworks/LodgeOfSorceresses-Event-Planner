@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Http\Response;
@@ -10,6 +11,16 @@ use Illuminate\Http\Response;
 class DiscordApi
 {
     public const ROLE_SOULSHRIVEN = '499970844928507906';
+
+    public const ROLE_NEOPHYTE_SHRIVEN = '591367441297309703';
+
+    public const ROLE_PRACTICUS_SHRIVEN = '591367589540659200';
+
+    public const ROLE_ADEPTUS_MINOR_SHRIVEN = '591367585694613506';
+
+    public const ROLE_ADEPTUS_MAJOR_SHRIVEN = '591367721565028392';
+
+    public const ROLE_MEMBERS = '230086132799504394';
 
     public const ROLE_INITIATE = '465486256810360832';
 
@@ -26,8 +37,6 @@ class DiscordApi
     public const ROLE_RECTOR = '534135978093182977';
 
     public const ROLE_MAGISTER_TEMPLI = '230086456943706113';
-
-    public const ROLE_MEMBERS = '230086132799504394';
 
     public const ROLE_GUIDANCE = '499972678526959617';
 
@@ -120,9 +129,16 @@ class DiscordApi
         return $response->getStatusCode() === Response::HTTP_NO_CONTENT;
     }
 
-    public function getGuildMember(string $memberId): array
+    public function getGuildMember(string $memberId): ?array
     {
-        $response = $this->discordClient->get('guilds/' . $this->discordGuildId . '/members/' . $memberId);
+        try {
+            $response = $this->discordClient->get('guilds/' . $this->discordGuildId . '/members/' . $memberId);
+        } catch (ClientException $e) {
+            if ($e->getCode() === 404) {
+                return null;
+            }
+        }
+        /** @noinspection PhpUndefinedVariableInspection */
         $this->lastResponseHeaders = $response->getHeaders();
 
         return json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);

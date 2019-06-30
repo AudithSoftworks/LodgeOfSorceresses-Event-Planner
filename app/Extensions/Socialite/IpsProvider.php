@@ -89,7 +89,7 @@ class IpsProvider extends AbstractProvider implements ProviderInterface
      */
     protected function mapUserToObject(array $user): User
     {
-        return (new IpsUser())->setRaw($user)->map([
+        return (new CustomOauthTwoUser())->setRaw($user)->map([
             'id' => $user['id'],
             'nickname' => $user['name'],
             'name' => $user['name'],
@@ -97,6 +97,7 @@ class IpsProvider extends AbstractProvider implements ProviderInterface
             'remotePrimaryGroup' => $user['primaryGroup']['id'],
             'avatar' => $user['photoUrl'],
             'token' => Arr::get($user, 'access_token'),
+            'provider' => 'ips',
         ]);
     }
 }

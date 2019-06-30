@@ -1,5 +1,7 @@
 <?php namespace App\Exceptions;
 
+use App\Exceptions\Users\UserNotActivatedException;
+use App\Exceptions\Users\UserNotMemberInDiscord;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
@@ -10,7 +12,6 @@ use Illuminate\Validation\ValidationException as IlluminateValidationException;
 use Laravel\Socialite\Two\InvalidStateException;
 use Symfony\Component\HttpFoundation\Response as SymfonyHttpResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -52,22 +53,22 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $e)
     {
-        if ($e instanceof ModelNotFoundException) {
+        if ($e instanceof ModelNotFoundException || $e instanceof UserNotMemberInDiscord || $e instanceof UserNotActivatedException) {
             return $request->expectsJson()
-                ? response()->json(['message' => $e->getMessage() ?? 'Not found!'], 404)
-                : redirect()->guest(route('logout'));
+                ? response()->json(['message' => $e->getMessage() ?? 'Not found!'], $e instanceof ModelNotFoundException ? 404 : 403)
+                : redirect()->guest('/logout');
         }
 
         if ($e instanceof InvalidStateException) {
             return $request->expectsJson()
                 ? response()->json(['message' => 'Session Expired. Please refresh the page!'], 401)
-                : redirect()->guest(route('logout'));
+                : redirect()->guest('/logout');
         }
 
         if ($e instanceof AuthorizationException) {
             return $request->expectsJson()
                 ? response()->json(['message' => 'Access Denied!'], 403)
-                : redirect()->guest(route('logout'));
+                : redirect()->guest('/logout');
         }
 
         if ($request->method() !== 'GET' && $request->header('content-type') === 'application/x-www-form-urlencoded') {
@@ -88,7 +89,7 @@ class Handler extends ExceptionHandler
     protected function unauthenticated($request, AuthenticationException $exception): SymfonyHttpResponse
     {
         return $request->expectsJson()
-            ? response()->json(['message' => 'Session Expired. Please refresh the page!'], 401)
-            : redirect()->guest(route('oauth.to', 'ips', false));
+            ? response()->json(['message' => 'Not authenticated. Please refresh the page!'], 401)
+            : redirect()->guest('/');
     }
 }

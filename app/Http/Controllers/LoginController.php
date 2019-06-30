@@ -1,20 +1,19 @@
 <?php namespace App\Http\Controllers;
 
 use App\Events\User\LoggedIn;
-use App\Events\User\LoggedInViaOauth;
 use App\Events\User\LoggedOut;
 use App\Events\User\Registered;
 use App\Exceptions\Common\ValidationException;
 use App\Exceptions\Users\LoginNotValidException;
-use App\Exceptions\Users\LoginViaOauthFailedException;
-use App\Extensions\Socialite\IpsUser;
+use App\Exceptions\Users\UserNotActivatedException;
+use App\Exceptions\Users\UserNotMemberInDiscord;
+use App\Extensions\Socialite\CustomOauthTwoUser;
 use App\Models\User;
 use App\Models\UserOAuth;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Laravel\Socialite\Contracts\Factory as SocialiteContract;
-use Laravel\Socialite\Two\User as OauthTwoUser;
 
 class LoginController extends Controller
 {
@@ -109,6 +108,8 @@ class LoginController extends Controller
      * @param string                               $provider
      *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\Users\UserNotActivatedException
+     * @throws \App\Exceptions\Users\UserNotMemberInDiscord
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function handleOAuthReturn(Request $request, SocialiteContract $socialite, $provider)
@@ -126,111 +127,112 @@ class LoginController extends Controller
                 break;
         }
 
-        /** @var IpsUser $userInfo */
-        $userInfo = $socialite->driver($provider)->user();
-        if ($this->loginViaOAuth($userInfo, $provider)) {
-            if ($userInfo instanceof IpsUser && !empty($userInfo->token)) {
-                $request->session()->put('token', $userInfo->token);
+        /** @var CustomOauthTwoUser $oauthTwoUser */
+        $oauthTwoUser = $socialite->driver($provider)->user();
+        if ($this->loginViaOAuth($oauthTwoUser, $provider)) {
+            if (!empty($oauthTwoUser->token)) {
+                $request->session()->put('token', $oauthTwoUser->token);
             }
 
             return redirect()->intended($this->redirectPath());
         }
 
-        return redirect('/')->withErrors(trans('passwords.oauth_failed'));
+        return redirect('/');
     }
 
     /**
-     * @param \Laravel\Socialite\Two\User $oauthUserData
-     * @param string                      $provider
+     * @param CustomOauthTwoUser $oauthTwoUser
+     * @param string             $provider
      *
      * @return bool
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws \App\Exceptions\Users\UserNotActivatedException
+     * @throws \App\Exceptions\Users\UserNotMemberInDiscord
      */
-    protected function loginViaOAuth(OauthTwoUser $oauthUserData, $provider): bool
+    protected function loginViaOAuth(CustomOauthTwoUser $oauthTwoUser, string $provider): bool
     {
-        /** @var UserOAuth $owningOAuthAccount */
-        if ($owningOAuthAccount = UserOAuth::whereRemoteProvider($provider)->whereRemoteId($oauthUserData->id)->first()) {
-            $ownerAccount = $owningOAuthAccount->owner;
-            if ($provider === 'ips') {
-                app('auth.driver')->login($ownerAccount);
-                event(new LoggedIn($ownerAccount, $provider));
+        if ($provider === 'discord') {
+            if (!($discordUser = app('discord.api')->getGuildMember($oauthTwoUser->getId()))) {
+                throw new UserNotMemberInDiscord('You need to join Lodge Discord server to continue! Please do so and come back afterwards.');
             }
-            event(new LoggedInViaOauth($owningOAuthAccount));
+            $oauthTwoUser->nickname = $discordUser['nick'];
+        }
+        if ($provider === 'ips' && $ipsUser = app('ips.api')->getUser($oauthTwoUser->getId())) {
+            $oauthTwoUser->verified = !(bool)$ipsUser['validating'];
+        }
+        if (!$oauthTwoUser->isVerified()) {
+            throw new UserNotActivatedException('Your Discord/Forums account hasn\'t been activated! Please activate it and come back afterwards.');
+        }
+
+        /** @var UserOAuth $owningOAuthAccount */
+        if ($owningOAuthAccount = UserOAuth::whereRemoteProvider($provider)->whereRemoteId($oauthTwoUser->id)->first()) {
+            $ownerAccount = $owningOAuthAccount->owner;
+            $ownerAccount->name = $oauthTwoUser->getName();
+            $ownerAccount->save();
+
+            app('auth.driver')->login($ownerAccount);
+            event(new LoggedIn($ownerAccount));
 
             return true;
         }
 
-        return !$this->registerViaOAuth($oauthUserData, $provider) ? false : true;
+        return $this->registerViaOAuth($oauthTwoUser, $provider);
     }
 
     /**
-     * @param \Laravel\Socialite\Two\User $oauthUserData
-     * @param string                      $provider
+     * @param \App\Extensions\Socialite\CustomOauthTwoUser $oauthTwoUser
+     * @param string                                       $provider
      *
-     * @return \Illuminate\Contracts\Auth\Authenticatable|bool
+     * @return bool
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    protected function registerViaOAuth(OauthTwoUser $oauthUserData, $provider)
+    protected function registerViaOAuth(CustomOauthTwoUser $oauthTwoUser, string $provider): bool
     {
-        /** @var \App\Models\User $ownerAccount */
-        if ($provider === 'ips') {
-            $ownerAccount = User::withTrashed()->whereEmail($oauthUserData->email)->first();
+        $authDriver = app('auth.driver');
+
+        if ($authDriver->check()) {
+            $ownerAccount = $authDriver->user();
         } else {
-            $ownerAccount = app('auth.driver')->user();
-        }
+            $ownerAccount = User::withTrashed()->whereEmail($oauthTwoUser->email)->first();
+            if (!$ownerAccount) {
+                $ownerAccount = User::create([
+                    'name' => $oauthTwoUser->getNickname(),
+                    'email' => $oauthTwoUser->getEmail(),
+                    'password' => app('hash')->make(uniqid('', true))
+                ]);
+                event(new Registered($ownerAccount, $provider));
+            }
 
-        if (!$ownerAccount) {
-            $ownerAccount = User::create([
-                'name' => $oauthUserData->name,
-                'email' => $oauthUserData->email,
-                'password' => app('hash')->make(uniqid('', true))
-            ]);
-            event(new Registered($ownerAccount, $provider));
-        }
+            # If user account is soft-deleted, restore it.
+            $ownerAccount->trashed() && $ownerAccount::restore();
 
-        # If user account is soft-deleted, restore it.
-        $ownerAccount->trashed() && $ownerAccount::restore();
-
-        # Update missing user name.
-        if (!$ownerAccount->name && $oauthUserData->name) {
-            $ownerAccount->name = $oauthUserData->name;
+            # Update user name.
+            $ownerAccount->name = $oauthTwoUser->getNickname();
             $ownerAccount->save();
         }
+        $this->linkOAuthAccount($oauthTwoUser, $provider, $ownerAccount);
+        $authDriver->login($ownerAccount, true);
+        event(new LoggedIn($ownerAccount));
 
-        if ($doLinkOAuthAccount = $this->linkOAuthAccount($oauthUserData, $provider, $ownerAccount)) {
-            app('auth.driver')->login($ownerAccount, true);
-        }
-
-        event(new LoggedIn($ownerAccount, $provider));
-
-        return $doLinkOAuthAccount;
+        return true;
     }
 
     /**
-     * @param \Laravel\Socialite\Two\User|IpsUser $oauthUserData
-     * @param string                              $provider
-     * @param User                                $ownerAccount
-     *
-     * @return \App\Models\User|bool
+     * @param \App\Extensions\Socialite\CustomOauthTwoUser $oauthTwoUser
+     * @param string                                       $provider
+     * @param User                                         $ownerAccount
      */
-    protected function linkOAuthAccount(OauthTwoUser $oauthUserData, $provider, $ownerAccount)
+    protected function linkOAuthAccount(CustomOauthTwoUser $oauthTwoUser, $provider, $ownerAccount): void
     {
         $linkedAccount = new UserOAuth();
         $linkedAccount->remote_provider = $provider;
-        $linkedAccount->remote_id = $oauthUserData->id;
-        $linkedAccount->email = $oauthUserData->email;
-        $linkedAccount->avatar = $oauthUserData->avatar;
-        property_exists($oauthUserData, 'remotePrimaryGroup') && $linkedAccount->remote_primary_group = $oauthUserData->remotePrimaryGroup;
-        property_exists($oauthUserData, 'nickname') && $linkedAccount->nickname = $oauthUserData->nickname;
-        property_exists($oauthUserData, 'name') && $linkedAccount->name = $oauthUserData->name;
-
-        if (!$ownerAccount->linkedAccounts()->save($linkedAccount)) {
-            throw new LoginViaOauthFailedException();
-        }
-
-        event(new LoggedInViaOauth($linkedAccount->refresh()));
-
-        return $ownerAccount;
+        $linkedAccount->remote_id = $oauthTwoUser->id;
+        $linkedAccount->email = $oauthTwoUser->email;
+        $linkedAccount->avatar = $oauthTwoUser->avatar;
+        $linkedAccount->remote_primary_group = $oauthTwoUser->getRemotePrimaryGroup();
+        $linkedAccount->nickname = $oauthTwoUser->getNickname();
+        $linkedAccount->name = $oauthTwoUser->getName();
+        $ownerAccount->linkedAccounts()->save($linkedAccount);
     }
 
     /**
@@ -242,14 +244,12 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
-        if (app('auth.driver')->check()) {
-            $user = app('auth.driver')->user();
-
-            app('auth.driver')->logout();
-
+        $guard = app('auth.driver');
+        if ($guard->check()) {
+            $user = $guard->user();
+            $guard->logout();
             app('events')->dispatch(new LoggedOut($user));
         }
-
         $request->session()->flush();
         $request->session()->regenerate();
 
@@ -257,6 +257,6 @@ class LoginController extends Controller
             return response()->json();
         }
 
-        return redirect('https://lodgeofsorceresses.com');
+        return redirect('/');
     }
 }

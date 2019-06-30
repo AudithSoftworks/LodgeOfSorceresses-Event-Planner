@@ -1,7 +1,9 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
+import { faUserShield } from '@fortawesome/pro-regular-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import getContentAction from '../actions/get-content';
@@ -10,32 +12,50 @@ import getMyCharactersAction from '../actions/get-my-characters';
 import getSetsAction from '../actions/get-sets';
 import getSkillsAction from '../actions/get-skills';
 import getUserAction from '../actions/get-user';
-import { characters, user } from '../vendor/data';
+import { errorsAction } from "../actions/notifications";
 import Loading from '../Components/Loading';
 import Notification from '../Components/Notification';
+import { authorizeUser } from "../helpers";
+import { characters, user } from '../vendor/data';
 
-library.add(faDiscord);
+library.add(faDiscord, faUserShield);
 
 class Init extends PureComponent {
+    constructor(props) {
+        super(props);
+        this.state = {
+            authChecked: false
+        };
+    };
+
     componentDidMount = () => {
         const { me, groups, myCharacters, sets, skills, content } = this.props;
-        if (!me) {
-            this.props.getUserAction();
-        }
-        if (!groups) {
-            this.props.getGroupsAction();
-        }
-        if (!myCharacters) {
-            this.props.getMyCharactersAction();
-        }
-        if (!sets) {
-            this.props.getSetsAction();
-        }
-        if (!skills) {
-            this.props.getSkillsAction();
-        }
-        if (!content) {
-            this.props.getContentAction();
+        if (me && groups && myCharacters && sets && skills && content) {
+            this.setState({ authChecked: true });
+        } else if (!me) {
+            this.props.getUserAction()
+                .then(() => {
+                    if (!groups) {
+                        this.props.getGroupsAction()
+                            .then(() => {
+                                this.setState({ authChecked: true });
+                                if (authorizeUser(this.props)) {
+                                    if (!myCharacters) {
+                                        this.props.getMyCharactersAction();
+                                    }
+                                    if (!sets) {
+                                        this.props.getSetsAction();
+                                    }
+                                    if (!skills) {
+                                        this.props.getSkillsAction();
+                                    }
+                                    if (!content) {
+                                        this.props.getContentAction();
+                                    }
+                                }
+                            });
+                    }
+                });
         }
     };
 
@@ -43,19 +63,71 @@ class Init extends PureComponent {
         this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Unmount');
     };
 
+    renderAccessDeniedNotification = () => {
+        const { dispatch } = this.props;
+        const message = [
+            <Fragment key="f-1">You do not have <b>Soulshriven</b> or any member tag (<b>Initiate</b> etc) on Lodge Discord server.</Fragment>,
+            <Fragment key="f-2">Please contact guild leader on Discord, to fix this.</Fragment>,
+            <Fragment key="f-3">You won't be able to use Planner until this issue is addressed!</Fragment>,
+        ].reduce((acc, curr) => [acc, ' ', curr]);
+        dispatch(
+            errorsAction(
+                message,
+                {
+                    container: 'bottom-center',
+                    animationIn: ['animated', 'bounceInDown'],
+                    animationOut: ['animated', 'bounceOutDown'],
+                    dismiss: { duration: 60000 },
+                    width: 450,
+                },
+                'access-denied'
+            )
+        );
+    };
+
+    renderForm = () => {
+        return (
+            <form className="col-md-24 d-flex flex-row flex-wrap p-0" onSubmit={this.handleSubmit} key="characterCreationForm">
+                <h2 className="form-title col-md-24 text-center pr-0 mt-md-5 mb-md-5" title="Login">Login</h2>
+                <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')} />
+                <fieldset className="form-group col-md-8 col-xl-4">
+
+                </fieldset>
+                <fieldset className="form-group col-md-24 text-center">
+                    <a href="/oauth/to/discord" style={{ backgroundColor: '#8ea1e1', borderColor: 'transparent' }} className="btn btn-info btn-sm mr-2">
+                        <FontAwesomeIcon icon={['fab', 'discord']} className='mr-1' /> Authenticate via Discord
+                    </a>
+                    <a href="/oauth/to/ips" style={{ backgroundColor: '#804123', borderColor: 'transparent' }} className="btn btn-info btn-sm">
+                        <FontAwesomeIcon icon={['far', 'user-shield']} className='mr-1' /> Authenticate via Lodge Forums
+                    </a>
+                </fieldset>
+            </form>
+        );
+    };
+
     render = () => {
-        const { associatedDiscordAccount, location, myCharacters, sets, skills, content } = this.props;
-        if (associatedDiscordAccount === null) {
-            return [<Loading key="loading" message="Fetching account details..." />, <Notification key="notifications" />];
-        } else if (sets === null) {
-            return [<Loading key="loading" message="Fetching Sets..." />, <Notification key="notifications" />];
-        } else if (skills === null) {
-            return [<Loading key="loading" message="Fetching Skills..." />, <Notification key="notifications" />];
-        } else if (content === null) {
-            return [<Loading key="loading" message="Fetching Content Data..." />, <Notification key="notifications" />];
-        } else if (myCharacters === null) {
-            return [<Loading key="loading" message="Fetching your Characters..." />, <Notification key="notifications" />];
+        const { groups, location, me, myCharacters, sets, skills, content } = this.props;
+        if (!this.state.authChecked) {
+            return [<Loading key="loading" message="Checking session..." />, <Notification key="notifications" />];
+        } else if (me === null) {
+            return [this.renderForm()];
         } else {
+            if (groups === null) {
+                return [<Loading key="loading" message="Fetching groups data..." />, <Notification key="notifications" />];
+            } else if (me.linkedAccountsParsed.discord && !authorizeUser(this.props)) {
+                this.renderAccessDeniedNotification();
+            } else if (authorizeUser(this.props)) {
+                if (!sets) {
+                    return [<Loading key="loading" message="Fetching sets..." />, <Notification key="notifications" />];
+                } else if (!skills) {
+                    return [<Loading key="loading" message="Fetching skills..." />, <Notification key="notifications" />];
+                } else if (!content) {
+                    return [<Loading key="loading" message="Fetching content data..." />, <Notification key="notifications" />];
+                } else if (!myCharacters) {
+                    return [<Loading key="loading" message="Fetching your Characters..." />, <Notification key="notifications" />];
+                }
+            }
+
             let redirectUri = '/dashboard';
             if (location.state && location.state.prevPath) {
                 redirectUri = location.state.prevPath;
@@ -72,7 +144,6 @@ Init.propTypes = {
     history: PropTypes.object.isRequired,
 
     axiosCancelTokenSource: PropTypes.object,
-    associatedDiscordAccount: PropTypes.array,
     me: user,
     groups: PropTypes.object,
     sets: PropTypes.array,

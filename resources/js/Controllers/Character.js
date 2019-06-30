@@ -23,7 +23,7 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { errorsAction, successAction } from '../actions/notifications';
 import List from '../Components/DpsParses/List';
-import { amIAdmin } from '../helpers';
+import { authorizeAdmin } from '../helpers';
 import { getCharacter } from '../vendor/api';
 import { updateCharacter } from '../vendor/api/admin';
 import axios from '../vendor/axios';
@@ -122,13 +122,13 @@ class Character extends PureComponent {
     renderCharacter = character => {
         const actionList = {
             promote:
-                amIAdmin(this.props) && character['role'].indexOf('Damage Dealer') === -1 ? (
+                authorizeAdmin(this.props) && character['role'].indexOf('Damage Dealer') === -1 ? (
                     <a href="#" onClick={this.handleRerank} data-id={character.id} data-action="promote" title="Promote Character">
                         <FontAwesomeIcon icon={['far', 'sunrise']} />
                     </a>
                 ) : null,
             demote:
-                amIAdmin(this.props) && character['role'].indexOf('Damage Dealer') === -1 ? (
+                authorizeAdmin(this.props) && character['role'].indexOf('Damage Dealer') === -1 ? (
                     <a href="#" onClick={this.handleRerank} data-id={character.id} data-action="demote" title="Demote Character">
                         <FontAwesomeIcon icon={['far', 'sunset']} />
                     </a>

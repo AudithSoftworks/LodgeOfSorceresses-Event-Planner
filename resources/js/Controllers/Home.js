@@ -80,15 +80,6 @@ class Home extends PureComponent {
                 <h2 className="form-title col-md-24" title="Dashboard">
                     Dashboard
                 </h2>
-                <article className="alert-info">
-                    <b>Tips:</b>
-                    <ul>
-                        <li>
-                            Make sure you have linked your Discord account: watch for red colored <FontAwesomeIcon icon={['fab', 'discord']} /> icon on top right. When green, it means you've already
-                            linked your Discord account.
-                        </li>
-                    </ul>
-                </article>
                 <ul className="ne-corner">{actionListRendered}</ul>
             </section>,
             <Notification key="notifications" />,

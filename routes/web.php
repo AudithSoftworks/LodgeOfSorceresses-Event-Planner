@@ -8,5 +8,6 @@ $router->get('oauth/from/{provider}', ['uses' => 'LoginController@handleOAuthRet
 
 $router->middleware('auth')->group(static function (Router $router) {
     $router->get('logout', ['uses' => 'LoginController@logout', 'as' => 'logout']);
-    $router->get('{any}', ['uses' => 'HomeController@index', 'as' => 'home'])->where('any', '(?!api).*');
 });
+
+$router->get('{any}', ['uses' => 'HomeController@index', 'as' => 'home'])->where('any', '(?!api).*');

@@ -12,7 +12,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { errorsAction, infosAction, successAction } from '../../actions/notifications';
-import { amIAdmin } from '../../helpers';
+import { authorizeAdmin } from '../../helpers';
 import { deletePendingDpsParse, getPendingDpsParses, updatePendingDpsParse } from '../../vendor/api/admin';
 import axios from '../../vendor/axios';
 import { user } from '../../vendor/data';
@@ -234,7 +234,7 @@ class DpsParses extends PureComponent {
             return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
 
-        if (!amIAdmin(this.props)) {
+        if (!authorizeAdmin(this.props)) {
             return history.push('/');
         }
 

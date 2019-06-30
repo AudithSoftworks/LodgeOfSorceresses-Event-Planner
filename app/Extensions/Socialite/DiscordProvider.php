@@ -82,18 +82,20 @@ class DiscordProvider extends AbstractProvider implements ProviderInterface
     /**
      * Map the raw user array to a Socialite User instance.
      *
-     * @param  array $user
+     * @param array $user
      *
      * @return User
      */
     protected function mapUserToObject(array $user): User
     {
-        return (new User())->setRaw($user)->map([
+        return (new CustomOauthTwoUser())->setRaw($user)->map([
             'id' => $user['id'],
             'name' => $user['username'] . '#' . $user['discriminator'],
             'email' => $user['email'],
             'token' => Arr::get($user, 'access_token'),
-            'verified' => $user['verified']
+            'verified' => $user['verified'],
+            'avatar' => $user['avatar'],
+            'provider' => 'discord',
         ]);
     }
 }

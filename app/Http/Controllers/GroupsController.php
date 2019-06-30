@@ -12,7 +12,7 @@ class GroupsController extends Controller
      */
     public function index(): JsonResponse
     {
-        $this->authorize('user', User::class);
+        $this->authorize('limited', User::class);
 
         $rankDefinitions = [
             'SOULSHRIVEN' => GuildRankAndClearance::RANK_SOULSHRIVEN,

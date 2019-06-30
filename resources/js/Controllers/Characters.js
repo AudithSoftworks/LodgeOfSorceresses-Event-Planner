@@ -14,6 +14,7 @@ import { Link, Redirect } from 'react-router-dom';
 import deleteMyCharacterAction from '../actions/delete-my-character';
 import { infosAction } from '../actions/notifications';
 import List from '../Components/Characters/List';
+import { authorizeUser } from "../helpers";
 import { characters, user } from '../vendor/data';
 import Notification from '../Components/Notification';
 
@@ -76,9 +77,12 @@ class Characters extends PureComponent {
     };
 
     render = () => {
-        const { me, location, myCharacters } = this.props;
-        if (me === null || myCharacters === null) {
+        const { me, groups, location, myCharacters } = this.props;
+        if (!me || !myCharacters) {
             return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
+        }
+        if (me && groups && !authorizeUser(this.props)) {
+            return <Redirect to='/' />;
         }
         this.renderNoCharactersCreateOneNotification();
 
@@ -117,6 +121,7 @@ Characters.propTypes = {
 
     axiosCancelTokenSource: PropTypes.object,
     me: user,
+    groups: PropTypes.object,
     myCharacters: characters,
     notifications: PropTypes.array,
 
@@ -125,6 +130,7 @@ Characters.propTypes = {
 
 const mapStateToProps = state => ({
     me: state.getIn(['me']),
+    groups: state.getIn(['groups']),
     myCharacters: state.getIn(['myCharacters']),
     notifications: state.getIn(['notifications']),
 });

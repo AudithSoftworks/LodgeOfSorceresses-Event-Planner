@@ -50,7 +50,7 @@ class EventServiceProvider extends ServiceProvider
             Listeners\File\PersistUploadedFile::class
         ],
 
-        Events\User\LoggedInViaOauth::class => [
+        Events\User\LoggedIn::class => [
             Listeners\User\UpdateOauthUserData::class,
         ],
         Events\User\LoggedOut::class => [],
