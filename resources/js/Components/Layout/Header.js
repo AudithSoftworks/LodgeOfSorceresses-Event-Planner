@@ -84,7 +84,7 @@ class Header extends Component {
         const navbarFirstSection = me ? (
             <li className="chevron">
                 <figure>
-                    <img alt={email || 'The Soulless One'} src={me ? me.avatar : "/images/touch-icon-ipad.png"} />
+                    <img alt={email || 'The Soulless One'} src={me && me.avatar ? me.avatar : "/images/touch-icon-ipad.png"} />
                     <figcaption>{email || 'The Soulless One'}</figcaption>
                 </figure>
                 <FontAwesomeIcon icon="chevron-down" className="ml-2" />
