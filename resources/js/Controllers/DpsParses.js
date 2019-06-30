@@ -8,6 +8,7 @@ import { Link, Redirect } from 'react-router-dom';
 import deleteMyDpsParseAction from '../actions/delete-my-dps-parse';
 import { infosAction } from '../actions/notifications';
 import List from '../Components/DpsParses/List';
+import { authorizeUser } from "../helpers";
 import { characters, user } from '../vendor/data';
 import Notification from '../Components/Notification';
 
@@ -83,9 +84,12 @@ class DpsParses extends PureComponent {
     };
 
     render = () => {
-        const { me } = this.props;
+        const { groups, me } = this.props;
         if (!me) {
             return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
+        }
+        if (me && groups && !authorizeUser(this.props)) {
+            return <Redirect to='/' />;
         }
         const character = this.getCharacter();
         if (!character) {
@@ -115,6 +119,7 @@ DpsParses.propTypes = {
 
     axiosCancelTokenSource: PropTypes.object,
     me: user,
+    groups: PropTypes.object,
     myCharacters: characters,
     notifications: PropTypes.array,
 
@@ -123,6 +128,7 @@ DpsParses.propTypes = {
 
 const mapStateToProps = state => ({
     me: state.getIn(['me']),
+    groups: state.getIn(['groups']),
     myCharacters: state.getIn(['myCharacters']),
     notifications: state.getIn(['notifications']),
 });

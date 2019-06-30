@@ -81,7 +81,7 @@ class CharactersController extends Controller
      */
     public function show(int $char): JsonResponse
     {
-        $this->authorize('user', User::class);
+        $this->authorize('limited', User::class);
         $character = Character::query()
             ->with([
                 'dpsParses' => static function (HasMany $query) {
