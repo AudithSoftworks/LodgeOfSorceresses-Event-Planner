@@ -46,7 +46,7 @@ class Home extends PureComponent {
         if (me && !me.linkedAccountsParsed.discord && notifications.find(n => n.key === 'no-discord-account-linked') === undefined) {
             const message = [
                 <Fragment key="f-1">
-                    <b>Discord not linked!</b> Discord notifications are disabled! Additionally, your Parses won't be evaluated. Click
+                    <b>Discord not linked!</b> You won't be able to use Planner unless this issue is addressed. Click
                 </Fragment>,
                 <FontAwesomeIcon icon={['fab', 'discord']} key="icon" />,
                 <Fragment key="f-2">icon to the top right, to fix this.</Fragment>,

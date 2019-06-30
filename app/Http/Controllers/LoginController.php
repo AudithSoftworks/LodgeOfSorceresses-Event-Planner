@@ -131,6 +131,7 @@ class LoginController extends Controller
         $oauthTwoUser = $socialite->driver($provider)->user();
         if ($this->loginViaOAuth($oauthTwoUser, $provider)) {
             if (!empty($oauthTwoUser->token)) {
+                $request->session()->put('oauth_provider', $provider);
                 $request->session()->put('token', $oauthTwoUser->token);
             }
 

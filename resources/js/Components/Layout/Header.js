@@ -2,19 +2,19 @@ import(
     /* webpackPrefetch: true */
     /* webpackChunkName: "header-scss" */
     '../../../sass/_header.scss'
-);
+    );
 
 import { library } from '@fortawesome/fontawesome-svg-core/index';
-import { faHome, faUsers, faUsersCog } from '@fortawesome/pro-solid-svg-icons/index';
+import { faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faCampfire } from '@fortawesome/pro-solid-svg-icons/index';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome/index';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { NavLink, withRouter } from 'react-router-dom';
+import { Link, NavLink, withRouter } from 'react-router-dom';
 import { authorizeAdmin, authorizeUser } from "../../helpers";
 import { characters, user } from '../../vendor/data';
 
-library.add(faHome, faUsers, faUsersCog);
+library.add(faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faCampfire);
 
 class Header extends Component {
     renderNavLinks = navLinks => {
@@ -43,6 +43,13 @@ class Header extends Component {
                     <span className="d-none d-sm-inline-block">Home</span>
                 </NavLink>
             );
+        } else {
+            navLinks.push(
+                <NavLink exact to="/" activeClassName="active" title="Login">
+                    <FontAwesomeIcon icon="sign-in-alt" size="lg" />
+                    <span className="d-none d-sm-inline-block">Login</span>
+                </NavLink>
+            );
         }
         if (authorizeUser(this.props)) {
             navLinks.push(
@@ -54,23 +61,56 @@ class Header extends Component {
         }
         if (authorizeAdmin(this.props)) {
             navLinks.push(
-                <NavLink to="/admin" activeClassName="active" className="pull-right" title="Officer">
-                    <FontAwesomeIcon icon="users-cog" size="lg" />
-                    <span className="d-none d-sm-inline-block">Officer</span>
-                </NavLink>
+
             );
         }
 
         const navLinksRendered = this.renderNavLinks(navLinks);
 
+        let email = me ? me.email : null;
+        if (email) {
+            const posOfAtSignInEmail = email.indexOf('@');
+            email = email.slice(0, posOfAtSignInEmail + 1) + '...';
+        }
+
+        const officerLink = authorizeAdmin(this.props) ? (
+            <li>
+                <Link to="/admin" title="Officer Area">
+                    <FontAwesomeIcon icon="campfire" size="2x" />
+                    <span className="d-none d-sm-inline-block">Officer Area</span>
+                </Link>
+            </li>
+        ) : null;
+        const navbarFirstSection = me ? (
+            <li className="chevron">
+                <figure>
+                    <img alt={email || 'The Soulless One'} src={me ? me.avatar : "/images/touch-icon-ipad.png"} />
+                    <figcaption>{email || 'The Soulless One'}</figcaption>
+                </figure>
+                <FontAwesomeIcon icon="chevron-down" className="ml-2" />
+                <ul className="member-bar-dropdown">
+                    {officerLink}
+                    <li><a href="/logout"><FontAwesomeIcon icon="sign-out-alt" size="2x" /> Sign Out</a></li>
+                </ul>
+            </li>
+        ) : (
+            <li className="chevron">
+                <figure>
+                    <img alt={email || 'The Soulless One'} src={me ? me.avatar : "/images/touch-icon-ipad.png"} />
+                    <figcaption>Welcome, Soulless One!</figcaption>
+                </figure>
+            </li>
+        );
+
         return (
             <header className="container">
                 <h1 className="col-xs-24 col-md-18">Lodge of Sorceresses</h1>
-                <ul className="member-bar d-none">
+                <ul className="member-bar d-none d-md-flex">
+                    {navbarFirstSection}
                     <li>
-                        <figure>
-                            <img alt="" src="" />
-                        </figure>
+                        <a href="https://lodgeofsorceresses.com" title="Forums">
+                            <FontAwesomeIcon icon="globe" size="lg" />
+                        </a>
                     </li>
                 </ul>
                 <nav className="col-md-24">

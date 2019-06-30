@@ -22,7 +22,7 @@ body {
 
     > main.container {
         background-color: rgba(white, 0.85);
-        border-radius: 0 0 6px 6px;
+        border-radius: 0 6px 6px 6px;
         padding-top: $grid-gutter-width;
         padding-bottom: $grid-gutter-width;
         min-height: calc(100vh - 186px - 80px);

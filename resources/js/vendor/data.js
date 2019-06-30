@@ -4,6 +4,7 @@ export const user = PropTypes.shape({
     id: PropTypes.number,
     email: PropTypes.string,
     name: PropTypes.string,
+    avatar: PropTypes.string,
     linkedAccountsParsed: PropTypes.shape({
         discord: PropTypes.shape({
             id: PropTypes.number,
