@@ -61,23 +61,6 @@ class DpsParses extends PureComponent {
         }
     };
 
-    renderWarningForLackingDiscordOauthAccount = associatedDiscordAccount => {
-        let discordLinkWarning = null;
-        if (associatedDiscordAccount && !associatedDiscordAccount.length) {
-            discordLinkWarning = (
-                <article className="alert-danger">
-                    <b>Important note:</b>
-                    <ul>
-                        <li>
-                            Your Parses will not be evaluated until <a href="/oauth/to/discord">you link your Discord account</a>!
-                        </li>
-                    </ul>
-                </article>
-            );
-        }
-        return discordLinkWarning;
-    };
-
     renderActionList = () => {
         const actionList = {
             return: (
@@ -112,15 +95,12 @@ class DpsParses extends PureComponent {
 
         const dpsParses = character.dps_parses;
 
-        const discordLinkWarning = this.renderWarningForLackingDiscordOauthAccount(me.linkedAccountsParsed.discord);
-
         return [
             <section className="col-md-24 p-0 mb-4" key="dpsParsesList">
                 <h2 className="form-title col-md-24">
                     Parses for <i>{character.name}</i> Pending Approval
                 </h2>
                 <ul className="ne-corner">{this.renderActionList()}</ul>
-                {discordLinkWarning}
                 <List character={character} dpsParses={dpsParses} onDeleteHandler={this.handleDelete} />
             </section>,
             <Notification key="notifications" />,

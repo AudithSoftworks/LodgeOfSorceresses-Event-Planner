@@ -77,9 +77,15 @@ class RerankPlayerOnIpsAndDiscord
 
         $memberGroupId = $clearanceLevel ? GuildRankAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['ipsGroupId'] : IpsApi::MEMBER_GROUPS_INITIATE;
 
-        app('ips.api')->editUser($remoteIpsUser->remote_id, ['group' => $memberGroupId]);
+        if ($remoteIpsUser->remote_primary_group === IpsApi::MEMBER_GROUPS_SOULSHRIVEN) {
+            $remoteSecondaryGroups = [(string)$memberGroupId];
+            app('ips.api')->editUser($remoteIpsUser->remote_id, ['secondaryGroups' => $remoteSecondaryGroups]);
+            $remoteIpsUser->remote_secondary_groups = implode(',', $remoteSecondaryGroups);
+        } else {
+            app('ips.api')->editUser($remoteIpsUser->remote_id, ['group' => $memberGroupId]);
+            $remoteIpsUser->remote_primary_group = $memberGroupId;
+        }
 
-        $remoteIpsUser->remote_primary_group = $memberGroupId;
         $remoteIpsUser->save();
     }
 
@@ -95,6 +101,7 @@ class RerankPlayerOnIpsAndDiscord
             DiscordApi::ROLE_GUIDANCE,
             DiscordApi::ROLE_DOMINUS_LIMINIS,
             DiscordApi::ROLE_MEMBERS,
+            DiscordApi::ROLE_SOULSHRIVEN,
             DiscordApi::ROLE_RECTOR,
             DiscordApi::ROLE_CORE_ONE,
             DiscordApi::ROLE_CORE_TWO,
@@ -123,7 +130,10 @@ class RerankPlayerOnIpsAndDiscord
         }
 
         $newRoleToAssign = $clearanceLevel ? GuildRankAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['discordRole'] : DiscordApi::ROLE_INITIATE;
-        $rolesToAssign = array_merge($existingSpecialRoles, [$newRoleToAssign]);
+        if (in_array(DiscordApi::ROLE_SOULSHRIVEN, $usersDiscordRoles, true)) {
+            $newRoleToAssign = $clearanceLevel ? GuildRankAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['discordShrivenRole'] : DiscordApi::ROLE_SOULSHRIVEN;
+        }
+        $rolesToAssign = array_unique(array_merge($existingSpecialRoles, [$newRoleToAssign]));
         $result = app('discord.api')->modifyGuildMember($remoteDiscordUser->remote_id, ['roles' => $rolesToAssign]);
         if ($result) {
             $remoteDiscordUser->remote_secondary_groups = implode(',', $rolesToAssign);

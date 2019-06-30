@@ -19,6 +19,7 @@ class GuildRankAndClearance
         'title' => 'Initiate',
         'ipsGroupId' => IpsApi::MEMBER_GROUPS_INITIATE,
         'discordRole' => DiscordApi::ROLE_INITIATE,
+        'discordShrivenRole' => DiscordApi::ROLE_SOULSHRIVEN,
         'isMember' => true,
         'isAdmin' => false,
     ];
@@ -27,6 +28,7 @@ class GuildRankAndClearance
         'title' => 'Neophyte',
         'ipsGroupId' => IpsApi::MEMBER_GROUPS_NEOPHYTE,
         'discordRole' => DiscordApi::ROLE_NEOPHYTE,
+        'discordShrivenRole' => DiscordApi::ROLE_NEOPHYTE_SHRIVEN,
         'isMember' => true,
         'isAdmin' => false,
     ];
@@ -35,6 +37,7 @@ class GuildRankAndClearance
         'title' => 'Practicus',
         'ipsGroupId' => IpsApi::MEMBER_GROUPS_PRACTICUS,
         'discordRole' => DiscordApi::ROLE_PRACTICUS,
+        'discordShrivenRole' => DiscordApi::ROLE_PRACTICUS_SHRIVEN,
         'isMember' => true,
         'isAdmin' => false,
     ];
@@ -43,6 +46,7 @@ class GuildRankAndClearance
         'title' => 'Adeptus Minor',
         'ipsGroupId' => IpsApi::MEMBER_GROUPS_ADEPTUS_MINOR,
         'discordRole' => DiscordApi::ROLE_ADEPTUS_MINOR,
+        'discordShrivenRole' => DiscordApi::ROLE_ADEPTUS_MINOR_SHRIVEN,
         'isMember' => true,
         'isAdmin' => false,
     ];
@@ -51,6 +55,7 @@ class GuildRankAndClearance
         'title' => 'Adeptus Major',
         'ipsGroupId' => IpsApi::MEMBER_GROUPS_ADEPTUS_MAJOR,
         'discordRole' => DiscordApi::ROLE_ADEPTUS_MAJOR,
+        'discordShrivenRole' => DiscordApi::ROLE_ADEPTUS_MAJOR_SHRIVEN,
         'isMember' => true,
         'isAdmin' => false,
     ];
