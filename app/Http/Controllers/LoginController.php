@@ -168,7 +168,7 @@ class LoginController extends Controller
         /** @var UserOAuth $owningOAuthAccount */
         if ($owningOAuthAccount = UserOAuth::whereRemoteProvider($provider)->whereRemoteId($oauthTwoUser->id)->first()) {
             $ownerAccount = $owningOAuthAccount->owner;
-            $ownerAccount->name = $oauthTwoUser->getNickname();
+            $oauthTwoUser->getNickname() && $ownerAccount->name = $oauthTwoUser->getNickname();
             $ownerAccount->save();
 
             app('auth.driver')->login($ownerAccount);
@@ -208,8 +208,8 @@ class LoginController extends Controller
             $ownerAccount->trashed() && $ownerAccount::restore();
 
             # Update user name.
-            $ownerAccount->name = $oauthTwoUser->getNickname();
-            $ownerAccount->save();
+            $oauthTwoUser->getNickname() && $ownerAccount->name = $oauthTwoUser->getNickname();
+            $ownerAccount->isDirty() && $ownerAccount->save();
         }
         $this->linkOAuthAccount($oauthTwoUser, $provider, $ownerAccount);
         $authDriver->login($ownerAccount, true);
