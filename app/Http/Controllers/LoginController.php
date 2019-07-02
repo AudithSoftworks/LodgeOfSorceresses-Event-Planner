@@ -168,7 +168,7 @@ class LoginController extends Controller
         /** @var UserOAuth $owningOAuthAccount */
         if ($owningOAuthAccount = UserOAuth::whereRemoteProvider($provider)->whereRemoteId($oauthTwoUser->id)->first()) {
             $ownerAccount = $owningOAuthAccount->owner;
-            $ownerAccount->name = $oauthTwoUser->getName();
+            $ownerAccount->name = $oauthTwoUser->getNickname();
             $ownerAccount->save();
 
             app('auth.driver')->login($ownerAccount);
