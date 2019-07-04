@@ -97,10 +97,10 @@ class SyncYoutubeRssFeeds extends Command
                 $channel->isDirty() && $channel->save();
 
                 $entry = prev($entries);
-
-                $this->info('Done.');
             }
         }
+
+        $this->info('Done.');
     }
 
     private function postOnDiscord(YoutubeFeedsVideo $video): void
