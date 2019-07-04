@@ -29,7 +29,7 @@ class AnnounceDpsDisapprovalOnDiscord
          | Prelim
          *-----------------------------------*/
 
-        $channelId = config('services.discord.channels.midgame_dps_parses');
+        $channelId = config('services.discord.channels.dps_parses');
 
         $dpsParse = $event->dpsParse;
         $dpsParse->refresh();

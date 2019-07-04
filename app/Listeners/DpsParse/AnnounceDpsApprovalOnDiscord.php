@@ -34,7 +34,7 @@ class AnnounceDpsApprovalOnDiscord
          | Prelim
          *-----------------------------------*/
 
-        $midgameDpsParsesChannelId = config('services.discord.channels.midgame_dps_parses');
+        $dpsParsesChannelId = config('services.discord.channels.dps_parses');
 
         $dpsParse = $event->dpsParse;
         $dpsParse->refresh();
@@ -76,7 +76,7 @@ class AnnounceDpsApprovalOnDiscord
          *-----------------------------------*/
 
         $discordApi = app('discord.api');
-        $discordApi->deleteMessagesInChannel($midgameDpsParsesChannelId, $discordMessageIdsToDelete);
+        $discordApi->deleteMessagesInChannel($dpsParsesChannelId, $discordMessageIdsToDelete);
 
         /*------------------------------------------------------
          | Post approval announcement in #dps-parses channel
@@ -91,7 +91,7 @@ class AnnounceDpsApprovalOnDiscord
         $playerClearanceTitle = $playerClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['title'] : null;
         $characterClearanceTitle = $characterClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$characterClearance]['title'] : null;
         $className = ClassTypes::getClassName($character->class);
-        $responseDecoded = $discordApi->createMessageInChannel($midgameDpsParsesChannelId, [
+        $responseDecoded = $discordApi->createMessageInChannel($dpsParsesChannelId, [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
                     'content' => $mentionedName . ': DPS parse you submitted has been **approved** by ' . $myMentionedName . ".\n"
@@ -157,7 +157,7 @@ class AnnounceDpsApprovalOnDiscord
          | React to the message
          *-----------------------------------*/
 
-        $discordApi->reactToMessageInChannel($midgameDpsParsesChannelId, $responseDecoded['id'], '✅');
+        $discordApi->reactToMessageInChannel($dpsParsesChannelId, $responseDecoded['id'], '✅');
 
         /*-----------------------------------------------------------
          | Post clearance announcement as DM to the author

@@ -55,9 +55,9 @@ return [
         'guild_id' => env('DISCORD_GUILD_ID', 229980402574557184),
         'channels' => [
             'announcements' => env('APP_ENV') === 'production' ? env('DISCORD_ANNOUNCEMENTS_CHANNEL_ID') : env('DISCORD_TEST_CHANNEL_ID'),
+            'subscriptions' => env('APP_ENV') === 'production' ? env('DISCORD_SUBSCRIPTIONS_CHANNEL_ID') : env('DISCORD_TEST_CHANNEL_ID'),
             'officer_hq' => env('APP_ENV') === 'production' ? env('DISCORD_OFFICER_HQ_CHANNEL_ID') : env('DISCORD_TEST_CHANNEL_ID'),
-            'midgame_dps_parses' => env('APP_ENV') === 'production' ? env('DISCORD_MIDGAME_DPS_PARSES_CHANNEL_ID') : env('DISCORD_TEST_CHANNEL_ID'),
-            'endgame_dps_parses' => env('APP_ENV') === 'production' ? env('DISCORD_ENDGAME_DPS_PARSES_CHANNEL_ID') : env('DISCORD_TEST_CHANNEL_ID'),
+            'dps_parses' => env('APP_ENV') === 'production' ? env('DISCORD_DPS_PARSES_CHANNEL_ID') : env('DISCORD_TEST_CHANNEL_ID'),
         ],
     ],
     'pmg' => [

@@ -43,7 +43,7 @@ class PostNewDpsParseToDiscord
         $mentionedName = $discordAccount ? '<@!' . $discordAccount->remote_id . '>' : $me->name;
 
         $idsOfCreatedDiscordMessages = [];
-        $channelId = config('services.discord.channels.midgame_dps_parses');
+        $channelId = config('services.discord.channels.dps_parses');
         $responseDecoded = app('discord.api')->createMessageInChannel($channelId, [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
