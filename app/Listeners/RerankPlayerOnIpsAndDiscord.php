@@ -64,7 +64,8 @@ class RerankPlayerOnIpsAndDiscord
         $parseOwnersIpsAccount && $this->rerankUserOnIps($parseOwnersIpsAccount, $topClearanceExisting);
         $parseOwnersDiscordAccount && $this->rerankUserOnDiscord($parseOwnersDiscordAccount, $topClearanceExisting);
         $parseOwnersDiscordAccount && $this->announceRerankToThePlayerViaDiscordDm($discordApi, $parseOwnersDiscordAccount, $mentionedName, $topClearanceExisting);
-        $this->announceRerankInOfficerChannelOnDiscord($discordApi, $mentionedName, $topClearanceExisting);
+        $isParseOwnerASoulshriven = in_array(DiscordApi::ROLE_SOULSHRIVEN, explode(',', $parseOwnersDiscordAccount->remote_secondary_groups), true);
+        !$isParseOwnerASoulshriven && $this->announceRerankInOfficerChannelOnDiscord($discordApi, $mentionedName, $topClearanceExisting);
 
         return true;
     }
