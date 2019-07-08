@@ -131,4 +131,16 @@ class IpsApi
 
         return json_decode($response->getBody()->getContents(), true);
     }
+
+    public function createTopic(int $forum, string $title, string $post): array
+    {
+        $response = $this->apiClient->post($this->ipsUrl . '/forums/topics/', ['query' => [
+            'forum' => $forum,
+            'title' => $title,
+            'post' => $post,
+            'author' => self::USER_ID_FOR_DANDELION,
+        ]]);
+
+        return json_decode($response->getBody()->getContents(), true);
+    }
 }

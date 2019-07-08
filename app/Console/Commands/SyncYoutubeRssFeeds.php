@@ -89,6 +89,7 @@ class SyncYoutubeRssFeeds extends Command
                 $video->thumbnail = $xpath->query('./media:thumbnail', $mediaGroup)->item(0)->attributes->getNamedItem('url')->nodeValue;
 
                 $this->postOnDiscord($video);
+                $this->postOnIps($video);
                 sleep(1);
 
                 $video->save();
@@ -118,5 +119,21 @@ class SyncYoutubeRssFeeds extends Command
         ]);
         $video->discord_message_id = $responseDecoded['id'];
         $this->info('Posted on Discord (Video ID: ' . $video->id . ')');
+    }
+
+    private function postOnIps(YoutubeFeedsVideo $video): void
+    {
+        $forumId = config('services.ips.forums.herald');
+        $title = '[' . $video->channel->title . '] ' . $video->title;
+        $post = '
+            <div class="ipsEmbeddedVideo" contenteditable="false">
+                <div>
+                    <iframe allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" height="270" id="ips_uid_1588_7" width="480" frameborder="0" data-embed-src="https://www.youtube.com/embed/' . $video->id . '?feature=oembed"></iframe>
+                </div>
+            </div>
+        ';
+        $ipsApi = app('ips.api');
+        $ipsApi->createTopic($forumId, $title, $post);
+        $this->info('Posted on Forums (Video ID: ' . $video->id . ')');
     }
 }

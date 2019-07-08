@@ -45,6 +45,9 @@ return [
         'redirect' => env('IPS_REDIRECT_URI'),
         'api_key' => env('IPS_API_KEY'),
         'url' => env('IPS_URL'),
+        'forums' => [
+            'herald' => env('IPS_HERALD_FORUM_ID'),
+        ],
     ],
     'discord' => [
         'client_id' => env('DISCORD_CLIENT_ID'),
