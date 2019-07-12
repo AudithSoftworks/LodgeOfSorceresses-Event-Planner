@@ -156,7 +156,7 @@ class LoginController extends Controller
             if (!($discordUser = app('discord.api')->getGuildMember($oauthTwoUser->getId()))) {
                 throw new UserNotMemberInDiscord('You need to join Lodge Discord server to continue! Please do so and come back afterwards.');
             }
-            $oauthTwoUser->nickname = $discordUser['nick'];
+            $discordUser['nick'] && $oauthTwoUser->nickname = $discordUser['nick'];
         }
         if ($provider === 'ips' && $ipsUser = app('ips.api')->getUser($oauthTwoUser->getId())) {
             $oauthTwoUser->verified = !(bool)$ipsUser['validating'];
@@ -168,8 +168,12 @@ class LoginController extends Controller
         /** @var UserOAuth $owningOAuthAccount */
         if ($owningOAuthAccount = UserOAuth::whereRemoteProvider($provider)->whereRemoteId($oauthTwoUser->id)->first()) {
             $ownerAccount = $owningOAuthAccount->owner;
-            $oauthTwoUser->getNickname() && $ownerAccount->name = $oauthTwoUser->getNickname();
-            $ownerAccount->save();
+            if (empty($ownerAccount->name) || preg_match('/\#\d{4}$/', $ownerAccount->name)) {
+                $usableName = $oauthTwoUser->getNickname() ?? $oauthTwoUser->getName();
+                !preg_match('/\#\d{4}$/', $usableName) && $ownerAccount->name = $usableName;
+            }
+
+            $ownerAccount->isDirty() && $ownerAccount->save();
 
             app('auth.driver')->login($ownerAccount);
             event(new LoggedIn($ownerAccount));
@@ -197,7 +201,7 @@ class LoginController extends Controller
             $ownerAccount = User::withTrashed()->whereEmail($oauthTwoUser->email)->first();
             if (!$ownerAccount) {
                 $ownerAccount = User::create([
-                    'name' => $oauthTwoUser->getNickname(),
+                    'name' => $oauthTwoUser->getNickname() ?? $oauthTwoUser->getName(),
                     'email' => $oauthTwoUser->getEmail(),
                     'password' => app('hash')->make(uniqid('', true))
                 ]);
@@ -208,7 +212,11 @@ class LoginController extends Controller
             $ownerAccount->trashed() && $ownerAccount::restore();
 
             # Update user name.
-            $oauthTwoUser->getNickname() && $ownerAccount->name = $oauthTwoUser->getNickname();
+            if (empty($ownerAccount->name) || preg_match('/\#\d{4}$/', $ownerAccount->name)) {
+                $usableName = $oauthTwoUser->getNickname() ?? $oauthTwoUser->getName();
+                !preg_match('/\#\d{4}$/', $usableName) && $ownerAccount->name = $usableName;
+            }
+
             $ownerAccount->isDirty() && $ownerAccount->save();
         }
         $this->linkOAuthAccount($oauthTwoUser, $provider, $ownerAccount);
