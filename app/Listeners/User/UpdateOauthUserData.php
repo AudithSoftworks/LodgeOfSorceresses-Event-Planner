@@ -41,6 +41,7 @@ class UpdateOauthUserData
 
                 $avatarHash = $remoteUserDataFetchedThroughApi['user']['avatar'] ?? null;
                 $avatarHash && $avatarExtension = strpos($avatarHash, 'a_') === 0 ? 'gif' : 'png';
+                $avatarHash = preg_replace('/^a_/', '', $avatarHash);
                 isset($avatarExtension) && $avatarUrl = sprintf('https://cdn.discordapp.com/avatars/%s/%s.%s?size=256', $linkedAccount->remote_id, $avatarHash, $avatarExtension);
                 if (isset($avatarUrl)) {
                     $hasUserAvatarChanged = $user->avatar !== $avatarUrl && false !== strpos($user->avatar, 'cdn.discordapp.com');
