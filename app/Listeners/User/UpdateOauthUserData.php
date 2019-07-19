@@ -45,7 +45,7 @@ class UpdateOauthUserData
                 if (isset($avatarUrl)) {
                     $hasUserAvatarChanged = $user->avatar !== $avatarUrl && false !== strpos($user->avatar, 'cdn.discordapp.com');
                     if ($userHasNoAvatar || $hasUserAvatarChanged) {
-                        $user->avatar = $remoteUserDataFetchedThroughApi['photoUrl'];
+                        $user->avatar = $avatarUrl;
                     }
                 }
             }
