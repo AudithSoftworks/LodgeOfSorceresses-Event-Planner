@@ -3,8 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Models\UserOAuth;
-use GuzzleHttp\Exception\RequestException;
+use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Http\Response;
 
 class SyncDiscordOauthLinks extends Command
 {
@@ -59,30 +60,28 @@ class SyncDiscordOauthLinks extends Command
 
             try {
                 $remoteUserDataFetchedThroughApi = $this->discordApi->getGuildMember($oauthAccount->remote_id);
-                $oauthAccount->remote_secondary_groups = count($remoteUserDataFetchedThroughApi['roles'])
+                $oauthAccount->remote_secondary_groups = !empty($remoteUserDataFetchedThroughApi['roles'])
                     ? implode(',', $remoteUserDataFetchedThroughApi['roles'])
                     : null;
                 $oauthAccount->touch();
                 $oauthAccount->save();
                 $this->info($memberNameParsed . ' Successfully synced.');
-            } catch (RequestException $e) {
-                $errorMessage = $e->getMessage();
-                if (preg_match('/429 TOO MANY REQUESTS/', $errorMessage)) {
-                    preg_match('/"retry_after": (\d+)/', $errorMessage, $retryAfterMatch);
+            } catch (Exception $e) {
+                if ($e->getCode() === Response::HTTP_TOO_MANY_REQUESTS) {
+                    preg_match('/"retry_after": (\d+)/', $e->getMessage(), $retryAfterMatch);
                     $microSecondsToWait = (int)$retryAfterMatch[1] * 1000;
                     usleep($microSecondsToWait);
                     $this->warn($memberNameParsed . ' Being rated... Waiting for ' . $microSecondsToWait . ' microsecs.');
                     continue;
                 }
-
-                if (preg_match('/404 NOT FOUND/', $errorMessage)) {
+                if ($e->getCode() === Response::HTTP_NOT_FOUND) {
                     $this->error($memberNameParsed . ' Member not found, deleting account...');
                     $user = $oauthAccount->owner;
                     if ($user) {
                         try {
                             $user->forceDelete();
                             $this->warn($memberNameParsed . ' Deleted.');
-                        } catch (\Exception $e) {
+                        } catch (Exception $e) {
                             $this->error($memberNameParsed . ' Failed to delete: ' . $e->getMessage());
                         }
                     }
