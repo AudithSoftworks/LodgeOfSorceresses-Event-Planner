@@ -132,7 +132,6 @@ class DiscordApi
     public function getGuildMember(string $memberId): ?array
     {
         $response = $this->discordClient->get('guilds/' . $this->discordGuildId . '/members/' . $memberId);
-        /** @noinspection PhpUndefinedVariableInspection */
         $this->lastResponseHeaders = $response->getHeaders();
 
         return json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);

@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\UserOAuth;
 use Exception;
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\Command;
 use Illuminate\Http\Response;
 
@@ -66,7 +67,7 @@ class SyncDiscordOauthLinks extends Command
                 $oauthAccount->touch();
                 $oauthAccount->save();
                 $this->info($memberNameParsed . ' Successfully synced.');
-            } catch (Exception $e) {
+            } catch (ClientException $e) {
                 if ($e->getCode() === Response::HTTP_TOO_MANY_REQUESTS) {
                     preg_match('/"retry_after": (\d+)/', $e->getMessage(), $retryAfterMatch);
                     $microSecondsToWait = (int)$retryAfterMatch[1] * 1000;
