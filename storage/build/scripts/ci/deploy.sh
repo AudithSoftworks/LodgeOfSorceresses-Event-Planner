@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-if [[ ${DB_CONNECTION} != 'mysql' ]]; then exit 0; fi
-
 sed -e "s/APP_ENV=.*/APP_ENV=production/g" \
     -e "s@APP_KEY=.*@APP_KEY=${APP_KEY}@g" \
     -e "s/APP_DEBUG=.*/APP_DEBUG=false/g" \
