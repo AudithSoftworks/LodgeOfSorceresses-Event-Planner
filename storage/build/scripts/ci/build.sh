@@ -56,6 +56,7 @@ docker-compose exec php bash -c "
     convertFonts.sh --use-font-weight --output=public/fonts/skyrim-daedra/stylesheet.css public/fonts/skyrim-daedra/*.ttf;
     convertFonts.sh --use-font-weight --output=public/fonts/sovngarde/stylesheet.css public/fonts/sovngarde/*.ttf;
 
+    mkdir -p ~/.ssh && touch ~/.ssh/known_hosts && chmod 0600 ~/.ssh/known_hosts;
     ssh-keyscan -H github.com >> ~/.ssh/known_hosts;
     NODE_ENV=production npm run build;
     composer install --prefer-source --no-interaction;
