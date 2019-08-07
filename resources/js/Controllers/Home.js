@@ -1,3 +1,4 @@
+import * as Calendar from '../Components/Events/Calendar';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -81,6 +82,7 @@ class Home extends PureComponent {
                     Dashboard
                 </h2>
                 <ul className="ne-corner">{actionListRendered}</ul>
+                <Calendar.Month />
             </section>,
             <Notification key="notifications" />,
         ];

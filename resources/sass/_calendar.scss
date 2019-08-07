@@ -1,0 +1,47 @@
+table {
+    &.calendar {
+        &.month-view {
+            > thead {
+                > tr {
+                    > th {
+                        text-align: center;
+                        width: calc((100% - 70px) / 7);
+
+                        &:first-of-type {
+                            width: 70px;
+                        }
+                    }
+                }
+            }
+
+            > tbody {
+                > tr {
+                    &:hover {
+                        background-image: none;
+                    }
+
+                    > td {
+                        height: 7em;
+
+                        &:first-of-type {
+                            vertical-align: middle;
+                        }
+
+                        &.days {
+                            position: relative;
+                            border: 1px #cccccc solid;
+
+                            &:after {
+                                content: attr(data-date);
+                                position: absolute;
+                                top: 2px;
+                                right: 4px;
+                                z-index: 10;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
