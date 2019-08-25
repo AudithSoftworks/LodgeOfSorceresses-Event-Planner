@@ -52,6 +52,13 @@ const DpsParseForm = React.lazy(() =>
         '../../Controllers/Forms/DpsParseForm'
     )
 );
+const Events = React.lazy(() =>
+    import(
+        /* webpackPrefetch: true */
+        /* webpackChunkName: "controllers-events" */
+        '../../Controllers/Events'
+        )
+);
 
 const AdminHome = React.lazy(() =>
     import(
@@ -84,6 +91,7 @@ class Main extends Component {
                         <Route exact path="/" component={props => <Init {...props} />} />
                         <Route exact path="/dashboard" component={props => <Home {...props} />} />
                         <Route exact path="/characters/:id" component={props => <Character {...props} />} />
+                        <Route exact path="/events" component={props => <Events {...props} />} />
                         <Route
                             path="/@me/characters"
                             render={({ match: { url } }) => (

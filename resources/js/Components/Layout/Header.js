@@ -5,7 +5,7 @@ import(
     );
 
 import { library } from '@fortawesome/fontawesome-svg-core/index';
-import { faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faCampfire } from '@fortawesome/pro-solid-svg-icons/index';
+import { faCalendarAlt, faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faCampfire } from '@fortawesome/pro-solid-svg-icons/index';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome/index';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -14,7 +14,7 @@ import { Link, NavLink, withRouter } from 'react-router-dom';
 import { authorizeAdmin, authorizeUser } from "../../helpers";
 import { characters, user } from '../../vendor/data';
 
-library.add(faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faCampfire);
+library.add(faCalendarAlt, faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faCampfire);
 
 class Header extends Component {
     renderNavLinks = navLinks => {
@@ -56,6 +56,12 @@ class Header extends Component {
                 <NavLink to="/@me/characters" activeClassName="active" title="My Characters">
                     <FontAwesomeIcon icon="users" size="lg" />
                     <span className="d-none d-sm-inline-block">My Characters</span>
+                </NavLink>
+            );
+            navLinks.push(
+                <NavLink to="/events" activeClassName="active" title="Calendar">
+                    <FontAwesomeIcon icon="calendar-alt" size="lg" />
+                    <span className="d-none d-sm-inline-block">Calendar</span>
                 </NavLink>
             );
         }
