@@ -1,17 +1,13 @@
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { faCalendarPlus } from '@fortawesome/pro-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import * as Calendar from '../Components/Events/Calendar';
 import Notification from '../Components/Notification';
 import { authorizeAdmin } from '../helpers';
 import { user } from '../vendor/data';
-
-library.add(faCalendarPlus, faDiscord);
 
 class Events extends PureComponent {
     componentWillUnmount = () => {
@@ -21,9 +17,9 @@ class Events extends PureComponent {
     renderActionList = () => {
         const actionList = {
             create: authorizeAdmin(this.props) ? (
-                <a href="/events/create" className="ne-corner" title="Add New Event">
-                    <FontAwesomeIcon icon={['far', 'calendar-plus']} />
-                </a>
+                <Link to="/events/create" className="ne-corner" title="Add New Event">
+                    <FontAwesomeIcon icon={faCalendarPlus} />
+                </Link>
             ) : null,
         };
         let actionListRendered = [];
