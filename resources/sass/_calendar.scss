@@ -30,6 +30,7 @@ table {
                         &.days {
                             position: relative;
                             border: 1px #cccccc solid;
+                            padding-top: 1.7em;
 
                             &:after {
                                 content: attr(data-date);
