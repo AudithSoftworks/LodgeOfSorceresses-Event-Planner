@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers\Auth;
 
+use App\Events\User\Updated;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -59,6 +60,8 @@ class UsersController extends Controller
         $me = app('auth.driver')->user();
         $me->name = ltrim($request->get('name'), '@');
         $me->save();
+
+        app('events')->dispatch(new Updated($me));
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);
     }

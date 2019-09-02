@@ -55,6 +55,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         Events\User\LoggedOut::class => [],
         Events\User\Registered::class => [],
+        Events\User\Updated::class => [
+            Listeners\User\UpdateDiscordAndForumNames::class,
+        ],
     ];
 
     /**
