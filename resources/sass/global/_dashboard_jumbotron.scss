@@ -41,6 +41,11 @@
         &.half-transparent {
             opacity: 0.5;
         }
+
+        a {
+            text-decoration: underline;
+            color: inherit;
+        }
     }
 
     &.success {
