@@ -50,6 +50,20 @@ class EventForm extends PureComponent {
         }));
 
         const heading = (match.params.id ? 'Edit' : 'Create') + ' Event';
+        const contentTierAdjustmentOptions = [
+            { value: 0, label: 'No, restrict to actual content tier!' },
+            { value: -1, label: 'Yes, allow players of 1 tier below.' },
+            { value: -4, label: 'Yes, allow players of any tier clearance.' },
+        ];
+        const autoCheckInOptions = [
+            { value: 0, label: 'Regular Event: Attendance is voluntary, members need to check-in manually.' },
+            { value: 1, label: 'Mandated Event: Attendance is mandatory, members are automatically checked-in.' },
+        ];
+        const teams = [
+            { value: 1, label: 'Core One'},
+            { value: 2, label: 'Core Two'},
+            { value: 3, label: 'Core Three'},
+        ];
 
         return (
             <form className="col-md-24 d-flex flex-row flex-wrap p-0" onSubmit={this.handleSubmit} key="characterCreationForm">
@@ -82,14 +96,27 @@ class EventForm extends PureComponent {
                 <fieldset className="form-group col-md-7">
                     <label>Ease-up on Tier Clearance?</label>
                     <Select
-                        options={[
-                            { value: 0, label: 'No, restrict to actual content tier!' },
-                            { value: -1, label: 'Yes, allow players of 1 tier below.' },
-                            { value: -4, label: 'Yes, allow players of any tier clearance.' },
-                        ]}
-                        defaultValue={0}
+                        options={contentTierAdjustmentOptions}
+                        defaultValue={contentTierAdjustmentOptions[0]}
                         components={Animated}
                         name="content_tier_adjustment"
+                    />
+                </fieldset>
+                <fieldset className="form-group col-md-12">
+                    <label>Check-in Mode</label>
+                    <Select
+                        options={autoCheckInOptions}
+                        defaultValue={autoCheckInOptions[0]}
+                        components={Animated}
+                        name="auto_check_in"
+                    />
+                </fieldset>
+                <fieldset className="form-group col-md-4">
+                    <label>Mandated Team</label>
+                    <Select
+                        options={teams}
+                        components={Animated}
+                        name="mandated_team_id"
                     />
                 </fieldset>
                 <fieldset className="form-group col-md-24 text-right">
