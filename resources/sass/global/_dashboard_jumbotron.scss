@@ -1,0 +1,57 @@
+.jumbotron {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    margin-bottom: 1rem;
+    font-family: "AsapCondensed", sans-serif;
+    font-weight: 400;
+
+    > * {
+        margin-right: 0.3em;
+    }
+
+    > h3 {
+        font-family: inherit;
+        margin-bottom: 0;
+    }
+
+    > p {
+        margin-bottom: 0;
+        font-style: italic;
+        font-size: 1.75rem;
+    }
+
+    > input {
+        border: 1px rgb(204, 204, 204) solid;
+        border-radius: 4px;
+        padding: 2px 8px;
+        height: auto;
+        line-height: 32px;
+        font-size: 1rem;
+    }
+
+    > small {
+        width: 100%;
+        text-align: center;
+
+        &.half-transparent {
+            opacity: 0.5;
+        }
+    }
+
+    &.success {
+        background-color: rgba(144, 238, 144, 0.3);
+    }
+
+    &.danger {
+        background-color: rgba(238, 144, 144, 0.3);
+
+        & > small {
+            margin-top: 10px;
+        }
+    }
+}

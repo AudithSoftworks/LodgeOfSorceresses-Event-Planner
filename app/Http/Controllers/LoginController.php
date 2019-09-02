@@ -168,13 +168,6 @@ class LoginController extends Controller
         /** @var UserOAuth $owningOAuthAccount */
         if ($owningOAuthAccount = UserOAuth::whereRemoteProvider($provider)->whereRemoteId($oauthTwoUser->id)->first()) {
             $ownerAccount = $owningOAuthAccount->owner;
-            if (empty($ownerAccount->name) || preg_match('/#\d{4}$/', $ownerAccount->name)) {
-                $usableName = $oauthTwoUser->getNickname() ?? $oauthTwoUser->getName();
-                !preg_match('/#\d{4}$/', $usableName) && $ownerAccount->name = $usableName;
-            }
-
-            $ownerAccount->isDirty() && $ownerAccount->save();
-
             app('auth.driver')->login($ownerAccount);
             event(new LoggedIn($ownerAccount));
 
@@ -201,7 +194,6 @@ class LoginController extends Controller
             $ownerAccount = User::withTrashed()->whereEmail($oauthTwoUser->email)->first();
             if (!$ownerAccount) {
                 $ownerAccount = User::create([
-                    'name' => $oauthTwoUser->getNickname() ?? $oauthTwoUser->getName(),
                     'email' => $oauthTwoUser->getEmail(),
                     'password' => app('hash')->make(uniqid('', true))
                 ]);
@@ -210,12 +202,6 @@ class LoginController extends Controller
 
             # If user account is soft-deleted, restore it.
             $ownerAccount->trashed() && $ownerAccount::restore();
-
-            # Update user name.
-            if (empty($ownerAccount->name) || preg_match('/#\d{4}$/', $ownerAccount->name)) {
-                $usableName = $oauthTwoUser->getNickname() ?? $oauthTwoUser->getName();
-                !preg_match('/#\d{4}$/', $usableName) && $ownerAccount->name = $usableName;
-            }
 
             $ownerAccount->isDirty() && $ownerAccount->save();
         }

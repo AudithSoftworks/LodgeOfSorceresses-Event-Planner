@@ -81,7 +81,7 @@ class Characters extends PureComponent {
         if (!me || !myCharacters) {
             return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
-        if (me && groups && !authorizeUser(this.props)) {
+        if (me && groups && !authorizeUser(this.props, true)) {
             return <Redirect to='/' />;
         }
         this.renderNoCharactersCreateOneNotification();

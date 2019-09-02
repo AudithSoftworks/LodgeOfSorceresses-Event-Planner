@@ -1,3 +1,9 @@
+import(
+    /* webpackPrefetch: true */
+    /* webpackChunkName: "dashboard-jumbotron-scss" */
+    '../../sass/global/_dashboard_jumbotron.scss'
+    );
+
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -6,8 +12,9 @@ import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { errorsAction } from '../actions/notifications';
-import { user } from '../vendor/data';
 import Notification from '../Components/Notification';
+import Name from "../Components/Users/Name";
+import { user } from '../vendor/data';
 
 library.add(faDiscord);
 
@@ -77,10 +84,11 @@ class Home extends PureComponent {
 
         return [
             <section className="col-md-24 p-0 mb-4" key="dashboard">
-                <h2 className="form-title col-md-24" title="Dashboard">
-                    Dashboard
+                <h2 className="form-title col-md-24" title="Account Status">
+                    Account Status
                 </h2>
                 <ul className="ne-corner">{actionListRendered}</ul>
+                <Name />
             </section>,
             <Notification key="notifications" />,
         ];

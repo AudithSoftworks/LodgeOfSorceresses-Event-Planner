@@ -15,6 +15,7 @@ $router->middleware(['auth:api', 'throttle'])->group(static function (Router $ro
 
 $router->middleware(['auth:api', 'throttle'])->group(static function (Router $router) {
     $router->get('users/@me', 'Auth\UsersController@me')->name('users@me');
+    $router->put('users/@me', 'Auth\UsersController@update')->name('users@update');
     $router->apiResource('users/@me/characters', 'Auth\CharactersController');
     $router->apiResource('users/@me/characters/{char}/parses', 'Auth\DpsParsesController');
 });

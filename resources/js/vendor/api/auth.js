@@ -19,6 +19,17 @@ export const getUser = (cancelToken) => axios.get('/api/users/@me', {
     throw error;
 });
 
+export const putUser = (cancelToken, data) => axios.post('/api/users/@me', data, {
+    cancelToken: cancelToken.token,
+    headers: {
+        'X-HTTP-Method-Override': 'PUT'
+    }
+}).then(
+    response => response
+).catch(error => {
+    throw error;
+});
+
 export const getMyCharacters = (cancelToken) => axios.get('/api/users/@me/characters', {
     cancelToken: cancelToken.token
 }).then(response => {

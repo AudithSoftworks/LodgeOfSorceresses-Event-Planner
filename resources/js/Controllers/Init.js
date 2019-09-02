@@ -52,6 +52,7 @@ class Init extends PureComponent {
                                     if (!content) {
                                         this.props.getContentAction();
                                     }
+                                } else {
                                 }
                             });
                     }
@@ -66,9 +67,10 @@ class Init extends PureComponent {
     renderAccessDeniedNotification = () => {
         const { dispatch } = this.props;
         const message = [
-            <Fragment key="f-1">You do not have <b>Soulshriven</b> or any member tag (<b>Initiate</b> etc) on Lodge Discord server.</Fragment>,
-            <Fragment key="f-2">Please contact guild leader on Discord, to fix this.</Fragment>,
-            <Fragment key="f-3">You won't be able to use Planner until this issue is addressed!</Fragment>,
+            <Fragment key="f-1">Pre-checks failed! First, make sure your ESO ID is set!</Fragment>,
+            <Fragment key="f-2">Then, make sure you have <b>Soulshriven</b> or any member tag (<b>Initiate</b> etc) on Lodge Discord server.</Fragment>,
+            <Fragment key="f-3">Please contact guild leader on Discord if you need help with these issues.</Fragment>,
+            <Fragment key="f-4">You won't be able to use Planner until they are addressed!</Fragment>,
         ].reduce((acc, curr) => [acc, ' ', curr]);
         dispatch(
             errorsAction(

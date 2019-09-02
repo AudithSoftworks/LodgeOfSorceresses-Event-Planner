@@ -8,8 +8,12 @@ export const authorizeAdmin = ({ me, groups }) => {
     return !(!myGroup || !myGroup[1]['isAdmin']);
 };
 
-export const authorizeUser = ({ me, groups }) => {
+export const authorizeUser = ({ me, groups }, withAdditionalPrechecks = false) => {
     if (!me || !groups || !me.linkedAccountsParsed.discord) {
+        return false;
+    }
+
+    if (withAdditionalPrechecks && (!me.name || !me.name.length)) {
         return false;
     }
 

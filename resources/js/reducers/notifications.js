@@ -39,7 +39,7 @@ const notificationsReducer = (state = [], action) => {
             listOfNotifications.push({ ...notificationProps, options });
         }
     } else if (type === actions.TYPE_TRIGGER_SUCCESS || type.indexOf('_SUCCESS') !== -1) {
-        if (message) {
+        if (message && message.length) {
             const notificationProps = { persist: true };
             notificationProps.message = message;
             notificationProps.key = key || v4();

@@ -51,7 +51,7 @@ class Header extends Component {
                 </NavLink>
             );
         }
-        if (authorizeUser(this.props)) {
+        if (authorizeUser(this.props) && me.name && me.name.length ) {
             navLinks.push(
                 <NavLink to="/@me/characters" activeClassName="active" title="My Characters">
                     <FontAwesomeIcon icon="users" size="lg" />
@@ -65,11 +65,9 @@ class Header extends Component {
                 </NavLink>
             );
         }
-        if (authorizeAdmin(this.props)) {
-            navLinks.push(
-
-            );
-        }
+        // if (authorizeAdmin(this.props)) {
+        //     navLinks.push([]);
+        // }
 
         const navLinksRendered = this.renderNavLinks(navLinks);
 

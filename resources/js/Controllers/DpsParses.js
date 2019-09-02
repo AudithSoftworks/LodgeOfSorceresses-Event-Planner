@@ -88,7 +88,7 @@ class DpsParses extends PureComponent {
         if (!me) {
             return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
-        if (me && groups && !authorizeUser(this.props)) {
+        if (me && groups && !authorizeUser(this.props, true)) {
             return <Redirect to='/' />;
         }
         const character = this.getCharacter();

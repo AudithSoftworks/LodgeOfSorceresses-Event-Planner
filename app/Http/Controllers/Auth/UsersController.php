@@ -3,6 +3,8 @@
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class UsersController extends Controller
 {
@@ -33,14 +35,31 @@ class UsersController extends Controller
     }
 
     /**
+     * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws \Illuminate\Validation\ValidationException
      */
-    public function updateName(): JsonResponse
+    public function update(Request $request): JsonResponse
     {
         $this->authorize('user', User::class);
+        $validatorErrorMessages = [
+            'name.required' => 'ESO ID can\'t be empty!',
+        ];
+        $validator = app('validator')->make($request->all(), [
+            'name' => 'required|string',
+        ], $validatorErrorMessages);
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
 
         /** @var \App\Models\User $me */
         $me = app('auth.driver')->user();
+        $me->name = ltrim($request->get('name'), '@');
+        $me->save();
+
+        return response()->json([], JsonResponse::HTTP_NO_CONTENT);
     }
 }
