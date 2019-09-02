@@ -168,9 +168,9 @@ class LoginController extends Controller
         /** @var UserOAuth $owningOAuthAccount */
         if ($owningOAuthAccount = UserOAuth::whereRemoteProvider($provider)->whereRemoteId($oauthTwoUser->id)->first()) {
             $ownerAccount = $owningOAuthAccount->owner;
-            if (empty($ownerAccount->name) || preg_match('/\#\d{4}$/', $ownerAccount->name)) {
+            if (empty($ownerAccount->name) || preg_match('/#\d{4}$/', $ownerAccount->name)) {
                 $usableName = $oauthTwoUser->getNickname() ?? $oauthTwoUser->getName();
-                !preg_match('/\#\d{4}$/', $usableName) && $ownerAccount->name = $usableName;
+                !preg_match('/#\d{4}$/', $usableName) && $ownerAccount->name = $usableName;
             }
 
             $ownerAccount->isDirty() && $ownerAccount->save();
@@ -212,9 +212,9 @@ class LoginController extends Controller
             $ownerAccount->trashed() && $ownerAccount::restore();
 
             # Update user name.
-            if (empty($ownerAccount->name) || preg_match('/\#\d{4}$/', $ownerAccount->name)) {
+            if (empty($ownerAccount->name) || preg_match('/#\d{4}$/', $ownerAccount->name)) {
                 $usableName = $oauthTwoUser->getNickname() ?? $oauthTwoUser->getName();
-                !preg_match('/\#\d{4}$/', $usableName) && $ownerAccount->name = $usableName;
+                !preg_match('/#\d{4}$/', $usableName) && $ownerAccount->name = $usableName;
             }
 
             $ownerAccount->isDirty() && $ownerAccount->save();

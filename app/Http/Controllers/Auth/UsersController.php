@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 
 class UsersController extends Controller
@@ -13,7 +14,7 @@ class UsersController extends Controller
         $guard = app('auth.driver');
 
         if (!$guard->check()) {
-            return response()->json();
+            return response()->json([], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
         /** @var \App\Models\User $me */
@@ -29,5 +30,17 @@ class UsersController extends Controller
         $me->makeHidden(['linkedAccounts']);
 
         return response()->json($me);
+    }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function updateName(): JsonResponse
+    {
+        $this->authorize('user', User::class);
+
+        /** @var \App\Models\User $me */
+        $me = app('auth.driver')->user();
     }
 }

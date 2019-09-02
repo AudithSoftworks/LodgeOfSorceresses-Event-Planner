@@ -55,7 +55,7 @@ class Handler extends ExceptionHandler
     {
         if ($e instanceof ModelNotFoundException || $e instanceof UserNotMemberInDiscord || $e instanceof UserNotActivatedException) {
             return $request->expectsJson()
-                ? response()->json(['message' => $e->getMessage() ?? 'Not found!'], $e instanceof ModelNotFoundException ? 404 : 403)
+                ? response()->json(['message' => $e->getMessage() ?? 'Not found!'], $e instanceof ModelNotFoundException ? SymfonyHttpResponse::HTTP_NOT_FOUND : SymfonyHttpResponse::HTTP_FORBIDDEN)
                 : redirect()->guest('/logout');
         }
 
@@ -89,7 +89,7 @@ class Handler extends ExceptionHandler
     protected function unauthenticated($request, AuthenticationException $exception): SymfonyHttpResponse
     {
         return $request->expectsJson()
-            ? response()->json(['message' => 'Not authenticated. Please refresh the page!'], 401)
+            ? response()->json(['message' => 'Not authenticated. Please refresh the page!'], SymfonyHttpResponse::HTTP_UNAUTHORIZED)
             : redirect()->guest('/');
     }
 }

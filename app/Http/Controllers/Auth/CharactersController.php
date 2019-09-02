@@ -4,20 +4,22 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\Character;
-use App\Models\File;
 use App\Models\User;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
+use App\Traits\Characters\HasDpsParse;
+use App\Traits\Characters\IsCharacter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use UnexpectedValueException;
 
 class CharactersController extends Controller
 {
+    use IsCharacter, HasDpsParse;
+
     /**
      * Display a listing of the resource.
      *
@@ -38,37 +40,15 @@ class CharactersController extends Controller
             ->orderBy('id', 'desc')
             ->get();
         if ($characters->count()) {
-            app('cache.store')->has('sets'); // Trigger Recache listener.
-            $sets = app('cache.store')->get('sets');
-            app('cache.store')->has('skills'); // Trigger Recache listener.
-            $skills = app('cache.store')->get('skills');
             foreach ($characters as $character) {
                 $character->class = ClassTypes::getClassName($character->class);
                 $character->role = RoleTypes::getRoleName($character->role);
-
-                $characterSets = array_filter($sets, static function ($key) use ($character) {
-                    return in_array($key, explode(',', $character->sets), false);
-                }, ARRAY_FILTER_USE_KEY);
-                $character->sets = array_values($characterSets);
-
-                $characterSkills = array_filter($skills, static function ($key) use ($character) {
-                    return in_array($key, explode(',', $character->skills), false);
-                }, ARRAY_FILTER_USE_KEY);
-                $character->skills = array_values($characterSkills);
+                $character->sets = $this->parseCharacterSets($character);
+                $character->skills = $this->parseCharacterSkills($character);
 
                 foreach ($character->dpsParses as $dpsParse) {
-                    $setsUsedInDpsParse = array_filter($sets, static function ($key) use ($dpsParse) {
-                        return in_array($key, explode(',', $dpsParse->sets), false);
-                    }, ARRAY_FILTER_USE_KEY);
-                    $dpsParse->sets = array_values($setsUsedInDpsParse);
-
-                    $parseFile = File::whereHash($dpsParse->parse_file_hash)->first();
-                    $superstarFile = File::whereHash($dpsParse->superstar_file_hash)->first();
-                    if (!$parseFile || !$superstarFile) {
-                        throw new UnexpectedValueException('Couldn\'t find screenshot file records!');
-                    }
-                    $dpsParse->parse_file_hash = app('filestream')->url($parseFile);
-                    $dpsParse->superstar_file_hash = app('filestream')->url($superstarFile);
+                    $dpsParse->sets = $this->parseDpsParseSets($dpsParse);
+                    $this->parseScreenshotFiles($dpsParse);
                 }
             }
         }
@@ -157,34 +137,12 @@ class CharactersController extends Controller
 
         $character->class = ClassTypes::getClassName($character->class);
         $character->role = RoleTypes::getRoleName($character->role);
-
-        app('cache.store')->has('sets'); // Trigger Recache listener.
-        $sets = app('cache.store')->get('sets');
-        $charactersSets = array_filter($sets, static function ($key) use ($character) {
-            return in_array($key, explode(',', $character->sets), false);
-        }, ARRAY_FILTER_USE_KEY);
-        $character->sets = array_values($charactersSets);
-
-        app('cache.store')->has('skills'); // Trigger Recache listener.
-        $skills = app('cache.store')->get('skills');
-        $charactersSkills = array_filter($skills, static function ($key) use ($character) {
-            return in_array($key, explode(',', $character->skills), false);
-        }, ARRAY_FILTER_USE_KEY);
-        $character->skills = array_values($charactersSkills);
+        $character->sets = $this->parseCharacterSets($character);
+        $character->skills = $this->parseCharacterSkills($character);
 
         foreach ($character->dpsParses as $dpsParse) {
-            $setsUsedInDpsParse = array_filter($sets, static function ($key) use ($dpsParse) {
-                return in_array($key, explode(',', $dpsParse->sets), false);
-            }, ARRAY_FILTER_USE_KEY);
-            $dpsParse->sets = array_values($setsUsedInDpsParse);
-
-            $parseFile = File::whereHash($dpsParse->parse_file_hash)->first();
-            $superstarFile = File::whereHash($dpsParse->superstar_file_hash)->first();
-            if (!$parseFile || !$superstarFile) {
-                throw new UnexpectedValueException('Couldn\'t find screenshot file records!');
-            }
-            $dpsParse->parse_file_hash = app('filestream')->url($parseFile);
-            $dpsParse->superstar_file_hash = app('filestream')->url($superstarFile);
+            $dpsParse->sets = $this->parseDpsParseSets($dpsParse);
+            $this->parseScreenshotFiles($dpsParse);
         }
 
         return response()->json($character);
