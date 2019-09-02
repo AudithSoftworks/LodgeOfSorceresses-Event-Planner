@@ -4,19 +4,15 @@ import(
     '../../sass/global/_dashboard_jumbotron.scss'
     );
 
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faDiscord } from '@fortawesome/free-brands-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import Notification from '../Components/Notification';
 import DiscordOauthAccount from "../Components/Users/DiscordOauthAccount";
+import IpsOauthAccount from "../Components/Users/IpsOauthAccount";
 import Name from "../Components/Users/Name";
 import { user } from '../vendor/data';
-
-library.add(faDiscord);
 
 class Home extends PureComponent {
     componentWillUnmount = () => {
@@ -33,8 +29,10 @@ class Home extends PureComponent {
                 <h2 className="form-title col-md-24" title="Account Status">
                     Account Status
                 </h2>
+                <p className='col-md-24'>Please fix the problems below in order they are listed.</p>
                 <DiscordOauthAccount />
                 <Name />
+                <IpsOauthAccount />
             </section>,
             <Notification key="notifications" />,
         ];

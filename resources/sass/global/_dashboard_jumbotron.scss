@@ -49,12 +49,21 @@
     }
 
     &.success {
-        background-color: rgba(144, 238, 144, 0.3);
+        background-color: #d4edda;
+        border: 1px #c3e6cb solid;
     }
 
     &.danger {
-        background-color: rgba(238, 144, 144, 0.3);
+        background-color: #f8d7da;
+        border: 1px #f5c6cb solid;
+    }
 
+    &.warning {
+        background-color: #fff3cd;
+        border: 1px #ffeeba solid;
+    }
+
+    &.danger, &.warning {
         & > small {
             margin-top: 10px;
         }
