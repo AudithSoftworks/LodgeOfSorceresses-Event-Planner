@@ -29,10 +29,10 @@ class Home extends PureComponent {
                 <h2 className="form-title col-md-24" title="Account Status">
                     Account Status
                 </h2>
-                <p className='col-md-24'>Please fix the problems below in order they are listed.</p>
+                <p className='col-md-24'>Please fix the problems below in the order they are listed, as one problem might be a blocker for another (the ones listed after it).</p>
                 <DiscordOauthAccount />
-                <Name />
                 <IpsOauthAccount />
+                <Name />
             </section>,
             <Notification key="notifications" />,
         ];
