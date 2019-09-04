@@ -175,7 +175,7 @@ class DpsParseForm extends PureComponent {
         this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Unmount');
     }
 
-    componentWillUpdate = nextProps => {
+    UNSAFE_componentWillUpdate = nextProps => {
         // We had a change in Characters data: Redirect!
         const { match } = this.props;
         const characterId = match.params.id;

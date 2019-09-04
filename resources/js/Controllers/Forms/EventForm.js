@@ -14,7 +14,7 @@ class EventForm extends PureComponent {
         this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Unmount');
     };
 
-    componentWillUpdate = nextProps => {
+    UNSAFE_componentWillUpdate = nextProps => {
         // We had a change in Events data: Redirect!
         if (nextProps.myCharacters.length !== this.props.myCharacters.length) {
             return this.props.history.push('/events');
