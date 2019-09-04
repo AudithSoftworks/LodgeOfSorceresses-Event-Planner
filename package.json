@@ -35,7 +35,7 @@
         "terser-webpack-plugin": "^1.4.1",
         "webpack": "^4.39.3",
         "webpack-cli": "^3.3.7",
-        "webpack-dev-middleware": "^3.7.0",
+        "webpack-dev-middleware": "^3.7.1",
         "webpack-manifest-plugin": "^2.0.4",
         "webpack-merge": "^4.2.2"
     },
@@ -58,7 +58,7 @@
         "immutable": "^4.0.0-rc.12",
         "lodash": "^4.17.15",
         "mocha": "^6.2.0",
-        "moment": "github:moment/moment",
+        "moment": "^2.24.0",
         "moment-timezone": "^0.5.26",
         "normalizr": "^3.4.1",
         "prop-types": "^15.7.2",
