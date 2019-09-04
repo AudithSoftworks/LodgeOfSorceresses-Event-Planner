@@ -69,7 +69,7 @@
         "react-notifications-component": "^1.1.1",
         "react-redux": "^7.1.1",
         "react-router-dom": "^5.0.1",
-        "react-select": "^2.4.4",
+        "react-select": "^3.0.4",
         "react-uuid": "^1.0.2",
         "redux": "^4.0.4",
         "redux-immutable": "^4.0.0",

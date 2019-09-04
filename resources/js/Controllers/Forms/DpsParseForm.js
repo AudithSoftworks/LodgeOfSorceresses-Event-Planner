@@ -5,7 +5,7 @@ import Loadable from 'react-loadable';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import Select from 'react-select';
-import * as Animated from 'react-select/lib/animated';
+import Animated from 'react-select/animated';
 import postMyDpsParseAction from '../../actions/post-my-dps-parse';
 import putMyDpsParseAction from '../../actions/put-my-dps-parse';
 import { characters, user } from '../../vendor/data';

@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import Select from 'react-select';
-import * as Animated from 'react-select/lib/animated';
+import Animated from 'react-select/animated';
 import postMyCharacterAction from '../../actions/post-my-character';
 import putMyCharacterAction from '../../actions/put-my-character';
 import Notification from '../../Components/Notification';
