@@ -75,6 +75,6 @@ docker-compose exec php bash -c "
 ";
 
 docker-compose exec php bash -c "
-    NODE_ENV=production npm install;
+    npm install --production;
     NODE_ENV=production npm run build;
 ";
