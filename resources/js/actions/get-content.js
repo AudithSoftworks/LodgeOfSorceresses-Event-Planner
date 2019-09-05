@@ -24,7 +24,7 @@ const getContentFailureAction = error => {
 
 const getContentAction = () => (dispatch, getState) => {
     dispatch(getContentSendAction());
-    let axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
+    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .getContent(axiosCancelTokenSource, dispatch)
         .then(response => {

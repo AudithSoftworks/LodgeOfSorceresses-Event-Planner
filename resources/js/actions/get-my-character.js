@@ -27,7 +27,7 @@ const getMyCharacterFailureAction = error => {
 
 const getMyCharacterAction = (characterId, customMessage) => (dispatch, getState) => {
     dispatch(getMyCharacterSendAction(characterId));
-    let axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
+    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .getMyCharacter(axiosCancelTokenSource, characterId, dispatch)
         .then(response => {

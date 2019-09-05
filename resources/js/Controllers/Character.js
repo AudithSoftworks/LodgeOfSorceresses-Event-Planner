@@ -134,7 +134,7 @@ class Character extends PureComponent {
                     </a>
                 ) : null,
         };
-        let actionListRendered = [];
+        const actionListRendered = [];
         for (const [actionType, link] of Object.entries(actionList)) {
             if (link) {
                 actionListRendered.push(<li key={actionType}>{link}</li>);

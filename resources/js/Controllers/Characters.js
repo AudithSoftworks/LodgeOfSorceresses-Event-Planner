@@ -14,7 +14,7 @@ import { Link, Redirect } from 'react-router-dom';
 import deleteMyCharacterAction from '../actions/delete-my-character';
 import { infosAction } from '../actions/notifications';
 import List from '../Components/Characters/List';
-import { authorizeUser } from "../helpers";
+import { authorizeUser } from '../helpers';
 import { characters, user } from '../vendor/data';
 import Notification from '../Components/Notification';
 
@@ -28,7 +28,7 @@ class Characters extends PureComponent {
     handleDelete = event => {
         event.preventDefault();
         if (confirm('Are you sure you want to delete this character?')) {
-            let currentTarget = event.currentTarget;
+            const currentTarget = event.currentTarget;
             const { deleteMyCharacterAction } = this.props;
             const characterId = parseInt(currentTarget.getAttribute('data-id'));
 
@@ -68,7 +68,7 @@ class Characters extends PureComponent {
                 </Link>
             ),
         };
-        let actionListRendered = [];
+        const actionListRendered = [];
         for (const [actionType, link] of Object.entries(actionList)) {
             actionListRendered.push(<li key={actionType}>{link}</li>);
         }

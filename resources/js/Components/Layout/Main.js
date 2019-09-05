@@ -102,7 +102,7 @@ class Main extends Component {
                         <Route exact path="/events/create" component={props => <EventForm {...props} />} />
                         <Route
                             path="/@me/characters"
-                            render={({ match: { url } }) => (
+                            render={({ match: { url }}) => (
                                 <Fragment>
                                     <Route exact path={url} component={props => <Characters {...props} />} />
                                     <Route path={url + '/create'} component={props => <CharacterForm {...props} />} />
@@ -114,7 +114,7 @@ class Main extends Component {
                         />
                         <Route
                             path="/admin"
-                            render={({ match: { url } }) => (
+                            render={({ match: { url }}) => (
                                 <Fragment>
                                     <Route exact path={url} component={props => <AdminHome {...props} />} />
                                     <Route exact path={url + '/characters'} component={props => <AdminCharacters {...props} />} />

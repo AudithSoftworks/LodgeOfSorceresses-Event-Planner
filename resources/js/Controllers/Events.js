@@ -22,7 +22,7 @@ class Events extends PureComponent {
                 </Link>
             ) : null,
         };
-        let actionListRendered = [];
+        const actionListRendered = [];
         for (const [actionType, link] of Object.entries(actionList)) {
             if (link) {
                 actionListRendered.push(<li key={actionType}>{link}</li>);

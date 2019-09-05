@@ -24,7 +24,7 @@ const getSkillsFailureAction = error => {
 
 const getSkillsAction = () => (dispatch, getState) => {
     dispatch(getSkillsSendAction());
-    let axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
+    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .getSkills(axiosCancelTokenSource, dispatch)
         .then(response => {

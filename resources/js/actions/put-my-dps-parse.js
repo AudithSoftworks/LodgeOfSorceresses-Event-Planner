@@ -22,7 +22,7 @@ const putMyDpsParseFailureAction = error => ({
 
 const putMyDpsParseAction = (characterId, parseId, data) => (dispatch, getState) => {
     dispatch(putMyDpsParseSendAction(characterId, parseId, data));
-    let axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
+    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .putMyDpsParse(axiosCancelTokenSource, characterId, parseId, data, dispatch)
         .then(() => {

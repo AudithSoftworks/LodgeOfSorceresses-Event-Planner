@@ -29,7 +29,7 @@ const deleteMyCharacterFailureAction = error => {
 
 const deleteMyCharacterAction = characterId => (dispatch, getState) => {
     dispatch(deleteMyCharacterSendAction(characterId));
-    let axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
+    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .deleteMyCharacter(axiosCancelTokenSource, characterId, dispatch)
         .then(response => {

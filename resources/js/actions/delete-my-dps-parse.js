@@ -29,7 +29,7 @@ export const deleteMyDpsParseFailureAction = error => ({
 
 const deleteMyDpsParseAction = (characterId, parseId) => (dispatch, getState) => {
     dispatch(deleteMyDpsParseSendAction(characterId, parseId));
-    let axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
+    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .deleteMyDpsParse(axiosCancelTokenSource, characterId, parseId, dispatch)
         .then(response => {

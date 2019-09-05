@@ -41,12 +41,12 @@ class Item extends PureComponent {
                 !character.approved_for_t2 &&
                 !character.approved_for_t3 &&
                 !character.approved_for_t4 ? (
-                    <Link to="#" onClick={onDeleteHandler} data-id={character.id} title="Delete Character">
-                        <FontAwesomeIcon icon={['far', 'trash-alt']} />
-                    </Link>
-                ) : null,
+                        <Link to="#" onClick={onDeleteHandler} data-id={character.id} title="Delete Character">
+                            <FontAwesomeIcon icon={['far', 'trash-alt']} />
+                        </Link>
+                    ) : null,
         };
-        let actionListRendered = [];
+        const actionListRendered = [];
         for (const [actionType, link] of Object.entries(character.actionList)) {
             if (link) {
                 actionListRendered.push(<li key={actionType}>{link}</li>);

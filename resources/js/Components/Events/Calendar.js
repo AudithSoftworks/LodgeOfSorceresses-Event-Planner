@@ -25,7 +25,7 @@ export class Month extends PureComponent {
 
         let aWeekRendered = [];
         const aMonthRendered = [];
-        let startingNumberOfGaps = date.isoWeekday() - 1;
+        const startingNumberOfGaps = date.isoWeekday() - 1;
         if (startingNumberOfGaps) {
             aWeekRendered.push(<td key="starting-gap" colSpan={startingNumberOfGaps} />);
         }
@@ -46,7 +46,7 @@ export class Month extends PureComponent {
                 date.add(1, 'days');
             }
         }
-        let endingNumberOfGaps = 7 - date.isoWeekday();
+        const endingNumberOfGaps = 7 - date.isoWeekday();
         if (endingNumberOfGaps) {
             aWeekRendered.push(<td key="ending-gap" colSpan={endingNumberOfGaps} />);
         }

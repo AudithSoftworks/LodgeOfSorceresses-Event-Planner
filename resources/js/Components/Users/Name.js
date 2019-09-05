@@ -1,8 +1,8 @@
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { connect } from "react-redux";
+import { connect } from 'react-redux';
 import putUserAction from '../../actions/put-user';
-import { user } from "../../vendor/data";
+import { user } from '../../vendor/data';
 
 class Name extends PureComponent {
     handleSubmit = event => {

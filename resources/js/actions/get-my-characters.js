@@ -24,7 +24,7 @@ const getMyCharactersFailureAction = error => {
 
 const getMyCharactersAction = () => (dispatch, getState) => {
     dispatch(getMyCharactersSendAction());
-    let axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
+    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .getMyCharacters(axiosCancelTokenSource, dispatch)
         .then(response => {

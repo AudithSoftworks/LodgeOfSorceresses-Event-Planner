@@ -4,7 +4,7 @@ import * as actions from '../actions/notifications';
 
 const notificationsReducer = (state = [], action) => {
     let listOfNotifications = [...state];
-    let { type, key, message, errors, options, uuidToRemove } = action;
+    const { type, key, message, errors, options, uuidToRemove } = action;
     listOfNotifications = listOfNotifications.filter(n => n.persist === true);
     if (type === actions.TYPE_TRIGGER_ERROR || type.indexOf('_FAILURE') !== -1) {
         if (errors && Object.keys(errors)) {

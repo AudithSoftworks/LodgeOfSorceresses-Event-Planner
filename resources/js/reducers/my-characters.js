@@ -18,9 +18,9 @@ const myCharactersReducer = (state = null, action) => {
 
         return newState;
     } else if (action.type === getActions.TYPE_GET_MY_CHARACTER_SUCCESS) {
-        let newState = state === null ? [] : [...state];
+        const newState = state === null ? [] : [...state];
         const characterId = action.characterId;
-        let indexOfCharacterUpdatedInStore = newState.findIndex(c => c.id === parseInt(characterId));
+        const indexOfCharacterUpdatedInStore = newState.findIndex(c => c.id === parseInt(characterId));
         if (indexOfCharacterUpdatedInStore !== -1) {
             newState.splice(indexOfCharacterUpdatedInStore, 1, action.response.entities.characters[characterId]);
         } else {
@@ -37,10 +37,10 @@ const myCharactersReducer = (state = null, action) => {
     }
 
     if (action.type === showDpsParseActions.TYPE_GET_MY_DPS_PARSE_SUCCESS) {
-        let newState = state === null ? [] : [...state];
+        const newState = state === null ? [] : [...state];
         const { characterId, parseId } = action;
-        let indexOfCharacterDpsSubmittedFor = newState.findIndex(c => c.id === parseInt(characterId));
-        let characterDpsSubmittedFor = newState.find(c => c.id === parseInt(characterId));
+        const indexOfCharacterDpsSubmittedFor = newState.findIndex(c => c.id === parseInt(characterId));
+        const characterDpsSubmittedFor = newState.find(c => c.id === parseInt(characterId));
         if (characterDpsSubmittedFor) {
             characterDpsSubmittedFor.dps_parses.push(action.response.entities.dpsParses[parseId]); // We only store. No edits!
             newState.splice(indexOfCharacterDpsSubmittedFor, 1);
@@ -49,7 +49,7 @@ const myCharactersReducer = (state = null, action) => {
 
         return newState;
     } else if (action.type === destroyDpsParseActions.TYPE_DELETE_MY_DPS_PARSE_SUCCESS) {
-        let newState = state === null ? [] : [...state];
+        const newState = state === null ? [] : [...state];
         const characterId = action.characterId;
         const parseId = action.parseId;
         const character = newState.find(item => item.id === characterId);

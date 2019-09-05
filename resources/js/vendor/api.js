@@ -1,14 +1,14 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
-import { normalize } from "normalizr";
+import { normalize } from 'normalizr';
 import React from 'react';
-import axios from "./axios";
+import axios from './axios';
 import * as schema from './schema';
 
 library.add(faDiscord);
 
-export const getUserGroups = (cancelToken) => axios.get('/api/groups', {
-    cancelToken: cancelToken.token
+export const getUserGroups = cancelToken => axios.get('/api/groups', {
+    cancelToken: cancelToken.token,
 }).then(response => {
     if (response.data) {
         return response.data;
@@ -19,8 +19,8 @@ export const getUserGroups = (cancelToken) => axios.get('/api/groups', {
     throw error;
 });
 
-export const getSets = (cancelToken) => axios.get('/api/sets', {
-    cancelToken: cancelToken.token
+export const getSets = cancelToken => axios.get('/api/sets', {
+    cancelToken: cancelToken.token,
 }).then(response => {
     if (response.data) {
         return normalize(response.data, schema.listOfSets);
@@ -31,8 +31,8 @@ export const getSets = (cancelToken) => axios.get('/api/sets', {
     throw error;
 });
 
-export const getSkills = (cancelToken) => axios.get('/api/skills', {
-    cancelToken: cancelToken.token
+export const getSkills = cancelToken => axios.get('/api/skills', {
+    cancelToken: cancelToken.token,
 }).then(response => {
     if (response.data) {
         return normalize(response.data, schema.listOfSkills);
@@ -43,8 +43,8 @@ export const getSkills = (cancelToken) => axios.get('/api/skills', {
     throw error;
 });
 
-export const getContent = (cancelToken) => axios.get('/api/content', {
-    cancelToken: cancelToken.token
+export const getContent = cancelToken => axios.get('/api/content', {
+    cancelToken: cancelToken.token,
 }).then(response => {
     if (response.data) {
         return normalize(response.data, schema.listOfContent);
@@ -55,8 +55,8 @@ export const getContent = (cancelToken) => axios.get('/api/content', {
     throw error;
 });
 
-export const getAllCharacters = (cancelToken) => axios.get('/api/characters', {
-    cancelToken: cancelToken.token
+export const getAllCharacters = cancelToken => axios.get('/api/characters', {
+    cancelToken: cancelToken.token,
 }).then(response => {
     if (response.data) {
         return normalize(response.data, schema.listOfCharacters);
@@ -68,7 +68,7 @@ export const getAllCharacters = (cancelToken) => axios.get('/api/characters', {
 });
 
 export const getCharacter = (cancelToken, characterId) => axios.get('/api/characters/' + characterId, {
-    cancelToken: cancelToken.token
+    cancelToken: cancelToken.token,
 }).then(response => {
     if (response.data) {
         return normalize(response.data, schema.character);

@@ -24,7 +24,7 @@ const getGroupsFailureAction = error => {
 
 const getGroupsAction = () => (dispatch, getState) => {
     dispatch(getGroupsSendAction());
-    let axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
+    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .getUserGroups(axiosCancelTokenSource, dispatch)
         .then(response => {

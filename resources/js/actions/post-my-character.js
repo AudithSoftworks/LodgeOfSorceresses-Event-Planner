@@ -20,7 +20,7 @@ const postMyCharacterFailureAction = error => ({
 
 const postMyCharacterAction = data => (dispatch, getState) => {
     dispatch(postMyCharacterSendAction(data));
-    let axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
+    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .postMyCharacter(axiosCancelTokenSource, data, dispatch)
         .then(response => {

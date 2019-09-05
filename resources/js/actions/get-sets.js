@@ -24,7 +24,7 @@ const getSetsFailureAction = error => {
 
 const getSetsAction = () => (dispatch, getState) => {
     dispatch(getSetsSendAction());
-    let axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
+    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .getSets(axiosCancelTokenSource, dispatch)
         .then(response => {

@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
-import { connect } from "react-redux";
-import { user } from "../../vendor/data";
+import { connect } from 'react-redux';
+import { user } from '../../vendor/data';
 
 class IpsOauthAccount extends PureComponent {
     render = () => {

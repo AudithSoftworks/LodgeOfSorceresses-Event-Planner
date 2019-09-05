@@ -13,7 +13,7 @@ const getUserSendAction = () => ({
 const getUserSuccessAction = (response, message) => ({
     type: TYPE_GET_USER_SUCCESS,
     response: response,
-    message
+    message,
 });
 
 const getUserFailureAction = error => {
@@ -25,7 +25,7 @@ const getUserFailureAction = error => {
 
 const getUserAction = customMessage => (dispatch, getState) => {
     dispatch(getUserSendAction());
-    let axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
+    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .getUser(axiosCancelTokenSource, dispatch)
         .then(response => {

@@ -127,7 +127,7 @@ class Characters extends PureComponent {
     };
 
     filter = (event, typeUpdating) => {
-        let temp = Object.assign({}, this.state.filters);
+        const temp = Object.assign({}, this.state.filters);
         for (const [type, value] of Object.entries(temp)) {
             if (type === typeUpdating) {
                 temp[type] = !value;
@@ -191,7 +191,7 @@ class Characters extends PureComponent {
                 </Link>
             ),
         };
-        let actionListRendered = [];
+        const actionListRendered = [];
         for (const [actionType, link] of Object.entries(character.actionList)) {
             if (link) {
                 actionListRendered.push(<li key={actionType}>{link}</li>);
@@ -248,7 +248,7 @@ class Characters extends PureComponent {
             ];
         }
 
-        let { filters } = this.state;
+        const { filters } = this.state;
         const filterList = {
             no_clearance: (
                 <button type="button" onClick={event => this.filter(event, 'no_clearance')} className={'ne-corner ' + (filters.no_clearance || 'inactive')} title="Filter No-Clearance">
@@ -311,7 +311,7 @@ class Characters extends PureComponent {
                 </button>
             ),
         };
-        let actionListRendered = [];
+        const actionListRendered = [];
         for (const [filterType, link] of Object.entries(filterList)) {
             actionListRendered.push(<li key={filterType}>{link}</li>);
         }
@@ -356,7 +356,7 @@ class Characters extends PureComponent {
     render = () => {
         const { me, location } = this.props;
         if (!me) {
-            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname }}} />;
         }
 
         if (!authorizeAdmin(this.props)) {

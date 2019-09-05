@@ -8,7 +8,7 @@ import { Link, Redirect } from 'react-router-dom';
 import deleteMyDpsParseAction from '../actions/delete-my-dps-parse';
 import { infosAction } from '../actions/notifications';
 import List from '../Components/DpsParses/List';
-import { authorizeUser } from "../helpers";
+import { authorizeUser } from '../helpers';
 import { characters, user } from '../vendor/data';
 import Notification from '../Components/Notification';
 
@@ -29,7 +29,7 @@ class DpsParses extends PureComponent {
     handleDelete = event => {
         event.preventDefault();
         if (confirm('Are you sure you want to delete this parse?')) {
-            let currentTarget = event.currentTarget;
+            const currentTarget = event.currentTarget;
             const { match, deleteMyDpsParseAction } = this.props;
             const characterId = parseInt(match.params.id);
             const parseId = parseInt(currentTarget.getAttribute('data-id'));
@@ -75,7 +75,7 @@ class DpsParses extends PureComponent {
                 </Link>
             ),
         };
-        let actionListRendered = [];
+        const actionListRendered = [];
         for (const [actionType, link] of Object.entries(actionList)) {
             actionListRendered.push(<li key={actionType}>{link}</li>);
         }

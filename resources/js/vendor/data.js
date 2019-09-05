@@ -1,4 +1,4 @@
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
 export const user = PropTypes.shape({
     id: PropTypes.number,
@@ -84,11 +84,11 @@ export const dpsParse = PropTypes.shape({
     sets: PropTypes.array,
     parse_file_hash: PropTypes.shape({
         thumbnail: PropTypes.string,
-        large: PropTypes.string
+        large: PropTypes.string,
     }),
     superstar_file_hash: PropTypes.shape({
         thumbnail: PropTypes.string,
-        large: PropTypes.string
+        large: PropTypes.string,
     }),
     discord_notification_message_ids: PropTypes.string,
     processed_by: PropTypes.number,

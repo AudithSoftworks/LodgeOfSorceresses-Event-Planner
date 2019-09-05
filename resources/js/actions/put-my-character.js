@@ -23,7 +23,7 @@ const putMyCharacterFailureAction = error => ({
 
 const putMyCharacterAction = (characterId, data) => (dispatch, getState) => {
     dispatch(putMyCharacterSendAction(characterId, data));
-    let axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
+    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .putMyCharacter(axiosCancelTokenSource, characterId, data, dispatch)
         .then(() => {

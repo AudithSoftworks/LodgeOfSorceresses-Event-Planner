@@ -20,7 +20,7 @@ const putUserFailureAction = error => ({
 
 const putUserAction = data => (dispatch, getState) => {
     dispatch(putUserSendAction(data));
-    let axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
+    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .putUser(axiosCancelTokenSource, data, dispatch)
         .then(response => {

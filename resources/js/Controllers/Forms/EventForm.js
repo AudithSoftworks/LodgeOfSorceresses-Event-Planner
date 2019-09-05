@@ -60,9 +60,9 @@ class EventForm extends PureComponent {
             { value: 1, label: 'Mandated Event: Attendance is mandatory, members are automatically checked-in.' },
         ];
         const teams = [
-            { value: 1, label: 'Core One'},
-            { value: 2, label: 'Core Two'},
-            { value: 3, label: 'Core Three'},
+            { value: 1, label: 'Core One' },
+            { value: 2, label: 'Core Two' },
+            { value: 3, label: 'Core Three' },
         ];
 
         return (

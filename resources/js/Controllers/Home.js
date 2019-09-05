@@ -2,16 +2,16 @@ import(
     /* webpackPrefetch: true */
     /* webpackChunkName: "dashboard-jumbotron-scss" */
     '../../sass/global/_dashboard_jumbotron.scss'
-    );
+);
 
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import Notification from '../Components/Notification';
-import DiscordOauthAccount from "../Components/Users/DiscordOauthAccount";
-import IpsOauthAccount from "../Components/Users/IpsOauthAccount";
-import Name from "../Components/Users/Name";
+import DiscordOauthAccount from '../Components/Users/DiscordOauthAccount';
+import IpsOauthAccount from '../Components/Users/IpsOauthAccount';
+import Name from '../Components/Users/Name';
 import { user } from '../vendor/data';
 
 class Home extends PureComponent {

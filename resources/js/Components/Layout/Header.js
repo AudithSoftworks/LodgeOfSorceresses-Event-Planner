@@ -2,7 +2,7 @@ import(
     /* webpackPrefetch: true */
     /* webpackChunkName: "header-scss" */
     '../../../sass/_header.scss'
-    );
+);
 
 import { library } from '@fortawesome/fontawesome-svg-core/index';
 import { faCalendarAlt, faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faCampfire } from '@fortawesome/pro-solid-svg-icons/index';
@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link, NavLink, withRouter } from 'react-router-dom';
-import { authorizeAdmin, authorizeUser } from "../../helpers";
+import { authorizeAdmin, authorizeUser } from '../../helpers';
 import { characters, user } from '../../vendor/data';
 
 library.add(faCalendarAlt, faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faCampfire);
@@ -19,7 +19,7 @@ library.add(faCalendarAlt, faChevronDown, faGlobe, faHome, faSignInAlt, faSignOu
 class Header extends Component {
     renderNavLinks = navLinks => {
         return navLinks.map((item, idx) => {
-            let { className } = item.props;
+            const { className } = item.props;
             let newClassName = 'nav-item';
             if (className) {
                 newClassName += ' ' + className;
@@ -88,7 +88,7 @@ class Header extends Component {
         const navbarFirstSection = me ? (
             <li className="chevron">
                 <figure>
-                    <img alt={email || 'The Soulless One'} src={me && me.avatar ? me.avatar : "/images/touch-icon-ipad.png"} />
+                    <img alt={email || 'The Soulless One'} src={me && me.avatar ? me.avatar : '/images/touch-icon-ipad.png'} />
                     <figcaption>{email || 'The Soulless One'}</figcaption>
                 </figure>
                 <FontAwesomeIcon icon="chevron-down" className="ml-2" />
@@ -100,7 +100,7 @@ class Header extends Component {
         ) : (
             <li className="chevron">
                 <figure>
-                    <img alt={email || 'The Soulless One'} src={me && me.avatar ? me.avatar : "/images/touch-icon-ipad.png"} />
+                    <img alt={email || 'The Soulless One'} src={me && me.avatar ? me.avatar : '/images/touch-icon-ipad.png'} />
                     <figcaption>Welcome, Soulless One!</figcaption>
                 </figure>
             </li>

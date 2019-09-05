@@ -26,7 +26,7 @@ class Item extends PureComponent {
                     </Link>
                 ) : null,
         };
-        let actionListRendered = [];
+        const actionListRendered = [];
         for (const [actionType, link] of Object.entries(dpsParse.actionList)) {
             actionListRendered.push(<li key={actionType}>{link}</li>);
         }

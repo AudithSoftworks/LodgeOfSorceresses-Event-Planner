@@ -1,7 +1,7 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { faUserShield } from '@fortawesome/pro-regular-svg-icons';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'react-redux';
@@ -12,10 +12,10 @@ import getMyCharactersAction from '../actions/get-my-characters';
 import getSetsAction from '../actions/get-sets';
 import getSkillsAction from '../actions/get-skills';
 import getUserAction from '../actions/get-user';
-import { errorsAction } from "../actions/notifications";
+import { errorsAction } from '../actions/notifications';
 import Loading from '../Components/Loading';
 import Notification from '../Components/Notification';
-import { authorizeUser } from "../helpers";
+import { authorizeUser } from '../helpers';
 import { characters, user } from '../vendor/data';
 
 library.add(faDiscord, faUserShield);
@@ -24,7 +24,7 @@ class Init extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            authChecked: false
+            authChecked: false,
         };
     };
 

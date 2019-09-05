@@ -55,7 +55,7 @@ class DpsParses extends PureComponent {
         event.preventDefault();
         if (confirm('Are you sure you want to **disapprove** this parse?')) {
             this.cancelTokenSource = axios.CancelToken.source();
-            let reasonForDisapproval = window.prompt('Please provide a reason for disapproval. This will be posted on Discord.');
+            const reasonForDisapproval = window.prompt('Please provide a reason for disapproval. This will be posted on Discord.');
             if (reasonForDisapproval && reasonForDisapproval.length) {
                 const currentTarget = event.currentTarget;
                 const { dpsParses } = this.state;
@@ -126,7 +126,7 @@ class DpsParses extends PureComponent {
                 </Link>
             ),
         };
-        let actionListRendered = [];
+        const actionListRendered = [];
         for (const [actionType, link] of Object.entries(dpsParse.actionList)) {
             actionListRendered.push(<li key={actionType}>{link}</li>);
         }
@@ -231,7 +231,7 @@ class DpsParses extends PureComponent {
     render = () => {
         const { me, location } = this.props;
         if (!me) {
-            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname }}} />;
         }
 
         if (!authorizeAdmin(this.props)) {
