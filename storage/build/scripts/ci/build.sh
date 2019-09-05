@@ -58,7 +58,7 @@ docker-compose exec php bash -c "
 
     mkdir -p ~/.ssh && touch ~/.ssh/known_hosts && chmod 0600 ~/.ssh/known_hosts;
     ssh-keyscan -H github.com >> ~/.ssh/known_hosts;
-    NODE_ENV=production npm run build;
+    NODE_ENV=development npm run build;
     composer install --prefer-source --no-interaction;
 
     ./artisan key:generate;
@@ -72,4 +72,9 @@ docker-compose exec php bash -c "
 #    ./artisan dusk -vvv;
 #    ./vendor/bin/phpcov merge ./storage/coverage --clover ./storage/coverage/coverage-clover-merged.xml
 #    ./vendor/bin/phpunit --debug --verbose --no-coverage --testsuite='SauceWebDriver';
+";
+
+docker-compose exec php bash -c "
+    NODE_ENV=production npm install;
+    NODE_ENV=production npm run build;
 ";
