@@ -1,0 +1,40 @@
+env:
+  browser: true
+  es6: true
+  node: true
+extends:
+  - google
+globals:
+  Atomics: readonly
+  SharedArrayBuffer: readonly
+parser: babel-eslint
+parserOptions:
+  ecmaFeatures:
+    jsx: true
+  ecmaVersion: 2018
+  sourceType: module
+plugins:
+  - react
+rules:
+  arrow-parens:
+    - error
+    - as-needed
+  indent:
+    - error
+    - 4
+  max-len:
+    - error
+    - code: 200
+  no-invalid-this: off
+  object-curly-spacing:
+    - error
+    - always
+    - objectsInObjects: false
+      arraysInObjects: false
+  quotes:
+    - error
+    - single
+  semi:
+    - error
+    - always
+
