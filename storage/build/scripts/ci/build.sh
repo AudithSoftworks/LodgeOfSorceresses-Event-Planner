@@ -73,8 +73,3 @@ docker-compose exec php bash -c "
 #    ./vendor/bin/phpcov merge ./storage/coverage --clover ./storage/coverage/coverage-clover-merged.xml
 #    ./vendor/bin/phpunit --debug --verbose --no-coverage --testsuite='SauceWebDriver';
 ";
-
-docker-compose exec php bash -c "
-    npm install --production;
-    NODE_ENV=production npm run build;
-";
