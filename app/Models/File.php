@@ -37,6 +37,8 @@ class File extends Model
 {
     protected $table = 'files';
 
+    protected $keyType = 'string';
+
     protected $primaryKey = 'hash';
 
     public $incrementing = false;

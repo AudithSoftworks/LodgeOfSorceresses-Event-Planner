@@ -2,21 +2,7 @@
 
 namespace App\Http;
 
-use Illuminate\Auth\Middleware\Authenticate;
-use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
-use Illuminate\Auth\Middleware\Authorize;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
-use Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode;
-use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
-use Illuminate\Foundation\Http\Middleware\ValidatePostSize;
-use Illuminate\Http\Middleware\SetCacheHeaders;
-use Illuminate\Routing\Middleware\SubstituteBindings;
-use Illuminate\Routing\Middleware\ThrottleRequests;
-use Illuminate\Routing\Middleware\ValidateSignature;
-use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Laravel\Passport\Http\Middleware\CreateFreshApiToken;
 
 class Kernel extends HttpKernel
 {
@@ -27,10 +13,10 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
-        CheckForMaintenanceMode::class,
-        ValidatePostSize::class,
+        \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
+        \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         Middleware\TrimStrings::class,
-        ConvertEmptyStringsToNull::class,
+        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         Middleware\TrustProxies::class,
     ];
 
@@ -42,13 +28,13 @@ class Kernel extends HttpKernel
     protected $middlewareGroups = [
         'web' => [
             Middleware\EncryptCookies::class,
-            AddQueuedCookiesToResponse::class,
-            StartSession::class,
-//            AuthenticateSession::class,
-            ShareErrorsFromSession::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+//            \Illuminate\Session\Middleware\AuthenticateSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             Middleware\VerifyCsrfToken::class,
-            SubstituteBindings::class,
-            CreateFreshApiToken::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
         ],
         'api' => [
             'throttle:60,1',
@@ -63,13 +49,24 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
-        'auth' => Authenticate::class,
-        'auth.basic' => AuthenticateWithBasicAuth::class,
-        'bindings' => SubstituteBindings::class,
-        'cache.headers' => SetCacheHeaders::class,
-        'can' => Authorize::class,
+        'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
+        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
+        'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => Middleware\RedirectIfAuthenticated::class,
-        'signed' => ValidateSignature::class,
-        'throttle' => ThrottleRequests::class,
+        'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
+        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+    ];
+
+    protected $middlewarePriority = [
+        \Illuminate\Session\Middleware\StartSession::class,
+        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        \Illuminate\Auth\Middleware\Authenticate::class,
+        \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        \Illuminate\Session\Middleware\AuthenticateSession::class,
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        \Illuminate\Auth\Middleware\Authorize::class,
     ];
 }

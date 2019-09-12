@@ -45,7 +45,7 @@ class Event extends Model
     /**
      * {@inheritdoc}
      */
-    protected $table = "events";
+    protected $table = 'events';
 
     /**
      * {@inheritdoc}

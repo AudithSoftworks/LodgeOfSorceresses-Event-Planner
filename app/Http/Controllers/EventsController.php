@@ -81,7 +81,7 @@ class EventsController extends Controller
         $recurrenceParsed = [];
         $recurrenceExploded = explode(';', $event->recurrence);
         foreach ($recurrenceExploded as $recurrenceFragments) {
-            list($key, $value) = explode('=', $recurrenceFragments);
+            [$key, $value] = explode('=', $recurrenceFragments);
             $recurrenceParsed = array_merge($recurrenceParsed, array_combine([$key], [$value]));
         }
         if (isset($recurrenceParsed['UNTIL'])) {

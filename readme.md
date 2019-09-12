@@ -1,4 +1,4 @@
-## Lodge of Sorceresses - Event Planner (powered by Laravel 5)
+## Lodge of Sorceresses - Event Planner (powered by Laravel 6)
 
 [![Build Status](https://travis-ci.com/AudithSoftworks/LodgeOfSorceresses-Event-Planner.svg?branch=master)](https://travis-ci.com/AudithSoftworks/LodgeOfSorceresses-Event-Planner)
 
