@@ -4,13 +4,11 @@ import(
     '../../../sass/_characters.scss'
 );
 
-import { library } from '@fortawesome/fontawesome-svg-core';
 import {
     faAmbulance,
     faBowArrow,
     faPortrait,
     faShieldAlt,
-    faSpinner,
     faSunrise,
     faSunset,
     faSwords,
@@ -20,8 +18,6 @@ import {
     faTachometerAltFastest,
     faTachometerAltSlow,
     faTachometerAltSlowest,
-    faUser,
-    faUsers,
 } from '@fortawesome/pro-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
@@ -29,32 +25,13 @@ import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { errorsAction, infosAction, successAction } from '../../actions/notifications';
-import { authorizeAdmin } from '../../helpers';
+import { authorizeAdmin, filter } from '../../helpers';
 import Notification from '../../Components/Notification';
 import { getAllCharacters, getCharacter } from '../../vendor/api';
 import { updateCharacter } from '../../vendor/api/admin';
 import axios from '../../vendor/axios';
 import { characters, user } from '../../vendor/data';
 import Loading from '../../Components/Loading';
-
-library.add(
-    faAmbulance,
-    faBowArrow,
-    faPortrait,
-    faShieldAlt,
-    faSpinner,
-    faSunrise,
-    faSunset,
-    faSwords,
-    faTachometerAlt,
-    faTachometerAltAverage,
-    faTachometerAltFast,
-    faTachometerAltFastest,
-    faTachometerAltSlow,
-    faTachometerAltSlowest,
-    faUser,
-    faUsers
-);
 
 class Characters extends PureComponent {
     constructor(props) {
@@ -73,6 +50,7 @@ class Characters extends PureComponent {
             },
             allCharacters: null,
         };
+        this.filter = filter.bind(this);
     }
 
     componentWillUnmount = () => {
@@ -126,21 +104,6 @@ class Characters extends PureComponent {
         }
     };
 
-    filter = (event, typeUpdating) => {
-        const temp = Object.assign({}, this.state.filters);
-        for (const [type, value] of Object.entries(temp)) {
-            if (type === typeUpdating) {
-                temp[type] = !value;
-                event.currentTarget.classList.toggle('inactive');
-            } else {
-                temp[type] = value;
-            }
-        }
-        this.setState({
-            filters: temp,
-        });
-    };
-
     renderListItem = character => {
         if (character.role === 'Tank' && !this.state.filters.role_1) return null;
         if (character.role === 'Healer' && !this.state.filters.role_2) return null;
@@ -176,18 +139,18 @@ class Characters extends PureComponent {
             promote:
                 character['role'].indexOf('DD') === -1 ? (
                     <a href="#" onClick={this.handleRerank} data-id={character.id} data-action="promote" title="Promote Character">
-                        <FontAwesomeIcon icon={['far', 'sunrise']} />
+                        <FontAwesomeIcon icon={faSunrise} />
                     </a>
                 ) : null,
             demote:
                 character['role'].indexOf('DD') === -1 ? (
                     <a href="#" onClick={this.handleRerank} data-id={character.id} data-action="demote" title="Demote Character">
-                        <FontAwesomeIcon icon={['far', 'sunset']} />
+                        <FontAwesomeIcon icon={faSunset} />
                     </a>
                 ) : null,
             view: (
                 <Link to={'/characters/' + character.id} title="Character Sheet">
-                    <FontAwesomeIcon icon={['far', 'portrait']} />
+                    <FontAwesomeIcon icon={faPortrait} />
                 </Link>
             ),
         };
@@ -252,12 +215,12 @@ class Characters extends PureComponent {
         const filterList = {
             no_clearance: (
                 <button type="button" onClick={event => this.filter(event, 'no_clearance')} className={'ne-corner ' + (filters.no_clearance || 'inactive')} title="Filter No-Clearance">
-                    <FontAwesomeIcon icon={['far', 'tachometer-alt-slowest']} />
+                    <FontAwesomeIcon icon={faTachometerAltSlowest} />
                 </button>
             ),
             tier_1: (
                 <button type="button" onClick={event => this.filter(event, 'tier_1')} className={'ne-corner tier_1 ' + (filters.tier_1 || 'inactive')} title="Filter Midgame-cleared">
-                    <FontAwesomeIcon icon={['far', 'tachometer-alt-slow']} />
+                    <FontAwesomeIcon icon={faTachometerAltSlow} />
                 </button>
             ),
             tier_2: (
@@ -267,7 +230,7 @@ class Characters extends PureComponent {
                     className={'ne-corner tier_2 ' + (filters.tier_2 || 'inactive')}
                     title="Filter Endgame Tier-0-cleared"
                 >
-                    <FontAwesomeIcon icon={['far', 'tachometer-alt-average']} />
+                    <FontAwesomeIcon icon={faTachometerAltAverage} />
                 </button>
             ),
             tier_3: (
@@ -277,7 +240,7 @@ class Characters extends PureComponent {
                     className={'ne-corner tier_3 ' + (filters.tier_3 || 'inactive')}
                     title="Filter Endgame Tier-1-cleared"
                 >
-                    <FontAwesomeIcon icon={['far', 'tachometer-alt-fast']} />
+                    <FontAwesomeIcon icon={faTachometerAltFast} />
                 </button>
             ),
             tier_4: (
@@ -287,27 +250,27 @@ class Characters extends PureComponent {
                     className={'ne-corner tier_4 ' + (filters.tier_4 || 'inactive')}
                     title="Filter Endgame Tier-2-cleared"
                 >
-                    <FontAwesomeIcon icon={['far', 'tachometer-alt-fastest']} />
+                    <FontAwesomeIcon icon={faTachometerAltFastest} />
                 </button>
             ),
             role_1: (
                 <button type="button" onClick={event => this.filter(event, 'role_1')} className={'ne-corner ' + (filters.role_1 || 'inactive')} title="Filter Tanks">
-                    <FontAwesomeIcon icon={['far', 'shield-alt']} />
+                    <FontAwesomeIcon icon={faShieldAlt} />
                 </button>
             ),
             role_2: (
                 <button type="button" onClick={event => this.filter(event, 'role_2')} className={'ne-corner ' + (filters.role_2 || 'inactive')} title="Filter Healers">
-                    <FontAwesomeIcon icon={['far', 'ambulance']} />
+                    <FontAwesomeIcon icon={faAmbulance} />
                 </button>
             ),
             role_3: (
                 <button type="button" onClick={event => this.filter(event, 'role_3')} className={'ne-corner ' + (filters.role_3 || 'inactive')} title="Filter Magicka DDs">
-                    <FontAwesomeIcon icon={['far', 'bow-arrow']} />
+                    <FontAwesomeIcon icon={faBowArrow} />
                 </button>
             ),
             role_4: (
                 <button type="button" onClick={event => this.filter(event, 'role_4')} className={'ne-corner ' + (filters.role_4 || 'inactive')} title="Filter Stamina DDs">
-                    <FontAwesomeIcon icon={['far', 'swords']} />
+                    <FontAwesomeIcon icon={faSwords} />
                 </button>
             ),
         };
@@ -324,7 +287,7 @@ class Characters extends PureComponent {
                     <ul>
                         <li>Mouse-over the character name for action buttons to reveal to the right of row.</li>
                         <li>
-                            Click <FontAwesomeIcon icon={['far', 'tachometer-alt']} /> icon to the right to see that Character's Processed Parses.
+                            Click <FontAwesomeIcon icon={faTachometerAlt} /> icon to the right to see that Character's Processed Parses.
                         </li>
                     </ul>
                 </article>

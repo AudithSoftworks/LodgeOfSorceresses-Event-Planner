@@ -14,7 +14,7 @@ import { Link, Redirect } from 'react-router-dom';
 import deleteMyCharacterAction from '../actions/delete-my-character';
 import { infosAction } from '../actions/notifications';
 import List from '../Components/Characters/List';
-import { authorizeUser } from '../helpers';
+import { authorizeUser, renderActionList } from '../helpers';
 import { characters, user } from '../vendor/data';
 import Notification from '../Components/Notification';
 
@@ -60,22 +60,6 @@ class Characters extends PureComponent {
         }
     };
 
-    renderActionList = () => {
-        const actionList = {
-            create: (
-                <Link to="/@me/characters/create" className="ne-corner" title="Submit a Character">
-                    <FontAwesomeIcon icon={['far', 'user-plus']} />
-                </Link>
-            ),
-        };
-        const actionListRendered = [];
-        for (const [actionType, link] of Object.entries(actionList)) {
-            actionListRendered.push(<li key={actionType}>{link}</li>);
-        }
-
-        return actionListRendered;
-    };
-
     render = () => {
         const { me, groups, location, myCharacters } = this.props;
         if (!me || !myCharacters) {
@@ -84,6 +68,14 @@ class Characters extends PureComponent {
         if (me && groups && !authorizeUser(this.props, true)) {
             return <Redirect to='/' />;
         }
+
+        const actionList = {
+            create: (
+                <Link to="/@me/characters/create" className="ne-corner" title="Submit a Character">
+                    <FontAwesomeIcon icon={['far', 'user-plus']} />
+                </Link>
+            ),
+        };
         this.renderNoCharactersCreateOneNotification();
 
         return [
@@ -106,7 +98,7 @@ class Characters extends PureComponent {
                         <li>Once a Character has a Clearance (Tier-1 and above), it cannot be deleted.</li>
                     </ul>
                 </article>
-                <ul className="ne-corner">{this.renderActionList()}</ul>
+                <ul className="ne-corner">{renderActionList(actionList)}</ul>
                 <List characters={myCharacters} onDeleteHandler={this.handleDelete} className="my-character-list-table" />
             </section>,
             <Notification key="notifications" />,

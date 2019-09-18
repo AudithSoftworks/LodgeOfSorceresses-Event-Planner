@@ -59,7 +59,7 @@ class EventForm extends PureComponent {
             { value: 0, label: 'Regular Event: Attendance is voluntary, members need to check-in manually.' },
             { value: 1, label: 'Mandated Event: Attendance is mandatory, members are automatically checked-in.' },
         ];
-        const teams = [
+        const teamOptions = [
             { value: 1, label: 'Core One' },
             { value: 2, label: 'Core Two' },
             { value: 3, label: 'Core Three' },
@@ -114,7 +114,7 @@ class EventForm extends PureComponent {
                 <fieldset className="form-group col-md-4">
                     <label>Mandated Team</label>
                     <Select
-                        options={teams}
+                        options={teamOptions}
                         components={Animated}
                         name="mandated_team_id"
                     />

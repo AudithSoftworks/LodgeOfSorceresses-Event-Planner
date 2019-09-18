@@ -1,3 +1,5 @@
+import React from 'react';
+
 export const authorizeAdmin = ({ me, groups }) => {
     if (!me || !groups || !me.linkedAccountsParsed.ips) {
         return false;
@@ -29,4 +31,30 @@ export const authorizeUser = ({ me, groups }, withAdditionalPrechecks = false) =
     }
 
     return false;
+};
+
+export const renderActionList = actionList => {
+    const actionListRendered = [];
+    for (const [actionType, link] of Object.entries(actionList)) {
+        if (link) {
+            actionListRendered.push(<li key={actionType}>{link}</li>);
+        }
+    }
+
+    return actionListRendered;
+};
+
+export const filter = function (event, typeUpdating) {
+    const temp = Object.assign({}, this.state.filters);
+    for (const [type, value] of Object.entries(temp)) {
+        if (type === typeUpdating) {
+            temp[type] = !value;
+            event.currentTarget.classList.toggle('inactive');
+        } else {
+            temp[type] = value;
+        }
+    }
+    this.setState({
+        filters: temp,
+    });
 };

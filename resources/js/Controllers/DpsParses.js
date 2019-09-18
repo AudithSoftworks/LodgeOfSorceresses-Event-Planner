@@ -8,7 +8,7 @@ import { Link, Redirect } from 'react-router-dom';
 import deleteMyDpsParseAction from '../actions/delete-my-dps-parse';
 import { infosAction } from '../actions/notifications';
 import List from '../Components/DpsParses/List';
-import { authorizeUser } from '../helpers';
+import { authorizeUser, renderActionList } from '../helpers';
 import { characters, user } from '../vendor/data';
 import Notification from '../Components/Notification';
 
@@ -62,27 +62,6 @@ class DpsParses extends PureComponent {
         }
     };
 
-    renderActionList = () => {
-        const actionList = {
-            return: (
-                <Link to={'/@me/characters'} title="Back to My Characters">
-                    <FontAwesomeIcon icon={['far', 'th-list']} />
-                </Link>
-            ),
-            create: (
-                <Link to={'/@me/characters/' + this.props.match.params.id + '/parses/create'} title="Submit a Parse">
-                    <FontAwesomeIcon icon={['far', 'user-plus']} />
-                </Link>
-            ),
-        };
-        const actionListRendered = [];
-        for (const [actionType, link] of Object.entries(actionList)) {
-            actionListRendered.push(<li key={actionType}>{link}</li>);
-        }
-
-        return actionListRendered;
-    };
-
     render = () => {
         const { groups, me } = this.props;
         if (!me) {
@@ -97,6 +76,18 @@ class DpsParses extends PureComponent {
         }
         this.renderNotificationForNoDpsParses(character);
 
+        const actionList = {
+            return: (
+                <Link to={'/@me/characters'} title="Back to My Characters">
+                    <FontAwesomeIcon icon={['far', 'th-list']} />
+                </Link>
+            ),
+            create: (
+                <Link to={'/@me/characters/' + this.props.match.params.id + '/parses/create'} title="Submit a Parse">
+                    <FontAwesomeIcon icon={['far', 'user-plus']} />
+                </Link>
+            ),
+        };
         const dpsParses = character.dps_parses;
 
         return [
@@ -104,7 +95,7 @@ class DpsParses extends PureComponent {
                 <h2 className="form-title col-md-24">
                     Parses for <i>{character.name}</i> Pending Approval
                 </h2>
-                <ul className="ne-corner">{this.renderActionList()}</ul>
+                <ul className="ne-corner">{renderActionList(actionList)}</ul>
                 <List character={character} dpsParses={dpsParses} onDeleteHandler={this.handleDelete} />
             </section>,
             <Notification key="notifications" />,
