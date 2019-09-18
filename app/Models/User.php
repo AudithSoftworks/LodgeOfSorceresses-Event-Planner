@@ -13,7 +13,6 @@ use Laravel\Passport\HasApiTokens;
  * @property string|null                     $name
  * @property string                          $email
  * @property string                          $avatar
- * @property string|null                     $email_verified_at
  * @property string                          $password
  * @property string|null                     $remember_token
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -25,6 +24,9 @@ use Laravel\Passport\HasApiTokens;
  * @property-read EloquentCollection|\App\Models\UserOAuth[]                                                                $linkedAccounts
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property-read EloquentCollection|\Laravel\Passport\Token[]                                                              $tokens
+ * @property iterable                                                                                                       $linkedAccountsParsed
+ * @property bool                                                                                                           isMember
+ * @property bool                                                                                                           isSoulshriven
  * @method static bool|null forceDelete()
  * @method static EloquentBuilder|User newModelQuery()
  * @method static EloquentBuilder|User newQuery()
