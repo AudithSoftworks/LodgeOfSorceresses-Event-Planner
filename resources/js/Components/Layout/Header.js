@@ -4,7 +4,7 @@ import(
     '../../../sass/_header.scss'
 );
 
-import { faCalendarAlt, faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faCampfire } from '@fortawesome/pro-solid-svg-icons/index';
+import { faCalendarAlt, faChess, faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faCampfire } from '@fortawesome/pro-solid-svg-icons/index';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome/index';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -64,7 +64,7 @@ class Header extends Component {
             );
 
             memberBarDropdownLinks.push(
-                <li key='my_characters'><Link to="/@me/characters" title="My Characters"><FontAwesomeIcon icon={faUsers} size="2x" fixedWidth /> My Characters</Link></li>
+                <li key='my_characters'><Link to="/@me/characters" title="My Characters"><FontAwesomeIcon icon={faChess} size="2x" fixedWidth /> My Characters</Link></li>
             );
         }
 
