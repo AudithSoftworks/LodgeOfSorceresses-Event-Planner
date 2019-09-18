@@ -55,6 +55,30 @@ export const getContent = cancelToken => axios.get('/api/content', {
     throw error;
 });
 
+export const getAllUsers = cancelToken => axios.get('/api/users', {
+    cancelToken: cancelToken.token,
+}).then(response => {
+    if (response.data) {
+        return normalize(response.data, schema.listOfUsers);
+    }
+
+    return null;
+}).catch(error => {
+    throw error;
+});
+
+export const getUser = (cancelToken, userId) => axios.get('/api/user/' + userId, {
+    cancelToken: cancelToken.token,
+}).then(response => {
+    if (response.data) {
+        return normalize(response.data, schema.user);
+    }
+
+    return null;
+}).catch(error => {
+    throw error;
+});
+
 export const getAllCharacters = cancelToken => axios.get('/api/characters', {
     cancelToken: cancelToken.token,
 }).then(response => {

@@ -3,12 +3,36 @@
 use App\Events\User\Updated;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Traits\Users\IsUser;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class UsersController extends Controller
 {
+    use IsUser;
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function index(): JsonResponse
+    {
+        $this->authorize('user', User::class);
+        $users = User::with('linkedAccounts')
+            ->whereHas('linkedAccounts', static function (Builder $query) {
+                $query->where('remote_provider', '=', 'discord')->whereNotNull('remote_secondary_groups');
+            })
+            ->orderBy('name')
+            ->get();
+        foreach ($users as &$user) {
+            $this->parseLinkedAccounts($user);
+        }
+
+        return response()->json($users);
+    }
+
     /**
      * @return \Illuminate\Http\JsonResponse
      */
@@ -23,14 +47,7 @@ class UsersController extends Controller
         /** @var \App\Models\User $me */
         $me = $guard->user();
         $me->loadMissing('linkedAccounts');
-        $linkedAccountsParsed = $me->linkedAccounts->keyBy('remote_provider');
-        foreach ($linkedAccountsParsed as $linkedAccount) {
-            !empty($linkedAccount->remote_secondary_groups) && $linkedAccount->remote_secondary_groups = explode(',', $linkedAccount->remote_secondary_groups);
-        }
-        /** @noinspection PhpUndefinedFieldInspection */
-        $me->linkedAccountsParsed = $linkedAccountsParsed;
-        $me->makeVisible(['linkedAccountsParsed']);
-        $me->makeHidden(['linkedAccounts']);
+        $this->parseLinkedAccounts($me);
 
         return response()->json($me);
     }
@@ -43,7 +60,7 @@ class UsersController extends Controller
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function update(Request $request): JsonResponse
+    public function updateMe(Request $request): JsonResponse
     {
         $this->authorize('user', User::class);
         $validatorErrorMessages = [

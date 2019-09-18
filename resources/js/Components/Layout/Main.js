@@ -17,6 +17,13 @@ const Home = React.lazy(() =>
         '../../Controllers/Home'
     )
 );
+const Users = React.lazy(() =>
+    import(
+        /* webpackPrefetch: true */
+        /* webpackChunkName: "controllers-users" */
+        '../../Controllers/Users'
+        )
+);
 const Character = React.lazy(() =>
     import(
         /* webpackPrefetch: true */
@@ -97,6 +104,7 @@ class Main extends Component {
                     <Switch>
                         <Route exact path="/" component={props => <Init {...props} />} />
                         <Route exact path="/dashboard" component={props => <Home {...props} />} />
+                        <Route exact path="/users" component={props => <Users {...props} />} />
                         <Route exact path="/characters/:id" component={props => <Character {...props} />} />
                         <Route exact path="/events" component={props => <Events {...props} />} />
                         <Route exact path="/events/create" component={props => <EventForm {...props} />} />

@@ -4,7 +4,6 @@ import(
     '../../../sass/_header.scss'
 );
 
-import { library } from '@fortawesome/fontawesome-svg-core/index';
 import { faCalendarAlt, faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faCampfire } from '@fortawesome/pro-solid-svg-icons/index';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome/index';
 import PropTypes from 'prop-types';
@@ -13,8 +12,6 @@ import { connect } from 'react-redux';
 import { Link, NavLink, withRouter } from 'react-router-dom';
 import { authorizeAdmin, authorizeUser } from '../../helpers';
 import { characters, user } from '../../vendor/data';
-
-library.add(faCalendarAlt, faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faCampfire);
 
 class Header extends Component {
     renderNavLinks = navLinks => {
@@ -36,38 +33,40 @@ class Header extends Component {
     render = () => {
         const { me } = this.props;
         const navLinks = [];
+        const memberBarDropdownLinks = [];
         if (me) {
             navLinks.push(
                 <NavLink exact to="/dashboard" activeClassName="active" title="Home">
-                    <FontAwesomeIcon icon="home" size="lg" />
+                    <FontAwesomeIcon icon={faHome} size="lg" />
                     <span className="d-none d-sm-inline-block">Home</span>
                 </NavLink>
             );
         } else {
             navLinks.push(
                 <NavLink exact to="/" activeClassName="active" title="Login">
-                    <FontAwesomeIcon icon="sign-in-alt" size="lg" />
+                    <FontAwesomeIcon icon={faSignInAlt} size="lg" />
                     <span className="d-none d-sm-inline-block">Login</span>
                 </NavLink>
             );
         }
         if (authorizeUser(this.props) && me.name && me.name.length ) {
             navLinks.push(
-                <NavLink to="/@me/characters" activeClassName="active" title="My Characters">
-                    <FontAwesomeIcon icon="users" size="lg" />
-                    <span className="d-none d-sm-inline-block">My Characters</span>
-                </NavLink>
-            );
-            navLinks.push(
                 <NavLink to="/events" activeClassName="active" title="Calendar">
-                    <FontAwesomeIcon icon="calendar-alt" size="lg" />
+                    <FontAwesomeIcon icon={faCalendarAlt} size="lg" />
                     <span className="d-none d-sm-inline-block">Calendar</span>
                 </NavLink>
             );
+            navLinks.push(
+                <NavLink to="/users" activeClassName="active" title="Roster">
+                    <FontAwesomeIcon icon={faUsers} size="lg" />
+                    <span className="d-none d-sm-inline-block">Roster</span>
+                </NavLink>
+            );
+
+            memberBarDropdownLinks.push(
+                <li key='my_characters'><Link to="/@me/characters" title="My Characters"><FontAwesomeIcon icon={faUsers} size="2x" fixedWidth /> My Characters</Link></li>
+            );
         }
-        // if (authorizeAdmin(this.props)) {
-        //     navLinks.push([]);
-        // }
 
         const navLinksRendered = this.renderNavLinks(navLinks);
 
@@ -77,24 +76,29 @@ class Header extends Component {
             email = email.slice(0, posOfAtSignInEmail + 1) + '...';
         }
 
-        const officerLink = authorizeAdmin(this.props) ? (
-            <li>
-                <Link to="/admin" title="Officer Area">
-                    <FontAwesomeIcon icon="campfire" size="2x" />
-                    <span className="d-none d-sm-inline-block">Officer Area</span>
-                </Link>
-            </li>
-        ) : null;
-        const navbarFirstSection = me ? (
+        if (authorizeAdmin(this.props)) {
+            memberBarDropdownLinks.push(
+                <li key='officer_area'>
+                    <Link to="/admin" title="Officer Area">
+                        <FontAwesomeIcon icon={faCampfire} size="2x" fixedWidth />
+                        <span className="d-none d-sm-inline-block">Officer Area</span>
+                    </Link>
+                </li>
+            );
+        }
+        memberBarDropdownLinks.push(
+            <li key='sign_out'><a href="/logout"><FontAwesomeIcon icon={faSignOutAlt} size="2x" fixedWidth /> Sign Out</a></li>
+        );
+
+        const memberBarFirstSection = me ? (
             <li className="chevron">
                 <figure>
                     <img alt={email || 'The Soulless One'} src={me && me.avatar ? me.avatar : '/images/touch-icon-ipad.png'} />
                     <figcaption>{email || 'The Soulless One'}</figcaption>
                 </figure>
-                <FontAwesomeIcon icon="chevron-down" className="ml-2" />
+                <FontAwesomeIcon icon={faChevronDown} className="ml-2" />
                 <ul className="member-bar-dropdown">
-                    {officerLink}
-                    <li><a href="/logout"><FontAwesomeIcon icon="sign-out-alt" size="2x" /> Sign Out</a></li>
+                    {memberBarDropdownLinks}
                 </ul>
             </li>
         ) : (
@@ -110,10 +114,10 @@ class Header extends Component {
             <header className="container">
                 <h1 className="col-xs-24 col-md-18">Lodge of Sorceresses</h1>
                 <ul className="member-bar d-none d-md-flex">
-                    {navbarFirstSection}
+                    {memberBarFirstSection}
                     <li>
                         <a href="https://lodgeofsorceresses.com" title="Forums">
-                            <FontAwesomeIcon icon="globe" size="lg" />
+                            <FontAwesomeIcon icon={faGlobe} size="lg" />
                         </a>
                     </li>
                 </ul>
