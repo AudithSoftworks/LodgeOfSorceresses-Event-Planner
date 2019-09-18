@@ -1,68 +1,5 @@
 import PropTypes from 'prop-types';
 
-export const user = PropTypes.shape({
-    id: PropTypes.number,
-    email: PropTypes.string,
-    name: PropTypes.string,
-    avatar: PropTypes.string,
-    linkedAccountsParsed: PropTypes.shape({
-        discord: PropTypes.shape({
-            id: PropTypes.number,
-            email: PropTypes.string,
-            nickname: PropTypes.string,
-            avatar: PropTypes.string,
-            remote_primary_group: PropTypes.string,
-            remote_secondary_groups: PropTypes.array,
-            verified: PropTypes.number,
-            created_at: PropTypes.string,
-            updated_at: PropTypes.string,
-        }),
-        ips: PropTypes.shape({
-            id: PropTypes.number,
-            email: PropTypes.string,
-            nickname: PropTypes.string,
-            avatar: PropTypes.string,
-            remote_primary_group: PropTypes.number,
-            remote_secondary_groups: PropTypes.array,
-            verified: PropTypes.number,
-            created_at: PropTypes.string,
-            updated_at: PropTypes.string,
-        }),
-    }),
-    created_at: PropTypes.string,
-    updated_at: PropTypes.string,
-    deleted_at: PropTypes.string,
-});
-
-export const skill = PropTypes.shape({
-    id: PropTypes.number,
-    name: PropTypes.string,
-    slug: PropTypes.string,
-    skill_line: PropTypes.number,
-    parent: PropTypes.number,
-    type: PropTypes.number,
-    effect_1: PropTypes.string,
-    effect_2: PropTypes.string,
-    cost: PropTypes.string,
-    icon: PropTypes.string,
-    pts: PropTypes.number,
-    cast_time: PropTypes.string,
-    target: PropTypes.string,
-    range: PropTypes.string,
-    unlocks_at: PropTypes.number,
-    created_at: PropTypes.string,
-    updated_at: PropTypes.string,
-});
-
-export const skills = PropTypes.arrayOf(skill);
-
-export const sets = PropTypes.arrayOf(
-    PropTypes.shape({
-        id: PropTypes.number,
-        name: PropTypes.string,
-    })
-);
-
 export const content = PropTypes.arrayOf(
     PropTypes.shape({
         id: PropTypes.number,
@@ -100,6 +37,73 @@ export const dpsParse = PropTypes.shape({
 
 export const dpsParses = PropTypes.arrayOf(dpsParse);
 
+export const set = PropTypes.shape({
+    id: PropTypes.number,
+    name: PropTypes.string,
+});
+
+export const sets = PropTypes.arrayOf(set);
+
+export const skill = PropTypes.shape({
+    id: PropTypes.number,
+    name: PropTypes.string,
+    slug: PropTypes.string,
+    skill_line: PropTypes.number,
+    parent: PropTypes.number,
+    type: PropTypes.number,
+    effect_1: PropTypes.string,
+    effect_2: PropTypes.string,
+    cost: PropTypes.string,
+    icon: PropTypes.string,
+    pts: PropTypes.number,
+    cast_time: PropTypes.string,
+    target: PropTypes.string,
+    range: PropTypes.string,
+    unlocks_at: PropTypes.number,
+    created_at: PropTypes.string,
+    updated_at: PropTypes.string,
+});
+
+export const skills = PropTypes.arrayOf(skill);
+
+export const user = PropTypes.shape({
+    id: PropTypes.number,
+    email: PropTypes.string,
+    name: PropTypes.string,
+    avatar: PropTypes.string,
+    isMember: PropTypes.bool,
+    isSoulshriven: PropTypes.bool,
+    linkedAccountsParsed: PropTypes.shape({
+        discord: PropTypes.shape({
+            id: PropTypes.number,
+            email: PropTypes.string,
+            nickname: PropTypes.string,
+            avatar: PropTypes.string,
+            remote_primary_group: PropTypes.string,
+            remote_secondary_groups: PropTypes.array,
+            verified: PropTypes.number,
+            created_at: PropTypes.string,
+            updated_at: PropTypes.string,
+        }),
+        ips: PropTypes.shape({
+            id: PropTypes.number,
+            email: PropTypes.string,
+            nickname: PropTypes.string,
+            avatar: PropTypes.string,
+            remote_primary_group: PropTypes.number,
+            remote_secondary_groups: PropTypes.array,
+            verified: PropTypes.number,
+            created_at: PropTypes.string,
+            updated_at: PropTypes.string,
+        }),
+    }),
+    created_at: PropTypes.string,
+    updated_at: PropTypes.string,
+    deleted_at: PropTypes.string,
+});
+
+export const users = PropTypes.arrayOf(user);
+
 export const character = PropTypes.shape({
     id: PropTypes.number,
     user_id: PropTypes.number,
@@ -117,7 +121,6 @@ export const character = PropTypes.shape({
     dps_parses: dpsParses,
     created_at: PropTypes.string,
     updated_at: PropTypes.string,
-
 });
 
 export const characters = PropTypes.arrayOf(character);

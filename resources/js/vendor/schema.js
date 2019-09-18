@@ -1,6 +1,7 @@
 import { schema } from 'normalizr';
 
 export const user = new schema.Entity('user');
+export const listOfUsers = new schema.Array(user);
 
 export const set = new schema.Entity('sets');
 export const listOfSets = new schema.Array(set);
