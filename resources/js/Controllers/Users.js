@@ -54,6 +54,9 @@ class Users extends PureComponent {
     };
 
     renderListItem = user => {
+        if (!user.isMember && !user.isSoulshriven) {
+            return null;
+        }
         if (user.isMember && !this.state.filters.members) return null;
         if (user.isSoulshriven && !this.state.filters.soulshriven) return null;
         let rowBgColor = user.isMember ? 'members' : 'soulshriven';
