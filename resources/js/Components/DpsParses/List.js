@@ -11,8 +11,8 @@ import Item from './Item';
 
 class List extends PureComponent {
     render = () => {
-        const { character, dpsParses, onDeleteHandler } = this.props;
-        let parsesRendered = dpsParses.map(dpsParse => <Item key={dpsParse.id} dpsParse={dpsParse} character={character} onDeleteHandler={onDeleteHandler} />);
+        const { character, dpsParses, onDeleteHandler, status } = this.props;
+        let parsesRendered = dpsParses.map(dpsParse => <Item key={dpsParse.id} dpsParse={dpsParse} character={character} onDeleteHandler={onDeleteHandler} status={status} />);
         if (parsesRendered.length) {
             parsesRendered = (
                 <table key="dps-parses-table" className="dps-parses-table pl-2 pr-2 col-md-24">
@@ -37,6 +37,7 @@ List.propTypes = {
     character,
     dpsParses,
     onDeleteHandler: PropTypes.func, // based on existense of this param, we render Delete button inside <Item>
+    status: PropTypes.string,
 };
 
 export default List;

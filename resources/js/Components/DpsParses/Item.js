@@ -4,13 +4,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Link } from 'react-router-dom';
+import { renderActionList } from "../../helpers";
 import { character, dpsParse } from '../../vendor/data';
+import List from "./List";
 
 library.add(faTrashAlt);
 
 class Item extends PureComponent {
     render = () => {
-        const { character, dpsParse, onDeleteHandler } = this.props;
+        const { character, dpsParse, onDeleteHandler, status } = this.props;
+        if ((status === 'processed' && !dpsParse.processed_by) || (status === 'not-processed' && dpsParse.processed_by)) {
+            return null;
+        }
 
         const characterSets = character.sets.map(set => (
             <a key={set.id} href={'https://eso-sets.com/set/' + set.id} className="badge badge-dark">
@@ -26,10 +31,6 @@ class Item extends PureComponent {
                     </Link>
                 ) : null,
         };
-        const actionListRendered = [];
-        for (const [actionType, link] of Object.entries(dpsParse.actionList)) {
-            actionListRendered.push(<li key={actionType}>{link}</li>);
-        }
 
         return (
             <tr key={'dpsParseRow-' + dpsParse.id}>
@@ -44,7 +45,7 @@ class Item extends PureComponent {
                     <a href={dpsParse.superstar_file_hash.large} target="_blank">
                         <img src={dpsParse.superstar_file_hash.thumbnail} alt="Superstar screenshot" />
                     </a>
-                    <ul className="actionList">{actionListRendered}</ul>
+                    <ul className="actionList">{renderActionList(dpsParse.actionList)}</ul>
                 </td>
             </tr>
         );
@@ -55,6 +56,7 @@ Item.propTypes = {
     character,
     dpsParse,
     onDeleteHandler: PropTypes.func, // based on existense of this param, we render Delete button
+    status: PropTypes.string,
 };
 
 export default Item;

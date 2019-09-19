@@ -65,7 +65,7 @@ class CharactersController extends Controller
         $character = Character::query()
             ->with([
                 'dpsParses' => static function (HasMany $query) {
-                    $query->whereNotNull('processed_by')->orderBy('id', 'desc');
+                    $query->orderBy('id', 'desc');
                 },
                 'content',
                 'owner'
