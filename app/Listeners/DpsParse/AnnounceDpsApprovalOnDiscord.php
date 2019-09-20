@@ -10,7 +10,9 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AnnounceDpsApprovalOnDiscord
 {
-    private const TOPIC_URLS_CORE_GUIDELINES = 'https://lodgeofsorceresses.com/topic/5506-pve-raid-core-guidelines/';
+    private const TOPIC_URLS_CLEARANCE_GUIDE = 'https://lodgeofsorceresses.com/topic/5741-pve-content-clearance-guide/';
+
+    private const TOPIC_URLS_CORE_GUIDELINES = 'https://lodgeofsorceresses.com/topic/5506-endgame-attendance-guidelines/';
 
     private const TOPIC_URLS_CORE_REQUIREMENTS = 'https://lodgeofsorceresses.com/topic/4887-pve-raid-core-requirements-to-join/';
 
@@ -193,7 +195,11 @@ class AnnounceDpsApprovalOnDiscord
                                     'value' => 'Sign-up [on Calendar](https://lodgeofsorceresses.com/calendar/)',
                                 ],
                                 [
-                                    'name' => 'Raid Core Guidelines',
+                                    'name' => 'Content Clearance Guide',
+                                    'value' => 'Read [this topic](' . self::TOPIC_URLS_CLEARANCE_GUIDE . ') to learn more about Content Clearance Tiers',
+                                ],
+                                [
+                                    'name' => 'Endgame Attendance Guidelines',
                                     'value' => 'Read [this topic](' . self::TOPIC_URLS_CORE_GUIDELINES . ') as a preparation to join a Core',
                                 ],
                                 [
