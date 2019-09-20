@@ -1,5 +1,5 @@
 import * as api from '../vendor/api/auth';
-import getMyCharacterAction from './get-my-character';
+import getCharacterAction from './get-character';
 
 export const TYPE_PUT_MY_CHARACTER_SEND = 'PUT_MY_CHARACTER_SEND';
 
@@ -27,7 +27,7 @@ const putMyCharacterAction = (characterId, data) => (dispatch, getState) => {
     return api
         .putMyCharacter(axiosCancelTokenSource, characterId, data, dispatch)
         .then(() => {
-            dispatch(getMyCharacterAction(characterId, RESPONSE_MESSAGE_SUCCESS));
+            dispatch(getCharacterAction(characterId, RESPONSE_MESSAGE_SUCCESS));
         })
         .catch(error => {
             dispatch(putMyCharacterFailureAction(error));

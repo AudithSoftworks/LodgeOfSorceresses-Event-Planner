@@ -23,7 +23,8 @@ class RouteServiceProvider extends ServiceProvider
     {
         app('router')->patterns([
             'provider' => 'ips|discord',
-            'char' => '\d+',
+            'user' => '\d+',
+            'character' => '\d+',
             'parse' => '\d+',
         ]);
 

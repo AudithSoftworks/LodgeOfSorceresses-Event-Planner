@@ -23,8 +23,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $last_submitted_dps_amount
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\DpsParse[] $dpsParses
  * @property-read \App\Models\User $owner
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\DpsParse[] $dpsParses
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\DpsParse[] $dps_parses_processed
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\DpsParse[] $dps_parses_pending
  * @method static EloquentBuilder|Character newModelQuery()
  * @method static EloquentBuilder|Character newQuery()
  * @method static EloquentBuilder|Character query()

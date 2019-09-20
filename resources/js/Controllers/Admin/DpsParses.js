@@ -109,7 +109,7 @@ class DpsParses extends PureComponent {
     };
 
     renderListItem(dpsParse) {
-        const characterSets = dpsParse.sets.map(set => (
+        const parseSets = dpsParse.sets.map(set => (
             <a key={set['id']} href={'https://eso-sets.com/set/' + set['id']} className="badge badge-dark">
                 {set['name']}
             </a>
@@ -141,7 +141,7 @@ class DpsParses extends PureComponent {
                         {dpsParse['character']['class']} / {dpsParse['character']['role']}
                     </small>
                 </td>
-                <td>{characterSets.reduce((prev, curr) => [prev, ' ', curr])}</td>
+                <td>{parseSets.reduce((prev, curr) => [prev, ' ', curr])}</td>
                 <td className="text-right">{dpsParse['dps_amount']}</td>
                 <td className="text-right">
                     <a href={dpsParse['parse_file_hash']['large']} target="_blank">

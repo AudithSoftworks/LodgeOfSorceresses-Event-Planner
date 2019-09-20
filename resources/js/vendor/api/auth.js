@@ -42,18 +42,6 @@ export const getMyCharacters = cancelToken => axios.get('/api/users/@me/characte
     throw error;
 });
 
-export const getMyCharacter = (cancelToken, characterId) => axios.get('/api/users/@me/characters/' + characterId, {
-    cancelToken: cancelToken.token,
-}).then(response => {
-    if (response.data) {
-        return normalize(response.data, schema.character);
-    }
-
-    return null;
-}).catch(error => {
-    throw error;
-});
-
 export const postMyCharacter = (cancelToken, data) => axios.post('/api/users/@me/characters', data, {
     cancelToken: cancelToken.token,
 }).then(

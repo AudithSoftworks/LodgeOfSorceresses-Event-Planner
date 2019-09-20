@@ -6,13 +6,13 @@ import(
 
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { character, dpsParses } from '../../vendor/data';
+import { dpsParses } from '../../vendor/data';
 import Item from './Item';
 
 class List extends PureComponent {
     render = () => {
-        const { character, dpsParses, onDeleteHandler, status } = this.props;
-        let parsesRendered = dpsParses.map(dpsParse => <Item key={dpsParse.id} dpsParse={dpsParse} character={character} onDeleteHandler={onDeleteHandler} status={status} />);
+        const { dpsParses, onDeleteHandler } = this.props;
+        let parsesRendered = dpsParses.map(dpsParse => <Item key={dpsParse.id} dpsParse={dpsParse} onDeleteHandler={onDeleteHandler} />);
         if (parsesRendered.length) {
             parsesRendered = (
                 <table key="dps-parses-table" className="dps-parses-table pl-2 pr-2 col-md-24">
@@ -34,10 +34,8 @@ class List extends PureComponent {
 }
 
 List.propTypes = {
-    character,
     dpsParses,
     onDeleteHandler: PropTypes.func, // based on existense of this param, we render Delete button inside <Item>
-    status: PropTypes.string,
 };
 
 export default List;

@@ -6,18 +6,19 @@ use App\Events\DpsParse\DpsParseApproved;
 use App\Events\DpsParse\DpsParseDisapproved;
 use App\Http\Controllers\Controller;
 use App\Models\DpsParse;
-use App\Models\File;
 use App\Models\User;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
+use App\Traits\Characters\HasOrIsDpsParse;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use UnexpectedValueException;
 
 class DpsParsesController extends Controller
 {
+    use HasOrIsDpsParse;
+
     /**
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
@@ -35,36 +36,23 @@ class DpsParsesController extends Controller
             ->whereNull('processed_by')
             ->orderBy('id')
             ->get();
-        if ($dpsParses->count()) {
-            app('cache.store')->has('sets'); // Trigger Recache listener.
-            $equipmentSets = app('cache.store')->get('sets');
-            foreach ($dpsParses as $dpsParse) {
-                $characterEquipmentSets = array_filter($equipmentSets, static function ($key) use ($dpsParse) {
-                    return in_array($key, explode(',', $dpsParse->sets), false);
-                }, ARRAY_FILTER_USE_KEY);
-                $dpsParse->sets = array_values($characterEquipmentSets);
-                is_int($dpsParse->character->role) && $dpsParse->character->role = RoleTypes::getShortRoleText($dpsParse->character->role);
-                is_int($dpsParse->character->class) && $dpsParse->character->class = ClassTypes::getClassName($dpsParse->character->class);
-                $parseFile = File::whereHash($dpsParse->parse_file_hash)->first();
-                $superstarFile = File::whereHash($dpsParse->superstar_file_hash)->first();
-                if (!$parseFile || !$superstarFile) {
-                    throw new UnexpectedValueException('Couldn\'t find screenshot file records!');
-                }
-                $dpsParse->parse_file_hash = app('filestream')->url($parseFile);
-                $dpsParse->superstar_file_hash = app('filestream')->url($superstarFile);
-            }
+        foreach ($dpsParses as $dpsParse) {
+            $dpsParse->sets = $this->parseDpsParseSets($dpsParse);
+            $this->parseScreenshotFiles($dpsParse);
+            is_int($dpsParse->character->role) && $dpsParse->character->role = RoleTypes::getShortRoleText($dpsParse->character->role);
+            is_int($dpsParse->character->class) && $dpsParse->character->class = ClassTypes::getClassName($dpsParse->character->class);
         }
 
         return response()->json($dpsParses);
     }
 
     /**
-     * @param int $parse
+     * @param int $parseId
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function update(int $parse): JsonResponse
+    public function update(int $parseId): JsonResponse
     {
         $this->authorize('admin', User::class);
 
@@ -72,7 +60,8 @@ class DpsParsesController extends Controller
         $me = app('auth.driver')->user();
 
         $dpsParse = DpsParse::query()
-            ->whereId($parse)
+            ->with(['character'])
+            ->whereId($parseId)
             ->whereNull('processed_by')
             ->first();
 
@@ -80,30 +69,45 @@ class DpsParsesController extends Controller
             throw new ModelNotFoundException('Parse not found!');
         }
 
-        app('events')->dispatch(new DpsParseApproved($dpsParse));
+        /** @var \App\Models\Character $character */
+        $character = $dpsParse->character()->first();
+        app('cache.store')->forget('character-' . $character->id);
 
         $dpsParse->processed_by = $me->id;
         $dpsParse->save();
+
+        app('events')->dispatch(new DpsParseApproved($dpsParse));
 
         return response()->json(['message' => 'Parse approved.']);
     }
 
     /**
      * @param \Illuminate\Http\Request $request
-     * @param int                      $parse
+     * @param int                      $parseId
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      * @throws \Exception
      */
-    public function destroy(Request $request, int $parse): JsonResponse
+    public function destroy(Request $request, int $parseId): JsonResponse
     {
         $this->authorize('admin', User::class);
 
         /** @var \App\Models\User $me */
         $me = app('auth.driver')->user();
 
-        $dpsParse = DpsParse::whereId($parse)->firstOrFail();
+        $dpsParse = DpsParse::query()
+            ->with(['character'])
+            ->whereId($parseId)
+            ->first();
+        if (!$dpsParse) {
+            throw new ModelNotFoundException('Parse not found!');
+        }
+
+        /** @var \App\Models\Character $character */
+        $character = $dpsParse->character()->first();
+        app('cache.store')->forget('character-' . $character->id);
+
         $dpsParse->reason_for_disapproval = $request->get('reason_for_disapproval');
         $dpsParse->processed_by = $me->id;
         $dpsParse->save();

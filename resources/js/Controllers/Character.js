@@ -111,16 +111,23 @@ class Character extends PureComponent {
     };
 
     renderDpsParses = character => {
-        return character.dps_parses.length ? [
+        const pendingDpsParsesRendered = character.dps_parses_pending.length ? [
+            <article className="col-lg-24 mt-5" key='pending-parses'>
+                <h3>Latest 10 DPS Parses Pending Inspection</h3>
+                <List character={character} dpsParses={character.dps_parses_pending.slice(0, 10)} />
+            </article>
+        ] : [];
+        const processedDpsParsesRendered = character.dps_parses_processed.length ? [
             <article className="col-lg-24 mt-5 mb-5" key='processed-parses'>
                 <h3>Latest 10 DPS Parses Approved</h3>
-                <List character={character} dpsParses={character.dps_parses.slice(0, 10)} status='processed' />
+                <List character={character} dpsParses={character.dps_parses_processed.slice(0, 10)} />
             </article>,
-            <article className="col-lg-24 mt-5" key='not-processed-parses'>
-                <h3>Latest 10 DPS Parses Pending Inspection</h3>
-                <List character={character} dpsParses={character.dps_parses.slice(0, 10)} status='not-processed' />
-            </article>
-        ] : null;
+        ] : [];
+
+        return [
+            ...pendingDpsParsesRendered,
+            ...processedDpsParsesRendered
+        ];
     };
 
     renderCharacter = character => {

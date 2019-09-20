@@ -40,7 +40,7 @@ class DpsParses extends PureComponent {
 
     renderNotificationForNoDpsParses = character => {
         const { dispatch, notifications } = this.props;
-        const dpsParses = character.dps_parses;
+        const dpsParses = character.dps_parses_pending;
         if (dpsParses && !dpsParses.length && notifications.find(n => n.key === 'no-dps-parses-create-one') === undefined) {
             const message = [
                 <Fragment key="f-1">Create a new parse, by clicking</Fragment>,
@@ -88,7 +88,7 @@ class DpsParses extends PureComponent {
                 </Link>
             ),
         };
-        const dpsParses = character.dps_parses;
+        const dpsParses = character.dps_parses_pending;
 
         return [
             <section className="col-md-24 p-0 mb-4" key="dpsParsesList">
@@ -96,7 +96,7 @@ class DpsParses extends PureComponent {
                     Parses for <i>{character.name}</i> Pending Approval
                 </h2>
                 <ul className="ne-corner">{renderActionList(actionList)}</ul>
-                <List character={character} dpsParses={dpsParses} onDeleteHandler={this.handleDelete} />
+                <List dpsParses={dpsParses} onDeleteHandler={this.handleDelete} />
             </section>,
             <Notification key="notifications" />,
         ];

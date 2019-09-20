@@ -118,7 +118,8 @@ export const character = PropTypes.shape({
     approved_for_t3: PropTypes.number,
     approved_for_t4: PropTypes.number,
     last_submitted_dps_amount: PropTypes.number,
-    dps_parses: dpsParses,
+    dps_parses_processed: dpsParses,
+    dps_parses_pending: dpsParses,
     created_at: PropTypes.string,
     updated_at: PropTypes.string,
 });

@@ -97,13 +97,13 @@ class PostNewDpsParseToDiscord
     }
 
     /**
-     * @param int $char
+     * @param int $characterId
      *
      * @return Character
      */
-    private function getCharacter(int $char): Character
+    private function getCharacter(int $characterId): Character
     {
-        return Character::whereId($char)->first();
+        return Character::whereId($characterId)->first();
     }
 
     /**

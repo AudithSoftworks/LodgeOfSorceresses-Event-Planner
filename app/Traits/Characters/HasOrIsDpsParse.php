@@ -2,12 +2,32 @@
 
 namespace App\Traits\Characters;
 
+use App\Models\Character;
 use App\Models\DpsParse;
 use App\Models\File;
 use UnexpectedValueException;
 
-trait HasDpsParse
+trait HasOrIsDpsParse
 {
+    public function processDpsParses(Character $character): void
+    {
+        $processedParses = collect();
+        $pendingDpsParses = collect();
+        foreach ($character->dpsParses as $dpsParse) {
+            $dpsParse->sets = $this->parseDpsParseSets($dpsParse);
+            $this->parseScreenshotFiles($dpsParse);
+            if ($dpsParse->processed_by) {
+                $processedParses->add($dpsParse);
+            } else {
+                $pendingDpsParses->add($dpsParse);
+            }
+        }
+        $character->dps_parses_processed = $processedParses;
+        $character->dps_parses_pending = $pendingDpsParses;
+        $character->makeHidden('dpsParses');
+        $character->makeVisible(['dps_parses_processed', 'dps_parses_pending']);
+    }
+
     public function parseDpsParseSets(DpsParse $dpsParse): array
     {
         app('cache.store')->has('sets'); // Trigger Recache listener.

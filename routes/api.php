@@ -10,14 +10,15 @@ $router->middleware(['auth:api', 'throttle'])->group(static function (Router $ro
     $router->apiResource('sets', 'SetsController')->only(['index']);
     $router->apiResource('skills', 'SkillsController')->only(['index']);
     $router->apiResource('content', 'ContentController')->only(['index']);
+    $router->apiResource('users', 'UsersController')->only(['index']);
+    $router->apiResource('users/{user}/characters', 'CharactersController')->only(['index', 'show']);
     $router->apiResource('characters', 'CharactersController')->only(['index', 'show']);
 });
 
 $router->middleware(['auth:api', 'throttle'])->group(static function (Router $router) {
     $router->get('users/@me', 'Auth\UsersController@me')->name('users@me');
     $router->put('users/@me', 'Auth\UsersController@updateMe')->name('users@update');
-    $router->apiResource('users', 'Auth\UsersController')->only(['index']);
-    $router->apiResource('users/@me/characters', 'Auth\CharactersController');
+    $router->apiResource('users/@me/characters', 'Auth\CharactersController')->except(['show']);
     $router->apiResource('users/@me/characters/{char}/parses', 'Auth\DpsParsesController');
 });
 

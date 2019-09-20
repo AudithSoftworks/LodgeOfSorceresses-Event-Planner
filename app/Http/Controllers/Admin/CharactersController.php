@@ -6,31 +6,55 @@ use App\Events\Character\CharacterDemoted;
 use App\Events\Character\CharacterPromoted;
 use App\Http\Controllers\Controller;
 use App\Models\Character;
-use App\Models\DpsParse;
-use App\Models\File;
 use App\Models\User;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
+use App\Traits\Characters\HasOrIsDpsParse;
+use App\Traits\Characters\IsCharacter;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use UnexpectedValueException;
 
 class CharactersController extends Controller
 {
+    use IsCharacter, HasOrIsDpsParse;
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function index(): JsonResponse
+    {
+        $this->authorize('user', User::class);
+        $characterIds = Character::query()
+            ->orderBy('id', 'desc')
+            ->get(['id'])->pluck('id');
+
+        $characters = collect();
+        foreach ($characterIds as $characterId) {
+            app('cache.store')->has('character-' . $characterId); // Trigger Recache listener.
+            $character = app('cache.store')->get('character-' . $characterId);
+            $characters->push($character);
+        }
+
+        return response()->json($characters);
+    }
+
     /**
      * @param \Illuminate\Http\Request $request
-     * @param int                      $char
+     * @param int                      $characterId
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function update(Request $request, int $char): JsonResponse
+    public function update(Request $request, int $characterId): JsonResponse
     {
         $this->authorize('admin', User::class);
 
@@ -46,11 +70,11 @@ class CharactersController extends Controller
 
         /** @var \App\Models\User $me */
         $me = app('auth.driver')->user();
-        if (!$me->id === $char) {
+        if (!$me->id === $characterId) {
             throw new AuthorizationException('Self-ranking disabled!');
         }
 
-        if (!($character = Character::query()->find($char))) {
+        if (!($character = Character::query()->find($characterId))) {
             throw new ModelNotFoundException('Character not found!');
         }
 

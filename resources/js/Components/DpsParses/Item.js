@@ -5,19 +5,14 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { renderActionList } from "../../helpers";
-import { character, dpsParse } from '../../vendor/data';
-import List from "./List";
+import { dpsParse } from '../../vendor/data';
 
 library.add(faTrashAlt);
 
 class Item extends PureComponent {
     render = () => {
-        const { character, dpsParse, onDeleteHandler, status } = this.props;
-        if ((status === 'processed' && !dpsParse.processed_by) || (status === 'not-processed' && dpsParse.processed_by)) {
-            return null;
-        }
-
-        const characterSets = character.sets.map(set => (
+        const { dpsParse, onDeleteHandler } = this.props;
+        const parseSets = dpsParse.sets.map(set => (
             <a key={set.id} href={'https://eso-sets.com/set/' + set.id} className="badge badge-dark">
                 {set.name}
             </a>
@@ -34,7 +29,7 @@ class Item extends PureComponent {
 
         return (
             <tr key={'dpsParseRow-' + dpsParse.id}>
-                <td>{characterSets.reduce((prev, curr) => [prev, ' ', curr])}</td>
+                <td>{parseSets.reduce((prev, curr) => [prev, ' ', curr])}</td>
                 <td>{dpsParse.dps_amount}</td>
                 <td>
                     <a href={dpsParse.parse_file_hash.large} target="_blank">
@@ -53,10 +48,8 @@ class Item extends PureComponent {
 }
 
 Item.propTypes = {
-    character,
     dpsParse,
     onDeleteHandler: PropTypes.func, // based on existense of this param, we render Delete button
-    status: PropTypes.string,
 };
 
 export default Item;

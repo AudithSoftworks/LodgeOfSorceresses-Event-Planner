@@ -30,65 +30,6 @@ class LoginController extends Controller
     }
 
     /**
-     * Log the user in.
-     *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     * @throws \Illuminate\Validation\ValidationException
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
-     */
-    public function loginViaWeb(Request $request): RedirectResponse
-    {
-        $validator = app('validator')->make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
-
-        // If the class is using the ThrottlesLogins trait, we can automatically throttle
-        // the login attempts for this application. We'll key this by the username and
-        // the IP address of the client making these requests into this application.
-        if ($lockedOut = $this->hasTooManyLoginAttempts($request)) {
-            $this->fireLockoutEvent($request);
-            $this->sendLockoutResponse($request);
-        }
-
-        $credentials = $request->only('email', 'password');
-
-        if (app('auth.driver')->attempt($credentials, $request->has('remember'))) {
-            $request->session()->regenerate();
-            $this->clearLoginAttempts($request);
-            event(new LoggedIn($user = app('auth.driver')->user()));
-
-            if ($request->expectsJson()) {
-                return response()->json(['data' => $user]);
-            }
-
-            return redirect()->intended($this->redirectPath());
-        }
-
-        // If the login attempt was unsuccessful we will increment the number of attempts
-        // to login and redirect the user back to the login form. Of course, when this
-        // user surpasses their maximum number of attempts they will get locked out.
-        if (!$lockedOut) {
-            $this->incrementLoginAttempts($request);
-        }
-
-        if ($request->expectsJson()) {
-            throw new LoginNotValidException('LoginViaWeb should not expect Json Response!');
-        }
-
-        return redirect()->back()
-            ->withInput($request->only('email', 'remember'))
-            ->withErrors([
-                'email' => app('translator')->get('auth.failed'),
-            ]);
-    }
-
-    /**
      * @param \Laravel\Socialite\Contracts\Factory $socialite
      * @param string                               $provider
      *

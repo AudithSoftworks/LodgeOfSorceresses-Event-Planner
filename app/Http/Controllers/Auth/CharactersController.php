@@ -7,7 +7,7 @@ use App\Models\Character;
 use App\Models\User;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
-use App\Traits\Characters\HasDpsParse;
+use App\Traits\Characters\HasOrIsDpsParse;
 use App\Traits\Characters\IsCharacter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -18,7 +18,7 @@ use Illuminate\Validation\ValidationException;
 
 class CharactersController extends Controller
 {
-    use IsCharacter, HasDpsParse;
+    use IsCharacter, HasOrIsDpsParse;
 
     /**
      * Display a listing of the resource.
@@ -29,28 +29,16 @@ class CharactersController extends Controller
     public function index(): JsonResponse
     {
         $this->authorize('user', User::class);
-        $characters = Character::query()
-            ->with([
-                'dpsParses' => static function (HasMany $query) {
-                    $query->whereNull('processed_by');
-                },
-                'content'
-            ])
+        $characterIds = Character::query()
             ->whereUserId(app('auth.driver')->id())
-            ->orderBy('id', 'desc')
-            ->get();
-        if ($characters->count()) {
-            foreach ($characters as $character) {
-                $character->class = ClassTypes::getClassName($character->class);
-                $character->role = RoleTypes::getRoleName($character->role);
-                $character->sets = $this->parseCharacterSets($character);
-                $character->skills = $this->parseCharacterSkills($character);
+            ->orderBy('name')
+            ->get(['id'])->pluck('id');
 
-                foreach ($character->dpsParses as $dpsParse) {
-                    $dpsParse->sets = $this->parseDpsParseSets($dpsParse);
-                    $this->parseScreenshotFiles($dpsParse);
-                }
-            }
+        $characters = collect();
+        foreach ($characterIds as $characterId) {
+            app('cache.store')->has('character-' . $characterId); // Trigger Recache listener.
+            $character = app('cache.store')->get('character-' . $characterId);
+            $characters->push($character);
         }
 
         return response()->json($characters);
@@ -111,55 +99,17 @@ class CharactersController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param int $char
-     *
-     * @return JsonResponse
-     * @throws \Illuminate\Auth\Access\AuthorizationException
-     */
-    public function show(int $char): JsonResponse
-    {
-        $this->authorize('user', User::class);
-        $character = Character::query()
-            ->with([
-                'dpsParses' => static function (HasMany $query) {
-                    $query->whereNull('processed_by');
-                },
-                'content'
-            ])
-            ->whereUserId(app('auth.driver')->id())
-            ->whereId($char)
-            ->first();
-        if (!$character) {
-            return response()->json(['message' => 'Character not found!'])->setStatusCode(404);
-        }
-
-        $character->class = ClassTypes::getClassName($character->class);
-        $character->role = RoleTypes::getRoleName($character->role);
-        $character->sets = $this->parseCharacterSets($character);
-        $character->skills = $this->parseCharacterSkills($character);
-
-        foreach ($character->dpsParses as $dpsParse) {
-            $dpsParse->sets = $this->parseDpsParseSets($dpsParse);
-            $this->parseScreenshotFiles($dpsParse);
-        }
-
-        return response()->json($character);
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param int     $char
+     * @param int     $characterId
      *
      * @return JsonResponse
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      * @throws \Illuminate\Validation\ValidationException
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function update(Request $request, int $char): JsonResponse
+    public function update(Request $request, int $characterId): JsonResponse
     {
         $this->authorize('user', User::class);
         $validatorErrorMessages = [
@@ -182,10 +132,10 @@ class CharactersController extends Controller
             throw new ValidationException($validator);
         }
 
-        $character = Character::query()->where(static function (Builder $query) use ($char) {
+        $character = Character::query()->where(static function (Builder $query) use ($characterId) {
             $query
                 ->where('user_id', app('auth.driver')->id())
-                ->where('id', $char);
+                ->where('id', $characterId);
         })->first(['id', 'name', 'class', 'role', 'sets']);
         if (!$character) {
             return response()->json(['message' => 'Character not found!'])->setStatusCode(404);
@@ -204,19 +154,21 @@ class CharactersController extends Controller
 
         $character->save();
 
+        app('cache.store')->forget('character-' . $characterId);
+
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $char
+     * @param int $characterId
      *
      * @return JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      * @throws \Exception
      */
-    public function destroy(int $char): JsonResponse
+    public function destroy(int $characterId): JsonResponse
     {
         $this->authorize('user', User::class);
         $character = Character::query()
@@ -225,10 +177,11 @@ class CharactersController extends Controller
             ->whereApprovedForT2(false)
             ->whereApprovedForT3(false)
             ->whereApprovedForT4(false)
-            ->whereId($char)
+            ->whereId($characterId)
             ->first();
         if ($character) {
             $character->delete();
+            app('cache.store')->forget('character-' . $characterId);
         } else {
             throw new ModelNotFoundException('Character not found!');
         }

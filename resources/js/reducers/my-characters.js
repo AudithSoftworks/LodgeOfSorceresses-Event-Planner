@@ -1,5 +1,5 @@
 import * as destroyActions from '../actions/delete-my-character';
-import * as getActions from '../actions/get-my-character';
+import * as getActions from '../actions/get-character';
 import * as indexActions from '../actions/get-my-characters';
 import * as showDpsParseActions from '../actions/get-my-dps-parse';
 import * as destroyDpsParseActions from '../actions/delete-my-dps-parse';
@@ -17,7 +17,7 @@ const myCharactersReducer = (state = null, action) => {
         }
 
         return newState;
-    } else if (action.type === getActions.TYPE_GET_MY_CHARACTER_SUCCESS) {
+    } else if (action.type === getActions.TYPE_GET_CHARACTER_SUCCESS) {
         const newState = state === null ? [] : [...state];
         const characterId = action.characterId;
         const indexOfCharacterUpdatedInStore = newState.findIndex(c => c.id === parseInt(characterId));
@@ -42,7 +42,7 @@ const myCharactersReducer = (state = null, action) => {
         const indexOfCharacterDpsSubmittedFor = newState.findIndex(c => c.id === parseInt(characterId));
         const characterDpsSubmittedFor = newState.find(c => c.id === parseInt(characterId));
         if (characterDpsSubmittedFor) {
-            characterDpsSubmittedFor.dps_parses.push(action.response.entities.dpsParses[parseId]); // We only store. No edits!
+            characterDpsSubmittedFor.dps_parses_pending.push(action.response.entities.dpsParses[parseId]); // We only store. No edits!
             newState.splice(indexOfCharacterDpsSubmittedFor, 1);
             newState.push(characterDpsSubmittedFor);
         }
@@ -53,7 +53,7 @@ const myCharactersReducer = (state = null, action) => {
         const characterId = action.characterId;
         const parseId = action.parseId;
         const character = newState.find(item => item.id === characterId);
-        character.dps_parses = character.dps_parses.filter(item => item.id !== parseId);
+        character.dps_parses_pending = character.dps_parses_pending.filter(item => item.id !== parseId);
 
         return newState;
     }

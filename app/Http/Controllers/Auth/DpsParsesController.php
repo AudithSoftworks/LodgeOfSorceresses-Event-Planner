@@ -6,47 +6,35 @@ use App\Events\DpsParse\DpsParseDeleted;
 use App\Events\DpsParse\DpsParseSubmitted;
 use App\Http\Controllers\Controller;
 use App\Models\DpsParse;
-use App\Models\File;
 use App\Models\User;
+use App\Traits\Characters\HasOrIsDpsParse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use UnexpectedValueException;
 
 class DpsParsesController extends Controller
 {
+    use HasOrIsDpsParse;
+
     /**
-     * @param int $char
+     * @param int $characterId
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function index(int $char): JsonResponse
+    public function index(int $characterId): JsonResponse
     {
         $this->authorize('user', User::class);
         $dpsParses = DpsParse::query()
             ->whereUserId(app('auth.driver')->id())
-            ->whereCharacterId($char)
+            ->whereCharacterId($characterId)
             ->whereNull('processed_by')
             ->orderBy('id', 'desc')
             ->get();
-        if ($dpsParses->count()) {
-            app('cache.store')->has('sets'); // Trigger Recache listener.
-            $sets = app('cache.store')->get('sets');
-            foreach ($dpsParses as $dpsParse) {
-                $setsUsedInDpsParse = array_filter($sets, static function ($key) use ($dpsParse) {
-                    return in_array($key, explode(',', $dpsParse->sets), false);
-                }, ARRAY_FILTER_USE_KEY);
-                $dpsParse->sets = array_values($setsUsedInDpsParse);
-                $parseFile = File::whereHash($dpsParse->parse_file_hash)->first();
-                $superstarFile = File::whereHash($dpsParse->superstar_file_hash)->first();
-                if (!$parseFile || !$superstarFile) {
-                    throw new UnexpectedValueException('Couldn\'t find screenshot file records!');
-                }
-                $dpsParse->parse_file_hash = app('filestream')->url($parseFile);
-                $dpsParse->superstar_file_hash = app('filestream')->url($superstarFile);
-            }
+        foreach ($dpsParses as $dpsParse) {
+            $dpsParse->sets = $this->parseDpsParseSets($dpsParse);
+            $this->parseScreenshotFiles($dpsParse);
         }
 
         return response()->json(['dpsParses' => $dpsParses]);
@@ -54,14 +42,14 @@ class DpsParsesController extends Controller
 
     /**
      * @param \Illuminate\Http\Request $request
-     * @param int                      $char
+     * @param int                      $characterId
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function store(Request $request, int $char): JsonResponse
+    public function store(Request $request, int $characterId): JsonResponse
     {
         $this->authorize('user', User::class);
         $validatorErrorMessages = [
@@ -82,12 +70,14 @@ class DpsParsesController extends Controller
 
         $dpsParse = new DpsParse();
         $dpsParse->user_id = app('auth.driver')->id();
-        $dpsParse->character_id = $char;
+        $dpsParse->character_id = $characterId;
         $dpsParse->dps_amount = $request->get('dps_amount');
         $dpsParse->parse_file_hash = $request->get('parse_file_hash');
         $dpsParse->superstar_file_hash = $request->get('superstar_file_hash');
         $dpsParse->sets = !empty($request->get('sets')) ? implode(',', $request->get('sets')) : null;
         $dpsParse->save();
+
+        app('cache.store')->forget('character-' . $characterId);
 
         app('events')->dispatch(new DpsParseSubmitted($dpsParse));
 
@@ -95,64 +85,52 @@ class DpsParsesController extends Controller
     }
 
     /**
-     * @param int $char
-     * @param int $parse
+     * @param int $characterId
+     * @param int $parseId
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function show(int $char, int $parse): JsonResponse
+    public function show(int $characterId, int $parseId): JsonResponse
     {
         $this->authorize('user', User::class);
         $dpsParse = DpsParse::query()
             ->whereUserId(app('auth.driver')->id())
-            ->whereCharacterId($char)
+            ->whereCharacterId($characterId)
             ->whereNull('processed_by')
-            ->whereId($parse)
+            ->whereId($parseId)
             ->first();
         if (!$dpsParse) {
             throw new ModelNotFoundException('Parse Not Found!');
         }
 
-        app('cache.store')->has('sets'); // Trigger Recache listener.
-        $sets = app('cache.store')->get('sets');
-
-        $setsUsedInDpsParse = array_filter($sets, static function ($key) use ($dpsParse) {
-            return in_array($key, explode(',', $dpsParse->sets), false);
-        }, ARRAY_FILTER_USE_KEY);
-        $dpsParse->sets = array_values($setsUsedInDpsParse);
-
-        $parseFile = File::whereHash($dpsParse->parse_file_hash)->first();
-        $superstarFile = File::whereHash($dpsParse->superstar_file_hash)->first();
-        if (!$parseFile || !$superstarFile) {
-            throw new UnexpectedValueException('Couldn\'t find screenshot file records!');
-        }
-        $dpsParse->parse_file_hash = app('filestream')->url($parseFile);
-        $dpsParse->superstar_file_hash = app('filestream')->url($superstarFile);
+        $dpsParse->sets = $this->parseDpsParseSets($dpsParse);
+        $this->parseScreenshotFiles($dpsParse);
 
         return response()->json($dpsParse);
     }
 
     /**
-     * @param int $char
-     * @param int $parse
+     * @param int $characterId
+     * @param int $parseId
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Exception
      */
-    public function destroy(int $char, int $parse): JsonResponse
+    public function destroy(int $characterId, int $parseId): JsonResponse
     {
         $this->authorize('user', User::class);
         $dpsParse = DpsParse::query()
             ->whereUserId(app('auth.driver')->id())
-            ->whereCharacterId($char)
+            ->whereCharacterId($characterId)
             ->whereNull('processed_by')
-            ->whereId($parse)
+            ->whereId($parseId)
             ->first();
         if (!$dpsParse) {
             throw new ModelNotFoundException('Parse not found (or already processed)!');
         }
         $dpsParse->delete();
+        app('cache.store')->forget('character-' . $characterId);
         app('events')->dispatch(new DpsParseDeleted($dpsParse));
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);

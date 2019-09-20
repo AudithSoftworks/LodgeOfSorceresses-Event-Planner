@@ -6,46 +6,38 @@ use App\Models\Character;
 use App\Models\User;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
-use App\Traits\Characters\HasDpsParse;
+use App\Traits\Characters\HasOrIsDpsParse;
 use App\Traits\Characters\IsCharacter;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
+use function Sodium\add;
 
 class CharactersController extends Controller
 {
-    use IsCharacter, HasDpsParse;
+    use IsCharacter, HasOrIsDpsParse;
 
     /**
      * Display a listing of the resource.
      *
+     * @param int $userId
+     *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function index(): JsonResponse
+    public function index(int $userId = null): JsonResponse
     {
         $this->authorize('user', User::class);
-        $characters = Character::query()
-            ->with([
-                'owner',
-                'dpsParses' => static function (HasMany $query) {
-                    $query->whereNotNull('processed_by');
-                },
-                'content'
-            ])
+        $query = Character::query();
+        $userId && $query::whereUserId($userId);
+        $characterIds = $query
             ->orderBy('id', 'desc')
-            ->get();
-        if ($characters->count()) {
-            foreach ($characters as $character) {
-                $character->class = ClassTypes::getClassName($character->class);
-                $character->role = RoleTypes::getShortRoleText($character->role);
-                $character->sets = $this->parseCharacterSets($character);
-                $character->skills = $this->parseCharacterSkills($character);
+            ->get(['id'])->pluck('id');
 
-                foreach ($character->dpsParses as $dpsParse) {
-                    $dpsParse->sets = $this->parseDpsParseSets($dpsParse);
-                    $this->parseScreenshotFiles($dpsParse);
-                }
-            }
+        $characters = collect();
+        foreach ($characterIds as $characterId) {
+            app('cache.store')->has('character-' . $characterId); // Trigger Recache listener.
+            $character = app('cache.store')->get('character-' . $characterId);
+            $characters->push($character);
         }
 
         return response()->json($characters);
@@ -54,37 +46,18 @@ class CharactersController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param int $char
+     * @param int $characterId
      *
      * @return JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function show(int $char): JsonResponse
+    public function show(int $characterId): JsonResponse
     {
         $this->authorize('limited', User::class);
-        $character = Character::query()
-            ->with([
-                'dpsParses' => static function (HasMany $query) {
-                    $query->orderBy('id', 'desc');
-                },
-                'content',
-                'owner'
-            ])
-            ->whereId($char)
-            ->first();
+        app('cache.store')->has('character-' . $characterId); // Trigger Recache listener.
+        $character = app('cache.store')->get('character-' . $characterId);
         if (!$character) {
             return response()->json(['message' => 'Character not found!'])->setStatusCode(404);
-        }
-
-        $character->class = ClassTypes::getClassName($character->class);
-        $character->role = RoleTypes::getRoleName($character->role);
-
-        $character->sets = $this->parseCharacterSets($character);
-        $character->skills = $this->parseCharacterSkills($character);
-
-        foreach ($character->dpsParses as $dpsParse) {
-            $dpsParse->sets = $this->parseDpsParseSets($dpsParse);
-            $this->parseScreenshotFiles($dpsParse);
         }
 
         return response()->json($character);
