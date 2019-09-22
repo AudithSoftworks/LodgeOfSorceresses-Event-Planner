@@ -137,13 +137,13 @@ class Characters extends PureComponent {
         ));
         character.actionList = {
             promote:
-                character['role'].indexOf('DD') === -1 ? (
+                character['role'].indexOf('DD') === -1 && character['role'].indexOf('Damage') === -1 ? (
                     <a href="#" onClick={this.handleRerank} data-id={character.id} data-action="promote" title="Promote Character">
                         <FontAwesomeIcon icon={faSunrise} />
                     </a>
                 ) : null,
             demote:
-                character['role'].indexOf('DD') === -1 ? (
+                character['role'].indexOf('DD') === -1 && character['role'].indexOf('Damage') === -1 ? (
                     <a href="#" onClick={this.handleRerank} data-id={character.id} data-action="demote" title="Demote Character">
                         <FontAwesomeIcon icon={faSunset} />
                     </a>
