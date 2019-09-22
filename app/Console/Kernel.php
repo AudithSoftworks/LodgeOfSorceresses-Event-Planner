@@ -21,7 +21,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command(FetchEventsUsingIpsApi::class)->hourly()->sendOutputTo(self::LOG_FILE);
-        $schedule->command(SyncDiscordOauthLinks::class)->everyFiveMinutes()->withoutOverlapping()->sendOutputTo(self::LOG_FILE);
+        $schedule->command(SyncDiscordOauthLinks::class)->everyFiveMinutes()->sendOutputTo(self::LOG_FILE);
         $schedule->command(PruneOrphanedFiles::class)->weekly()->sendOutputTo(self::LOG_FILE);
         $schedule->command(SyncYoutubeRssFeeds::class)->dailyAt('05:00')->sendOutputTo(self::LOG_FILE);
     }
