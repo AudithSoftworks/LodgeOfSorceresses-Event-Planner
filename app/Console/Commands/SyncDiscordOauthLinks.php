@@ -46,7 +46,7 @@ class SyncDiscordOauthLinks extends Command
      * @return bool
      * @throws \Exception
      */
-    public function handle(): bool
+    public function handle(): void
     {
         /** @var UserOAuth|\Illuminate\Database\Eloquent\Collection $oauthAccount */
         $oauthAccounts = UserOAuth::whereRemoteProvider('discord')->get();
@@ -91,7 +91,5 @@ class SyncDiscordOauthLinks extends Command
             $oauthAccount = $oauthAccounts->shift();
         }
         $this->info('Discord OAuth accounts successfully synced!');
-
-        return true;
     }
 }
