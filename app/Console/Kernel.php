@@ -11,6 +11,8 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
+    const LOG_FILE = '/var/log/lodgeofsorceresses.log';
+    
     /**
      * Define the application's command schedule.
      *
@@ -18,10 +20,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command(FetchEventsUsingIpsApi::class)->hourly();
-        $schedule->command(SyncDiscordOauthLinks::class)->everyFiveMinutes()->withoutOverlapping();
-        $schedule->command(PruneOrphanedFiles::class)->weekly();
-        $schedule->command(SyncYoutubeRssFeeds::class)->dailyAt('05:00');
+        $schedule->command(FetchEventsUsingIpsApi::class)->hourly()->sendOutputTo(self::LOG_FILE);
+        $schedule->command(SyncDiscordOauthLinks::class)->everyFiveMinutes()->withoutOverlapping()->sendOutputTo(self::LOG_FILE);
+        $schedule->command(PruneOrphanedFiles::class)->weekly()->sendOutputTo(self::LOG_FILE);
+        $schedule->command(SyncYoutubeRssFeeds::class)->dailyAt('05:00')->sendOutputTo(self::LOG_FILE);
     }
 
     /**
