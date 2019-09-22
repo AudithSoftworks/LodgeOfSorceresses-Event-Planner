@@ -11,7 +11,7 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
-    const LOG_FILE = '/var/log/lodgeofsorceresses.log';
+    private const LOG_FILE = '/var/log/lodgeofsorceresses.log';
     
     /**
      * Define the application's command schedule.
