@@ -44,6 +44,14 @@ docker-compose exec php bash -c "
     convertFonts.sh --use-font-weight --output=public/fonts/sovngarde/stylesheet.css public/fonts/sovngarde/*.ttf;
 
     npm run build;
+";
+
+echo ">>> WAITING for DB to get ready...";
+until docker-compose exec mariadb mysql -D basis -e "SHOW TABLES;" > /dev/null 2>&1; do
+    sleep 1;
+done;
+
+docker-compose exec php bash -c "
     composer install --prefer-source --no-interaction;
 
     ./artisan key:generate;

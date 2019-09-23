@@ -7,6 +7,8 @@ services:
     environment:
       MYSQL_DATABASE: "basis"
       MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+    volumes:
+      - db-data:/var/lib/mysql:rw
     networks:
       default:
         ipv4_address: 172.72.0.101
@@ -75,6 +77,8 @@ services:
     networks:
       default:
         ipv4_address: 172.72.0.108
+volumes:
+  db-data: {}
 networks:
   default:
     ipam:

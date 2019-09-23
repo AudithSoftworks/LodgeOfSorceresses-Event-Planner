@@ -59,6 +59,14 @@ docker-compose exec php bash -c "
     mkdir -p ~/.ssh && touch ~/.ssh/known_hosts && chmod 0600 ~/.ssh/known_hosts;
     ssh-keyscan -H github.com >> ~/.ssh/known_hosts;
     NODE_ENV=development npm run build;
+";
+
+echo ">>> WAITING for DB to get ready...";
+until docker-compose exec mariadb mysql -D basis -e "SHOW TABLES;" > /dev/null 2>&1; do
+    sleep 1;
+done;
+
+docker-compose exec php bash -c "
     composer install --prefer-source --no-interaction;
 
     ./artisan key:generate;
