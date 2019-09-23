@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Events\Character\CharacterDeleted;
 use App\Events\Character\CharacterDeleting;
+use App\Events\Character\CharacterUpdated;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -27,24 +28,24 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\DpsParse[] $dpsParses
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\DpsParse[] $dps_parses_processed
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\DpsParse[] $dps_parses_pending
- * @method static EloquentBuilder|Character newModelQuery()
- * @method static EloquentBuilder|Character newQuery()
+ * @method EloquentBuilder|Character newModelQuery()
+ * @method EloquentBuilder|Character newQuery()
  * @method static EloquentBuilder|Character query()
- * @method static EloquentBuilder|Character whereApprovedForT1($value)
- * @method static EloquentBuilder|Character whereApprovedForT2($value)
- * @method static EloquentBuilder|Character whereApprovedForT3($value)
- * @method static EloquentBuilder|Character whereApprovedForT4($value)
- * @method static EloquentBuilder|Character whereClass($value)
- * @method static EloquentBuilder|Character whereContent($value)
- * @method static EloquentBuilder|Character whereCreatedAt($value)
- * @method static EloquentBuilder|Character whereId($value)
- * @method static EloquentBuilder|Character whereLastSubmittedDpsAmount($value)
- * @method static EloquentBuilder|Character whereName($value)
- * @method static EloquentBuilder|Character whereRole($value)
- * @method static EloquentBuilder|Character whereSets($value)
- * @method static EloquentBuilder|Character whereSkills($value)
- * @method static EloquentBuilder|Character whereUpdatedAt($value)
- * @method static EloquentBuilder|Character whereUserId($value)
+ * @method EloquentBuilder|Character whereApprovedForT1($value)
+ * @method EloquentBuilder|Character whereApprovedForT2($value)
+ * @method EloquentBuilder|Character whereApprovedForT3($value)
+ * @method EloquentBuilder|Character whereApprovedForT4($value)
+ * @method EloquentBuilder|Character whereClass($value)
+ * @method EloquentBuilder|Character whereContent($value)
+ * @method EloquentBuilder|Character whereCreatedAt($value)
+ * @method EloquentBuilder|Character whereId($value)
+ * @method EloquentBuilder|Character whereLastSubmittedDpsAmount($value)
+ * @method EloquentBuilder|Character whereName($value)
+ * @method EloquentBuilder|Character whereRole($value)
+ * @method EloquentBuilder|Character whereSets($value)
+ * @method EloquentBuilder|Character whereSkills($value)
+ * @method EloquentBuilder|Character whereUpdatedAt($value)
+ * @method EloquentBuilder|Character whereUserId($value)
  */
 class Character extends Model
 {
@@ -54,6 +55,7 @@ class Character extends Model
     protected $dispatchesEvents = [
         'deleting' => CharacterDeleting::class,
         'deleted' => CharacterDeleted::class,
+        'updated' => CharacterUpdated::class,
     ];
 
     /**

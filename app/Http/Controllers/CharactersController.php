@@ -4,13 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Character;
 use App\Models\User;
-use App\Singleton\ClassTypes;
-use App\Singleton\RoleTypes;
 use App\Traits\Characters\HasOrIsDpsParse;
 use App\Traits\Characters\IsCharacter;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
-use function Sodium\add;
 
 class CharactersController extends Controller
 {
@@ -28,7 +24,7 @@ class CharactersController extends Controller
     {
         $this->authorize('user', User::class);
         $query = Character::query();
-        $userId && $query::whereUserId($userId);
+        $userId && $query->whereUserId($userId);
         $characterIds = $query
             ->orderBy('id', 'desc')
             ->get(['id'])->pluck('id');

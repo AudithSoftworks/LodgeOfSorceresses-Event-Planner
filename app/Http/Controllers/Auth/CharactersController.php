@@ -154,8 +154,6 @@ class CharactersController extends Controller
 
         $character->save();
 
-        app('cache.store')->forget('character-' . $characterId);
-
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);
     }
 
@@ -181,7 +179,6 @@ class CharactersController extends Controller
             ->first();
         if ($character) {
             $character->delete();
-            app('cache.store')->forget('character-' . $characterId);
         } else {
             throw new ModelNotFoundException('Character not found!');
         }

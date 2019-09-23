@@ -5,7 +5,6 @@ use App\Models\Set;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
 use GuzzleHttp\RequestOptions;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AnnounceDpsDisapprovalOnDiscord
 {
@@ -31,18 +30,9 @@ class AnnounceDpsDisapprovalOnDiscord
 
         $channelId = config('services.discord.channels.dps_parses');
 
-        $dpsParse = $event->dpsParse;
-        $dpsParse->refresh();
-        $dpsParse->loadMissing(['owner', 'character']);
-
-        $parseAuthor = $dpsParse->owner()->first();
-        if (!$parseAuthor) {
-            throw new ModelNotFoundException('Parse author record not found!');
-        }
-        $character = $dpsParse->character()->first();
-        if (!$character) {
-            throw new ModelNotFoundException('Character record not found!');
-        }
+        $dpsParse = $event->getDpsParse();
+        $parseAuthor = $event->getOwner();
+        $character = $event->getCharacter();
 
         /*--------------------------------------------
          | Me & Parse author mention names parsed
@@ -55,7 +45,10 @@ class AnnounceDpsDisapprovalOnDiscord
 
         $parseAuthor->loadMissing('linkedAccounts');
         $parseOwnersDiscordAccount = $parseAuthor->linkedAccounts()->where('remote_provider', 'discord')->first();
-        $mentionedName = '<@!' . $parseOwnersDiscordAccount->remote_id . '>';
+        $mentionedName = $parseAuthor->name;
+        if ($parseOwnersDiscordAccount) {
+            $mentionedName = '<@!' . $parseOwnersDiscordAccount->remote_id . '>';
+        }
 
         $discordMessageIdsToDelete = explode(',', $dpsParse->discord_notification_message_ids);
 

@@ -77,8 +77,6 @@ class DpsParsesController extends Controller
         $dpsParse->sets = !empty($request->get('sets')) ? implode(',', $request->get('sets')) : null;
         $dpsParse->save();
 
-        app('cache.store')->forget('character-' . $characterId);
-
         app('events')->dispatch(new DpsParseSubmitted($dpsParse));
 
         return response()->json(['lastInsertId' => $dpsParse->id], JsonResponse::HTTP_CREATED);
@@ -130,7 +128,6 @@ class DpsParsesController extends Controller
             throw new ModelNotFoundException('Parse not found (or already processed)!');
         }
         $dpsParse->delete();
-        app('cache.store')->forget('character-' . $characterId);
         app('events')->dispatch(new DpsParseDeleted($dpsParse));
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);

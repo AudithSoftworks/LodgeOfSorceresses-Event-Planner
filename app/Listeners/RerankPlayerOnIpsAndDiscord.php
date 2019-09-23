@@ -1,7 +1,5 @@
 <?php namespace App\Listeners;
 
-use App\Events\Character\CharacterInterface;
-use App\Events\Character\DpsParseInterface;
 use App\Models\UserOAuth;
 use App\Services\DiscordApi;
 use App\Services\GuildRankAndClearance;
@@ -26,30 +24,14 @@ class RerankPlayerOnIpsAndDiscord
     }
 
     /**
-     * @param \App\Events\Character\CharacterInterface|\App\Events\Character\DpsParseInterface $event
+     * @param \App\Events\Character\GetCharacterInterface|\App\Events\User\GetUserInterface|\App\Events\DpsParse\GetDpsParsesInterface $event
      *
      * @return bool|int
      */
     public function handle($event)
     {
-        $parseAuthor = null;
-        if ($event instanceof CharacterInterface) {
-            $this->character = $event->getCharacter();
-            $this->character->refresh();
-            $this->character->loadMissing(['owner']);
-            $parseAuthor = $event->getOwner();
-            $parseAuthor->refresh();
-        } elseif ($event instanceof DpsParseInterface) {
-            $dpsParse = $event->getDpsParse();
-            $dpsParse->refresh();
-            $dpsParse->loadMissing(['owner', 'character']);
-            $this->character = $dpsParse->character()->first();
-            /** @var \App\Models\User $parseAuthor */
-            $parseAuthor = $dpsParse->owner()->first();
-        }
-        if (!$parseAuthor) {
-            return false;
-        }
+        $this->character = $event->getCharacter();
+        $parseAuthor = $event->getOwner();
 
         $parseAuthor->loadMissing(['linkedAccounts', 'characters']);
 

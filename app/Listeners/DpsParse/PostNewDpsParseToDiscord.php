@@ -29,18 +29,17 @@ class PostNewDpsParseToDiscord
         $dpsParse = $event->dpsParse;
         $dpsParse->refresh();
 
-        /** @var \App\Models\User $me */
-        $me = app('auth.driver')->user();
-        $character = $this->getCharacter($dpsParse->character_id);
+        $owner = $event->getOwner();
+        $character = $event->getCharacter();
         $gearSets = $this->getGearSets($dpsParse->sets);
         $gearSetsParsed = [];
         foreach ($gearSets as $set) {
             $gearSetsParsed[] = '[' . $set->name . '](https://eso-sets.com/set/' . $set->id . ')';
         }
 
-        $me->loadMissing('linkedAccounts');
-        $discordAccount = $me->linkedAccounts()->where('remote_provider', 'discord')->first();
-        $mentionedName = $discordAccount ? '<@!' . $discordAccount->remote_id . '>' : $me->name;
+        $owner->loadMissing('linkedAccounts');
+        $discordAccount = $owner->linkedAccounts()->where('remote_provider', 'discord')->first();
+        $mentionedName = $discordAccount ? '<@!' . $discordAccount->remote_id . '>' : $owner->name;
 
         $idsOfCreatedDiscordMessages = [];
         $channelId = config('services.discord.channels.dps_parses');
@@ -94,16 +93,6 @@ class PostNewDpsParseToDiscord
         $dpsParse->save();
 
         return true;
-    }
-
-    /**
-     * @param int $characterId
-     *
-     * @return Character
-     */
-    private function getCharacter(int $characterId): Character
-    {
-        return Character::whereId($characterId)->first();
     }
 
     /**

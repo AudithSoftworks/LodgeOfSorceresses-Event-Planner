@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Events\Character;
+namespace App\Events\DpsParse;
 
 use App\Models\DpsParse;
 
-interface DpsParseInterface
+interface GetDpsParseInterface
 {
     public function getDpsParse(): DpsParse;
 }

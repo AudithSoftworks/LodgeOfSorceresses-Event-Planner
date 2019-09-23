@@ -14,8 +14,6 @@ class ProcessDpsParse
         $dpsParse = $event->dpsParse;
         $dpsParse->refresh();
 
-        $guildRankingService = app('guild.ranks.clearance');
-
-        return $guildRankingService->processDpsParse($dpsParse);
+        return app('guild.ranks.clearance')->processDpsParse($dpsParse);
     }
 }

@@ -2,8 +2,9 @@
 
 use App\Models\Character;
 use App\Models\User;
+use App\Events\User\GetUserInterface;
 
-class CharacterDeleted implements CharacterInterface
+class CharacterDeleted implements GetUserInterface, CharacterNeedsRecacheInterface
 {
     /**
      * @var \App\Models\Character

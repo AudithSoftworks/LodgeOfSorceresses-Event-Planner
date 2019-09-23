@@ -93,7 +93,6 @@ class CharactersController extends Controller
                 app('events')->dispatch(new CharacterDemoted($character));
                 break;
         }
-        app('cache.store')->forget('character-' . $characterId);
 
         return response()->json(['message' => 'Character reranked.']);
     }
