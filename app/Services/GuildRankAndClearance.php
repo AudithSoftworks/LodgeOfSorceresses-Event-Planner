@@ -188,11 +188,11 @@ class GuildRankAndClearance
 
     public function promoteCharacter(Character $character): bool
     {
-        $promoted = false;
+        $promoted = null;
         foreach (self::CLEARANCE_LEVELS as $clearanceLevel => $clearanceLevelDetails) {
             if (!$character->{'approved_for_' . $clearanceLevel}) {
                 $character->{'approved_for_' . $clearanceLevel} = true;
-                $promoted = true;
+                $promoted = $clearanceLevel;
                 break;
             }
         }
@@ -206,12 +206,12 @@ class GuildRankAndClearance
 
     public function demoteCharacter(Character $character): bool
     {
-        $demoted = false;
+        $demoted = null;
         $clearanceLevelsInReverse = array_reverse(self::CLEARANCE_LEVELS);
         foreach ($clearanceLevelsInReverse as $clearanceLevel => $clearanceLevelDetails) {
             if ($character->{'approved_for_' . $clearanceLevel}) {
                 $character->{'approved_for_' . $clearanceLevel} = false;
-                $demoted = true;
+                $demoted = $clearanceLevel;
                 break;
             }
         }

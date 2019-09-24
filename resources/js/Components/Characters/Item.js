@@ -25,7 +25,7 @@ class Item extends PureComponent {
                 </Link>
             ),
             parses:
-                character['role'].indexOf('Damage') !== -1 ? (
+                character['role'].indexOf('DD') !== -1 ? (
                     <Link to={'/@me/characters/' + character.id + '/parses'} title="DPS Parses">
                         <FontAwesomeIcon icon={['far', 'tachometer-alt']} />
                     </Link>

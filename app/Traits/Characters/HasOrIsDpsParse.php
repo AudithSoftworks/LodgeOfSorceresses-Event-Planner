@@ -17,9 +17,9 @@ trait HasOrIsDpsParse
             $dpsParse->sets = $this->parseDpsParseSets($dpsParse);
             $this->parseScreenshotFiles($dpsParse);
             if ($dpsParse->processed_by) {
-                $processedParses->add($dpsParse);
+                $processedParses->count() < 10 && $processedParses->add($dpsParse);
             } else {
-                $pendingDpsParses->add($dpsParse);
+                $pendingDpsParses->count() < 10 && $pendingDpsParses->add($dpsParse);
             }
         }
         $character->dps_parses_processed = $processedParses;

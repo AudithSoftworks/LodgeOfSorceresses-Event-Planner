@@ -17,32 +17,42 @@ class EventServiceProvider extends ServiceProvider
             Listeners\Cache\Recache::class
         ],
 
-        Events\Character\CharacterPromoted::class => [
+        Events\Character\CharacterDeleting::class => [
+            Listeners\DpsParse\DeleteDiscordMessagesWhenCharacterIsDeleting::class
+        ],
+        Events\Character\CharacterDeleted::class => [
+            Listeners\Cache\DeleteCharacterCache::class,
             Listeners\RerankPlayerOnIpsAndDiscord::class
         ],
         Events\Character\CharacterDemoted::class => [
+            Listeners\Cache\DeleteCharacterCache::class,
             Listeners\RerankPlayerOnIpsAndDiscord::class
         ],
-        Events\Character\CharacterDeleting::class => [
-            Listeners\DpsParse\DeleteDpsParsesOfDeletingCharacter::class
-        ],
-        Events\Character\CharacterDeleted::class => [
+        Events\Character\CharacterPromoted::class => [
+            Listeners\Cache\DeleteCharacterCache::class,
             Listeners\RerankPlayerOnIpsAndDiscord::class
+        ],
+        Events\Character\CharacterUpdated::class => [
+            Listeners\Cache\DeleteCharacterCache::class,
         ],
 
         Events\DpsParse\DpsParseSubmitted::class => [
+            Listeners\Cache\DeleteCharacterCache::class,
             Listeners\DpsParse\PostNewDpsParseToDiscord::class
         ],
         Events\DpsParse\DpsParseDeleted::class => [
+            Listeners\Cache\DeleteCharacterCache::class,
             Listeners\DpsParse\DeleteDiscordMessagesWhenDpsParseIsDeleted::class
         ],
         Events\DpsParse\DpsParseApproved::class => [
+            Listeners\Cache\DeleteCharacterCache::class,
             Listeners\DpsParse\ProcessDpsParse::class,
             Listeners\RerankPlayerOnIpsAndDiscord::class,
             Listeners\DpsParse\AnnounceDpsApprovalOnDiscord::class,
         ],
         Events\DpsParse\DpsParseDisapproved::class => [
-            Listeners\DpsParse\AnnounceDpsDisapprovalOnDiscord::class
+            Listeners\Cache\DeleteCharacterCache::class,
+            Listeners\DpsParse\AnnounceDpsDisapprovalOnDiscord::class,
         ],
 
         Events\File\Uploaded::class => [

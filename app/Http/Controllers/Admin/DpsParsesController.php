@@ -69,10 +69,6 @@ class DpsParsesController extends Controller
             throw new ModelNotFoundException('Parse not found!');
         }
 
-        /** @var \App\Models\Character $character */
-        $character = $dpsParse->character()->first();
-        app('cache.store')->forget('character-' . $character->id);
-
         $dpsParse->processed_by = $me->id;
         $dpsParse->save();
 
@@ -103,10 +99,6 @@ class DpsParsesController extends Controller
         if (!$dpsParse) {
             throw new ModelNotFoundException('Parse not found!');
         }
-
-        /** @var \App\Models\Character $character */
-        $character = $dpsParse->character()->first();
-        app('cache.store')->forget('character-' . $character->id);
 
         $dpsParse->reason_for_disapproval = $request->get('reason_for_disapproval');
         $dpsParse->processed_by = $me->id;

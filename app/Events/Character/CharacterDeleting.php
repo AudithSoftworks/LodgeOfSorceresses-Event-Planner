@@ -1,10 +1,17 @@
 <?php namespace App\Events\Character;
 
+use App\Events\DpsParse\GetDpsParsesInterface;
 use App\Models\Character;
 use App\Models\User;
+use App\Events\User\GetUserInterface;
 
-class CharacterDeleting implements CharacterInterface
+class CharacterDeleting implements GetUserInterface, GetCharacterInterface, GetDpsParsesInterface
 {
+    /**
+     * @var iterable|\App\Models\DpsParse[]
+     */
+    public $dpsParses;
+
     /**
      * @var \App\Models\Character
      */
@@ -22,8 +29,9 @@ class CharacterDeleting implements CharacterInterface
     {
         $this->character = $character;
         $character->refresh();
-        $character->loadMissing(['owner']);
+        $character->loadMissing(['owner', 'dpsParses']);
         $this->owner = $character->owner()->first();
+        $this->dpsParses = $character->dpsParses()->withTrashed()->get();
     }
 
     public function getCharacter(): Character
@@ -34,5 +42,13 @@ class CharacterDeleting implements CharacterInterface
     public function getOwner(): User
     {
         return $this->owner;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDpsParses()
+    {
+        return $this->dpsParses;
     }
 }

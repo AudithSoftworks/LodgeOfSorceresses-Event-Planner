@@ -1,7 +1,5 @@
 <?php namespace App\Listeners;
 
-use App\Events\Character\CharacterInterface;
-use App\Events\Character\DpsParseInterface;
 use App\Models\UserOAuth;
 use App\Services\DiscordApi;
 use App\Services\GuildRankAndClearance;
@@ -26,46 +24,30 @@ class RerankPlayerOnIpsAndDiscord
     }
 
     /**
-     * @param \App\Events\Character\CharacterInterface|\App\Events\Character\DpsParseInterface $event
+     * @param \App\Events\Character\GetCharacterInterface|\App\Events\User\GetUserInterface|\App\Events\DpsParse\GetDpsParsesInterface $event
      *
      * @return bool|int
      */
     public function handle($event)
     {
-        $parseAuthor = null;
-        if ($event instanceof CharacterInterface) {
-            $this->character = $event->getCharacter();
-            $this->character->refresh();
-            $this->character->loadMissing(['owner']);
-            $parseAuthor = $event->getOwner();
-            $parseAuthor->refresh();
-        } elseif ($event instanceof DpsParseInterface) {
-            $dpsParse = $event->getDpsParse();
-            $dpsParse->refresh();
-            $dpsParse->loadMissing(['owner', 'character']);
-            $this->character = $dpsParse->character()->first();
-            /** @var \App\Models\User $parseAuthor */
-            $parseAuthor = $dpsParse->owner()->first();
-        }
-        if (!$parseAuthor) {
-            return false;
-        }
+        $this->character = $event->getCharacter();
+        $parseAuthor = $event->getOwner();
 
         $parseAuthor->loadMissing(['linkedAccounts', 'characters']);
 
         $discordApi = app('discord.api');
-        $topClearanceExisting = app('guild.ranks.clearance')->calculateTopClearanceForUser($parseAuthor);
+        $newOverallClearanceForUser = app('guild.ranks.clearance')->calculateTopClearanceForUser($parseAuthor);
 
         /** @var \App\Models\UserOAuth $parseOwnersIpsAccount */
         $parseOwnersIpsAccount = $parseAuthor->linkedAccounts()->where('remote_provider', 'ips')->first();
         /** @var \App\Models\UserOAuth $parseOwnersDiscordAccount */
         $parseOwnersDiscordAccount = $parseAuthor->linkedAccounts()->where('remote_provider', 'discord')->first();
         $mentionedName = $parseOwnersDiscordAccount ? '<@!' . $parseOwnersDiscordAccount->remote_id . '>' : $parseAuthor->name;
-        $parseOwnersIpsAccount && $this->rerankUserOnIps($parseOwnersIpsAccount, $topClearanceExisting);
-        $parseOwnersDiscordAccount && $this->rerankUserOnDiscord($parseOwnersDiscordAccount, $topClearanceExisting);
-        $parseOwnersDiscordAccount && $this->announceRerankToThePlayerViaDiscordDm($discordApi, $parseOwnersDiscordAccount, $mentionedName, $topClearanceExisting);
+        $parseOwnersIpsAccount && $this->rerankUserOnIps($parseOwnersIpsAccount, $newOverallClearanceForUser);
+        $parseOwnersDiscordAccount && $this->rerankUserOnDiscord($parseOwnersDiscordAccount, $newOverallClearanceForUser);
+        $parseOwnersDiscordAccount && $this->announceRerankToThePlayerViaDiscordDm($discordApi, $parseOwnersDiscordAccount, $mentionedName, $newOverallClearanceForUser);
         $isParseOwnerASoulshriven = in_array(DiscordApi::ROLE_SOULSHRIVEN, explode(',', $parseOwnersDiscordAccount->remote_secondary_groups), true);
-        !$isParseOwnerASoulshriven && $this->announceRerankInOfficerChannelOnDiscord($discordApi, $mentionedName, $topClearanceExisting);
+        !$isParseOwnerASoulshriven && $this->announceRerankInOfficerChannelOnDiscord($discordApi, $mentionedName, $newOverallClearanceForUser);
 
         return true;
     }
@@ -125,7 +107,7 @@ class RerankPlayerOnIpsAndDiscord
             $keyInDiscordRoleArray = array_search($discordRole, $existingSpecialRoles, true);
             if ($clearanceLevel !== null && !$keyInDiscordRoleArray) {
                 $existingSpecialRoles[] = $discordRole;
-            } elseif ($clearanceLevel === null && $keyInDiscordRoleArray) {
+            } elseif ($clearanceLevel === null && $keyInDiscordRoleArray) { // Note: This check isn't really meaningful and not so important.
                 unset($existingSpecialRoles[$keyInDiscordRoleArray]);
             }
         }
@@ -149,7 +131,7 @@ class RerankPlayerOnIpsAndDiscord
             : GuildRankAndClearance::RANK_INITIATE['title'];
 
         $dmChannel = $discordApi->createDmChannel($remoteDiscordUser->remote_id);
-        $discordApi->createMessageInChannel($dmChannel['id'], [
+        $responseDecoded = $discordApi->createMessageInChannel($dmChannel['id'], [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
                     'content' => $mentionedName . ', recent activities of your Characters (DPS approval, Tank/Healer clearance, Character deletion etc) on Planner triggered a Reranking!'
@@ -158,6 +140,7 @@ class RerankPlayerOnIpsAndDiscord
                 ]),
             ]
         ]);
+        $discordApi->reactToMessageInChannel($dmChannel['id'], $responseDecoded['id'], '☝');
     }
 
     private function announceRerankInOfficerChannelOnDiscord(DiscordApi $discordApi, string $mentionedName, ?string $playerClearance): void

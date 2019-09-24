@@ -1,20 +1,13 @@
 <?php namespace App\Events\Character;
 
 use App\Models\Character;
-use App\Models\User;
-use App\Events\User\GetUserInterface;
 
-class CharacterPromoted implements GetUserInterface, CharacterNeedsRecacheInterface
+class CharacterUpdated implements CharacterNeedsRecacheInterface
 {
     /**
      * @var \App\Models\Character
      */
     public $character;
-
-    /**
-     * @var \App\Models\User
-     */
-    public $owner;
 
     /**
      * @param \App\Models\Character $character
@@ -23,17 +16,10 @@ class CharacterPromoted implements GetUserInterface, CharacterNeedsRecacheInterf
     {
         $this->character = $character;
         $character->refresh();
-        $character->loadMissing(['owner']);
-        $this->owner = $character->owner()->first();
     }
 
     public function getCharacter(): Character
     {
         return $this->character;
-    }
-
-    public function getOwner(): User
-    {
-        return $this->owner;
     }
 }

@@ -39,7 +39,7 @@ class CharactersController extends Controller
         foreach ($characterIds as $characterId) {
             app('cache.store')->has('character-' . $characterId); // Trigger Recache listener.
             $character = app('cache.store')->get('character-' . $characterId);
-            $characters->push($character);
+            $characters->add($character);
         }
 
         return response()->json($characters);
@@ -93,7 +93,6 @@ class CharactersController extends Controller
                 app('events')->dispatch(new CharacterDemoted($character));
                 break;
         }
-        app('cache.store')->forget('character-' . $characterId);
 
         return response()->json(['message' => 'Character reranked.']);
     }

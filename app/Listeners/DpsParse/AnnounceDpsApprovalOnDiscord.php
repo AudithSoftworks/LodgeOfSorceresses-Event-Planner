@@ -6,7 +6,6 @@ use App\Services\GuildRankAndClearance;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
 use GuzzleHttp\RequestOptions;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AnnounceDpsApprovalOnDiscord
 {
@@ -32,26 +31,15 @@ class AnnounceDpsApprovalOnDiscord
      */
     public function handle(DpsParseApproved $event): bool
     {
-        /*------------------------------------
+        /*-------------
          | Prelim
-         *-----------------------------------*/
+         *------------*/
 
         $dpsParsesChannelId = config('services.discord.channels.dps_parses');
 
-        $dpsParse = $event->dpsParse;
-        $dpsParse->refresh();
-        $dpsParse->loadMissing(['owner', 'character']);
-
-        /** @var \App\Models\User $parseAuthor */
-        $parseAuthor = $dpsParse->owner()->first();
-        if (!$parseAuthor) {
-            throw new ModelNotFoundException('Parse author record not found!');
-        }
-        /** @var \App\Models\Character $character */
-        $character = $dpsParse->character()->first();
-        if (!$character) {
-            throw new ModelNotFoundException('Character record not found!');
-        }
+        $dpsParse = $event->getDpsParse();
+        $parseAuthor = $event->getOwner();
+        $character = $event->getCharacter();
         $playerClearance = app('guild.ranks.clearance')->calculateTopClearanceForUser($parseAuthor);
         $characterClearance = app('guild.ranks.clearance')->calculateTopClearanceForCharacter($character);
 
@@ -66,11 +54,11 @@ class AnnounceDpsApprovalOnDiscord
 
         $parseAuthor->loadMissing('linkedAccounts');
         $parseOwnersDiscordAccount = $parseAuthor->linkedAccounts()->where('remote_provider', 'discord')->first();
-        if (!$parseOwnersDiscordAccount) {
-            return false;
+        $mentionedName = $parseAuthor->name;
+        if ($parseOwnersDiscordAccount) {
+            $mentionedName = '<@!' . $parseOwnersDiscordAccount->remote_id . '>';
         }
 
-        $mentionedName = '<@!' . $parseOwnersDiscordAccount->remote_id . '>';
         $discordMessageIdsToDelete = explode(',', $dpsParse->discord_notification_message_ids);
 
         /*------------------------------------
@@ -154,6 +142,8 @@ class AnnounceDpsApprovalOnDiscord
                 ]),
             ]
         ]);
+        $dpsParse->discord_notification_message_ids = $responseDecoded['id'];
+        $dpsParse->save();
 
         /*------------------------------------
          | React to the message
