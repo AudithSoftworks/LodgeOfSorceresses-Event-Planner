@@ -142,6 +142,8 @@ class AnnounceDpsApprovalOnDiscord
                 ]),
             ]
         ]);
+        $dpsParse->discord_notification_message_ids = $responseDecoded['id'];
+        $dpsParse->save();
 
         /*------------------------------------
          | React to the message

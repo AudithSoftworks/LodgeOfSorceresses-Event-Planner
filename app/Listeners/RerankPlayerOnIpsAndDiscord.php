@@ -131,7 +131,7 @@ class RerankPlayerOnIpsAndDiscord
             : GuildRankAndClearance::RANK_INITIATE['title'];
 
         $dmChannel = $discordApi->createDmChannel($remoteDiscordUser->remote_id);
-        $discordApi->createMessageInChannel($dmChannel['id'], [
+        $responseDecoded = $discordApi->createMessageInChannel($dmChannel['id'], [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
                     'content' => $mentionedName . ', recent activities of your Characters (DPS approval, Tank/Healer clearance, Character deletion etc) on Planner triggered a Reranking!'
@@ -140,6 +140,7 @@ class RerankPlayerOnIpsAndDiscord
                 ]),
             ]
         ]);
+        $discordApi->reactToMessageInChannel($dmChannel['id'], $responseDecoded['id'], '☝');
     }
 
     private function announceRerankInOfficerChannelOnDiscord(DiscordApi $discordApi, string $mentionedName, ?string $playerClearance): void

@@ -124,6 +124,8 @@ class AnnounceDpsDisapprovalOnDiscord
             ]
         ];
         $responseDecoded = $discordApi->createMessageInChannel($channelId, $message);
+        $dpsParse->discord_notification_message_ids = $responseDecoded['id'];
+        $dpsParse->save();
 
         $dmChannel = $discordApi->createDmChannel($parseOwnersDiscordAccount->remote_id);
         $discordApi->createMessageInChannel($dmChannel['id'], $message);
