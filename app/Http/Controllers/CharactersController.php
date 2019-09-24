@@ -33,7 +33,7 @@ class CharactersController extends Controller
         foreach ($characterIds as $characterId) {
             app('cache.store')->has('character-' . $characterId); // Trigger Recache listener.
             $character = app('cache.store')->get('character-' . $characterId);
-            $characters->push($character);
+            $characters->add($character);
         }
 
         return response()->json($characters);

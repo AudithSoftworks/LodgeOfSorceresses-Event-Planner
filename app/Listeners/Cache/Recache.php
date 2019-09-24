@@ -73,7 +73,7 @@ class Recache
         $character = Character::query()
             ->with([
                 'dpsParses' => static function (HasMany $query) {
-                    $query->orderBy('id', 'desc')->limit(10);
+                    $query->orderBy('id', 'desc');
                 },
                 'content',
                 'owner'
@@ -82,7 +82,7 @@ class Recache
             ->first();
         if ($character) {
             $character->class = ClassTypes::getClassName($character->class);
-            $character->role = RoleTypes::getRoleName($character->role);
+            $character->role = RoleTypes::getShortRoleText($character->role);
             $character->sets = $this->parseCharacterSets($character);
             $character->skills = $this->parseCharacterSkills($character);
             $this->processDpsParses($character);

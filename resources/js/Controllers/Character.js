@@ -175,6 +175,9 @@ class Character extends PureComponent {
                 <h2 className="form-title col-md-24">{character.name}</h2>
                 <ul className="ne-corner">{actionListRendered}</ul>
                 <dl className="col-lg-8">
+                    <dt>Ingame ID</dt>
+                    <dd>{'@' + character.owner.name}</dd>
+
                     <dt>Class</dt>
                     <dd>{character.class}</dd>
 

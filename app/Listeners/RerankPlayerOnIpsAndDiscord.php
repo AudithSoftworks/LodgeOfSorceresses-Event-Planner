@@ -36,18 +36,18 @@ class RerankPlayerOnIpsAndDiscord
         $parseAuthor->loadMissing(['linkedAccounts', 'characters']);
 
         $discordApi = app('discord.api');
-        $topClearanceExisting = app('guild.ranks.clearance')->calculateTopClearanceForUser($parseAuthor);
+        $newOverallClearanceForUser = app('guild.ranks.clearance')->calculateTopClearanceForUser($parseAuthor);
 
         /** @var \App\Models\UserOAuth $parseOwnersIpsAccount */
         $parseOwnersIpsAccount = $parseAuthor->linkedAccounts()->where('remote_provider', 'ips')->first();
         /** @var \App\Models\UserOAuth $parseOwnersDiscordAccount */
         $parseOwnersDiscordAccount = $parseAuthor->linkedAccounts()->where('remote_provider', 'discord')->first();
         $mentionedName = $parseOwnersDiscordAccount ? '<@!' . $parseOwnersDiscordAccount->remote_id . '>' : $parseAuthor->name;
-        $parseOwnersIpsAccount && $this->rerankUserOnIps($parseOwnersIpsAccount, $topClearanceExisting);
-        $parseOwnersDiscordAccount && $this->rerankUserOnDiscord($parseOwnersDiscordAccount, $topClearanceExisting);
-        $parseOwnersDiscordAccount && $this->announceRerankToThePlayerViaDiscordDm($discordApi, $parseOwnersDiscordAccount, $mentionedName, $topClearanceExisting);
+        $parseOwnersIpsAccount && $this->rerankUserOnIps($parseOwnersIpsAccount, $newOverallClearanceForUser);
+        $parseOwnersDiscordAccount && $this->rerankUserOnDiscord($parseOwnersDiscordAccount, $newOverallClearanceForUser);
+        $parseOwnersDiscordAccount && $this->announceRerankToThePlayerViaDiscordDm($discordApi, $parseOwnersDiscordAccount, $mentionedName, $newOverallClearanceForUser);
         $isParseOwnerASoulshriven = in_array(DiscordApi::ROLE_SOULSHRIVEN, explode(',', $parseOwnersDiscordAccount->remote_secondary_groups), true);
-        !$isParseOwnerASoulshriven && $this->announceRerankInOfficerChannelOnDiscord($discordApi, $mentionedName, $topClearanceExisting);
+        !$isParseOwnerASoulshriven && $this->announceRerankInOfficerChannelOnDiscord($discordApi, $mentionedName, $newOverallClearanceForUser);
 
         return true;
     }
@@ -107,7 +107,7 @@ class RerankPlayerOnIpsAndDiscord
             $keyInDiscordRoleArray = array_search($discordRole, $existingSpecialRoles, true);
             if ($clearanceLevel !== null && !$keyInDiscordRoleArray) {
                 $existingSpecialRoles[] = $discordRole;
-            } elseif ($clearanceLevel === null && $keyInDiscordRoleArray) {
+            } elseif ($clearanceLevel === null && $keyInDiscordRoleArray) { // Note: This check isn't really meaningful and not so important.
                 unset($existingSpecialRoles[$keyInDiscordRoleArray]);
             }
         }
