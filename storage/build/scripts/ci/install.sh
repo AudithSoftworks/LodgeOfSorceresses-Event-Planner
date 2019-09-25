@@ -9,6 +9,7 @@ cd /opt/lodgeofsorceresses/subdomains/planner/$1;
 ./artisan config:cache;
 ./artisan route:cache;
 ./artisan storage:link
+./artisan cache:warmup
 
 composer install --prefer-source --no-interaction --no-dev;
 
