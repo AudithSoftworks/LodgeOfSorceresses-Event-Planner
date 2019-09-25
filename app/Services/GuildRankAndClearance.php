@@ -119,7 +119,7 @@ class GuildRankAndClearance
         ],
     ];
 
-    public function calculateTopClearanceForUser(User $user): ?string
+    public function calculateOverallClearanceOfUser(User $user): ?string
     {
         $user->loadMissing(['characters']);
         /** @var \App\Models\Character[] $characters */
@@ -143,7 +143,7 @@ class GuildRankAndClearance
         return $topClearanceExisting;
     }
 
-    public function calculateTopClearanceForCharacter(Character $character): ?string
+    public function determineClearanceOfCharacter(Character $character): ?string
     {
         $topClearanceExisting = null;
         foreach (self::CLEARANCE_LEVELS as $clearanceLevel => $clearanceLevelDetails) {
@@ -153,6 +153,14 @@ class GuildRankAndClearance
         }
 
         return $topClearanceExisting;
+    }
+
+    public function determineIfUserHasOtherRankedCharactersWithGivenRole(User $user, int $role): bool
+    {
+        $user->loadMissing('characters');
+        $resultSet = $user->characters()->where('role', $role)->where('approved_for_t1', true)->first();
+
+        return !empty($resultSet);
     }
 
     public function processDpsParse(DpsParse $dpsParse): bool

@@ -36,7 +36,9 @@ class RerankPlayerOnIpsAndDiscord
         $parseAuthor->loadMissing(['linkedAccounts', 'characters']);
 
         $discordApi = app('discord.api');
-        $newOverallClearanceForUser = app('guild.ranks.clearance')->calculateTopClearanceForUser($parseAuthor);
+        $guildRankAndClearance = app('guild.ranks.clearance');
+        $newOverallClearanceForUser = $guildRankAndClearance->calculateOverallClearanceOfUser($parseAuthor);
+        $userShouldRetainRoleTagOnDiscord = $guildRankAndClearance->determineIfUserHasOtherRankedCharactersWithGivenRole($parseAuthor, $this->character->role);
 
         /** @var \App\Models\UserOAuth $parseOwnersIpsAccount */
         $parseOwnersIpsAccount = $parseAuthor->linkedAccounts()->where('remote_provider', 'ips')->first();
@@ -44,7 +46,7 @@ class RerankPlayerOnIpsAndDiscord
         $parseOwnersDiscordAccount = $parseAuthor->linkedAccounts()->where('remote_provider', 'discord')->first();
         $mentionedName = $parseOwnersDiscordAccount ? '<@!' . $parseOwnersDiscordAccount->remote_id . '>' : $parseAuthor->name;
         $parseOwnersIpsAccount && $this->rerankUserOnIps($parseOwnersIpsAccount, $newOverallClearanceForUser);
-        $parseOwnersDiscordAccount && $this->rerankUserOnDiscord($parseOwnersDiscordAccount, $newOverallClearanceForUser);
+        $parseOwnersDiscordAccount && $this->rerankUserOnDiscord($parseOwnersDiscordAccount, $newOverallClearanceForUser, $userShouldRetainRoleTagOnDiscord);
         $parseOwnersDiscordAccount && $this->announceRerankToThePlayerViaDiscordDm($discordApi, $parseOwnersDiscordAccount, $mentionedName, $newOverallClearanceForUser);
         $isParseOwnerASoulshriven = in_array(DiscordApi::ROLE_SOULSHRIVEN, explode(',', $parseOwnersDiscordAccount->remote_secondary_groups), true);
         !$isParseOwnerASoulshriven && $this->announceRerankInOfficerChannelOnDiscord($discordApi, $mentionedName, $newOverallClearanceForUser);
@@ -72,7 +74,7 @@ class RerankPlayerOnIpsAndDiscord
         $remoteIpsUser->save();
     }
 
-    private function rerankUserOnDiscord(UserOAuth $remoteDiscordUser, ?string $clearanceLevel): void
+    private function rerankUserOnDiscord(UserOAuth $remoteDiscordUser, ?string $clearanceLevel, bool $userShouldRetainRoleTagOnDiscord): void
     {
         $usersDiscordRoles = explode(',', $remoteDiscordUser->remote_secondary_groups);
         $existingSpecialRoles = array_intersect($usersDiscordRoles, [
@@ -105,9 +107,9 @@ class RerankPlayerOnIpsAndDiscord
         }
         if ($discordRole) {
             $keyInDiscordRoleArray = array_search($discordRole, $existingSpecialRoles, true);
-            if ($clearanceLevel !== null && !$keyInDiscordRoleArray) {
+            if ($userShouldRetainRoleTagOnDiscord && !$keyInDiscordRoleArray) {
                 $existingSpecialRoles[] = $discordRole;
-            } elseif ($clearanceLevel === null && $keyInDiscordRoleArray) { // Note: This check isn't really meaningful and not so important.
+            } elseif (!$userShouldRetainRoleTagOnDiscord && $keyInDiscordRoleArray) {
                 unset($existingSpecialRoles[$keyInDiscordRoleArray]);
             }
         }
