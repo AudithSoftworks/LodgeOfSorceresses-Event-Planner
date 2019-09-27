@@ -4,7 +4,6 @@ import(
     '../../sass/_my_characters.scss'
 );
 
-import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTachometerAlt, faUserPlus } from '@fortawesome/pro-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
@@ -17,8 +16,6 @@ import List from '../Components/Characters/List';
 import { authorizeUser, renderActionList } from '../helpers';
 import { characters, user } from '../vendor/data';
 import Notification from '../Components/Notification';
-
-library.add(faTachometerAlt, faUserPlus);
 
 class Characters extends PureComponent {
     componentWillUnmount() {
@@ -41,7 +38,7 @@ class Characters extends PureComponent {
         if (!myCharacters.length && notifications.find(n => n.key === 'no-characters-create-one') === undefined) {
             const message = [
                 <Fragment key="f-1">Create a new character, by clicking</Fragment>,
-                <FontAwesomeIcon icon={['far', 'user-plus']} key="icon" />,
+                <FontAwesomeIcon icon={faUserPlus} key="icon" />,
                 <Fragment key="f-2">icon on top right corner.</Fragment>,
             ].reduce((acc, curr) => [acc, ' ', curr]);
             dispatch(
@@ -72,7 +69,7 @@ class Characters extends PureComponent {
         const actionList = {
             create: (
                 <Link to="/@me/characters/create" className="ne-corner" title="Submit a Character">
-                    <FontAwesomeIcon icon={['far', 'user-plus']} />
+                    <FontAwesomeIcon icon={faUserPlus} />
                 </Link>
             ),
         };
@@ -88,7 +85,7 @@ class Characters extends PureComponent {
                     <ul>
                         <li>Mouse-over the character name for action buttons to reveal to the right of row.</li>
                         <li>
-                            Only Damage Dealers can submit DPS-parses. Click <FontAwesomeIcon icon={['far', 'tachometer-alt']} /> icon to the right to create one for such Character.
+                            Only Damage Dealers can submit DPS-parses. Click <FontAwesomeIcon icon={faTachometerAlt} /> icon to the right to create one for such Character.
                         </li>
                         <li>
                             When creating a Character, select <b>all</b> your available sets.

@@ -1,20 +1,6 @@
-import { library } from '@fortawesome/fontawesome-svg-core';
 import {
-    faAmbulance,
-    faBowArrow,
-    faShieldAlt,
-    faSpinner,
     faSunrise,
     faSunset,
-    faSwords,
-    faTachometerAlt,
-    faTachometerAltAverage,
-    faTachometerAltFast,
-    faTachometerAltFastest,
-    faTachometerAltSlow,
-    faTachometerAltSlowest,
-    faUser,
-    faUsers,
 } from '@fortawesome/pro-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
@@ -30,24 +16,6 @@ import axios from '../vendor/axios';
 import { user } from '../vendor/data';
 import Notification from './../Components/Notification';
 import Loading from '../Components/Loading';
-
-library.add(
-    faAmbulance,
-    faBowArrow,
-    faShieldAlt,
-    faSpinner,
-    faSunrise,
-    faSunset,
-    faSwords,
-    faTachometerAlt,
-    faTachometerAltAverage,
-    faTachometerAltFast,
-    faTachometerAltFastest,
-    faTachometerAltSlow,
-    faTachometerAltSlowest,
-    faUser,
-    faUsers
-);
 
 class Character extends PureComponent {
     constructor(props) {
@@ -135,13 +103,13 @@ class Character extends PureComponent {
             promote:
                 authorizeAdmin(this.props) && character['role'].indexOf('Damage Dealer') === -1 ? (
                     <a href="#" onClick={this.handleRerank} data-id={character.id} data-action="promote" title="Promote Character">
-                        <FontAwesomeIcon icon={['far', 'sunrise']} />
+                        <FontAwesomeIcon icon={faSunrise} />
                     </a>
                 ) : null,
             demote:
                 authorizeAdmin(this.props) && character['role'].indexOf('Damage Dealer') === -1 ? (
                     <a href="#" onClick={this.handleRerank} data-id={character.id} data-action="demote" title="Demote Character">
-                        <FontAwesomeIcon icon={['far', 'sunset']} />
+                        <FontAwesomeIcon icon={faSunset} />
                     </a>
                 ) : null,
         };
