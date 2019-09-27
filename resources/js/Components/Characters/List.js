@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { characters } from '../../vendor/data';
-import Item from '../Characters/Item';
+import Item from '../Characters/List/Item';
 
 class List extends PureComponent {
     render = () => {

@@ -1,7 +1,7 @@
 import(
     /* webpackPrefetch: true */
     /* webpackChunkName: "my_characters-scss" */
-    '../../sass/_my_characters.scss'
+    '../../../sass/_my_characters.scss'
 );
 
 import { faTachometerAlt, faUserPlus } from '@fortawesome/pro-regular-svg-icons';
@@ -10,12 +10,12 @@ import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
-import deleteMyCharacterAction from '../actions/delete-my-character';
-import { infosAction } from '../actions/notifications';
-import List from '../Components/Characters/List';
-import { authorizeUser, renderActionList } from '../helpers';
-import { characters, user } from '../vendor/data';
-import Notification from '../Components/Notification';
+import deleteMyCharacterAction from '../../actions/delete-my-character';
+import { infosAction } from '../../actions/notifications';
+import List from '../../Components/Characters/List';
+import { authorizeUser, renderActionList } from '../../helpers';
+import { characters, user } from '../../vendor/data';
+import Notification from '../../Components/Notification';
 
 class Characters extends PureComponent {
     componentWillUnmount() {

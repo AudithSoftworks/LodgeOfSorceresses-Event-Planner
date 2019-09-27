@@ -1,12 +1,10 @@
-import { library } from '@fortawesome/fontawesome-svg-core';
 import { faPortrait, faTachometerAlt, faTrashAlt, faUserEdit } from '@fortawesome/pro-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Link } from 'react-router-dom';
-import { character } from '../../vendor/data';
-
-library.add(faPortrait, faTachometerAlt, faTrashAlt, faUserEdit);
+import { renderActionList } from "../../../helpers";
+import { character } from '../../../vendor/data';
 
 class Item extends PureComponent {
     render = () => {
@@ -21,18 +19,18 @@ class Item extends PureComponent {
         character.actionList = {
             view: (
                 <Link to={'/characters/' + character.id} title="Character Sheet">
-                    <FontAwesomeIcon icon={['far', 'portrait']} />
+                    <FontAwesomeIcon icon={faPortrait} />
                 </Link>
             ),
             parses:
                 character['role'].indexOf('DD') !== -1 ? (
                     <Link to={'/@me/characters/' + character.id + '/parses'} title="DPS Parses">
-                        <FontAwesomeIcon icon={['far', 'tachometer-alt']} />
+                        <FontAwesomeIcon icon={faTachometerAlt} />
                     </Link>
                 ) : null,
             edit: (
                 <Link to={'/@me/characters/' + character.id + '/edit'} title="Edit Character">
-                    <FontAwesomeIcon icon={['far', 'user-edit']} />
+                    <FontAwesomeIcon icon={faUserEdit} />
                 </Link>
             ),
             delete:
@@ -42,16 +40,11 @@ class Item extends PureComponent {
                 !character.approved_for_t3 &&
                 !character.approved_for_t4 ? (
                         <Link to="#" onClick={onDeleteHandler} data-id={character.id} title="Delete Character">
-                            <FontAwesomeIcon icon={['far', 'trash-alt']} />
+                            <FontAwesomeIcon icon={faTrashAlt} />
                         </Link>
                     ) : null,
         };
-        const actionListRendered = [];
-        for (const [actionType, link] of Object.entries(character.actionList)) {
-            if (link) {
-                actionListRendered.push(<li key={actionType}>{link}</li>);
-            }
-        }
+
         let rowBgColor = 'no_clearance';
         if (character['approved_for_t4']) {
             rowBgColor = 'tier_4';
@@ -68,9 +61,9 @@ class Item extends PureComponent {
                 <td>{character.name}</td>
                 <td>{character.class}</td>
                 <td>{character.role}</td>
-                <td>{characterSets.reduce((prev, curr) => [prev, ' ', curr])}</td>
+                <td className='sets'>{characterSets.reduce((prev, curr) => [prev, ' ', curr])}</td>
                 <td>
-                    <ul className="actionList">{actionListRendered}</ul>
+                    <ul className="actionList">{renderActionList(character.actionList)}</ul>
                 </td>
             </tr>
         );

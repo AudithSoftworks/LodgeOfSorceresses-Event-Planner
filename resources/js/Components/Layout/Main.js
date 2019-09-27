@@ -35,7 +35,7 @@ const Characters = React.lazy(() =>
     import(
         /* webpackPrefetch: true */
         /* webpackChunkName: "controllers-my-characters" */
-        '../../Controllers/Characters'
+        '../../Controllers/Auth/Characters'
     )
 );
 const CharacterForm = React.lazy(() =>
