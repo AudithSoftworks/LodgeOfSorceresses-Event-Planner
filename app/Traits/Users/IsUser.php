@@ -10,6 +10,7 @@ trait IsUser
     public function parseLinkedAccounts(User $user): void
     {
         $linkedAccountsParsed = $user->linkedAccounts->keyBy('remote_provider');
+        $user->isMember = $user->isSoulshriven = false;
         foreach ($linkedAccountsParsed as $linkedAccount) {
             if (!empty($linkedAccount->remote_secondary_groups)) {
                 $linkedAccount->remote_secondary_groups = explode(',', $linkedAccount->remote_secondary_groups);

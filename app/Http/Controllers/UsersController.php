@@ -2,7 +2,6 @@
 
 use App\Models\User;
 use App\Traits\Users\IsUser;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 
 class UsersController extends Controller
@@ -16,15 +15,12 @@ class UsersController extends Controller
     public function index(): JsonResponse
     {
         $this->authorize('user', User::class);
-        $users = User::with('linkedAccounts')
-            ->whereHas('linkedAccounts', static function (Builder $query) {
-                $query->where('remote_provider', '=', 'discord')->whereNotNull('remote_secondary_groups');
-            })
-            ->whereNotNull('name')
-            ->orderBy('name')
-            ->get();
-        foreach ($users as &$user) {
-            $this->parseLinkedAccounts($user);
+        $userIds = User::query()->whereNotNull('name')->orderBy('name')->get(['id'])->pluck('id');
+        $users = collect();
+        foreach ($userIds as $userId) {
+            app('cache.store')->has('user-' . $userId);
+            $user = app('cache.store')->get('user-' . $userId);
+            $users->add($user);
         }
 
         return response()->json($users);

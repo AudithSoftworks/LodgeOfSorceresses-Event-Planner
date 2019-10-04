@@ -4,16 +4,18 @@ use App\Models\Character;
 use App\Models\Content;
 use App\Models\Set;
 use App\Models\Skill;
+use App\Models\User;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
 use App\Traits\Characters\HasOrIsDpsParse;
 use App\Traits\Characters\IsCharacter;
+use App\Traits\Users\IsUser;
 use Illuminate\Cache\Events\CacheMissed;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Recache
 {
-    use HasOrIsDpsParse, IsCharacter;
+    use HasOrIsDpsParse, IsCharacter, IsUser;
 
     /**
      * @param \Illuminate\Cache\Events\CacheMissed $event
@@ -23,52 +25,64 @@ class Recache
      */
     public function handle(CacheMissed $event)
     {
-        switch ($cacheKey = $event->key) {
-            case 'sets':
+        $key = $event->key;
+        switch (true) {
+            case $key === 'sets':
                 $recache = [
                     'data' => Set::query()->get()->keyBy('id')->toArray(),
                     'ttl' => Set::CACHE_TTL
                 ];
                 break;
-            case 'skills':
+            case $key === 'skills':
                 $recache = [
                     'data' => Skill::query()->get()->keyBy('id')->toArray(),
                     'ttl' => Set::CACHE_TTL
                 ];
                 break;
-            case 'content':
+            case $key === 'content':
                 $recache = [
                     'data' => Content::query()->orderBy('tier')->get()->keyBy('id')->toArray(),
                     'ttl' => Content::CACHE_TTL
                 ];
                 break;
-            default:
+            case strpos($key, 'user-') === 0:
+                $userId = preg_replace('/\D/', '', $key);
                 $recache = [
-                    'data' => $this->handleComplexCache($cacheKey),
+                    'data' => !empty($userId) ? $this->getUser((int)$userId) : [],
                     'ttl' => null,
                 ];
+                break;
+            case strpos($key, 'character-') === 0:
+                $characterId = preg_replace('/\D/', '', $key);
+                $recache = [
+                    'data' => !empty($characterId) ? $this->getCharacter((int)$characterId) : [],
+                    'ttl' => null,
+                ];
+                break;
         }
         if (empty($recache)) {
             return null;
         }
 
-        app('cache.store')->put($cacheKey, $recache['data'], $recache['ttl']);
+        app('cache.store')->put($key, $recache['data'], $recache['ttl']);
 
         return $recache['data'];
     }
 
-    private function handleComplexCache(string $key)
+    private function getUser(int $userId): ?User
     {
-        if (strpos($key, 'character-') === 0) {
-            $characterId = preg_replace('/\D/', '', $key);
+        $user = User::with([
+            'linkedAccounts' => static function (HasMany $query) {
+                $query->where('remote_provider', '=', 'discord')->whereNotNull('remote_secondary_groups');
+            },
+            'characters'
+        ])->whereNotNull('name')->find($userId);
+        $this->parseLinkedAccounts($user);
 
-            return !empty($characterId) ? $this->handleCharacterItem((int)$characterId) : [];
-        }
-
-        return null;
+        return $user;
     }
 
-    private function handleCharacterItem(int $characterId): ?Character
+    private function getCharacter(int $characterId): ?Character
     {
         $character = Character::query()
             ->with([
