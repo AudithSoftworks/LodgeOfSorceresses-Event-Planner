@@ -27,7 +27,6 @@ use Laravel\Passport\HasApiTokens;
  * @property iterable                                                                                                       $linkedAccountsParsed
  * @property bool                                                                                                           isMember
  * @property bool                                                                                                           isSoulshriven
- * @method static bool|null forceDelete()
  * @method static EloquentBuilder|User newModelQuery()
  * @method static EloquentBuilder|User newQuery()
  * @method static QueryBuilder|User onlyTrashed()

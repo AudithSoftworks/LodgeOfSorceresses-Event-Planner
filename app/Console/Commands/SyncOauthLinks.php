@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\UserOAuth;
-use Exception;
+use App\Services\IpsApi;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\Command;
 use Illuminate\Http\Response;
@@ -39,7 +39,7 @@ class SyncOauthLinks extends Command
     private $ipsApi;
 
     /**
-     * @var \Illuminate\Support\Collection
+     * @var \Illuminate\Support\Collection|\App\Models\User[]
      */
     private $usersMarkedForReexamination;
 
@@ -71,13 +71,13 @@ class SyncOauthLinks extends Command
             switch ($oauthAccount->remote_provider) {
                 case 'discord':
                     if ($this->syncDiscordMember($oauthAccount) === self::MEMBER_NOT_FOUND) {
-                        $this->error('[' . $oauthAccount->name . ']' . ' Member not found on Discord, deleting this OAuth link & marking this user for re-examination...');
+                        $this->warn('[' . $oauthAccount->name . ']' . ' Member not found on Discord, deleting this OAuth link & marking this user for re-examination...');
                         $this->deleteOauthAccountAndAddAccountToReexaminationList($oauthAccount);
                     }
                     break;
                 case 'ips':
                     if ($this->syncIpsMember($oauthAccount) === self::MEMBER_NOT_FOUND) {
-                        $this->error('[' . $oauthAccount->name . ']' . ' Member not found on IPS, deleting this OAuth link & marking this user for re-examination...');
+                        $this->warn('[' . $oauthAccount->name . ']' . ' Member not found on IPS, deleting this OAuth link & marking this user for re-examination...');
                         $this->deleteOauthAccountAndAddAccountToReexaminationList($oauthAccount);
                     }
                     break;
@@ -171,14 +171,23 @@ class SyncOauthLinks extends Command
     {
         foreach ($this->usersMarkedForReexamination as $user) {
             $user->loadMissing(['linkedAccounts'])->refresh();
-            if (!$user->linkedAccounts->count()) {
-                $this->warn('[@' . $user->name . ']' . ' User has no remaining OAuth links. Deleting...');
-                try {
+            $linkedAccounts = $user->linkedAccounts;
+            if ($linkedAccounts->count()) {
+                /** @var null|\App\Models\UserOAuth $ipsOauthAccount */
+                $ipsOauthAccount = $linkedAccounts->firstWhere('remote_provider', 'ips');
+                /** @var null|\App\Models\UserOAuth $discordOauthAccount */
+                $discordOauthAccount = $linkedAccounts->firstWhere('remote_provider', 'discord');
+                if ($ipsOauthAccount !== null && $discordOauthAccount === null) {
+                    $this->warn('[' . $ipsOauthAccount->name . ']' . ' User has left Discord and has IPS account. Setting them as Soulshriven on IPS...');
+                    $this->ipsApi->editUser($ipsOauthAccount->remote_id, ['group' => IpsApi::MEMBER_GROUPS_SOULSHRIVEN, 'secondaryGroups' => []]);
+                    $this->warn('[@' . $user->name . ']' . ' Now deleting them on Planner...');
                     $user->forceDelete();
-                    $this->warn('[@' . $user->name . ']' . ' Deleted.');
-                } catch (Exception $e) {
-                    $this->error('[@' . $user->name . ']' . ' Failed to delete: ' . $e->getMessage());
+                    $this->info('[@' . $user->name . ']' . ' Deleted.');
                 }
+            } else {
+                $this->warn('[@' . $user->name . ']' . ' User has no remaining OAuth links. Deleting...');
+                $user->forceDelete();
+                $this->info('[@' . $user->name . ']' . ' Deleted.');
             }
         }
 
@@ -193,11 +202,13 @@ class SyncOauthLinks extends Command
         $user = $oauthAccount->owner;
         $oauthAccount->forceDelete();
         if ($user) {
-            if (!$this->usersMarkedForReexamination->containsStrict(['id' => $user->id])) {
-                $this->usersMarkedForReexamination->add($user);
+            $user->loadMissing(['linkedAccounts'])->refresh();
+            if (!$this->usersMarkedForReexamination->has($user->id)) {
+                $this->usersMarkedForReexamination->put($user->id, $user);
                 $this->info('[@' . $user->name . ']' . ' Added for re-examination.');
             } else {
-                $this->warn('[@' . $user->name . ']' . ' Already marked for re-examination!');
+                $this->usersMarkedForReexamination->replace([$user->id => $user]);
+                $this->warn('[@' . $user->name . ']' . ' Updated in re-examination list!');
             }
         }
     }
