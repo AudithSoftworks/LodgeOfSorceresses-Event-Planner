@@ -4,7 +4,7 @@ namespace App\Console;
 
 use App\Console\Commands\FetchEventsUsingIpsApi;
 use App\Console\Commands\PruneOrphanedFiles;
-use App\Console\Commands\SyncDiscordOauthLinks;
+use App\Console\Commands\SyncOauthLinks;
 use App\Console\Commands\SyncYoutubeRssFeeds;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -21,7 +21,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command(FetchEventsUsingIpsApi::class)->hourly()->sendOutputTo(self::LOG_FILE);
-        $schedule->command(SyncDiscordOauthLinks::class)->everyFiveMinutes()->sendOutputTo(self::LOG_FILE);
+        $schedule->command(SyncOauthLinks::class)->everyFiveMinutes()->sendOutputTo(self::LOG_FILE);
         $schedule->command(PruneOrphanedFiles::class)->weekly()->sendOutputTo(self::LOG_FILE);
         $schedule->command(SyncYoutubeRssFeeds::class)->dailyAt('05:00')->sendOutputTo(self::LOG_FILE);
     }

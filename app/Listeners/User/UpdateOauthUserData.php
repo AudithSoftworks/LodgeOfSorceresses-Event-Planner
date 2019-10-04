@@ -19,11 +19,10 @@ class UpdateOauthUserData
             if ($linkedAccount->remote_provider === 'ips') {
                 $remoteUserDataFetchedThroughApi = app('ips.api')->getUser($linkedAccount->remote_id);
                 $remoteSecondaryGroups = array_reduce($remoteUserDataFetchedThroughApi['secondaryGroups'], static function ($acc, $item) {
-                    $acc === null && $acc = [];
                     $acc[] = $item['id'];
 
                     return $acc;
-                });
+                }, []);
                 $linkedAccount->remote_primary_group = $remoteUserDataFetchedThroughApi['primaryGroup']['id'];
                 $linkedAccount->remote_secondary_groups = $remoteSecondaryGroups ? implode(',', $remoteSecondaryGroups) : null;
 
