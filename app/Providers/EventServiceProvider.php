@@ -21,18 +21,22 @@ class EventServiceProvider extends ServiceProvider
             Listeners\DpsParse\DeleteDiscordMessagesWhenCharacterIsDeleting::class
         ],
         Events\Character\CharacterDeleted::class => [
+            Listeners\Cache\DeleteUserCache::class,
             Listeners\Cache\DeleteCharacterCache::class,
             Listeners\RerankPlayerOnIpsAndDiscord::class
         ],
         Events\Character\CharacterDemoted::class => [
+            Listeners\Cache\DeleteUserCache::class,
             Listeners\Cache\DeleteCharacterCache::class,
             Listeners\RerankPlayerOnIpsAndDiscord::class
         ],
         Events\Character\CharacterPromoted::class => [
+            Listeners\Cache\DeleteUserCache::class,
             Listeners\Cache\DeleteCharacterCache::class,
             Listeners\RerankPlayerOnIpsAndDiscord::class
         ],
         Events\Character\CharacterUpdated::class => [
+            Listeners\Cache\DeleteUserCache::class,
             Listeners\Cache\DeleteCharacterCache::class,
         ],
 

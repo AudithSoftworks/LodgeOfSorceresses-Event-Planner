@@ -1,10 +1,10 @@
 <?php namespace App\Events\Character;
 
+use App\Events\User\UserNeedsRecacheInterface;
 use App\Models\Character;
 use App\Models\User;
-use App\Events\User\GetUserInterface;
 
-class CharacterDeleted implements GetUserInterface, CharacterNeedsRecacheInterface
+class CharacterDeleted implements UserNeedsRecacheInterface, CharacterNeedsRecacheInterface
 {
     /**
      * @var \App\Models\Character

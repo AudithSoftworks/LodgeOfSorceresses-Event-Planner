@@ -1,11 +1,11 @@
 <?php namespace App\Events\Character;
 
 use App\Events\DpsParse\GetDpsParsesInterface;
+use App\Events\User\UserNeedsRecacheInterface;
 use App\Models\Character;
 use App\Models\User;
-use App\Events\User\GetUserInterface;
 
-class CharacterDeleting implements GetUserInterface, GetCharacterInterface, GetDpsParsesInterface
+class CharacterDeleting implements UserNeedsRecacheInterface, GetCharacterInterface, GetDpsParsesInterface
 {
     /**
      * @var iterable|\App\Models\DpsParse[]
