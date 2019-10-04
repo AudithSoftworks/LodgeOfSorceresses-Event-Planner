@@ -35,12 +35,12 @@ class CacheWarmup extends Command
         $this->info('Skills successfully cached!');
         $cacheService->has('content');
         $this->info('Content successfully cached!');
-        $this->cacheAllCharacters($cacheService);
-        $this->info('Characters successfully cached!');
+        $this->cacheAllUsersAndCharacters($cacheService);
+        $this->info('Users & Characters successfully cached!');
         $this->info('Cache-warmup successfully finished!');
     }
 
-    private function cacheAllCharacters(Repository $cacheService): void
+    private function cacheAllUsersAndCharacters(Repository $cacheService): void
     {
         $characters = Character::query()
             ->with([
@@ -48,10 +48,10 @@ class CacheWarmup extends Command
                     $query->whereNotNull('name');
                 },
             ])
-            ->get(['id']);
-        $characterIds = $characters->pluck('id');
-        foreach ($characterIds as $characterId) {
-            $cacheService->has('character-' . $characterId);
+            ->get();
+        foreach ($characters as $character) {
+            !empty($character->owner) && $cacheService->has('user-' . $character->owner->id);
+            $cacheService->has('character-' . $character->id);
         }
     }
 }
