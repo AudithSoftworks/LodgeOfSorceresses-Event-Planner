@@ -32,11 +32,11 @@ class Init extends PureComponent {
         const { me, groups, myCharacters, sets, skills, content } = this.props;
         if (me && groups && myCharacters && sets && skills && content) {
             this.setState({ authChecked: true });
-        } else if (!me) {
-            this.props.getUserAction()
+        } else if (!groups) {
+            this.props.getGroupsAction()
                 .then(() => {
-                    if (!groups) {
-                        this.props.getGroupsAction()
+                    if (!me) {
+                        this.props.getUserAction()
                             .then(() => {
                                 this.setState({ authChecked: true });
                                 if (authorizeUser(this.props)) {
@@ -64,7 +64,7 @@ class Init extends PureComponent {
         this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Unmount');
     };
 
-    renderAccessDeniedNotification = () => {
+    renderPrechecksFailedNotification = () => {
         const { dispatch } = this.props;
         const message = [
             <Fragment key="f-1">Pre-checks failed! First, make sure your ESO ID is set!</Fragment>,
@@ -99,9 +99,6 @@ class Init extends PureComponent {
                     <a href="/oauth/to/discord" style={{ backgroundColor: '#8ea1e1', borderColor: 'transparent' }} className="btn btn-info btn-sm mr-2">
                         <FontAwesomeIcon icon={['fab', 'discord']} className='mr-1' /> Authenticate via Discord
                     </a>
-                    <a href="/oauth/to/ips" style={{ backgroundColor: '#804123', borderColor: 'transparent' }} className="btn btn-info btn-sm">
-                        <FontAwesomeIcon icon={['far', 'user-shield']} className='mr-1' /> Authenticate via Lodge Forums
-                    </a>
                 </fieldset>
             </form>
         );
@@ -112,12 +109,12 @@ class Init extends PureComponent {
         if (!this.state.authChecked) {
             return [<Loading key="loading" message="Checking session..." />, <Notification key="notifications" />];
         } else if (me === null) {
-            return [this.renderForm()];
+            return [this.renderForm(), <Notification key="notifications" />];
         } else {
             if (groups === null) {
                 return [<Loading key="loading" message="Fetching groups data..." />, <Notification key="notifications" />];
             } else if (me.linkedAccountsParsed.discord && !authorizeUser(this.props)) {
-                this.renderAccessDeniedNotification();
+                this.renderPrechecksFailedNotification();
             } else if (authorizeUser(this.props)) {
                 if (!sets) {
                     return [<Loading key="loading" message="Fetching sets..." />, <Notification key="notifications" />];

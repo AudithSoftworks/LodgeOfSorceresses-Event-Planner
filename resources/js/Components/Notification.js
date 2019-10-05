@@ -44,7 +44,7 @@ class Notification extends Component {
             container: container || 'top-right',
             animationIn: animationIn || ['animated', 'flash'],
             animationOut: animationOut || ['animated', 'fadeOut'],
-            dismiss: dismiss || { duration: 5000 },
+            dismiss: dismiss || { duration: 10000 },
             dismissable: dismissable || { click: true },
             width,
         });

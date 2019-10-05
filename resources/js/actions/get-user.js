@@ -16,12 +16,10 @@ const getUserSuccessAction = (response, message) => ({
     message,
 });
 
-const getUserFailureAction = error => {
-    return {
-        type: TYPE_GET_USER_FAILURE,
-        message: error.response.data.message || error.response.statusText || error.message,
-    };
-};
+const getUserFailureAction = error => ({
+    type: TYPE_GET_USER_FAILURE,
+    message: error.response.data.message || error.response.statusText || error.message,
+});
 
 const getUserAction = customMessage => (dispatch, getState) => {
     dispatch(getUserSendAction());
