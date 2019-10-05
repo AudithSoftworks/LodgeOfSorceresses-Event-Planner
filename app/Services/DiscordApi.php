@@ -3,12 +3,10 @@
 namespace App\Services;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Http\Response;
 
-class DiscordApi
+class DiscordApi extends AbstractApi
 {
     public const ROLE_SOULSHRIVEN = '499970844928507906';
 
@@ -66,11 +64,6 @@ class DiscordApi
      */
     private $discordGuildId;
 
-    /**
-     * @var array
-     */
-    private $lastResponseHeaders = [];
-
     public function __construct()
     {
         $botAccessToken = config('services.discord.bot_token');
@@ -84,26 +77,21 @@ class DiscordApi
         $this->discordGuildId = config('services.discord.guild_id');
     }
 
-    public function getLastResponseHeaders(): array
-    {
-        return $this->lastResponseHeaders;
-    }
-
     public function createMessageInChannel(string $channelId, array $params): array
     {
-        $response = $this->discordClient->post('channels/' . $channelId . '/messages', $params);
-        $this->lastResponseHeaders = $response->getHeaders();
+        return $this->executeCallback(function (string $channelId, array $params) {
+            $response = $this->discordClient->post('channels/' . $channelId . '/messages', $params);
 
-        return json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
+            return json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
+        }, $channelId, $params);
     }
 
     public function deleteMessagesInChannel(string $channelId, array $messageIds): bool
     {
-        try {
+        $return = $this->executeCallback(function (string $channelId, array $messageIds) {
             if (!count($messageIds)) {
                 return false;
             }
-
             if (count($messageIds) > 1) {
                 $response = $this->discordClient->post('channels/' . $channelId . '/messages/bulk-delete', [
                     RequestOptions::JSON => [
@@ -113,57 +101,61 @@ class DiscordApi
             } else {
                 $response = $this->discordClient->delete('channels/' . $channelId . '/messages/' . $messageIds[0]);
             }
-            $this->lastResponseHeaders = $response->getHeaders();
 
             return $response->getStatusCode() === Response::HTTP_NO_CONTENT;
-        } catch (RequestException $e) {
-            return false;
-        }
+        }, $channelId, $messageIds);
+
+        return $return ?? false;
     }
 
     public function reactToMessageInChannel(string $channelId, string $messageId, string $reaction): bool
     {
-        $response = $this->discordClient->put('channels/' . $channelId . '/messages/' . $messageId . '/reactions/' . $reaction . '/@me');
-        $this->lastResponseHeaders = $response->getHeaders();
+        return $this->executeCallback(function (string $channelId, string $messageId, string $reaction) {
+            $response = $this->discordClient->put('channels/' . $channelId . '/messages/' . $messageId . '/reactions/' . $reaction . '/@me');
 
-        return $response->getStatusCode() === Response::HTTP_NO_CONTENT;
+            return $response->getStatusCode() === Response::HTTP_NO_CONTENT;
+        }, $channelId, $messageId, $reaction);
     }
 
     public function getGuildMember(string $memberId): ?array
     {
-        $response = $this->discordClient->get('guilds/' . $this->discordGuildId . '/members/' . $memberId);
-        $this->lastResponseHeaders = $response->getHeaders();
+        return $this->executeCallback(function (string $memberId) {
+            $response = $this->discordClient->get('guilds/' . $this->discordGuildId . '/members/' . $memberId);
 
-        return json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
+            return json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
+        }, $memberId);
     }
 
     public function modifyGuildMember(string $memberId, array $params): bool
     {
-        $response = $this->discordClient->patch('guilds/' . $this->discordGuildId . '/members/' . $memberId, [
-            RequestOptions::JSON => $params
-        ]);
-        $this->lastResponseHeaders = $response->getHeaders();
+        return $this->executeCallback(function (string $memberId, array $params) {
+            $response = $this->discordClient->patch('guilds/' . $this->discordGuildId . '/members/' . $memberId, [
+                RequestOptions::JSON => $params
+            ]);
 
-        return $response->getStatusCode() === Response::HTTP_NO_CONTENT;
+            return $response->getStatusCode() === Response::HTTP_NO_CONTENT;
+        }, $memberId, $params);
     }
 
     public function createDmChannel(string $recipientId): array
     {
-        $response = $this->discordClient->post('users/@me/channels', [
-            RequestOptions::JSON => [
-                'recipient_id' => $recipientId,
-            ]
-        ]);
-        $this->lastResponseHeaders = $response->getHeaders();
+        return $this->executeCallback(function (string $recipientId) {
+            $response = $this->discordClient->post('users/@me/channels', [
+                RequestOptions::JSON => [
+                    'recipient_id' => $recipientId,
+                ]
+            ]);
 
-        return json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
+            return json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
+        }, $recipientId);
     }
 
     public function getGuildRoles(): array
     {
-        $response = $this->discordClient->get('guilds/' . $this->discordGuildId . '/roles');
-        $this->lastResponseHeaders = $response->getHeaders();
+        return $this->executeCallback(function () {
+            $response = $this->discordClient->get('guilds/' . $this->discordGuildId . '/roles');
 
-        return json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
+            return json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
+        });
     }
 }

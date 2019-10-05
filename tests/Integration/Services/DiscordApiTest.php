@@ -4,7 +4,6 @@ namespace App\Tests\Integration\Services;
 
 use App\Services\DiscordApi;
 use App\Tests\IlluminateTestCase;
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\RequestOptions;
 
 class DiscordApiTest extends IlluminateTestCase
@@ -84,7 +83,7 @@ class DiscordApiTest extends IlluminateTestCase
         $this->assertIsBool($result);
         $this->assertTrue($result);
 
-        $result = $this->discordApi->deleteMessagesInChannel($channelId, ['some_bogus_id']);
+        $result = $this->discordApi->deleteMessagesInChannel($channelId, ['2121212']); // some bogus id
         $this->assertIsBool($result);
         $this->assertFalse($result);
 
@@ -93,39 +92,10 @@ class DiscordApiTest extends IlluminateTestCase
         $this->assertFalse($result);
     }
 
-    public function testGetLastResponseHeaders(): void
-    {
-        $channelId = env('DISCORD_TEST_CHANNEL_ID');
-        try {
-            while (true) {
-                $this->discordApi->createMessageInChannel($channelId, [
-                    RequestOptions::FORM_PARAMS => [
-                        'payload_json' => json_encode(['content' => 'Test'])
-                    ]
-                ]);
-            }
-        } catch (ClientException $e) {
-            $this->assertRegExp('/429 TOO MANY REQUESTS/', $e->getMessage());
-            $lastResponseHeaders = $this->discordApi->getLastResponseHeaders();
-            $this->assertIsArray($lastResponseHeaders);
-            $this->assertNotEmpty($lastResponseHeaders);
-            $this->assertArrayHasKey('X-RateLimit-Limit', $lastResponseHeaders);
-            $this->assertArrayHasKey('X-RateLimit-Remaining', $lastResponseHeaders);
-            $this->assertArrayHasKey('X-RateLimit-Reset', $lastResponseHeaders);
-        }
-    }
-
     public function testGetGuildMember(): array
     {
-        sleep(1);
-        try {
-            $memberId = '568032622404567060';
-            $result = $this->discordApi->getGuildMember($memberId);
-        } catch (ClientException $e) {
-            $this->assertRegExp('/429 TOO MANY REQUESTS/', $e->getMessage());
-
-            return [];
-        }
+        $memberId = '568032622404567060';
+        $result = $this->discordApi->getGuildMember($memberId);
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('user', $result);
@@ -143,15 +113,10 @@ class DiscordApiTest extends IlluminateTestCase
      */
     public function testModifyGuildMember(array $member): void
     {
-        sleep(1);
-        try {
-            $result = $this->discordApi->modifyGuildMember($member['user']['id'], [
-                'roles' => [DiscordApi::ROLE_MEMBERS, DiscordApi::ROLE_INITIATE]
-            ]);
-            $this->assertTrue(true, $result);
-        } catch (ClientException $e) {
-            $this->assertRegExp('/429 TOO MANY REQUESTS/', $e->getMessage());
-        }
+        $result = $this->discordApi->modifyGuildMember($member['user']['id'], [
+            'roles' => [DiscordApi::ROLE_MEMBERS, DiscordApi::ROLE_INITIATE]
+        ]);
+        $this->assertTrue(true, $result);
     }
 
     /**
@@ -161,8 +126,6 @@ class DiscordApiTest extends IlluminateTestCase
      */
     public function testCreateDmChannel(array $member): void
     {
-        sleep(1);
-
         $result = $this->discordApi->createDmChannel($member['user']['id']);
 
         $this->assertIsArray($result);
@@ -173,8 +136,6 @@ class DiscordApiTest extends IlluminateTestCase
 
     public function testGetGuildRoles(): void
     {
-        sleep(1);
-
         $result = $this->discordApi->getGuildRoles();
 
         $this->assertIsArray($result);
