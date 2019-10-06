@@ -5,9 +5,9 @@ namespace App\Services;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Http\Response;
 
-abstract class AbstractApi
+abstract class AbstractApi implements ApiInterface
 {
-    protected function executeCallback(callable $callable, ...$args)
+    public function executeCallback(callable $callable, ...$args)
     {
         while (true) {
             try {
@@ -26,7 +26,7 @@ abstract class AbstractApi
         return null;
     }
 
-    protected function waitForRateLimiting(ClientException $e): void
+    public function waitForRateLimiting(ClientException $e): void
     {
         $headers = $retryAfterMatch = [];
         $response = $e->getResponse();
