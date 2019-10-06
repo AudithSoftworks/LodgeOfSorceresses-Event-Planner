@@ -130,7 +130,7 @@ class IpsApi extends AbstractApi
     public function editUser(int $remoteUserId, array $params): array
     {
         return $this->executeCallback(function (int $remoteUserId, array $params) {
-            $response = $this->apiClient->post($this->ipsUrl . '/core/members/' . $remoteUserId, ['query' => $params]);
+            $response = $this->apiClient->post($this->ipsUrl . '/core/members/' . $remoteUserId, [RequestOptions::QUERY => $params]);
 
             return json_decode($response->getBody()->getContents(), true);
         }, $remoteUserId, $params);
@@ -149,7 +149,7 @@ class IpsApi extends AbstractApi
     {
         return $this->executeCallback(function (int $forum, string $title, string $post) {
             $response = $this->apiClient->post($this->ipsUrl . '/forums/topics/', [
-                'query' => [
+                RequestOptions::QUERY => [
                     'forum' => $forum,
                     'title' => $title,
                     'post' => $post,
