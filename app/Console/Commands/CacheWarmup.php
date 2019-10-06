@@ -42,6 +42,7 @@ class CacheWarmup extends Command
 
     private function cacheAllUsersAndCharacters(Repository $cacheService): void
     {
+        /** @var \App\Models\Character[] $characters */
         $characters = Character::query()
             ->with([
                 'owner' => static function (BelongsTo $query) {

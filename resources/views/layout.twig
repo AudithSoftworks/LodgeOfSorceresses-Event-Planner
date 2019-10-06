@@ -4,5 +4,5 @@
     <head>
         {{ block('document_head') }}
     </head>
-    <body id="root"/>
+    <body id="root" data-error-message="{{ session_get('errors') }}" />
 </html>

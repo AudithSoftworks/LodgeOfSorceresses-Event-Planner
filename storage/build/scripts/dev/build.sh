@@ -60,6 +60,7 @@ docker-compose exec php bash -c "
     ./artisan db:seed;
     ./artisan pmg:skills;
     ./artisan pmg:sets;
+    ./artisan cache:warmup
 
     ./vendor/bin/phpunit --debug --verbose --testsuite='Integration';
 #    ./artisan dusk -vvv;

@@ -73,10 +73,10 @@ docker-compose exec php bash -c "
     ./artisan passport:keys;
     ./artisan migrate;
     ./artisan db:seed;
-#    ./artisan pmg:skills;
-#    ./artisan pmg:sets;
+    ./artisan pmg:skills;
+    ./artisan pmg:sets;
 
-#    ./vendor/bin/phpunit --debug --verbose --testsuite='Integration';
+    ./vendor/bin/phpunit --debug --verbose --testsuite='Integration';
 #    ./artisan dusk -vvv;
 #    ./vendor/bin/phpcov merge ./storage/coverage --clover ./storage/coverage/coverage-clover-merged.xml
 #    ./vendor/bin/phpunit --debug --verbose --no-coverage --testsuite='SauceWebDriver';

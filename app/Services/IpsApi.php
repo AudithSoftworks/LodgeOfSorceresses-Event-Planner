@@ -8,7 +8,7 @@ use GuzzleHttp\RequestOptions;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class IpsApi
+class IpsApi extends AbstractApi
 {
     public const CALENDAR_TRAINING = 11;
 
@@ -116,31 +116,48 @@ class IpsApi
     /**
      * @param int $remoteUserId
      *
-     * @return array
+     * @return null|array
      */
-    public function getUser(int $remoteUserId): array
+    public function getUser(int $remoteUserId): ?array
     {
-        $response = $this->apiClient->get($this->ipsUrl . '/core/members/' . $remoteUserId);
+        return $this->executeCallback(function (int $remoteUserId) {
+            $response = $this->apiClient->get($this->ipsUrl . '/core/members/' . $remoteUserId);
 
-        return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true);
+        }, $remoteUserId);
     }
 
-    public function editUser(int $userId, array $params): array
+    public function editUser(int $remoteUserId, array $params): array
     {
-        $response = $this->apiClient->post($this->ipsUrl . '/core/members/' . $userId, ['query' => $params]);
+        return $this->executeCallback(function (int $remoteUserId, array $params) {
+            $response = $this->apiClient->post($this->ipsUrl . '/core/members/' . $remoteUserId, [RequestOptions::QUERY => $params]);
 
-        return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true);
+        }, $remoteUserId, $params);
+    }
+
+    public function deleteUser(int $remoteUserId): bool
+    {
+        return $this->executeCallback(function (int $remoteUserId) {
+            $this->apiClient->delete($this->ipsUrl . '/core/members/' . $remoteUserId);
+
+            return true;
+        }, $remoteUserId);
     }
 
     public function createTopic(int $forum, string $title, string $post): array
     {
-        $response = $this->apiClient->post($this->ipsUrl . '/forums/topics/', ['query' => [
-            'forum' => $forum,
-            'title' => $title,
-            'post' => $post,
-            'author' => self::USER_ID_FOR_DANDELION,
-        ]]);
+        return $this->executeCallback(function (int $forum, string $title, string $post) {
+            $response = $this->apiClient->post($this->ipsUrl . '/forums/topics/', [
+                RequestOptions::QUERY => [
+                    'forum' => $forum,
+                    'title' => $title,
+                    'post' => $post,
+                    'author' => self::USER_ID_FOR_DANDELION,
+                ]
+            ]);
 
-        return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true);
+        }, $forum, $title, $post);
     }
 }

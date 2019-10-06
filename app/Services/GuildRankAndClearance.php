@@ -147,9 +147,10 @@ class GuildRankAndClearance
     {
         $topClearanceExisting = null;
         foreach (self::CLEARANCE_LEVELS as $clearanceLevel => $clearanceLevelDetails) {
-            if ($character->{'approved_for_' . $clearanceLevel}) {
-                $topClearanceExisting = $clearanceLevel;
+            if (!$character->{'approved_for_' . $clearanceLevel}) {
+                break;
             }
+            $topClearanceExisting = $clearanceLevel;
         }
 
         return $topClearanceExisting;

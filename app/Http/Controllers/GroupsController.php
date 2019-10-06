@@ -1,6 +1,5 @@
 <?php namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Services\GuildRankAndClearance;
 use Illuminate\Http\JsonResponse;
 
@@ -8,12 +7,9 @@ class GroupsController extends Controller
 {
     /**
      * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function index(): JsonResponse
     {
-        $this->authorize('limited', User::class);
-
         $rankDefinitions = [
             'SOULSHRIVEN' => GuildRankAndClearance::RANK_SOULSHRIVEN,
             'INITIATE' => GuildRankAndClearance::RANK_INITIATE,
