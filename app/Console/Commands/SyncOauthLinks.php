@@ -70,13 +70,13 @@ class SyncOauthLinks extends Command
                 case 'discord':
                     if ($this->syncDiscordMember($oauthAccount) === self::MEMBER_NOT_FOUND) {
                         $this->warn('[' . $oauthAccount->name . ']' . ' Member not found on Discord, deleting this OAuth link & marking this user for re-examination...');
-                        $this->deleteOauthAccountAndAddAccountToReexaminationList($oauthAccount);
+                        $this->deleteOauthAccountAndAddUserToReexaminationList($oauthAccount);
                     }
                     break;
                 case 'ips':
                     if ($this->syncIpsMember($oauthAccount) === self::MEMBER_NOT_FOUND) {
                         $this->warn('[' . $oauthAccount->name . ']' . ' Member not found on IPS, deleting this OAuth link & marking this user for re-examination...');
-                        $this->deleteOauthAccountAndAddAccountToReexaminationList($oauthAccount);
+                        $this->deleteOauthAccountAndAddUserToReexaminationList($oauthAccount);
                     }
                     break;
             }
@@ -117,7 +117,10 @@ class SyncOauthLinks extends Command
         }
 
         $oauthAccount->isDirty() && $oauthAccount->save();
-        $user->isDirty() && $user->save();
+        if ($user->isDirty()) {
+            $user->save();
+            app('cache.store')->forget('user-' . $user->id);
+        }
         $this->info('[' . $oauthAccount->name . ']' . ' Successfully synced via Discord.');
 
         return self::MEMBER_FOUND;
@@ -136,7 +139,11 @@ class SyncOauthLinks extends Command
         }, []);
         $oauthAccount->remote_primary_group = $remoteUserDataFetchedThroughApi['primaryGroup']['id'];
         $oauthAccount->remote_secondary_groups = $remoteSecondaryGroups ? implode(',', $remoteSecondaryGroups) : null;
-        $oauthAccount->isDirty() && $oauthAccount->save();
+        if ($oauthAccount->isDirty()) {
+            $oauthAccount->save();
+            $user = $oauthAccount->owner;
+            app('cache.store')->forget('user-' . $user->id);
+        }
         $this->info('[' . $oauthAccount->name . ']' . ' Successfully synced via IPS.');
 
         return self::MEMBER_FOUND;
@@ -145,7 +152,7 @@ class SyncOauthLinks extends Command
     /**
      * @param \App\Models\UserOAuth $oauthAccount
      */
-    private function deleteOauthAccountAndAddAccountToReexaminationList(UserOAuth $oauthAccount): void
+    private function deleteOauthAccountAndAddUserToReexaminationList(UserOAuth $oauthAccount): void
     {
         $user = $oauthAccount->owner;
         $oauthAccount->forceDelete();
@@ -177,15 +184,13 @@ class SyncOauthLinks extends Command
                     $this->warn('[@' . $user->name . ']' . ' Now deleting them on Planner...');
                     $user->forceDelete();
                     $this->info('[@' . $user->name . ']' . ' Deleted.');
-
-                    app('cache.store')->forget('user-' . $user->id);
                 }
             } else {
                 $this->warn('[@' . $user->name . ']' . ' User has no remaining OAuth links. Deleting...');
                 $user->forceDelete();
                 $this->info('[@' . $user->name . ']' . ' Deleted.');
-                app('cache.store')->forget('user-' . $user->id);
             }
+            app('cache.store')->forget('user-' . $user->id);
         }
 
         !$this->usersMarkedForReexamination->count() ? $this->warn('Nothing to re-examine!') : $this->info('Re-examination completed!');
