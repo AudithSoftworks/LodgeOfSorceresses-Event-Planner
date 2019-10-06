@@ -102,7 +102,22 @@ class SyncOauthLinks extends Command
         $oauthAccount->remote_secondary_groups = !empty($remoteUserDataFetchedThroughApi['roles'])
             ? implode(',', $remoteUserDataFetchedThroughApi['roles'])
             : null;
+
+        $user = $oauthAccount->owner;
+        $userHasNoAvatar = empty($user->avatar);
+        $avatarHash = $remoteUserDataFetchedThroughApi['user']['avatar'] ?? null;
+        $avatarHash && $avatarExtension = strpos($avatarHash, 'a_') === 0 ? 'gif' : 'png';
+        $avatarHash = preg_replace('/^a_/', '', $avatarHash);
+        isset($avatarExtension) && $avatarUrl = sprintf('https://cdn.discordapp.com/avatars/%s/%s.%s?size=256', $oauthAccount->remote_id, $avatarHash, $avatarExtension);
+        if (isset($avatarUrl)) {
+            $hasUserAvatarChanged = $user->avatar !== $avatarUrl && false !== strpos($user->avatar, 'cdn.discordapp.com');
+            if ($userHasNoAvatar || $hasUserAvatarChanged) {
+                $user->avatar = $avatarUrl;
+            }
+        }
+
         $oauthAccount->isDirty() && $oauthAccount->save();
+        $user->isDirty() && $user->save();
         $this->info('[' . $oauthAccount->name . ']' . ' Successfully synced via Discord.');
 
         return self::MEMBER_FOUND;
@@ -125,6 +140,25 @@ class SyncOauthLinks extends Command
         $this->info('[' . $oauthAccount->name . ']' . ' Successfully synced via IPS.');
 
         return self::MEMBER_FOUND;
+    }
+
+    /**
+     * @param \App\Models\UserOAuth $oauthAccount
+     */
+    private function deleteOauthAccountAndAddAccountToReexaminationList(UserOAuth $oauthAccount): void
+    {
+        $user = $oauthAccount->owner;
+        $oauthAccount->forceDelete();
+        if ($user) {
+            $user->loadMissing(['linkedAccounts'])->refresh();
+            if (!$this->usersMarkedForReexamination->has($user->id)) {
+                $this->usersMarkedForReexamination->put($user->id, $user);
+                $this->info('[@' . $user->name . ']' . ' Added for re-examination.');
+            } else {
+                $this->usersMarkedForReexamination->replace([$user->id => $user]);
+                $this->warn('[@' . $user->name . ']' . ' Updated in re-examination list!');
+            }
+        }
     }
 
     private function processUsersListedForReexamination(): void
@@ -155,24 +189,5 @@ class SyncOauthLinks extends Command
         }
 
         !$this->usersMarkedForReexamination->count() ? $this->warn('Nothing to re-examine!') : $this->info('Re-examination completed!');
-    }
-
-    /**
-     * @param \App\Models\UserOAuth $oauthAccount
-     */
-    private function deleteOauthAccountAndAddAccountToReexaminationList(UserOAuth $oauthAccount): void
-    {
-        $user = $oauthAccount->owner;
-        $oauthAccount->forceDelete();
-        if ($user) {
-            $user->loadMissing(['linkedAccounts'])->refresh();
-            if (!$this->usersMarkedForReexamination->has($user->id)) {
-                $this->usersMarkedForReexamination->put($user->id, $user);
-                $this->info('[@' . $user->name . ']' . ' Added for re-examination.');
-            } else {
-                $this->usersMarkedForReexamination->replace([$user->id => $user]);
-                $this->warn('[@' . $user->name . ']' . ' Updated in re-examination list!');
-            }
-        }
     }
 }
