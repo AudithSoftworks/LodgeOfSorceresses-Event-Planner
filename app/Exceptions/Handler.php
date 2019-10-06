@@ -53,22 +53,23 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $e)
     {
+        $requestExpectsJson = $request->expectsJson();
         if ($e instanceof ModelNotFoundException || $e instanceof UserNotMemberInDiscord || $e instanceof UserNotActivatedException) {
-            return $request->expectsJson()
+            return $requestExpectsJson
                 ? response()->json(['message' => $e->getMessage() ?? 'Not found!'], $e instanceof ModelNotFoundException ? SymfonyHttpResponse::HTTP_NOT_FOUND : SymfonyHttpResponse::HTTP_FORBIDDEN)
-                : redirect()->guest('/logout');
+                : redirect()->guest('/logout')->withErrors($e->getMessage());
         }
 
         if ($e instanceof InvalidStateException) {
-            return $request->expectsJson()
+            return $requestExpectsJson
                 ? response()->json(['message' => 'Session Expired. Please refresh the page!'], 401)
-                : redirect()->guest('/logout');
+                : redirect()->guest('/logout')->withErrors('Access Denied!');
         }
 
         if ($e instanceof AuthorizationException) {
-            return $request->expectsJson()
+            return $requestExpectsJson
                 ? response()->json(['message' => 'Access Denied!'], 403)
-                : redirect()->guest('/logout');
+                : redirect()->guest('/logout')->withErrors('Access Denied!');
         }
 
         if ($request->method() !== 'GET' && $request->header('content-type') === 'application/x-www-form-urlencoded') {
@@ -89,7 +90,7 @@ class Handler extends ExceptionHandler
     protected function unauthenticated($request, AuthenticationException $exception): SymfonyHttpResponse
     {
         return $request->expectsJson()
-            ? response()->json(['message' => 'Not authenticated. Please refresh the page!'], SymfonyHttpResponse::HTTP_UNAUTHORIZED)
+            ? response()->json(['message' => 'Session expired or No session! If you were in the middle of something, please refresh the page.'], SymfonyHttpResponse::HTTP_UNAUTHORIZED)
             : redirect()->guest('/');
     }
 }
