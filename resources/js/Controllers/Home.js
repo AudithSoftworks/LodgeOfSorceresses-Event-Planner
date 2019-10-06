@@ -24,15 +24,19 @@ class Home extends PureComponent {
         if (!me) {
             return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
+        const accountStatusOptions = [<DiscordOauthAccount key='discord-oauth-status' />];
+        if (me.isMember) {
+            accountStatusOptions.push(<IpsOauthAccount key='ips-oauth-status' />);
+        }
+        accountStatusOptions.push(<Name key='ign-status' />);
+
         return [
             <section className="col-md-24 p-0 mb-4" key="dashboard">
                 <h2 className="form-title col-md-24" title="Account Status">
                     Account Status
                 </h2>
                 <p className='col-md-24'>Please fix the problems below in the order they are listed, as one problem might be a blocker for another (the ones listed after it).</p>
-                <DiscordOauthAccount />
-                <IpsOauthAccount />
-                <Name />
+                {[...accountStatusOptions]}
             </section>,
             <Notification key="notifications" />,
         ];
