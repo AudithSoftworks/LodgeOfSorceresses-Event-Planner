@@ -19,7 +19,7 @@ class CharacterForm extends PureComponent {
         { value: 6, label: 'Necromancer' },
     ];
 
-    roleOptions = [{ value: 1, label: 'Tank' }, { value: 2, label: 'Healer' }, { value: 3, label: 'Damage Dealer (Magicka)' }, { value: 4, label: 'Damage Dealer (Stamina)' }];
+    roleOptions = [{ value: 1, label: 'Tank' }, { value: 2, label: 'Healer' }, { value: 3, label: 'Magicka DD' }, { value: 4, label: 'Stamina DD' }];
 
     componentWillUnmount = () => {
         this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Unmount');

@@ -37,7 +37,9 @@ class DpsParseForm extends PureComponent {
         { value: 5, label: 'Warden' },
         { value: 6, label: 'Necromancer' },
     ];
-    roleOptions = [{ value: 1, label: 'Tank' }, { value: 2, label: 'Healer' }, { value: 3, label: 'Damage Dealer (Magicka)' }, { value: 4, label: 'Damage Dealer (Stamina)' }];
+
+    roleOptions = [{ value: 1, label: 'Tank' }, { value: 2, label: 'Healer' }, { value: 3, label: 'Magicka DD' }, { value: 4, label: 'Stamina DD' }];
+
     parseScreenshotUploader = new FineUploaderTraditional({
         options: {
             request: {
@@ -100,6 +102,7 @@ class DpsParseForm extends PureComponent {
             },
         },
     });
+
     superstarScreenshotUploader = new FineUploaderTraditional({
         options: {
             request: {
