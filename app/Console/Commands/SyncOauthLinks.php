@@ -4,9 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\UserOAuth;
 use App\Services\IpsApi;
-use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\Command;
-use Illuminate\Http\Response;
 
 class SyncOauthLinks extends Command
 {
@@ -97,72 +95,34 @@ class SyncOauthLinks extends Command
 
     private function syncDiscordMember(UserOAuth $oauthAccount): int
     {
-        while (true) {
-            $headers = $this->discordApi->getLastResponseHeaders();
-            if (isset($headers['X-RateLimit-Remaining']) && $headers['X-RateLimit-Remaining'] === '0') {
-                $sleepDuration = (int)$headers['X-RateLimit-Reset'] - time();
-                sleep($sleepDuration);
-            }
-
-            try {
-                $remoteUserDataFetchedThroughApi = $this->discordApi->getGuildMember($oauthAccount->remote_id);
-                $oauthAccount->remote_secondary_groups = !empty($remoteUserDataFetchedThroughApi['roles'])
-                    ? implode(',', $remoteUserDataFetchedThroughApi['roles'])
-                    : null;
-                $oauthAccount->isDirty() && $oauthAccount->save();
-                $this->info('[' . $oauthAccount->name . ']' . ' Successfully synced via Discord.');
-                break;
-            } catch (ClientException $e) {
-                if ($e->getCode() === Response::HTTP_TOO_MANY_REQUESTS) {
-                    preg_match('/"retry_after": (\d+)/', $e->getMessage(), $retryAfterMatch);
-                    $microSecondsToWait = (int)$retryAfterMatch[1] * 1000;
-                    usleep($microSecondsToWait);
-                    $this->warn('[' . $oauthAccount->name . ']' . ' Being rated by Discord... Waiting for ' . $microSecondsToWait . ' microsecs.');
-                    continue;
-                }
-                if ($e->getCode() === Response::HTTP_NOT_FOUND) {
-                    return self::MEMBER_NOT_FOUND;
-                }
-            }
+        $remoteUserDataFetchedThroughApi = $this->discordApi->getGuildMember($oauthAccount->remote_id);
+        if ($remoteUserDataFetchedThroughApi === null) {
+            return self::MEMBER_NOT_FOUND;
         }
+        $oauthAccount->remote_secondary_groups = !empty($remoteUserDataFetchedThroughApi['roles'])
+            ? implode(',', $remoteUserDataFetchedThroughApi['roles'])
+            : null;
+        $oauthAccount->isDirty() && $oauthAccount->save();
+        $this->info('[' . $oauthAccount->name . ']' . ' Successfully synced via Discord.');
 
         return self::MEMBER_FOUND;
     }
 
     private function syncIpsMember(UserOAuth $oauthAccount): int
     {
-        while (true) {
-            $headers = $this->discordApi->getLastResponseHeaders();
-            if (isset($headers['X-RateLimit-Remaining']) && $headers['X-RateLimit-Remaining'] === '0') {
-                $sleepDuration = (int)$headers['X-RateLimit-Reset'] - time();
-                sleep($sleepDuration);
-            }
-
-            try {
-                $remoteUserDataFetchedThroughApi = $this->ipsApi->getUser($oauthAccount->remote_id);
-                $remoteSecondaryGroups = array_reduce($remoteUserDataFetchedThroughApi['secondaryGroups'], static function ($acc, $item) {
-                    $acc[] = $item['id'];
-
-                    return $acc;
-                }, []);
-                $oauthAccount->remote_primary_group = $remoteUserDataFetchedThroughApi['primaryGroup']['id'];
-                $oauthAccount->remote_secondary_groups = $remoteSecondaryGroups ? implode(',', $remoteSecondaryGroups) : null;
-                $oauthAccount->isDirty() && $oauthAccount->save();
-                $this->info('[' . $oauthAccount->name . ']' . ' Successfully synced via IPS.');
-                break;
-            } catch (ClientException $e) {
-                if ($e->getCode() === Response::HTTP_TOO_MANY_REQUESTS) {
-                    preg_match('/"retry_after": (\d+)/', $e->getMessage(), $retryAfterMatch);
-                    $microSecondsToWait = (int)$retryAfterMatch[1] * 1000;
-                    usleep($microSecondsToWait);
-                    $this->warn('[' . $oauthAccount->name . ']' . ' Being rated by IPS... Waiting for ' . $microSecondsToWait . ' microsecs.');
-                    continue;
-                }
-                if ($e->getCode() === Response::HTTP_NOT_FOUND) {
-                    return self::MEMBER_NOT_FOUND;
-                }
-            }
+        $remoteUserDataFetchedThroughApi = $this->ipsApi->getUser($oauthAccount->remote_id);
+        if (!$remoteUserDataFetchedThroughApi) {
+            return self::MEMBER_NOT_FOUND;
         }
+        $remoteSecondaryGroups = array_reduce($remoteUserDataFetchedThroughApi['secondaryGroups'], static function ($acc, $item) {
+            $acc[] = $item['id'];
+
+            return $acc;
+        }, []);
+        $oauthAccount->remote_primary_group = $remoteUserDataFetchedThroughApi['primaryGroup']['id'];
+        $oauthAccount->remote_secondary_groups = $remoteSecondaryGroups ? implode(',', $remoteSecondaryGroups) : null;
+        $oauthAccount->isDirty() && $oauthAccount->save();
+        $this->info('[' . $oauthAccount->name . ']' . ' Successfully synced via IPS.');
 
         return self::MEMBER_FOUND;
     }
@@ -183,11 +143,14 @@ class SyncOauthLinks extends Command
                     $this->warn('[@' . $user->name . ']' . ' Now deleting them on Planner...');
                     $user->forceDelete();
                     $this->info('[@' . $user->name . ']' . ' Deleted.');
+
+                    app('cache.store')->forget('user-' . $user->id);
                 }
             } else {
                 $this->warn('[@' . $user->name . ']' . ' User has no remaining OAuth links. Deleting...');
                 $user->forceDelete();
                 $this->info('[@' . $user->name . ']' . ' Deleted.');
+                app('cache.store')->forget('user-' . $user->id);
             }
         }
 
