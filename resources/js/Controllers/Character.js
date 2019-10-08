@@ -101,13 +101,13 @@ class Character extends PureComponent {
     renderCharacter = character => {
         const actionList = {
             promote:
-                authorizeAdmin(this.props) && character['role'].indexOf('Damage Dealer') === -1 ? (
+                authorizeAdmin(this.props) && character['role'].indexOf('DD') === -1 ? (
                     <a href="#" onClick={this.handleRerank} data-id={character.id} data-action="promote" title="Promote Character">
                         <FontAwesomeIcon icon={faSunrise} />
                     </a>
                 ) : null,
             demote:
-                authorizeAdmin(this.props) && character['role'].indexOf('Damage Dealer') === -1 ? (
+                authorizeAdmin(this.props) && character['role'].indexOf('DD') === -1 ? (
                     <a href="#" onClick={this.handleRerank} data-id={character.id} data-action="demote" title="Demote Character">
                         <FontAwesomeIcon icon={faSunset} />
                     </a>

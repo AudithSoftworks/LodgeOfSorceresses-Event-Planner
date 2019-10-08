@@ -1,22 +1,23 @@
 import(
     /* webpackPrefetch: true */
     /* webpackChunkName: "users-scss" */
-    '../../sass/_users.scss'
-    );
+    "../../sass/_users.scss"
+);
 
-import { faUser, faUserCrown } from '@fortawesome/pro-regular-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropTypes from 'prop-types';
-import React, { Fragment, PureComponent } from 'react';
-import { connect } from 'react-redux';
-import { Link, Redirect } from 'react-router-dom';
-import { errorsAction, infosAction } from '../actions/notifications';
-import Loading from '../Components/Loading';
-import Notification from '../Components/Notification';
-import { authorizeUser, filter } from '../helpers';
-import { getAllUsers } from '../vendor/api';
-import axios from '../vendor/axios';
-import { user } from '../vendor/data';
+import { faThList, faUser, faUserCrown } from "@fortawesome/pro-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import PropTypes from "prop-types";
+import React, { Fragment, PureComponent } from "react";
+import { connect } from "react-redux";
+import { Link, Redirect } from "react-router-dom";
+import { errorsAction, infosAction } from "../actions/notifications";
+import List from "../Components/Characters/List";
+import Loading from "../Components/Loading";
+import Notification from "../Components/Notification";
+import { authorizeUser, filter, renderActionList } from "../helpers";
+import { getAllUsers } from "../vendor/api";
+import axios from "../vendor/axios";
+import { user } from "../vendor/data";
 
 class Users extends PureComponent {
     constructor(props) {
@@ -32,12 +33,13 @@ class Users extends PureComponent {
     }
 
     componentWillUnmount = () => {
-        this.cancelTokenSource && this.cancelTokenSource.cancel('Unmount');
+        this.cancelTokenSource && this.cancelTokenSource.cancel("Unmount");
     };
 
     componentDidMount = () => {
         const { me } = this.props;
-        if (me) {
+        const { allUsers } = this.state;
+        if (me && !allUsers) {
             this.cancelTokenSource = axios.CancelToken.source();
             getAllUsers(this.cancelTokenSource)
                 .then(allUsers => {
@@ -53,24 +55,53 @@ class Users extends PureComponent {
         }
     };
 
+    renderItem = user => {
+        const { me } = this.props;
+        if (!user.isMember && !user.isSoulshriven) {
+            return null;
+        }
+
+        const actionList = {
+            return: (
+                <Link to={"/users"} title="Back to Roster">
+                    <FontAwesomeIcon icon={faThList} />
+                </Link>
+            ),
+        };
+
+        return [
+            <section className="col-md-24 p-0 mb-4 d-flex flex-wrap" key="character">
+                <h2 className="form-title col-md-24">{"@" + user.name}</h2>
+                <ul className="ne-corner">{renderActionList(actionList)}</ul>
+                <dl className="col-lg-24">
+                    <dt>Rank</dt>
+                    <dd>{user.clearanceLevel.rank.title}</dd>
+                </dl>
+                <List characters={user.characters} me={me} />
+            </section>,
+        ];
+    };
+
     renderListItem = user => {
         if (!user.isMember && !user.isSoulshriven) {
             return null;
         }
         if (user.isMember && !this.state.filters.members) return null;
         if (user.isSoulshriven && !this.state.filters.soulshriven) return null;
-        let rowBgColor = user.isMember ? 'members' : 'soulshriven';
+        let rowBgColor = user.isMember ? "members" : "soulshriven";
 
         return (
-            <li className={rowBgColor + ' mb-1 mr-1'} key={'user-' + user.id} data-id={user.id}>
-                <Link to={'/users/' + user.id} title="User Sheet" onClick={event => {event.preventDefault(); alert('Coming Soon!')}}>{'@' + user.name}</Link>
+            <li className={rowBgColor + " mb-1 mr-1"} key={"user-" + user.id} data-id={user.id}>
+                <Link to={"/users/" + user.id} title="User Sheet">
+                    {"@" + user.name}
+                </Link>
             </li>
         );
     };
 
     renderList = allUsers => {
         let charactersRendered = allUsers.result.map(userId => {
-            const user = allUsers.entities['user'][userId];
+            const user = allUsers.entities["user"][userId];
 
             return this.renderListItem(user);
         });
@@ -85,12 +116,12 @@ class Users extends PureComponent {
         const { filters } = this.state;
         const filterList = {
             members: (
-                <button type="button" onClick={event => this.filter(event, 'members')} className={'ne-corner ' + (filters.members || 'inactive')} title="Filter Actual Members">
+                <button type="button" onClick={event => this.filter(event, "members")} className={"ne-corner " + (filters.members || "inactive")} title="Filter Actual Members">
                     <FontAwesomeIcon icon={faUserCrown} />
                 </button>
             ),
             soulshriven: (
-                <button type="button" onClick={event => this.filter(event, 'soulshriven')} className={'ne-corner ' + (filters.soulshriven || 'inactive')} title="Filter Soulshriven">
+                <button type="button" onClick={event => this.filter(event, "soulshriven")} className={"ne-corner " + (filters.soulshriven || "inactive")} title="Filter Soulshriven">
                     <FontAwesomeIcon icon={faUser} />
                 </button>
             ),
@@ -111,31 +142,31 @@ class Users extends PureComponent {
 
     renderNoUsersFoundNotification = allUsers => {
         const { dispatch, notifications } = this.props;
-        if (allUsers && !allUsers.result.length && notifications.find(n => n.key === 'no-users-found') === undefined) {
-            const message = [<Fragment key="f-1">No Users Found!</Fragment>].reduce((acc, curr) => [acc, ' ', curr]);
+        if (allUsers && !allUsers.result.length && notifications.find(n => n.key === "no-users-found") === undefined) {
+            const message = [<Fragment key="f-1">No Users Found!</Fragment>].reduce((acc, curr) => [acc, " ", curr]);
             dispatch(
                 infosAction(
                     message,
                     {
-                        container: 'bottom-center',
-                        animationIn: ['animated', 'bounceInDown'],
-                        animationOut: ['animated', 'bounceOutDown'],
+                        container: "bottom-center",
+                        animationIn: ["animated", "bounceInDown"],
+                        animationOut: ["animated", "bounceOutDown"],
                         dismiss: { duration: 30000 },
                     },
-                    'no-users-found'
+                    "no-users-found"
                 )
             );
         }
     };
 
     render = () => {
-        const { me, groups, location } = this.props;
+        const { me, groups, location, match } = this.props;
         if (!me) {
-            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
+            return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
         }
 
         if (me && groups && !authorizeUser(this.props, true)) {
-            return <Redirect to='/' />;
+            return <Redirect to="/" />;
         }
 
         const { allUsers } = this.state;
@@ -143,6 +174,12 @@ class Users extends PureComponent {
             return [<Loading message="Fetching Roster information..." key="loading" />, <Notification key="notifications" />];
         }
         this.renderNoUsersFoundNotification(allUsers);
+
+        if (match.params.id) {
+            const user = allUsers.entities.user[match.params.id];
+
+            return [...this.renderItem(user), <Notification key="notifications" />];
+        }
 
         return [...this.renderList(allUsers), <Notification key="notifications" />];
     };
@@ -160,9 +197,9 @@ Users.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    me: state.getIn(['me']),
-    groups: state.getIn(['groups']),
-    notifications: state.getIn(['notifications']),
+    me: state.getIn(["me"]),
+    groups: state.getIn(["groups"]),
+    notifications: state.getIn(["notifications"]),
 });
 
 const mapDispatchToProps = dispatch => ({

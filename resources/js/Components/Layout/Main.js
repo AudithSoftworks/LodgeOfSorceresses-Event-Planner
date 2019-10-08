@@ -105,6 +105,7 @@ class Main extends Component {
                         <Route exact path="/" component={props => <Init {...props} />} />
                         <Route exact path="/dashboard" component={props => <Home {...props} />} />
                         <Route exact path="/users" component={props => <Users {...props} />} />
+                        <Route exact path="/users/:id" component={props => <Users {...props} />} />
                         <Route exact path="/characters/:id" component={props => <Character {...props} />} />
                         <Route exact path="/events" component={props => <Events {...props} />} />
                         <Route exact path="/events/create" component={props => <EventForm {...props} />} />

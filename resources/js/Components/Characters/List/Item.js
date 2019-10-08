@@ -4,11 +4,11 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { renderActionList } from "../../../helpers";
-import { character } from '../../../vendor/data';
+import { character, user } from '../../../vendor/data';
 
 class Item extends PureComponent {
     render = () => {
-        const { character, onDeleteHandler } = this.props;
+        const { me, character, onDeleteHandler } = this.props;
 
         const characterSets = character.sets.map(set => (
             <a key={set['id']} href={'https://eso-sets.com/set/' + set['id']} className="badge badge-dark">
@@ -23,26 +23,28 @@ class Item extends PureComponent {
                 </Link>
             ),
             parses:
-                character['role'].indexOf('DD') !== -1 ? (
+                me.id === character.owner.id && character['role'].indexOf('DD') !== -1 ? (
                     <Link to={'/@me/characters/' + character.id + '/parses'} title="DPS Parses">
                         <FontAwesomeIcon icon={faTachometerAlt} />
                     </Link>
                 ) : null,
-            edit: (
-                <Link to={'/@me/characters/' + character.id + '/edit'} title="Edit Character">
-                    <FontAwesomeIcon icon={faUserEdit} />
-                </Link>
-            ),
+            edit:
+                me.id === character.owner.id ? (
+                    <Link to={'/@me/characters/' + character.id + '/edit'} title="Edit Character">
+                        <FontAwesomeIcon icon={faUserEdit} />
+                    </Link>
+                ) : null,
             delete:
                 typeof onDeleteHandler === 'function' &&
+                me.id === character.owner.id &&
                 !character.approved_for_t1 &&
                 !character.approved_for_t2 &&
                 !character.approved_for_t3 &&
                 !character.approved_for_t4 ? (
-                        <Link to="#" onClick={onDeleteHandler} data-id={character.id} title="Delete Character">
-                            <FontAwesomeIcon icon={faTrashAlt} />
-                        </Link>
-                    ) : null,
+                    <Link to="#" onClick={onDeleteHandler} data-id={character.id} title="Delete Character">
+                        <FontAwesomeIcon icon={faTrashAlt} />
+                    </Link>
+                ) : null,
         };
 
         let rowBgColor = 'no_clearance';
@@ -58,10 +60,12 @@ class Item extends PureComponent {
 
         return (
             <tr className={rowBgColor} key={'characterRow-' + character.id} data-id={character.id}>
-                <td>{character.name}</td>
-                <td>{character.class}</td>
-                <td>{character.role}</td>
-                <td className='sets'>{characterSets.reduce((prev, curr) => [prev, ' ', curr])}</td>
+                <td>
+                    {character.name}
+                    <br/>
+                    <small>{character.class} / {character.role}</small>
+                </td>
+                <td className='sets'>{characterSets.reduce((prev, curr) => [prev, ' ', curr], [])}</td>
                 <td>
                     <ul className="actionList">{renderActionList(character.actionList)}</ul>
                 </td>
@@ -71,6 +75,7 @@ class Item extends PureComponent {
 }
 
 Item.propTypes = {
+    me: user,
     character,
     onDeleteHandler: PropTypes.func, // based on existense of this param, we render Delete button
 };

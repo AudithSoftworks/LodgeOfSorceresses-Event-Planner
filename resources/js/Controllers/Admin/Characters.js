@@ -1,7 +1,7 @@
 import(
     /* webpackPrefetch: true */
     /* webpackChunkName: "characters-scss" */
-    '../../../sass/_characters.scss'
+    '../../../sass/_admin-character-list-table.scss'
 );
 
 import {
@@ -197,7 +197,7 @@ class Characters extends PureComponent {
         });
         if (charactersRendered.length) {
             charactersRendered = [
-                <table key="character-list-table" className="character-list-table pl-2 pr-2 col-md-24">
+                <table key="character-list-table" className="admin-character-list-table pl-2 pr-2 col-md-24">
                     <thead>
                         <tr>
                             <th scope="col">Player Name</th>

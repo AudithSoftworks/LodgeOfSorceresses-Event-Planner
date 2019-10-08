@@ -1,4 +1,3 @@
-import { library } from '@fortawesome/fontawesome-svg-core';
 import { faThList, faUserPlus } from '@fortawesome/pro-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
@@ -11,8 +10,6 @@ import List from '../Components/DpsParses/List';
 import { authorizeUser, renderActionList } from '../helpers';
 import { characters, user } from '../vendor/data';
 import Notification from '../Components/Notification';
-
-library.add(faThList, faUserPlus);
 
 class DpsParses extends PureComponent {
     componentWillUnmount() {
@@ -44,7 +41,7 @@ class DpsParses extends PureComponent {
         if (dpsParses && !dpsParses.length && notifications.find(n => n.key === 'no-dps-parses-create-one') === undefined) {
             const message = [
                 <Fragment key="f-1">Create a new parse, by clicking</Fragment>,
-                <FontAwesomeIcon icon={['far', 'user-plus']} key="icon" />,
+                <FontAwesomeIcon icon={faUserPlus} key="icon" />,
                 <Fragment key="f-2">icon on top right corner.</Fragment>,
             ].reduce((prev, curr) => [prev, ' ', curr]);
             dispatch(
@@ -79,12 +76,12 @@ class DpsParses extends PureComponent {
         const actionList = {
             return: (
                 <Link to={'/@me/characters'} title="Back to My Characters">
-                    <FontAwesomeIcon icon={['far', 'th-list']} />
+                    <FontAwesomeIcon icon={faThList} />
                 </Link>
             ),
             create: (
                 <Link to={'/@me/characters/' + this.props.match.params.id + '/parses/create'} title="Submit a Parse">
-                    <FontAwesomeIcon icon={['far', 'user-plus']} />
+                    <FontAwesomeIcon icon={faUserPlus} />
                 </Link>
             ),
         };

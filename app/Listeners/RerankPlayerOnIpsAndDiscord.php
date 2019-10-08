@@ -37,7 +37,7 @@ class RerankPlayerOnIpsAndDiscord
 
         $discordApi = app('discord.api');
         $guildRankAndClearance = app('guild.ranks.clearance');
-        $newOverallClearanceForUser = $guildRankAndClearance->calculateOverallClearanceOfUser($parseAuthor);
+        $newOverallClearanceForUser = $guildRankAndClearance->calculateCumulativeClearanceOfUser($parseAuthor);
         $userShouldRetainRoleTagOnDiscord = $guildRankAndClearance->determineIfUserHasOtherRankedCharactersWithGivenRole($parseAuthor, $this->character->role);
 
         /** @var \App\Models\UserOAuth $parseOwnersIpsAccount */

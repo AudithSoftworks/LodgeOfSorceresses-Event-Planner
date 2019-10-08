@@ -78,6 +78,8 @@ class Recache
             'characters'
         ])->whereNotNull('name')->find($userId);
         $this->parseLinkedAccounts($user);
+        $this->parseCharacters($user);
+        $this->calculateUserRank($user);
 
         return $user;
     }

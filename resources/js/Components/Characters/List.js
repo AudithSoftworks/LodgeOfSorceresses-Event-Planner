@@ -1,11 +1,17 @@
+import(
+    /* webpackPrefetch: true */
+    /* webpackChunkName: "characters-list-table-scss" */
+    '../../../sass/_character-list-table.scss'
+);
+
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { characters } from '../../vendor/data';
+import { characters, user } from '../../vendor/data';
 import Item from '../Characters/List/Item';
 
 class List extends PureComponent {
     render = () => {
-        const { characters, className, onDeleteHandler } = this.props;
+        const { characters, className, me, onDeleteHandler } = this.props;
         let charactersRendered = characters
             .sort((a, b) => {
                 const aNameLower = a.name.toLowerCase();
@@ -18,15 +24,13 @@ class List extends PureComponent {
 
                 return 0;
             })
-            .map(character => <Item key={character.id} character={character} onDeleteHandler={onDeleteHandler} />);
+            .map(character => <Item key={character.id} character={character} me={me} onDeleteHandler={onDeleteHandler} />);
         if (charactersRendered.length) {
             charactersRendered = [
-                <table key="character-list-table" className={'pl-2 pr-2 col-md-24 ' + className}>
+                <table key="character-list-table" className={'pl-2 pr-2 col-md-24 character-list-table ' + className}>
                     <thead>
                         <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Class</th>
-                            <th scope="col">Role</th>
+                            <th scope="col">Name, Class/Role</th>
                             <th scope="col">Sets</th>
                             <th scope="col" />
                         </tr>
@@ -43,6 +47,7 @@ class List extends PureComponent {
 List.propTypes = {
     className: PropTypes.string,
 
+    me: user,
     characters,
     onDeleteHandler: PropTypes.func, // based on existense of this param, we render Delete button inside <Item>
 };

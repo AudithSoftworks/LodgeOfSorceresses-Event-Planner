@@ -1,9 +1,3 @@
-import(
-    /* webpackPrefetch: true */
-    /* webpackChunkName: "my_characters-scss" */
-    '../../../sass/_my_characters.scss'
-);
-
 import { faTachometerAlt, faUserPlus } from '@fortawesome/pro-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
@@ -96,7 +90,7 @@ class Characters extends PureComponent {
                     </ul>
                 </article>
                 <ul className="ne-corner">{renderActionList(actionList)}</ul>
-                <List characters={myCharacters} onDeleteHandler={this.handleDelete} className="my-character-list-table" />
+                <List characters={myCharacters} me={me} onDeleteHandler={this.handleDelete} />
             </section>,
             <Notification key="notifications" />,
         ];

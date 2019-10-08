@@ -4,6 +4,7 @@ namespace App\Traits\Users;
 
 use App\Models\User;
 use App\Services\DiscordApi;
+use App\Services\GuildRankAndClearance;
 
 trait IsUser
 {
@@ -23,5 +24,24 @@ trait IsUser
         $user->linkedAccountsParsed = $linkedAccountsParsed;
         $user->makeVisible(['linkedAccountsParsed', 'isMember', 'isSoulshriven']);
         $user->makeHidden(['linkedAccounts']);
+    }
+
+    public function parseCharacters(User $user): void
+    {
+        $cacheStore = app('cache.store');
+        $newCharacterList = collect();
+        foreach ($user->characters as $character) {
+            $cacheStore->has('character-' . $character->id);
+            $newCharacterList->add($cacheStore->get('character-' . $character->id));
+        }
+        $user->setRelation('characters', $newCharacterList);
+    }
+
+    public function calculateUserRank(User $user): void
+    {
+        $clearanceLevel = app('guild.ranks.clearance')->calculateCumulativeClearanceOfUser($user);
+
+        $user->clearanceLevel = !empty($clearanceLevel) ? GuildRankAndClearance::CLEARANCE_LEVELS[$clearanceLevel] : [];
+        $user->makeVisible('clearanceLevel');
     }
 }

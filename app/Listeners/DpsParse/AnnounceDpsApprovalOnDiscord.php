@@ -40,7 +40,7 @@ class AnnounceDpsApprovalOnDiscord
         $dpsParse = $event->getDpsParse();
         $parseAuthor = $event->getOwner();
         $character = $event->getCharacter()->refresh();
-        $playerClearance = app('guild.ranks.clearance')->calculateOverallClearanceOfUser($parseAuthor);
+        $playerClearance = app('guild.ranks.clearance')->calculateCumulativeClearanceOfUser($parseAuthor);
         $characterClearance = app('guild.ranks.clearance')->determineClearanceOfCharacter($character);
 
         /*--------------------------------------------

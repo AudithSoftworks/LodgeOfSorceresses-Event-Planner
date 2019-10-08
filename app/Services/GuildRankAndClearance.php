@@ -119,7 +119,7 @@ class GuildRankAndClearance
         ],
     ];
 
-    public function calculateOverallClearanceOfUser(User $user): ?string
+    public function calculateCumulativeClearanceOfUser(User $user): ?string
     {
         $user->loadMissing(['characters']);
         /** @var \App\Models\Character[] $characters */

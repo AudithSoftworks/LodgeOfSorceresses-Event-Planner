@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 export const content = PropTypes.arrayOf(
     PropTypes.shape({
@@ -73,6 +73,12 @@ export const user = PropTypes.shape({
     avatar: PropTypes.string,
     isMember: PropTypes.bool,
     isSoulshriven: PropTypes.bool,
+    clearanceLevel: PropTypes.shape({
+        rank: PropTypes.shape({
+            title: PropTypes.string,
+        }),
+        title: PropTypes.string,
+    }),
     linkedAccountsParsed: PropTypes.shape({
         discord: PropTypes.shape({
             id: PropTypes.number,

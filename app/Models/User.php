@@ -18,15 +18,16 @@ use Laravel\Passport\HasApiTokens;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read EloquentCollection|\App\Models\Character[]                                                                $characters
+ * @property EloquentCollection|\App\Models\Character[]                                                                     $characters
  * @property-read EloquentCollection|\Laravel\Passport\Client[]                                                             $clients
  * @property-read EloquentCollection|\App\Models\File[]                                                                     $files
  * @property-read EloquentCollection|\App\Models\UserOAuth[]                                                                $linkedAccounts
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property-read EloquentCollection|\Laravel\Passport\Token[]                                                              $tokens
  * @property iterable                                                                                                       $linkedAccountsParsed
- * @property bool                                                                                                           isMember
- * @property bool                                                                                                           isSoulshriven
+ * @property bool                                                                                                           $isMember
+ * @property bool                                                                                                           $isSoulshriven
+ * @property array                                                                                                          $clearanceLevel
  * @method static EloquentBuilder|User newModelQuery()
  * @method static EloquentBuilder|User newQuery()
  * @method static QueryBuilder|User onlyTrashed()
