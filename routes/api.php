@@ -13,8 +13,7 @@ $router->middleware(['auth:api', 'throttle'])->group(static function (Router $ro
     $router->apiResource('files', 'FilesController')->only(['store', 'destroy']);
     $router->apiResource('sets', 'SetsController')->only(['index']);
     $router->apiResource('skills', 'SkillsController')->only(['index']);
-    $router->apiResource('users', 'UsersController')->only(['index']);
-    $router->apiResource('users/{user}/characters', 'CharactersController')->only(['index', 'show']);
+    $router->apiResource('users', 'UsersController')->only(['index', 'show']);
     $router->apiResource('characters', 'CharactersController')->only(['index', 'show']);
 });
 

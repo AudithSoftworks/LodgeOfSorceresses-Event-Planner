@@ -15,16 +15,13 @@ class CharactersController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param int $userId
-     *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function index(int $userId = null): JsonResponse
+    public function index(): JsonResponse
     {
         $this->authorize('user', User::class);
         $query = Character::query();
-        $userId && $query->whereUserId($userId);
         $characterIds = $query
             ->orderBy('id', 'desc')
             ->get(['id'])->pluck('id');

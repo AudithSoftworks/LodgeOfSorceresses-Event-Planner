@@ -15,7 +15,7 @@ import List from "../Components/Characters/List";
 import Loading from "../Components/Loading";
 import Notification from "../Components/Notification";
 import { authorizeUser, filter, renderActionList } from "../helpers";
-import { getAllUsers } from "../vendor/api";
+import { getAllUsers, getUser } from "../vendor/api";
 import axios from "../vendor/axios";
 import { user } from "../vendor/data";
 
@@ -28,6 +28,7 @@ class Users extends PureComponent {
                 soulshriven: false,
             },
             allUsers: null,
+            currentUser: null
         };
         this.filter = filter.bind(this);
     }
@@ -37,21 +38,35 @@ class Users extends PureComponent {
     };
 
     componentDidMount = () => {
-        const { me } = this.props;
-        const { allUsers } = this.state;
-        if (me && !allUsers) {
+        const { me, match } = this.props;
+        if (me) {
+            const { allUsers } = this.state;
             this.cancelTokenSource = axios.CancelToken.source();
-            getAllUsers(this.cancelTokenSource)
-                .then(allUsers => {
-                    this.cancelTokenSource = null;
-                    this.setState({ allUsers });
-                })
-                .catch(error => {
-                    if (!axios.isCancel(error)) {
-                        const message = error.response.data.message || error.response.statusText || error.message;
-                        this.props.dispatch(errorsAction(message));
-                    }
-                });
+            if (match.params.id) {
+                getUser(this.cancelTokenSource, match.params.id)
+                    .then(user => {
+                        this.cancelTokenSource = null;
+                        this.setState({ user: user.entities.user[match.params.id] });
+                    })
+                    .catch(error => {
+                        if (!axios.isCancel(error)) {
+                            const message = error.response.data.message || error.response.statusText || error.message;
+                            this.props.dispatch(errorsAction(message));
+                        }
+                    });
+            } else if (!allUsers) {
+                getAllUsers(this.cancelTokenSource)
+                    .then(allUsers => {
+                        this.cancelTokenSource = null;
+                        this.setState({ allUsers, user: null });
+                    })
+                    .catch(error => {
+                        if (!axios.isCancel(error)) {
+                            const message = error.response.data.message || error.response.statusText || error.message;
+                            this.props.dispatch(errorsAction(message));
+                        }
+                    });
+            }
         }
     };
 
@@ -69,13 +84,21 @@ class Users extends PureComponent {
             ),
         };
 
+        let rankFormatted = user.isSoulshriven ? 'None' : 'Initiate';
+        if (user.clearanceLevel.rank) {
+            rankFormatted = user.clearanceLevel.rank.title;
+        }
+        if (user.isSoulshriven) {
+            rankFormatted += ' (Soulshriven)';
+        }
+
         return [
             <section className="col-md-24 p-0 mb-4 d-flex flex-wrap" key="character">
                 <h2 className="form-title col-md-24">{"@" + user.name}</h2>
                 <ul className="ne-corner">{renderActionList(actionList)}</ul>
                 <dl className="col-lg-24">
                     <dt>Rank</dt>
-                    <dd>{user.clearanceLevel.rank.title}</dd>
+                    <dd>{rankFormatted}</dd>
                 </dl>
                 <List characters={user.characters} me={me} />
             </section>,
@@ -169,17 +192,15 @@ class Users extends PureComponent {
             return <Redirect to="/" />;
         }
 
-        const { allUsers } = this.state;
-        if (!allUsers) {
+        const { allUsers, user } = this.state;
+        if (!allUsers && !user) {
             return [<Loading message="Fetching Roster information..." key="loading" />, <Notification key="notifications" />];
         }
-        this.renderNoUsersFoundNotification(allUsers);
 
-        if (match.params.id) {
-            const user = allUsers.entities.user[match.params.id];
-
+        if (match.params.id && user) {
             return [...this.renderItem(user), <Notification key="notifications" />];
         }
+        this.renderNoUsersFoundNotification(allUsers);
 
         return [...this.renderList(allUsers), <Notification key="notifications" />];
     };

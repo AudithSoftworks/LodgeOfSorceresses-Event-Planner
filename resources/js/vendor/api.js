@@ -67,7 +67,7 @@ export const getAllUsers = cancelToken => axios.get('/api/users', {
     throw error;
 });
 
-export const getUser = (cancelToken, userId) => axios.get('/api/user/' + userId, {
+export const getUser = (cancelToken, userId) => axios.get('/api/users/' + userId, {
     cancelToken: cancelToken.token,
 }).then(response => {
     if (response.data) {
