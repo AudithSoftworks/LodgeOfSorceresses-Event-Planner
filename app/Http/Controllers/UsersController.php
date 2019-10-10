@@ -23,11 +23,18 @@ class UsersController extends Controller
         return response()->json($users);
     }
 
-    public function show(int $user): JsonResponse
+    /**
+     * @param int $userId
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function show(int $userId): JsonResponse
     {
+        $this->authorize('user', User::class);
         $cacheStore = app('cache.store');
-        $cacheStore->has('user-' . $user);
+        $cacheStore->has('user-' . $userId);
 
-        return response()->json($cacheStore->get('user-' . $user));
+        return response()->json($cacheStore->get('user-' . $userId));
     }
 }
