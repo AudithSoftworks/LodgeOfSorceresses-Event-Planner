@@ -32,7 +32,7 @@ class DiscordApi extends AbstractApi
 
     public const ROLE_DOMINUS_LIMINIS = '479642604598722573';
 
-    public const ROLE_RECTOR = '534135978093182977';
+    public const ROLE_ADEPTUS_EXEMPTUS = '534135978093182977';
 
     public const ROLE_MAGISTER_TEMPLI = '230086456943706113';
 

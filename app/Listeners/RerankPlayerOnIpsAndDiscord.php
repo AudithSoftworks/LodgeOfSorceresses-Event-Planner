@@ -87,7 +87,7 @@ class RerankPlayerOnIpsAndDiscord
             DiscordApi::ROLE_DOMINUS_LIMINIS,
             DiscordApi::ROLE_MEMBERS,
             DiscordApi::ROLE_SOULSHRIVEN,
-            DiscordApi::ROLE_RECTOR,
+            DiscordApi::ROLE_ADEPTUS_EXEMPTUS,
             DiscordApi::ROLE_CORE_ONE,
             DiscordApi::ROLE_CORE_TWO,
             DiscordApi::ROLE_CORE_THREE,

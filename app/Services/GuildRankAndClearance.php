@@ -68,10 +68,10 @@ class GuildRankAndClearance
         'isAdmin' => false,
     ];
 
-    public const RANK_RECTOR = [
-        'title' => 'Rector',
-        'ipsGroupId' => IpsApi::MEMBER_GROUPS_RECTOR,
-        'discordRole' => DiscordApi::ROLE_RECTOR,
+    public const RANK_ADEPTUS_EXEMPTUS = [
+        'title' => 'Adeptus Exemptus',
+        'ipsGroupId' => IpsApi::MEMBER_GROUPS_ADEPTUS_EXEMPTUS,
+        'discordRole' => DiscordApi::ROLE_ADEPTUS_EXEMPTUS,
         'isMember' => true,
         'isAdmin' => false,
     ];

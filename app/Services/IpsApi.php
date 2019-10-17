@@ -28,7 +28,7 @@ class IpsApi extends AbstractApi
 
     public const MEMBER_GROUPS_DOMINUS_LIMINIS = 22;
 
-    public const MEMBER_GROUPS_RECTOR = 25;
+    public const MEMBER_GROUPS_ADEPTUS_EXEMPTUS = 25;
 
     public const MEMBER_GROUPS_MAGISTER_TEMPLI = 6;
 

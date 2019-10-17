@@ -18,7 +18,7 @@ class GroupsController extends Controller
             'ADEPTUS_MINOR' => GuildRankAndClearance::RANK_ADEPTUS_MINOR,
             'ADEPTUS_MAJOR' => GuildRankAndClearance::RANK_ADEPTUS_MAJOR,
             'DOMINUS_LIMINIS' => GuildRankAndClearance::RANK_DOMINUS_LIMINIS,
-            'RECTOR' => GuildRankAndClearance::RANK_RECTOR,
+            'ADEPTUS_EXEMPTUS' => GuildRankAndClearance::RANK_ADEPTUS_EXEMPTUS,
             'MAGISTER_TEMPLI' => GuildRankAndClearance::RANK_MAGISTER_TEMPLI,
             'IPSISSIMUS' => GuildRankAndClearance::RANK_IPSISSIMUS,
         ];
