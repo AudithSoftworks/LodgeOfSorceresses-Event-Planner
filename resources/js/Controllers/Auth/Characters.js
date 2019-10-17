@@ -1,51 +1,45 @@
-import { faTachometerAlt, faUserPlus } from '@fortawesome/pro-regular-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropTypes from 'prop-types';
-import React, { Fragment, PureComponent } from 'react';
-import { connect } from 'react-redux';
-import { Link, Redirect } from 'react-router-dom';
-import deleteMyCharacterAction from '../../actions/delete-my-character';
-import { infosAction } from '../../actions/notifications';
-import List from '../../Components/Characters/List';
-import { authorizeUser, renderActionList } from '../../helpers';
-import { characters, user } from '../../vendor/data';
-import Notification from '../../Components/Notification';
+import { faTachometerAlt, faUserPlus } from "@fortawesome/pro-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import PropTypes from "prop-types";
+import React, { Fragment, PureComponent } from "react";
+import { connect } from "react-redux";
+import { Link, Redirect } from "react-router-dom";
+import deleteMyCharacterAction from "../../actions/delete-my-character";
+import { infosAction } from "../../actions/notifications";
+import List from "../../Components/Characters/List";
+import { authorizeUser, deleteMyCharacter, renderActionList } from "../../helpers";
+import { characters, user } from "../../vendor/data";
+import Notification from "../../Components/Notification";
 
 class Characters extends PureComponent {
-    componentWillUnmount() {
-        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Unmount');
+    constructor(props) {
+        super(props);
+        this.handleDelete = deleteMyCharacter.bind(this);
     }
 
-    handleDelete = event => {
-        event.preventDefault();
-        if (confirm('Are you sure you want to delete this character?')) {
-            const currentTarget = event.currentTarget;
-            const { deleteMyCharacterAction } = this.props;
-            const characterId = parseInt(currentTarget.getAttribute('data-id'));
-
-            return deleteMyCharacterAction(characterId);
-        }
-    };
+    componentWillUnmount() {
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel("Unmount");
+    }
 
     renderNoCharactersCreateOneNotification = () => {
         const { dispatch, myCharacters, notifications } = this.props;
-        if (!myCharacters.length && notifications.find(n => n.key === 'no-characters-create-one') === undefined) {
+        if (!myCharacters.length && notifications.find(n => n.key === "no-characters-create-one") === undefined) {
             const message = [
                 <Fragment key="f-1">Create a new character, by clicking</Fragment>,
                 <FontAwesomeIcon icon={faUserPlus} key="icon" />,
                 <Fragment key="f-2">icon on top right corner.</Fragment>,
-            ].reduce((acc, curr) => [acc, ' ', curr]);
+            ].reduce((acc, curr) => [acc, " ", curr]);
             dispatch(
                 infosAction(
                     message,
                     {
-                        container: 'bottom-center',
-                        animationIn: ['animated', 'bounceInDown'],
-                        animationOut: ['animated', 'bounceOutDown'],
+                        container: "bottom-center",
+                        animationIn: ["animated", "bounceInDown"],
+                        animationOut: ["animated", "bounceOutDown"],
                         dismiss: { duration: 30000 },
                         width: 250,
                     },
-                    'no-characters-create-one'
+                    "no-characters-create-one"
                 )
             );
         }
@@ -54,10 +48,10 @@ class Characters extends PureComponent {
     render = () => {
         const { me, groups, location, myCharacters } = this.props;
         if (!me || !myCharacters) {
-            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
+            return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
         }
         if (me && groups && !authorizeUser(this.props, true)) {
-            return <Redirect to='/' />;
+            return <Redirect to="/" />;
         }
 
         const actionList = {
@@ -112,10 +106,10 @@ Characters.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    me: state.getIn(['me']),
-    groups: state.getIn(['groups']),
-    myCharacters: state.getIn(['myCharacters']),
-    notifications: state.getIn(['notifications']),
+    me: state.getIn(["me"]),
+    groups: state.getIn(["groups"]),
+    myCharacters: state.getIn(["myCharacters"]),
+    notifications: state.getIn(["notifications"]),
 });
 
 const mapDispatchToProps = dispatch => ({

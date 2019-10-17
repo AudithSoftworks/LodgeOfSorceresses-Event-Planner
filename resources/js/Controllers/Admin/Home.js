@@ -28,11 +28,6 @@ class Home extends PureComponent {
                     <h3>Available actions</h3>
                     <ul>
                         <li>
-                            <Link to="/admin/characters" title="Character List">
-                                Character List
-                            </Link>
-                        </li>
-                        <li>
                             <Link to="/admin/parses" title="Approve Parses">
                                 DPS Parses pending Approval
                             </Link>

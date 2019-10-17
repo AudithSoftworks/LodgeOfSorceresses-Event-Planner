@@ -1,13 +1,13 @@
-import React from 'react';
+import React from "react";
 
 export const authorizeAdmin = ({ me, groups }) => {
     if (!me || !groups || !me.linkedAccountsParsed.ips) {
         return false;
     }
 
-    const myGroup = Object.entries(groups).find(group => me.linkedAccountsParsed.ips.remote_primary_group === group[1]['ipsGroupId']);
+    const myGroup = Object.entries(groups).find(group => me.linkedAccountsParsed.ips.remote_primary_group === group[1]["ipsGroupId"]);
 
-    return !(!myGroup || !myGroup[1]['isAdmin']);
+    return !(!myGroup || !myGroup[1]["isAdmin"]);
 };
 
 export const authorizeUser = ({ me, groups }, withAdditionalPrechecks = false) => {
@@ -22,9 +22,9 @@ export const authorizeUser = ({ me, groups }, withAdditionalPrechecks = false) =
     const discordGroups = me.linkedAccountsParsed.discord.remote_secondary_groups;
     if (discordGroups && discordGroups.length) {
         const listOfUserGroups = discordGroups.find(discordRole => {
-            const matchingGroup = Object.entries(groups).find(group => discordRole === group[1]['discordRole']);
+            const matchingGroup = Object.entries(groups).find(group => discordRole === group[1]["discordRole"]);
 
-            return matchingGroup === undefined ? false : matchingGroup['1']['isMember'];
+            return matchingGroup === undefined ? false : matchingGroup["1"]["isMember"];
         });
 
         return listOfUserGroups !== undefined;
@@ -44,12 +44,24 @@ export const renderActionList = actionList => {
     return actionListRendered;
 };
 
-export const filter = function (event, typeUpdating) {
+export const deleteMyCharacter = function(event) {
+    event.preventDefault();
+    if (confirm("Are you sure you want to delete this character?")) {
+        const currentTarget = event.currentTarget;
+        const characterId = parseInt(currentTarget.getAttribute("data-id"));
+        if (characterId) {
+            const { deleteMyCharacterAction, history } = this.props;
+            deleteMyCharacterAction(characterId).then(() => history.push("/@me/characters"));
+        }
+    }
+};
+
+export const filter = function(event, typeUpdating) {
     const temp = Object.assign({}, this.state.filters);
     for (const [type, value] of Object.entries(temp)) {
         if (type === typeUpdating) {
             temp[type] = !value;
-            event.currentTarget.classList.toggle('inactive');
+            event.currentTarget.classList.toggle("inactive");
         } else {
             temp[type] = value;
         }

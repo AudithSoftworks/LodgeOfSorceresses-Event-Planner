@@ -24,14 +24,14 @@ const Users = React.lazy(() =>
         '../../Controllers/Users'
         )
 );
-const Character = React.lazy(() =>
+const Characters = React.lazy(() =>
     import(
         /* webpackPrefetch: true */
         /* webpackChunkName: "controllers-character-sheet" */
-        '../../Controllers/Character'
+        '../../Controllers/Characters'
     )
 );
-const Characters = React.lazy(() =>
+const MyCharacters = React.lazy(() =>
     import(
         /* webpackPrefetch: true */
         /* webpackChunkName: "controllers-my-characters" */
@@ -81,13 +81,6 @@ const AdminHome = React.lazy(() =>
         '../../Controllers/Admin/Home'
     )
 );
-const AdminCharacters = React.lazy(() =>
-    import(
-        /* webpackPrefetch: true */
-        /* webpackChunkName: "controllers-admin-characters" */
-        '../../Controllers/Admin/Characters'
-    )
-);
 const AdminDpsParses = React.lazy(() =>
     import(
         /* webpackPrefetch: true */
@@ -106,14 +99,14 @@ class Main extends Component {
                         <Route exact path="/dashboard" component={props => <Home {...props} />} />
                         <Route exact path="/users" component={props => <Users {...props} />} />
                         <Route exact path="/users/:id" component={props => <Users {...props} />} />
-                        <Route exact path="/characters/:id" component={props => <Character {...props} />} />
+                        <Route exact path="/characters/:id" component={props => <Characters {...props} />} />
                         <Route exact path="/events" component={props => <Events {...props} />} />
                         <Route exact path="/events/create" component={props => <EventForm {...props} />} />
                         <Route
                             path="/@me/characters"
                             render={({ match: { url }}) => (
                                 <Fragment>
-                                    <Route exact path={url} component={props => <Characters {...props} />} />
+                                    <Route exact path={url} component={props => <MyCharacters {...props} />} />
                                     <Route path={url + '/create'} component={props => <CharacterForm {...props} />} />
                                     <Route path={url + '/:id/edit'} component={props => <CharacterForm {...props} />} />
                                     <Route exact path={url + '/:id/parses'} component={props => <DpsParses {...props} />} />
@@ -126,7 +119,6 @@ class Main extends Component {
                             render={({ match: { url }}) => (
                                 <Fragment>
                                     <Route exact path={url} component={props => <AdminHome {...props} />} />
-                                    <Route exact path={url + '/characters'} component={props => <AdminCharacters {...props} />} />
                                     <Route path={url + '/parses'} component={props => <AdminDpsParses {...props} />} />
                                 </Fragment>
                             )}
