@@ -214,7 +214,7 @@ body {
                         color: #666666;
 
                         &.active {
-                            background-color: rgba(white, 0.85);
+                            background-color: rgba(white, 0.95);
                             color: inherit;
                         }
 
@@ -224,15 +224,13 @@ body {
                     }
 
                     @include media-breakpoint-only(xs) {
+                        > a > svg {
+                            padding-right: 0;
+                        }
+
                         &:first-of-type {
                             > a {
                                 border-radius: 0 6px 0 0;
-                            }
-                        }
-
-                        &:last-of-type {
-                            > a {
-                                border-radius: 6px 0 0 0;
                             }
                         }
                     }

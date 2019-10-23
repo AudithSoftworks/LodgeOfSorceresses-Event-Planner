@@ -4,7 +4,8 @@ import(
     "../../sass/_users.scss"
 );
 
-import { faThList, faUser, faUserCrown } from "@fortawesome/pro-regular-svg-icons";
+import { faUser, faUserCrown } from "@fortawesome/pro-regular-svg-icons";
+import { faThList } from "@fortawesome/pro-duotone-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PropTypes from "prop-types";
 import React, { Fragment, PureComponent } from "react";
@@ -25,7 +26,7 @@ class Users extends PureComponent {
         this.state = {
             filters: {
                 members: true,
-                soulshriven: false,
+                soulshriven: true,
             },
             allUsers: null,
             currentUser: null

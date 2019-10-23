@@ -21,7 +21,7 @@ class Calendar extends Model
     /**
      * {@inheritdoc}
      */
-    protected $table = "calendars";
+    protected $table = 'calendars';
 
     /**
      * {@inheritdoc}

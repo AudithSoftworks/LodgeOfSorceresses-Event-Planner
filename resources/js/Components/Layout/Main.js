@@ -27,7 +27,7 @@ const Users = React.lazy(() =>
 const Characters = React.lazy(() =>
     import(
         /* webpackPrefetch: true */
-        /* webpackChunkName: "controllers-character-sheet" */
+        /* webpackChunkName: "controllers-characters" */
         '../../Controllers/Characters'
     )
 );

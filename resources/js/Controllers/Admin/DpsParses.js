@@ -4,8 +4,7 @@ import(
     '../../../sass/_pending_dps_parses.scss'
 );
 
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSpinner, faTachometerAlt, faThList, faUserCheck, faUserEdit, faUserPlus, faUserTimes } from '@fortawesome/pro-regular-svg-icons';
+import { faUserCheck, faUserTimes } from '@fortawesome/pro-duotone-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
@@ -18,8 +17,6 @@ import axios from '../../vendor/axios';
 import { user } from '../../vendor/data';
 import Loading from '../../Components/Loading';
 import Notification from '../../Components/Notification';
-
-library.add(faSpinner, faTachometerAlt, faThList, faUserCheck, faUserEdit, faUserPlus, faUserTimes);
 
 class DpsParses extends PureComponent {
     constructor(props) {
@@ -117,12 +114,12 @@ class DpsParses extends PureComponent {
         dpsParse.actionList = {
             approve: (
                 <Link to="" onClick={this.handleApprove} data-id={dpsParse['id']} title="Approve this Parse">
-                    <FontAwesomeIcon icon={['far', 'user-check']} />
+                    <FontAwesomeIcon icon={faUserCheck} />
                 </Link>
             ),
             disapprove: (
                 <Link to="" onClick={this.handleDisapprove} data-id={dpsParse['id']} title="Disapprove this Parse">
-                    <FontAwesomeIcon icon={['far', 'user-times']} />
+                    <FontAwesomeIcon icon={faUserTimes} />
                 </Link>
             ),
         };
@@ -201,7 +198,7 @@ class DpsParses extends PureComponent {
                         <li>Is parse in the screenshot the same Role (Stamina vs Magicka) as the Character listed?</li>
                         <li>Is the gear listed in Superstar screenshot the same as in the Character listed?</li>
                     </ul>
-                    If any of these fail, please Reject the Parse by clicking <FontAwesomeIcon icon={['far', 'user-times']} /> icon, and by stating the reason.
+                    If any of these fail, please Reject the Parse by clicking <FontAwesomeIcon icon={faUserTimes} /> icon, and by stating the reason.
                 </article>
                 {parsesRendered}
             </section>,

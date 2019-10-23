@@ -4,7 +4,7 @@ import(
     '../../../sass/_header.scss'
 );
 
-import { faCalendarAlt, faChess, faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faCampfire } from '@fortawesome/pro-solid-svg-icons/index';
+import { faCalendarAlt, faChess, faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faCampfire } from '@fortawesome/pro-light-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome/index';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
