@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\UserOAuth;
+use App\Services\DiscordApi;
 use App\Services\IpsApi;
 use Illuminate\Console\Command;
 
@@ -69,7 +70,7 @@ class SyncOauthLinks extends Command
             switch ($oauthAccount->remote_provider) {
                 case 'discord':
                     if ($this->syncDiscordMember($oauthAccount) === self::MEMBER_NOT_FOUND) {
-                        $this->warn('[' . $oauthAccount->name . ']' . ' Member not found on Discord, deleting this OAuth link & marking this user for re-examination...');
+                        $this->warn('[' . $oauthAccount->name . ']' . ' Member not found on Discord or found without roles; deleting this OAuth link & marking this user for re-examination...');
                         $this->deleteOauthAccountAndAddUserToReexaminationList($oauthAccount);
                     }
                     break;
@@ -123,7 +124,12 @@ class SyncOauthLinks extends Command
         }
         $this->info('[' . $oauthAccount->name . ']' . ' Successfully synced via Discord.');
 
-        return self::MEMBER_FOUND;
+        $memberCanUsePlanner = false;
+        if (in_array(DiscordApi::ROLE_SOULSHRIVEN, $remoteUserDataFetchedThroughApi['roles'], true) || in_array(DiscordApi::ROLE_MEMBERS, $remoteUserDataFetchedThroughApi['roles'], true)) {
+            $memberCanUsePlanner = true;
+        }
+
+        return $memberCanUsePlanner ? self::MEMBER_FOUND : self::MEMBER_NOT_FOUND;
     }
 
     private function syncIpsMember(UserOAuth $oauthAccount): int
@@ -184,6 +190,13 @@ class SyncOauthLinks extends Command
                     $this->warn('[@' . $user->name . ']' . ' Now deleting them on Planner...');
                     $user->forceDelete();
                     $this->info('[@' . $user->name . ']' . ' Deleted.');
+                } elseif ($discordOauthAccount !== null) {
+                    $discordRoles = explode(',', $discordOauthAccount->remote_secondary_groups);
+                    if (!in_array(DiscordApi::ROLE_SOULSHRIVEN, $discordRoles, true) && !in_array(DiscordApi::ROLE_MEMBERS, $discordRoles, true)) {
+                        $this->warn('[' . $discordOauthAccount->name . ']' . ' User has Discord account but lacks any roles. Deleting...');
+                        $user->forceDelete();
+                        $this->info('[@' . $user->name . ']' . ' Deleted.');
+                    }
                 }
             } else {
                 $this->warn('[@' . $user->name . ']' . ' User has no remaining OAuth links. Deleting...');
