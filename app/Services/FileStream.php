@@ -104,7 +104,7 @@ class FileStream
         }
 
         # Cleanup chunks.
-        if (1 === random_int(1, 1 / $this->chunksCleanupProbability)) {
+        if (1 === random_int(1, (int)(1 / $this->chunksCleanupProbability))) {
             $this->cleanupChunks();
         }
 
@@ -164,7 +164,7 @@ class FileStream
             if (!$file->isValid()) {
                 throw new FileStreamExceptions\UploadAttemptFailedException;
             }
-            $file->move($this->getAbsolutePath($targetFolder), $chunkIndex);
+            $file->move($this->getAbsolutePath($targetFolder), (string)$chunkIndex);
 
             return response()->json(['success' => true, 'uuid' => $fineUploaderUuid]);
         }
@@ -214,7 +214,7 @@ class FileStream
         $flippedPrefixMap = $base === 1024 ? array_flip($binaryPrefices) : array_flip($decimalPrefices);
         $factor = Arr::pull($flippedPrefixMap, $prefix);
 
-        return sprintf('%d', bcmul(str_replace(',', '', $coefficient), bcpow($base, $factor)));
+        return sprintf('%d', bcmul(str_replace(',', '', $coefficient), bcpow((string)$base, $factor)));
     }
 
     /**

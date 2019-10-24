@@ -28,6 +28,7 @@ class FilesController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws \App\Exceptions\Common\ValidationException
      * @throws \ErrorException
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function store(Request $request)
     {
@@ -63,7 +64,8 @@ class FilesController extends Controller
         /** @var \App\Models\User $me */
         $me = app('auth.driver')->user();
 
-        if (!($file = $me->files()->where('hash', $hash)->get())) {
+        /** @var null|\App\Models\File $file */
+        if (($file = $me->files()->where('hash', $hash)->get()) === null) {
             throw new ModelNotFoundException();
         }
 
@@ -72,8 +74,8 @@ class FilesController extends Controller
                 'data' => file_get_contents(app('filestream')->getAbsolutePath($file->path)),
                 'mime' => $file->mime,
             ])
-            ->header("pragma", "private")
-            ->header("Cache-Control", " private, max-age=86400");
+            ->header('pragma', 'private')
+            ->header('Cache-Control', 'private, max-age=86400');
     }
 
     /**

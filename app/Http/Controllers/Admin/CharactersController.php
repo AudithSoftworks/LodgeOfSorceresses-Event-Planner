@@ -70,7 +70,7 @@ class CharactersController extends Controller
 
         /** @var \App\Models\User $me */
         $me = app('auth.driver')->user();
-        if (!$me->id === $characterId) {
+        if ($me->id !== $characterId) {
             throw new AuthorizationException('Self-ranking disabled!');
         }
 

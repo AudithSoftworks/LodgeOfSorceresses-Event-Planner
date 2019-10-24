@@ -3,17 +3,15 @@
 use App\Events\User\LoggedIn;
 use App\Events\User\LoggedOut;
 use App\Events\User\Registered;
-use App\Exceptions\Common\ValidationException;
-use App\Exceptions\Users\LoginNotValidException;
 use App\Exceptions\Users\UserNotActivatedException;
 use App\Exceptions\Users\UserNotMemberInDiscord;
 use App\Extensions\Socialite\CustomOauthTwoUser;
 use App\Models\User;
 use App\Models\UserOAuth;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Laravel\Socialite\Contracts\Factory as SocialiteContract;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class LoginController extends Controller
 {

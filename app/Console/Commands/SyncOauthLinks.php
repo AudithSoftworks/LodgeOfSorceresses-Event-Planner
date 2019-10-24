@@ -63,8 +63,8 @@ class SyncOauthLinks extends Command
      */
     public function handle(): bool
     {
-        /** @var UserOAuth|\Illuminate\Database\Eloquent\Collection $oauthAccount */
         $oauthAccounts = UserOAuth::query()->get();
+        /** @var UserOAuth $oauthAccount */
         $oauthAccount = $oauthAccounts->shift();
         while ($oauthAccount) {
             switch ($oauthAccount->remote_provider) {

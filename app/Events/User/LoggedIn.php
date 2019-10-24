@@ -10,7 +10,7 @@ class LoggedIn
     public $user;
 
     /**
-     * @param \App\Models\User|\Illuminate\Contracts\Auth\Authenticatable $user
+     * @param \Illuminate\Contracts\Auth\Authenticatable|\App\Models\User $user
      */
     public function __construct(User $user)
     {

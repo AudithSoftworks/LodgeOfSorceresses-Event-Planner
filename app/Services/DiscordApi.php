@@ -60,7 +60,7 @@ class DiscordApi extends AbstractApi
     private $discordClient;
 
     /**
-     * @var \Illuminate\Config\Repository
+     * @var string
      */
     private $discordGuildId;
 
@@ -82,7 +82,7 @@ class DiscordApi extends AbstractApi
         return $this->executeCallback(function (string $channelId, array $params) {
             $response = $this->discordClient->post('channels/' . $channelId . '/messages', $params);
 
-            return json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
+            return json_decode($response->getBody()->getContents(), true);
         }, $channelId, $params);
     }
 
@@ -122,7 +122,7 @@ class DiscordApi extends AbstractApi
         return $this->executeCallback(function (string $memberId) {
             $response = $this->discordClient->get('guilds/' . $this->discordGuildId . '/members/' . $memberId);
 
-            return json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
+            return json_decode($response->getBody()->getContents(), true);
         }, $memberId);
     }
 
@@ -146,7 +146,7 @@ class DiscordApi extends AbstractApi
                 ]
             ]);
 
-            return json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
+            return json_decode($response->getBody()->getContents(), true);
         }, $recipientId);
     }
 
@@ -155,7 +155,7 @@ class DiscordApi extends AbstractApi
         return $this->executeCallback(function () {
             $response = $this->discordClient->get('guilds/' . $this->discordGuildId . '/roles');
 
-            return json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
+            return json_decode($response->getBody()->getContents(), true);
         });
     }
 }

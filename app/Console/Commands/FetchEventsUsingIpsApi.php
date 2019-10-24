@@ -34,7 +34,6 @@ class FetchEventsUsingIpsApi extends Command
     }
 
     /**
-     * @return mixed
      * @throws \Exception
      */
     public function handle(): bool
@@ -47,11 +46,6 @@ class FetchEventsUsingIpsApi extends Command
         return true;
     }
 
-    /**
-     * @param array $events
-     *
-     * @return int
-     */
     private function deleteObsoleteEvents(array $events): int
     {
         $idsOfActiveEvents = array_column($events, 'id');
@@ -62,8 +56,6 @@ class FetchEventsUsingIpsApi extends Command
     }
 
     /**
-     * @param array $events
-     *
      * @throws \Exception
      */
     private function syncEvents(array $events): void

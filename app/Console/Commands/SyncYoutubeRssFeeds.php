@@ -40,7 +40,7 @@ class SyncYoutubeRssFeeds extends Command
     public function handle(): void
     {
         $channelId = $this->argument('channelId');
-        $channelIds = $channelId ? [$channelId] : array_column(YoutubeFeedsChannel::get('id')->toArray(), 'id');
+        $channelIds = $channelId ? [$channelId] : array_column(YoutubeFeedsChannel::get(['id'])->toArray(), 'id');
         foreach ($channelIds as $channelId) {
             $feedUrl = 'https://www.youtube.com/feeds/videos.xml?channel_id=' . $channelId;
             $doc = new \DOMDocument();

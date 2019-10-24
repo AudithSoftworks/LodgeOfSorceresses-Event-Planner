@@ -40,16 +40,25 @@ class RerankPlayerOnIpsAndDiscord
         $newOverallClearanceForUser = $guildRankAndClearance->calculateCumulativeClearanceOfUser($parseAuthor);
         $userShouldRetainRoleTagOnDiscord = $guildRankAndClearance->determineIfUserHasOtherRankedCharactersWithGivenRole($parseAuthor, $this->character->role);
 
-        /** @var \App\Models\UserOAuth $parseOwnersIpsAccount */
+        /** @var null|\App\Models\UserOAuth $parseOwnersIpsAccount */
         $parseOwnersIpsAccount = $parseAuthor->linkedAccounts()->where('remote_provider', 'ips')->first();
-        /** @var \App\Models\UserOAuth $parseOwnersDiscordAccount */
+        /** @var null|\App\Models\UserOAuth $parseOwnersDiscordAccount */
         $parseOwnersDiscordAccount = $parseAuthor->linkedAccounts()->where('remote_provider', 'discord')->first();
-        $mentionedName = $parseOwnersDiscordAccount ? '<@!' . $parseOwnersDiscordAccount->remote_id . '>' : $parseAuthor->name;
-        $parseOwnersIpsAccount && $this->rerankUserOnIps($parseOwnersIpsAccount, $newOverallClearanceForUser);
-        $parseOwnersDiscordAccount && $this->rerankUserOnDiscord($parseOwnersDiscordAccount, $newOverallClearanceForUser, $userShouldRetainRoleTagOnDiscord);
-        $parseOwnersDiscordAccount && $this->announceRerankToThePlayerViaDiscordDm($discordApi, $parseOwnersDiscordAccount, $mentionedName, $newOverallClearanceForUser);
-        $isParseOwnerASoulshriven = in_array(DiscordApi::ROLE_SOULSHRIVEN, explode(',', $parseOwnersDiscordAccount->remote_secondary_groups), true);
-        !$isParseOwnerASoulshriven && $this->announceRerankInOfficerChannelOnDiscord($discordApi, $mentionedName, $newOverallClearanceForUser);
+
+        if ($parseOwnersIpsAccount !== null) {
+            $this->rerankUserOnIps($parseOwnersIpsAccount, $newOverallClearanceForUser);
+        }
+        $mentionedName = $parseAuthor->name;
+        $isParseOwnerASoulshriven = true;
+        if ($parseOwnersDiscordAccount !== null) {
+            $mentionedName = '<@!' . $parseOwnersDiscordAccount->remote_id . '>';
+            $this->rerankUserOnDiscord($parseOwnersDiscordAccount, $newOverallClearanceForUser, $userShouldRetainRoleTagOnDiscord);
+            $this->announceRerankToThePlayerViaDiscordDm($discordApi, $parseOwnersDiscordAccount, $newOverallClearanceForUser);
+            $isParseOwnerASoulshriven = in_array(DiscordApi::ROLE_SOULSHRIVEN, explode(',', $parseOwnersDiscordAccount->remote_secondary_groups), true);
+        }
+        if ($isParseOwnerASoulshriven === false) {
+            $this->announceRerankInOfficerChannelOnDiscord($discordApi, $mentionedName, $newOverallClearanceForUser);
+        }
 
         return true;
     }
@@ -126,7 +135,7 @@ class RerankPlayerOnIpsAndDiscord
         }
     }
 
-    private function announceRerankToThePlayerViaDiscordDm(DiscordApi $discordApi, UserOAuth $remoteDiscordUser, string $mentionedName, ?string $playerClearance): void
+    private function announceRerankToThePlayerViaDiscordDm(DiscordApi $discordApi, UserOAuth $remoteDiscordUser, ?string $playerClearance): void
     {
         $playerNewRankTitle = $playerClearance
             ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['rank']['title']
@@ -136,7 +145,7 @@ class RerankPlayerOnIpsAndDiscord
         $responseDecoded = $discordApi->createMessageInChannel($dmChannel['id'], [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
-                    'content' => $mentionedName . ', recent activities of your Characters (DPS approval, Tank/Healer clearance, Character deletion etc) on Planner triggered a Reranking!'
+                    'content' => 'Hello! Recent activities regarding your Characters (DPS approval, Tank/Healer clearance, Character deletion etc) on Planner triggered a Reranking!'
                         . ' As a result of this, your current member rank was updated to **' . $playerNewRankTitle . '**',
                     'tts' => false,
                 ]),

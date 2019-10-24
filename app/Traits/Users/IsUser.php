@@ -10,6 +10,7 @@ trait IsUser
 {
     public function parseLinkedAccounts(User $user): void
     {
+        /** @var \App\Models\UserOAuth[] $linkedAccountsParsed */
         $linkedAccountsParsed = $user->linkedAccounts->keyBy('remote_provider');
         $user->isMember = $user->isSoulshriven = false;
         foreach ($linkedAccountsParsed as $linkedAccount) {
