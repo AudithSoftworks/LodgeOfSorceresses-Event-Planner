@@ -41,18 +41,6 @@ services:
         aliases:
           - basis.audith.org
         ipv4_address: 172.72.0.105
-#  selenium-chrome:
-#    container_name: selenium-chrome
-#    image: selenium/standalone-chrome-debug
-#    networks:
-#      default:
-#        ipv4_address: 172.72.0.106
-#  selenium-firefox:
-#    container_name: selenium-firefox
-#    image: selenium/standalone-firefox-debug
-#    networks:
-#      default:
-#        ipv4_address: 172.72.0.107
   php:
     container_name: php
     image: audithsoftworks/docker:php

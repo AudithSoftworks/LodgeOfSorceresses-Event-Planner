@@ -1,7 +1,6 @@
 branches:
   only:
     - master
-    - docker-build
 
 language: generic
 dist: xenial
@@ -38,6 +37,8 @@ before_script:
   - chmod +x ./storage/build/scripts/ci/build.sh;
 
 script:
+  - whoami
+  - echo $HOME
   - ./storage/build/scripts/ci/build.sh;
 
 before_deploy:

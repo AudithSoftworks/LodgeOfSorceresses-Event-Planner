@@ -27,7 +27,7 @@ docker-compose exec php bash -c "
 
     npm config set "@fortawesome:registry" https://npm.fontawesome.com/ && \
     npm config set "//npm.fontawesome.com/:_authToken" ${FONTAWESOME_AUTH_TOKEN}
-    npm install;
+    npm ci;
 
     cd \$WORKDIR;
     if [[ -d ./node_modules/.google-fonts/.git ]]; then
