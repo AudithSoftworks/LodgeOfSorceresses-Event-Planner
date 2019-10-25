@@ -47,6 +47,7 @@ services:
     volumes:
       - .:/var/www
       - ./storage/build/configs/crontabs:/var/spool/cron/crontabs
+      - $HOME/.npm:/home/audith/.npm
     working_dir: /var/www
     links:
       - mariadb
