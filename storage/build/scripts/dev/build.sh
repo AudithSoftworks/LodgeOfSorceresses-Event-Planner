@@ -14,20 +14,21 @@ docker-compose exec php bash -c "
     crontab -l;
     npm config set "@fortawesome:registry" https://npm.fontawesome.com/ && \
     npm config set "//npm.fontawesome.com/:_authToken" ${FONTAWESOME_AUTH_TOKEN}
-    npm install;
+    npm ci;
 
     cd \$WORKDIR;
-    if [[ -d ./node_modules/.google-fonts ]]; then
-        cd ./node_modules/.google-fonts && git pull origin master;
+    if [[ -d ~/.cache/google-fonts/.git ]]; then
+        cd ~/.cache/google-fonts && git pull origin master;
     else
-        git clone --depth=1 https://github.com/google/fonts.git ./node_modules/.google-fonts;
+        rm -rf ~/.cache/google-fonts;
+        git clone --depth=1 https://github.com/google/fonts.git ~/.cache/google-fonts;
     fi;
 
     cd \$WORKDIR;
     rm -rf ./public/fonts/*;
-    cp -r ./node_modules/.google-fonts/apache/opensans ./public/fonts/opensans;
-    cp -r ./node_modules/.google-fonts/apache/robotocondensed ./public/fonts/robotocondensed;
-    cp -r ./node_modules/.google-fonts/ofl/asapcondensed ./public/fonts/asapcondensed;
+    cp -r ~/.cache/google-fonts/apache/opensans ./public/fonts/opensans;
+    cp -r ~/.cache/google-fonts/apache/robotocondensed ./public/fonts/robotocondensed;
+    cp -r ~/.cache/google-fonts/ofl/asapcondensed ./public/fonts/asapcondensed;
     cp -r ./resources/fonts/oblivion ./public/fonts/oblivion;
     cp -r ./resources/fonts/oblivion-script ./public/fonts/oblivion-script;
     cp -r ./resources/fonts/planewalker ./public/fonts/planewalker;
