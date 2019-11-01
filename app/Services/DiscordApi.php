@@ -10,6 +10,8 @@ class DiscordApi extends AbstractApi
 {
     public const ROLE_SOULSHRIVEN = '499970844928507906';
 
+    public const ROLE_INITIATE_SHRIVEN = '592359837430579246';
+
     public const ROLE_NEOPHYTE_SHRIVEN = '591367441297309703';
 
     public const ROLE_PRACTICUS_SHRIVEN = '591367589540659200';
