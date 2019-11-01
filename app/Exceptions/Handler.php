@@ -68,8 +68,8 @@ class Handler extends ExceptionHandler
 
         if ($e instanceof AuthorizationException) {
             return $requestExpectsJson
-                ? response()->json(['message' => 'Access Denied!'], 403)
-                : redirect()->guest('/logout')->withErrors('Access Denied!');
+                ? response()->json(['message' => $e->getMessage()], 403)
+                : redirect()->guest('/logout')->withErrors($e->getMessage());
         }
 
         if ($request->method() !== 'GET' && $request->header('content-type') === 'application/x-www-form-urlencoded') {
