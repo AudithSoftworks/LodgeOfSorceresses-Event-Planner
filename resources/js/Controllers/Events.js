@@ -11,7 +11,7 @@ import { user } from '../vendor/data';
 
 class Events extends PureComponent {
     componentWillUnmount = () => {
-        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Unmount');
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
     };
 
     render = () => {
@@ -53,6 +53,7 @@ Events.propTypes = {
 };
 
 const mapStateToProps = state => ({
+    axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
     me: state.getIn(['me']),
     groups: state.getIn(['groups']),
     notifications: state.getIn(['notifications']),

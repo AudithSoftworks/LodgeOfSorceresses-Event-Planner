@@ -11,7 +11,7 @@ import { content, user } from '../../vendor/data';
 
 class EventForm extends PureComponent {
     componentWillUnmount = () => {
-        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Unmount');
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
     };
 
     UNSAFE_componentWillUpdate = nextProps => {
@@ -156,6 +156,7 @@ EventForm.propTypes = {
 };
 
 const mapStateToProps = state => ({
+    axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
     me: state.getIn(['me']),
     content: state.getIn(['content']),
     notifications: state.getIn(['notifications']),
