@@ -44,19 +44,30 @@ export const renderActionList = actionList => {
     return actionListRendered;
 };
 
-export const deleteMyCharacter = function(event) {
+export const deleteMyCharacter = function (event) {
     event.preventDefault();
     if (confirm("Are you sure you want to delete this character?")) {
         const currentTarget = event.currentTarget;
         const characterId = parseInt(currentTarget.getAttribute("data-id"));
         if (characterId) {
-            const { deleteMyCharacterAction, history } = this.props;
-            deleteMyCharacterAction(characterId).then(() => history.push("/@me/characters"));
+            const { deleteMyCharacterAction } = this.props;
+            deleteMyCharacterAction(characterId);
         }
     }
 };
 
-export const filter = function(event, typeUpdating) {
+export const rerankCharacter = function (event) {
+    event.preventDefault();
+    if (confirm("Are you sure you want to **Rerank** this Character?")) {
+        const currentTarget = event.currentTarget;
+        const characterId = parseInt(currentTarget.getAttribute("data-id"));
+        const action = currentTarget.getAttribute("data-action");
+        const { putCharacterAction } = this.props;
+        putCharacterAction(characterId, { action });
+    }
+};
+
+export const filter = function (event, typeUpdating) {
     const temp = Object.assign({}, this.state.filters);
     for (const [type, value] of Object.entries(temp)) {
         if (type === typeUpdating) {

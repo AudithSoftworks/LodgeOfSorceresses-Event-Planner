@@ -19,12 +19,12 @@ const myCharactersReducer = (state = null, action) => {
         return newState;
     } else if (action.type === getActions.TYPE_GET_CHARACTER_SUCCESS) {
         const newState = state === null ? [] : [...state];
-        const characterId = action.characterId;
-        const indexOfCharacterUpdatedInStore = newState.findIndex(c => c.id === parseInt(characterId));
+        const character = action.response.entities.characters[action.response.result];
+        const indexOfCharacterUpdatedInStore = newState.findIndex(c => c.id === character.id);
         if (indexOfCharacterUpdatedInStore !== -1) {
-            newState.splice(indexOfCharacterUpdatedInStore, 1, action.response.entities.characters[characterId]);
+            newState.splice(indexOfCharacterUpdatedInStore, 1, character);
         } else {
-            newState.push(action.response.entities.characters[characterId]);
+            newState.push(character);
         }
 
         return newState;
