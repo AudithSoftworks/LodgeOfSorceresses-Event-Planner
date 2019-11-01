@@ -50,7 +50,7 @@ class Item extends PureComponent {
                     </a>
                 ) : null,
             delete:
-                typeof deleteHandler === "function" && !character.approved_for_t1 && !character.approved_for_t2 && !character.approved_for_t3 && !character.approved_for_t4 ? (
+                typeof deleteHandler === "function" && character.approved_for_tier === 0 ? (
                     <Link to="#" onClick={deleteHandler} data-id={character.id} title="Delete Character">
                         <FontAwesomeIcon icon={faTrashAlt} />
                     </Link>
@@ -88,6 +88,9 @@ class Item extends PureComponent {
 
                     <dt>Role</dt>
                     <dd>{character.role}</dd>
+
+                    <dt>Content Clearance</dt>
+                    <dd>{character.approved_for_tier ? 'Tier-' + character.approved_for_tier : 'None'}</dd>
                 </dl>
                 <article className="col-lg-6">
                     <h3>Content Cleared</h3>

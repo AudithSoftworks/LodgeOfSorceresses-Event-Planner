@@ -5,6 +5,7 @@ use App\Models\Set;
 use App\Services\GuildRankAndClearance;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
+use Cloudinary;
 use GuzzleHttp\RequestOptions;
 
 class AnnounceDpsApprovalOnDiscord
@@ -17,7 +18,7 @@ class AnnounceDpsApprovalOnDiscord
 
     public function __construct()
     {
-        \Cloudinary::config([
+        Cloudinary::config([
             'cloud_name' => config('filesystems.disks.cloudinary.cloud_name'),
             'api_key' => config('filesystems.disks.cloudinary.key'),
             'api_secret' => config('filesystems.disks.cloudinary.secret'),
@@ -40,8 +41,8 @@ class AnnounceDpsApprovalOnDiscord
         $dpsParse = $event->getDpsParse();
         $parseAuthor = $event->getOwner();
         $character = $event->getCharacter()->refresh();
-        $playerClearance = app('guild.ranks.clearance')->calculateCumulativeClearanceOfUser($parseAuthor);
-        $characterClearance = app('guild.ranks.clearance')->determineClearanceOfCharacter($character);
+        $playerClearance = app('guild.ranks.clearance')->calculateClearanceLevelOfUser($parseAuthor);
+        $characterClearance = $character->approved_for_tier;
 
         /*--------------------------------------------
          | Me & Parse author mention names parsed

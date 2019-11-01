@@ -35,12 +35,7 @@ class Item extends PureComponent {
                     </Link>
                 ) : null,
             delete:
-                typeof onDeleteHandler === 'function' &&
-                me.id === character.owner.id &&
-                !character.approved_for_t1 &&
-                !character.approved_for_t2 &&
-                !character.approved_for_t3 &&
-                !character.approved_for_t4 ? (
+                typeof onDeleteHandler === 'function' && me.id === character.owner.id && character.approved_for_tier === 0 ? (
                     <Link to="#" onClick={onDeleteHandler} data-id={character.id} title="Delete Character">
                         <FontAwesomeIcon icon={faTrashAlt} />
                     </Link>
@@ -48,14 +43,8 @@ class Item extends PureComponent {
         };
 
         let rowBgColor = 'no_clearance';
-        if (character['approved_for_t4']) {
-            rowBgColor = 'tier_4';
-        } else if (character['approved_for_t3']) {
-            rowBgColor = 'tier_3';
-        } else if (character['approved_for_t2']) {
-            rowBgColor = 'tier_2';
-        } else if (character['approved_for_t1']) {
-            rowBgColor = 'tier_1';
+        if (character['approved_for_tier'] !== 0) {
+            rowBgColor = 'tier_' + character['approved_for_tier'];
         }
 
         return (

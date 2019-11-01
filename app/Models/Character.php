@@ -7,6 +7,9 @@ use App\Events\Character\CharacterDeleting;
 use App\Events\Character\CharacterUpdated;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
@@ -17,10 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $sets
  * @property string|null $skills
  * @property string|null $content
- * @property int $approved_for_t1
- * @property int $approved_for_t2
- * @property int $approved_for_t3
- * @property int $approved_for_t4
+ * @property int $approved_for_tier
  * @property int|null $last_submitted_dps_amount
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -31,10 +31,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method EloquentBuilder|Character newModelQuery()
  * @method EloquentBuilder|Character newQuery()
  * @method static EloquentBuilder|Character query()
- * @method EloquentBuilder|Character whereApprovedForT1($value)
- * @method EloquentBuilder|Character whereApprovedForT2($value)
- * @method EloquentBuilder|Character whereApprovedForT3($value)
- * @method EloquentBuilder|Character whereApprovedForT4($value)
+ * @method EloquentBuilder|Character whereApprovedForTier($value)
  * @method EloquentBuilder|Character whereClass($value)
  * @method EloquentBuilder|Character whereContent($value)
  * @method EloquentBuilder|Character whereCreatedAt($value)
@@ -72,7 +69,7 @@ class Character extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function owner(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
@@ -80,7 +77,7 @@ class Character extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function content(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function content(): BelongsToMany
     {
         return $this->belongsToMany(Content::class, 'characters_content', 'character_id', 'content_id')->withTimestamps();
     }
@@ -88,7 +85,7 @@ class Character extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function dpsParses(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function dpsParses(): HasMany
     {
         return $this->hasMany(DpsParse::class);
     }

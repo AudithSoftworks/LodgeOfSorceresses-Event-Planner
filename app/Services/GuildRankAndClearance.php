@@ -11,6 +11,7 @@ class GuildRankAndClearance
         'title' => 'Soulshriven',
         'ipsGroupId' => IpsApi::MEMBER_GROUPS_SOULSHRIVEN,
         'discordRole' => DiscordApi::ROLE_SOULSHRIVEN,
+        'discordShrivenRole' => DiscordApi::ROLE_SOULSHRIVEN,
         'isMember' => true,
         'isAdmin' => false,
     ];
@@ -19,7 +20,7 @@ class GuildRankAndClearance
         'title' => 'Initiate',
         'ipsGroupId' => IpsApi::MEMBER_GROUPS_INITIATE,
         'discordRole' => DiscordApi::ROLE_INITIATE,
-        'discordShrivenRole' => DiscordApi::ROLE_SOULSHRIVEN,
+        'discordShrivenRole' => DiscordApi::ROLE_INITIATE_SHRIVEN,
         'isMember' => true,
         'isAdmin' => false,
     ];
@@ -64,6 +65,7 @@ class GuildRankAndClearance
         'title' => 'Dominus Liminis',
         'ipsGroupId' => IpsApi::MEMBER_GROUPS_DOMINUS_LIMINIS,
         'discordRole' => DiscordApi::ROLE_DOMINUS_LIMINIS,
+        'discordShrivenRole' => null,
         'isMember' => true,
         'isAdmin' => false,
     ];
@@ -72,6 +74,7 @@ class GuildRankAndClearance
         'title' => 'Adeptus Exemptus',
         'ipsGroupId' => IpsApi::MEMBER_GROUPS_ADEPTUS_EXEMPTUS,
         'discordRole' => DiscordApi::ROLE_ADEPTUS_EXEMPTUS,
+        'discordShrivenRole' => null,
         'isMember' => true,
         'isAdmin' => false,
     ];
@@ -80,6 +83,7 @@ class GuildRankAndClearance
         'title' => 'Magister Templi',
         'ipsGroupId' => IpsApi::MEMBER_GROUPS_MAGISTER_TEMPLI,
         'discordRole' => DiscordApi::ROLE_MAGISTER_TEMPLI,
+        'discordShrivenRole' => null,
         'isMember' => true,
         'isAdmin' => true,
     ];
@@ -88,17 +92,20 @@ class GuildRankAndClearance
         'title' => 'Magister Templi',
         'ipsGroupId' => IpsApi::MEMBER_GROUPS_IPSISSIMUS,
         'discordRole' => DiscordApi::ROLE_MAGISTER_TEMPLI,
+        'discordShrivenRole' => null,
         'isMember' => true,
         'isAdmin' => true,
     ];
 
-    public const CLEARANCE_TIER_1 = 't1';
+    public const CLEARANCE_TIER_0 = 0;
 
-    public const CLEARANCE_TIER_2 = 't2';
+    public const CLEARANCE_TIER_1 = 1;
 
-    public const CLEARANCE_TIER_3 = 't3';
+    public const CLEARANCE_TIER_2 = 2;
 
-    public const CLEARANCE_TIER_4 = 't4';
+    public const CLEARANCE_TIER_3 = 3;
+
+    public const CLEARANCE_TIER_4 = 4;
 
     public const CLEARANCE_LEVELS = [
         self::CLEARANCE_TIER_1 => [
@@ -119,47 +126,17 @@ class GuildRankAndClearance
         ],
     ];
 
-    public function calculateCumulativeClearanceOfUser(User $user): ?string
+    public function calculateClearanceLevelOfUser(User $user): int
     {
-        $user->loadMissing(['characters']);
-        /** @var \App\Models\Character[] $characters */
-        $parseAuthorsCharacters = $user->characters()->get();
+        $tableDbConnection = app('db.connection')->table('characters');
+        $result = $tableDbConnection->selectRaw('MAX(approved_for_tier) AS max')->where('user_id', $user->id)->get('max')->first();
 
-        $topClearanceExisting = null;
-        foreach (self::CLEARANCE_LEVELS as $clearanceLevel => $clearanceLevelDetails) {
-            $parseAuthorHasThisClearanceInACharacter = false;
-            foreach ($parseAuthorsCharacters as $character) {
-                if ($character->{'approved_for_' . $clearanceLevel}) {
-                    $topClearanceExisting = $clearanceLevel;
-                    $parseAuthorHasThisClearanceInACharacter = true;
-                    break;
-                }
-            }
-            if (!$parseAuthorHasThisClearanceInACharacter) {
-                break;
-            }
-        }
-
-        return $topClearanceExisting;
-    }
-
-    public function determineClearanceOfCharacter(Character $character): ?string
-    {
-        $topClearanceExisting = null;
-        foreach (self::CLEARANCE_LEVELS as $clearanceLevel => $clearanceLevelDetails) {
-            if (!$character->{'approved_for_' . $clearanceLevel}) {
-                break;
-            }
-            $topClearanceExisting = $clearanceLevel;
-        }
-
-        return $topClearanceExisting;
+        return $result->max;
     }
 
     public function determineIfUserHasOtherRankedCharactersWithGivenRole(User $user, int $role): bool
     {
-        $user->loadMissing('characters');
-        $resultSet = $user->characters()->where('role', $role)->where('approved_for_t1', true)->first();
+        $resultSet = $user->characters()->where('role', $role)->where('approved_for_tier', '>', self::CLEARANCE_TIER_0)->first();
 
         return !empty($resultSet);
     }
@@ -178,16 +155,12 @@ class GuildRankAndClearance
             throw new UnexpectedValueException('Invalid class or role value encountered!');
         }
 
+        $character->approved_for_tier = self::CLEARANCE_TIER_0;
         foreach (self::CLEARANCE_LEVELS as $clearanceLevel => $clearanceLevelDetails) {
             if ($dpsParse->dps_amount < $dpsRequirement[$clearanceLevel]) {
-                if ($character->{'approved_for_' . $clearanceLevel}) {
-                    $character->{'approved_for_' . $clearanceLevel} = false;
-                }
-                continue;
+                break;
             }
-            if (!$character->{'approved_for_' . $clearanceLevel}) {
-                $character->{'approved_for_' . $clearanceLevel} = true;
-            }
+            $character->approved_for_tier = $clearanceLevel;
         }
         $character->last_submitted_dps_amount = $dpsParse->dps_amount;
         $character->save();
@@ -197,38 +170,21 @@ class GuildRankAndClearance
 
     public function promoteCharacter(Character $character): bool
     {
-        $promoted = null;
-        foreach (self::CLEARANCE_LEVELS as $clearanceLevel => $clearanceLevelDetails) {
-            if (!$character->{'approved_for_' . $clearanceLevel}) {
-                $character->{'approved_for_' . $clearanceLevel} = true;
-                $promoted = $clearanceLevel;
-                break;
-            }
+        if ($character->approved_for_tier === self::CLEARANCE_TIER_4) {
+            throw new UnexpectedValueException('Failed! Character already has the highest clearance level.');
         }
+        ++$character->approved_for_tier;
 
-        if (!$promoted) {
-            throw new UnexpectedValueException('Character Not Promoted! Maybe they already have the top clearance level?');
-        }
-
-        return $character->save();
+        return $character->isDirty() && $character->save();
     }
 
     public function demoteCharacter(Character $character): bool
     {
-        $demoted = null;
-        $clearanceLevelsInReverse = array_reverse(self::CLEARANCE_LEVELS);
-        foreach ($clearanceLevelsInReverse as $clearanceLevel => $clearanceLevelDetails) {
-            if ($character->{'approved_for_' . $clearanceLevel}) {
-                $character->{'approved_for_' . $clearanceLevel} = false;
-                $demoted = $clearanceLevel;
-                break;
-            }
+        if ($character->approved_for_tier === self::CLEARANCE_TIER_0) {
+            throw new UnexpectedValueException('Failed! Character already has the lowest clearance level.');
         }
+        --$character->approved_for_tier;
 
-        if (!$demoted) {
-            throw new UnexpectedValueException('Character Not Demoted! Maybe they already have the lowest clearance level?');
-        }
-
-        return $character->save();
+        return $character->isDirty() && $character->save();
     }
 }
