@@ -15,12 +15,10 @@ const getGroupsSuccessAction = response => ({
     response: response,
 });
 
-const getGroupsFailureAction = error => {
-    return {
-        type: TYPE_GET_GROUPS_FAILURE,
-        message: error.response.data.message || error.response.statusText || error.message,
-    };
-};
+const getGroupsFailureAction = error => ({
+    type: TYPE_GET_GROUPS_FAILURE,
+    message: (error.response ? error.response.data.message || error.response.statusText : null) || error.message,
+});
 
 const getGroupsAction = () => (dispatch, getState) => {
     dispatch(getGroupsSendAction());

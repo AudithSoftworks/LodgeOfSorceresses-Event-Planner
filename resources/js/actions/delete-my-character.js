@@ -23,7 +23,7 @@ const deleteMyCharacterSuccessAction = (response, message, characterId) => ({
 const deleteMyCharacterFailureAction = error => {
     return {
         type: TYPE_DELETE_MY_CHARACTER_FAILURE,
-        message: error.response.data.message || error.response.statusText || error.message,
+        message: (error.response ? error.response.data.message || error.response.statusText : null) || error.message,
     };
 };
 

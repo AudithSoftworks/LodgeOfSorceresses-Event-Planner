@@ -15,12 +15,10 @@ const getContentSuccessAction = response => ({
     response: response,
 });
 
-const getContentFailureAction = error => {
-    return {
-        type: TYPE_GET_CONTENT_FAILURE,
-        message: error.response.data.message || error.response.statusText || error.message,
-    };
-};
+const getContentFailureAction = error => ({
+    type: TYPE_GET_CONTENT_FAILURE,
+    message: (error.response ? error.response.data.message || error.response.statusText : null) || error.message,
+});
 
 const getContentAction = () => (dispatch, getState) => {
     dispatch(getContentSendAction());

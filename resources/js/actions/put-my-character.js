@@ -17,7 +17,7 @@ const putMyCharacterSendAction = (characterId, data) => ({
 
 const putMyCharacterFailureAction = error => ({
     type: TYPE_PUT_MY_CHARACTER_FAILURE,
-    message: error.response.data.message || error.response.statusText || error.message,
+    message: (error.response ? error.response.data.message || error.response.statusText : null) || error.message,
     errors: error.response.data.errors || {},
 });
 

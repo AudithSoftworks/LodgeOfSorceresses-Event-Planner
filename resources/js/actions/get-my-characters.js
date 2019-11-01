@@ -15,12 +15,10 @@ const getMyCharactersSuccessAction = response => ({
     response: response,
 });
 
-const getMyCharactersFailureAction = error => {
-    return {
-        type: TYPE_GET_MY_CHARACTERS_FAILURE,
-        message: error.response.data.message || error.response.statusText || error.message,
-    };
-};
+const getMyCharactersFailureAction = error => ({
+    type: TYPE_GET_MY_CHARACTERS_FAILURE,
+    message: (error.response ? error.response.data.message || error.response.statusText : null) || error.message,
+});
 
 const getMyCharactersAction = () => (dispatch, getState) => {
     dispatch(getMyCharactersSendAction());

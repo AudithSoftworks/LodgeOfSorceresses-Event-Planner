@@ -18,7 +18,7 @@ const getSkillsSuccessAction = response => ({
 const getSkillsFailureAction = error => {
     return {
         type: TYPE_GET_SKILLS_FAILURE,
-        message: error.response.data.message || error.response.statusText || error.message,
+        message: (error.response ? error.response.data.message || error.response.statusText : null) || error.message,
     };
 };
 

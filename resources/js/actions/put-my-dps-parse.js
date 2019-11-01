@@ -16,7 +16,7 @@ const putMyDpsParseSendAction = (characterId, parseId, data) => ({
 
 const putMyDpsParseFailureAction = error => ({
     type: TYPE_PUT_MY_DPS_PARSE_FAILURE,
-    message: error.response.data.message || error.response.statusText || error.message,
+    message: (error.response ? error.response.data.message || error.response.statusText : null) || error.message,
     errors: error.response.data.errors || {},
 });
 
