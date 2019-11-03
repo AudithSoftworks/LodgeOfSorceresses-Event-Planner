@@ -5,6 +5,7 @@ use App\Services\DiscordApi;
 use App\Services\GuildRankAndClearance;
 use App\Services\IpsApi;
 use App\Singleton\RoleTypes;
+use Cloudinary;
 use GuzzleHttp\RequestOptions;
 
 class RerankPlayerOnIpsAndDiscord
@@ -16,7 +17,7 @@ class RerankPlayerOnIpsAndDiscord
 
     public function __construct()
     {
-        \Cloudinary::config([
+        Cloudinary::config([
             'cloud_name' => config('filesystems.disks.cloudinary.cloud_name'),
             'api_key' => config('filesystems.disks.cloudinary.key'),
             'api_secret' => config('filesystems.disks.cloudinary.secret'),
@@ -37,7 +38,7 @@ class RerankPlayerOnIpsAndDiscord
 
         $discordApi = app('discord.api');
         $guildRankAndClearance = app('guild.ranks.clearance');
-        $newOverallClearanceForUser = $guildRankAndClearance->calculateCumulativeClearanceOfUser($parseAuthor);
+        $recalculatedClearanceLevelOfUser = $guildRankAndClearance->calculateClearanceLevelOfUser($parseAuthor);
         $userShouldRetainRoleTagOnDiscord = $guildRankAndClearance->determineIfUserHasOtherRankedCharactersWithGivenRole($parseAuthor, $this->character->role);
 
         /** @var null|\App\Models\UserOAuth $parseOwnersIpsAccount */
@@ -46,24 +47,24 @@ class RerankPlayerOnIpsAndDiscord
         $parseOwnersDiscordAccount = $parseAuthor->linkedAccounts()->where('remote_provider', 'discord')->first();
 
         if ($parseOwnersIpsAccount !== null) {
-            $this->rerankUserOnIps($parseOwnersIpsAccount, $newOverallClearanceForUser);
+            $this->rerankUserOnIps($parseOwnersIpsAccount, $recalculatedClearanceLevelOfUser);
         }
         $mentionedName = $parseAuthor->name;
         $isParseOwnerASoulshriven = true;
         if ($parseOwnersDiscordAccount !== null) {
             $mentionedName = '<@!' . $parseOwnersDiscordAccount->remote_id . '>';
-            $this->rerankUserOnDiscord($parseOwnersDiscordAccount, $newOverallClearanceForUser, $userShouldRetainRoleTagOnDiscord);
-            $this->announceRerankToThePlayerViaDiscordDm($discordApi, $parseOwnersDiscordAccount, $newOverallClearanceForUser);
+            $this->rerankUserOnDiscord($parseOwnersDiscordAccount, $recalculatedClearanceLevelOfUser, $userShouldRetainRoleTagOnDiscord);
+            $this->announceRerankToThePlayerViaDiscordDm($discordApi, $parseOwnersDiscordAccount, $recalculatedClearanceLevelOfUser);
             $isParseOwnerASoulshriven = in_array(DiscordApi::ROLE_SOULSHRIVEN, explode(',', $parseOwnersDiscordAccount->remote_secondary_groups), true);
         }
         if ($isParseOwnerASoulshriven === false) {
-            $this->announceRerankInOfficerChannelOnDiscord($discordApi, $mentionedName, $newOverallClearanceForUser);
+            $this->announceRerankInOfficerChannelOnDiscord($discordApi, $mentionedName, $recalculatedClearanceLevelOfUser);
         }
 
         return true;
     }
 
-    private function rerankUserOnIps(UserOAuth $remoteIpsUser, ?string $clearanceLevel): void
+    private function rerankUserOnIps(UserOAuth $remoteIpsUser, int $clearanceLevel): void
     {
         if (in_array($remoteIpsUser->remote_primary_group, [IpsApi::MEMBER_GROUPS_IPSISSIMUS, IpsApi::MEMBER_GROUPS_MAGISTER_TEMPLI], false)) {
             return;
@@ -83,7 +84,7 @@ class RerankPlayerOnIpsAndDiscord
         $remoteIpsUser->save();
     }
 
-    private function rerankUserOnDiscord(UserOAuth $remoteDiscordUser, ?string $clearanceLevel, bool $userShouldRetainRoleTagOnDiscord): void
+    private function rerankUserOnDiscord(UserOAuth $remoteDiscordUser, int $clearanceLevel, bool $userShouldRetainRoleTagOnDiscord): void
     {
         $usersDiscordRoles = explode(',', $remoteDiscordUser->remote_secondary_groups);
         $existingSpecialRoles = array_intersect($usersDiscordRoles, [
@@ -135,10 +136,10 @@ class RerankPlayerOnIpsAndDiscord
         }
     }
 
-    private function announceRerankToThePlayerViaDiscordDm(DiscordApi $discordApi, UserOAuth $remoteDiscordUser, ?string $playerClearance): void
+    private function announceRerankToThePlayerViaDiscordDm(DiscordApi $discordApi, UserOAuth $remoteDiscordUser, int $clearanceLevel): void
     {
-        $playerNewRankTitle = $playerClearance
-            ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['rank']['title']
+        $playerNewRankTitle = $clearanceLevel
+            ? GuildRankAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['title']
             : GuildRankAndClearance::RANK_INITIATE['title'];
 
         $dmChannel = $discordApi->createDmChannel($remoteDiscordUser->remote_id);
@@ -154,12 +155,12 @@ class RerankPlayerOnIpsAndDiscord
         $discordApi->reactToMessageInChannel($dmChannel['id'], $responseDecoded['id'], '☝');
     }
 
-    private function announceRerankInOfficerChannelOnDiscord(DiscordApi $discordApi, string $mentionedName, ?string $playerClearance): void
+    private function announceRerankInOfficerChannelOnDiscord(DiscordApi $discordApi, string $mentionedName, int $clearanceLevel): void
     {
         $officerChannelId = config('services.discord.channels.officer_hq');
 
         $mentionedOfficerGroup = '<@&' . GuildRankAndClearance::RANK_MAGISTER_TEMPLI['discordRole'] . '>';
-        $rankTitle = $playerClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['rank']['title'] : GuildRankAndClearance::RANK_INITIATE['title'];
+        $rankTitle = $clearanceLevel ? GuildRankAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['title'] : GuildRankAndClearance::RANK_INITIATE['title'];
 
         $discordApi->createMessageInChannel($officerChannelId, [
             RequestOptions::FORM_PARAMS => [

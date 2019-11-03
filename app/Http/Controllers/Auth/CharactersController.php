@@ -5,13 +5,10 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Character;
 use App\Models\User;
-use App\Singleton\ClassTypes;
-use App\Singleton\RoleTypes;
 use App\Traits\Characters\HasOrIsDpsParse;
 use App\Traits\Characters\IsCharacter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -171,10 +168,7 @@ class CharactersController extends Controller
         $this->authorize('user', User::class);
         $character = Character::query()
             ->whereUserId(app('auth.driver')->id())
-            ->whereApprovedForT1(false)
-            ->whereApprovedForT2(false)
-            ->whereApprovedForT3(false)
-            ->whereApprovedForT4(false)
+            ->whereApprovedForTier(0)
             ->whereId($characterId)
             ->first();
         if ($character) {

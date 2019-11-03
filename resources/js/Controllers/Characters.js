@@ -3,79 +3,35 @@ import React, { PureComponent } from "react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import deleteMyCharacterAction from "../actions/delete-my-character";
-import { errorsAction, successAction } from "../actions/notifications";
+import putCharacterAction from "../actions/put-character";
+import viewCharacterAction from "../actions/view-character";
 import Character from "../Components/Characters/Item";
 import Loading from "../Components/Loading";
 import Notification from "../Components/Notification";
-import { authorizeAdmin, authorizeUser, deleteMyCharacter } from "../helpers";
-import { getCharacter } from "../vendor/api";
-import { updateCharacter } from "../vendor/api/admin";
-import axios from "../vendor/axios";
-import { user } from "../vendor/data";
+import { authorizeAdmin, authorizeUser, deleteMyCharacter, rerankCharacter } from "../helpers";
+import { character, user } from "../vendor/data";
 
 class Characters extends PureComponent {
     constructor(props) {
         super(props);
-        this.state = {
-            selectedCharacter: null,
-        };
         this.deleteMyCharacter = deleteMyCharacter.bind(this);
+        this.rerankHandler = rerankCharacter.bind(this);
     }
 
     componentWillUnmount = () => {
-        this.cancelTokenSource && this.cancelTokenSource.cancel("Unmount");
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
     };
 
     componentDidMount = () => {
-        const { me, match } = this.props;
-        if (me && match.params.id) {
-            this.cancelTokenSource = axios.CancelToken.source();
+        const { character, me, match } = this.props;
+        if (me && match.params.id && character !== null && !Object.keys(character).length) {
             const characterId = match.params.id;
-            getCharacter(this.cancelTokenSource, characterId)
-                .then(character => {
-                    this.cancelTokenSource = null;
-                    this.setState({ selectedCharacter: character.entities.characters[characterId] });
-                })
-                .catch(error => {
-                    if (!axios.isCancel(error)) {
-                        const message = error.response.data.message || error.response.statusText || error.message;
-                        this.props.dispatch(errorsAction(message));
-                    }
-                });
-        }
-    };
-
-    rerankHandler = event => {
-        event.preventDefault();
-        if (confirm("Are you sure you want to **Rerank** this Character?")) {
-            this.cancelTokenSource = axios.CancelToken.source();
-            const currentTarget = event.currentTarget;
-            const characterId = parseInt(currentTarget.getAttribute("data-id"));
-            const action = currentTarget.getAttribute("data-action");
-            const { allCharacters } = this.state;
-            updateCharacter(this.cancelTokenSource, characterId, { action })
-                .then(response => {
-                    if (response.status === 200) {
-                        const message = response.data.message;
-                        getCharacter(this.cancelTokenSource, characterId).then(response => {
-                            delete allCharacters.entities.characters[characterId];
-                            allCharacters.entities.characters[response.result] = response.entities.characters[response.result];
-                            this.setState({ allCharacters });
-                            this.props.dispatch(successAction(message));
-                        });
-                    }
-                })
-                .catch(error => {
-                    if (!axios.isCancel(error)) {
-                        const message = error.response.data.message || error.response.statusText || error.message;
-                        this.props.dispatch(errorsAction(message));
-                    }
-                });
+            this.props.viewCharacterAction(characterId);
         }
     };
 
     render = () => {
-        const { me, groups, location, match } = this.props;
+        const { me, groups, character, location, match } = this.props;
         if (!me) {
             return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
         }
@@ -86,16 +42,17 @@ class Characters extends PureComponent {
             }
         }
 
-        const { selectedCharacter } = this.state;
-        if (!selectedCharacter) {
+        if (character !== null && !Object.keys(character).length) {
             return [<Loading message="Fetching Character information..." key="loading" />, <Notification key="notifications" />];
+        } else if (character === null) {
+            return <Redirect to='/@me/characters' />;
         }
 
         return [
             <Character
-                character={selectedCharacter}
+                character={character}
                 rerankHandler={authorizeAdmin(this.props) ? this.rerankHandler : null}
-                deleteHandler={me.id === selectedCharacter.owner.id ? this.deleteMyCharacter : null}
+                deleteHandler={me.id === character.owner.id ? this.deleteMyCharacter : null}
                 key="character"
             />,
             <Notification key="notifications" />,
@@ -111,17 +68,26 @@ Characters.propTypes = {
     axiosCancelTokenSource: PropTypes.object,
     me: user,
     groups: PropTypes.object,
+    character,
     notifications: PropTypes.array,
+
+    viewCharacterAction: PropTypes.func.isRequired,
+    putCharacterAction: PropTypes.func.isRequired,
+    deleteMyCharacterAction: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
+    axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
     me: state.getIn(["me"]),
     groups: state.getIn(["groups"]),
+    character: state.getIn(["selectedCharacter"]),
     notifications: state.getIn(["notifications"]),
 });
 
 const mapDispatchToProps = dispatch => ({
     dispatch,
+    viewCharacterAction: characterId => dispatch(viewCharacterAction(characterId)),
+    putCharacterAction: (characterId, data) => dispatch(putCharacterAction(characterId, data)),
     deleteMyCharacterAction: characterId => dispatch(deleteMyCharacterAction(characterId)),
 });
 

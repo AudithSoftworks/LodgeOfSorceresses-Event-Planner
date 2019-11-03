@@ -22,7 +22,7 @@ class CharacterForm extends PureComponent {
     roleOptions = [{ value: 1, label: 'Tank' }, { value: 2, label: 'Healer' }, { value: 3, label: 'Magicka DD' }, { value: 4, label: 'Stamina DD' }];
 
     componentWillUnmount = () => {
-        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Unmount');
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
     };
 
     UNSAFE_componentWillUpdate = nextProps => {
@@ -241,6 +241,7 @@ CharacterForm.propTypes = {
 };
 
 const mapStateToProps = state => ({
+    axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
     me: state.getIn(['me']),
     sets: state.getIn(['sets']),
     skills: state.getIn(['skills']),

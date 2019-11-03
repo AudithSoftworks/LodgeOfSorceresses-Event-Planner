@@ -175,7 +175,7 @@ class DpsParseForm extends PureComponent {
     }
 
     componentWillUnmount() {
-        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Unmount');
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
     }
 
     UNSAFE_componentWillUpdate = nextProps => {
@@ -307,6 +307,7 @@ DpsParseForm.propTypes = {
 };
 
 const mapStateToProps = state => ({
+    axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
     me: state.getIn(['me']),
     sets: state.getIn(['sets']),
     myCharacters: state.getIn(['myCharacters']),

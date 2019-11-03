@@ -7,7 +7,7 @@ const notificationsReducer = (state = [], action) => {
     const { type, key, message, errors, options, uuidToRemove } = action;
     listOfNotifications = listOfNotifications.filter(n => n.persist === true);
     if (type === actions.TYPE_TRIGGER_ERROR || type.indexOf('_FAILURE') !== -1) {
-        if (errors && typeof errors === 'object' && Object.keys(errors)) {
+        if (errors && typeof errors === 'object' && Object.keys(errors).length) {
             Object.values(errors).forEach(error => {
                 const notificationProps = { persist: true };
                 notificationProps.message = error;

@@ -40,9 +40,9 @@ trait IsUser
 
     public function calculateUserRank(User $user): void
     {
-        $clearanceLevel = app('guild.ranks.clearance')->calculateCumulativeClearanceOfUser($user);
+        $clearanceLevel = app('guild.ranks.clearance')->calculateClearanceLevelOfUser($user);
 
-        $user->clearanceLevel = !empty($clearanceLevel) ? GuildRankAndClearance::CLEARANCE_LEVELS[$clearanceLevel] : [];
+        $user->clearanceLevel = $clearanceLevel !== 0 ? GuildRankAndClearance::CLEARANCE_LEVELS[$clearanceLevel] : [];
         $user->makeVisible('clearanceLevel');
     }
 }

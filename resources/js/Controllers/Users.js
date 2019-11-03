@@ -35,7 +35,7 @@ class Users extends PureComponent {
     }
 
     componentWillUnmount = () => {
-        this.cancelTokenSource && this.cancelTokenSource.cancel("Unmount");
+        this.cancelTokenSource && this.cancelTokenSource.cancel('Request cancelled.');
     };
 
     componentDidMount = () => {

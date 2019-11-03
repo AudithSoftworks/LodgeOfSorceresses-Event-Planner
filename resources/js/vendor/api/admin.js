@@ -7,7 +7,7 @@ import * as schema from '../schema';
 
 library.add(faDiscord);
 
-export const updateCharacter = (cancelToken, characterId, data) => axios.post('/api/admin/characters/' + characterId, data, {
+export const putCharacter = (cancelToken, characterId, data) => axios.post('/api/admin/characters/' + characterId, data, {
     cancelToken: cancelToken.token,
     headers: {
         'X-HTTP-Method-Override': 'PUT',

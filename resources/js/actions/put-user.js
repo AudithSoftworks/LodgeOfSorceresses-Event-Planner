@@ -14,7 +14,7 @@ const putUserSendAction = data => ({
 
 const putUserFailureAction = error => ({
     type: TYPE_PUT_USER_FAILURE,
-    message: error.response.data.message || error.response.statusText || error.message,
+    message: (error.response ? error.response.data.message || error.response.statusText : null) || error.message,
     errors: error.response.data.errors || {},
 });
 

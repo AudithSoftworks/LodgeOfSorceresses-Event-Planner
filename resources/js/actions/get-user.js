@@ -18,7 +18,7 @@ const getUserSuccessAction = (response, message) => ({
 
 const getUserFailureAction = error => ({
     type: TYPE_GET_USER_FAILURE,
-    message: error.response.data.message || error.response.statusText || error.message,
+    message: (error.response ? error.response.data.message || error.response.statusText : null) || error.message,
 });
 
 const getUserAction = customMessage => (dispatch, getState) => {

@@ -1,7 +1,6 @@
 branches:
   only:
     - master
-    - docker-build
 
 language: generic
 dist: xenial
@@ -22,8 +21,10 @@ matrix:
 
 cache:
   directories:
+    - ~/.cache/Cypress
+    - ~/.cache/google-fonts
+    - ~/.npm
     - vendor
-    - node_modules/.google-fonts
 
 install:
   - chmod -R 0777 ./storage/logs
@@ -52,7 +53,7 @@ deploy:
     script: ./storage/build/scripts/ci/deploy.sh
     on:
       branch: master
-      condition: $DB_CONNECTION == 'mysql'
+      condition: $DB_CONNECTION == 'mysql' && $BRANCH == 'master'
 
 after_deploy:
-  - if [[ $DB_CONNECTION == 'mysql' ]]; then ssh lodgeofsorceresses@lodgeofsorceresses.com 'bash -s' < ./storage/build/scripts/ci/install.sh ${TRAVIS_JOB_ID}; fi
+  - if [[ $DB_CONNECTION == 'mysql' && $BRANCH == 'master' ]]; then ssh lodgeofsorceresses@lodgeofsorceresses.com 'bash -s' < ./storage/build/scripts/ci/install.sh ${TRAVIS_JOB_ID}; fi

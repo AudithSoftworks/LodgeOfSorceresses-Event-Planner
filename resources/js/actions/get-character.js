@@ -11,19 +11,16 @@ const getCharacterSendAction = characterId => ({
     characterId,
 });
 
-const getCharacterSuccessAction = (response, characterId, message) => ({
+const getCharacterSuccessAction = (response, message) => ({
     type: TYPE_GET_CHARACTER_SUCCESS,
-    response: response,
-    characterId,
+    response,
     message,
 });
 
-const getCharacterFailureAction = error => {
-    return {
-        type: TYPE_GET_CHARACTER_FAILURE,
-        message: error.response.data.message || error.response.statusText || error.message,
-    };
-};
+const getCharacterFailureAction = error => ({
+    type: TYPE_GET_CHARACTER_FAILURE,
+    message: (error.response ? error.response.data.message || error.response.statusText : null) || error.message,
+});
 
 const getCharacterAction = (characterId, customMessage) => (dispatch, getState) => {
     dispatch(getCharacterSendAction(characterId));
@@ -31,7 +28,7 @@ const getCharacterAction = (characterId, customMessage) => (dispatch, getState) 
     return api
         .getCharacter(axiosCancelTokenSource, characterId, dispatch)
         .then(response => {
-            dispatch(getCharacterSuccessAction(response, characterId, customMessage));
+            dispatch(getCharacterSuccessAction(response, customMessage));
         })
         .catch(error => {
             dispatch(getCharacterFailureAction(error));
