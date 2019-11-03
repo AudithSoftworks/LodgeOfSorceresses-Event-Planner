@@ -24,9 +24,9 @@ class Characters extends PureComponent {
 
     componentDidMount = () => {
         const { character, me, match } = this.props;
-        if (me && match.params.id && character !== null && !Object.keys(character).length) {
-            const characterId = match.params.id;
-            this.props.viewCharacterAction(characterId);
+        let characterIdParam = me && match.params.id ? parseInt(match.params.id) : null;
+        if (characterIdParam && (!Object.keys(character).length || character.id !== characterIdParam)) {
+            this.props.viewCharacterAction(characterIdParam);
         }
     };
 
@@ -42,7 +42,7 @@ class Characters extends PureComponent {
             }
         }
 
-        if (character !== null && !Object.keys(character).length) {
+        if (character !== null && (!Object.keys(character).length || character.id !== parseInt(match.params.id))) {
             return [<Loading message="Fetching Character information..." key="loading" />, <Notification key="notifications" />];
         } else if (character === null) {
             return <Redirect to='/@me/characters' />;
