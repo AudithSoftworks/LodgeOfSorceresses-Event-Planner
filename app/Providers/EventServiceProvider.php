@@ -39,6 +39,11 @@ class EventServiceProvider extends ServiceProvider
             Listeners\Cache\DeleteUserCache::class,
             Listeners\Cache\DeleteCharacterCache::class,
         ],
+        Events\Character\CharacterReset::class => [
+            Listeners\Cache\DeleteUserCache::class,
+            Listeners\Cache\DeleteCharacterCache::class,
+            Listeners\RerankPlayerOnIpsAndDiscord::class
+        ],
 
         Events\DpsParse\DpsParseSubmitted::class => [
             Listeners\Cache\DeleteCharacterCache::class,

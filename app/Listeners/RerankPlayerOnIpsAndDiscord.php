@@ -25,7 +25,7 @@ class RerankPlayerOnIpsAndDiscord
     }
 
     /**
-     * @param \App\Events\Character\GetCharacterInterface|\App\Events\User\GetUserInterface|\App\Events\DpsParse\GetDpsParsesInterface $event
+     * @param \App\Events\Character\CharacterNeedsRecacheInterface|\App\Events\User\UserNeedsRecacheInterface $event
      *
      * @return bool|int
      */
@@ -146,8 +146,9 @@ class RerankPlayerOnIpsAndDiscord
         $responseDecoded = $discordApi->createMessageInChannel($dmChannel['id'], [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
-                    'content' => 'Hello! Recent activities regarding your Characters (DPS approval, Tank/Healer clearance, Character deletion etc) on Planner triggered a Reranking!'
-                        . ' As a result of this, your current member rank was updated to **' . $playerNewRankTitle . '**',
+                    'content' => 'Hello! Planner triggered a Reranking of your account, due to the changes related to your character **' . $this->character->name . "**. Changes of:\n"
+                        . "* DPS approval,\n* Tank/Healer clearance,\n* Character deletion,\n* Rank reset etc\n"
+                        . 'type might have caused this. As a result of this, your current member rank was updated to **' . $playerNewRankTitle . '**',
                     'tts' => false,
                 ]),
             ]
