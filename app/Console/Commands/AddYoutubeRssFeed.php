@@ -31,6 +31,7 @@ class AddYoutubeRssFeed extends Command
         $feedUrl = 'https://www.youtube.com/feeds/videos.xml?channel_id=' . $channelId;
         if (!($xml = file_get_contents($feedUrl))) {
             $this->error('Channel (ID: ' . $channelId . ') is not a valid Youtube channel!');
+
             return;
         }
 
