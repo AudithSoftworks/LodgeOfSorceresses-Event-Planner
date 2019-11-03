@@ -96,6 +96,7 @@ class LoginController extends Controller
                 throw new UserNotMemberInDiscord('You need to join Lodge Discord server to continue! Please do so and come back afterwards.');
             }
             $discordUser['nick'] && $oauthTwoUser->nickname = $discordUser['nick'];
+            !empty($discordUser['roles']) && $oauthTwoUser->remoteSecondaryGroups = $discordUser['roles'];
         }
         if ($provider === 'ips' && $ipsUser = app('ips.api')->getUser($oauthTwoUser->getId())) {
             $oauthTwoUser->verified = !(bool)$ipsUser['validating'];
@@ -109,6 +110,10 @@ class LoginController extends Controller
             $ownerAccount = $owningOAuthAccount->owner;
             app('auth.driver')->login($ownerAccount);
             event(new LoggedIn($ownerAccount));
+
+            $owningOAuthAccount->remote_secondary_groups !== $oauthTwoUser->remoteSecondaryGroups
+            && $owningOAuthAccount->remote_secondary_groups = implode(',', $oauthTwoUser->getRemoteSecondaryGroups());
+            $owningOAuthAccount->isDirty() && $owningOAuthAccount->save() && app('cache.store')->forget('user-' . $ownerAccount->id);
 
             return true;
         }
@@ -164,6 +169,9 @@ class LoginController extends Controller
         $linkedAccount->email = $oauthTwoUser->email;
         $linkedAccount->avatar = $oauthTwoUser->avatar;
         $linkedAccount->remote_primary_group = $oauthTwoUser->getRemotePrimaryGroup();
+        if ($oauthTwoUserRemoteSecondaryGroups = $oauthTwoUser->getRemoteSecondaryGroups()) {
+            $linkedAccount->remote_secondary_groups = implode(',', $oauthTwoUserRemoteSecondaryGroups);
+        }
         $linkedAccount->nickname = $oauthTwoUser->getNickname();
         $linkedAccount->name = $oauthTwoUser->getName();
         $ownerAccount->linkedAccounts()->save($linkedAccount);
