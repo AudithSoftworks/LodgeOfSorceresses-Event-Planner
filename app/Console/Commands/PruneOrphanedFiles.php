@@ -2,7 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Models\DpsParse;
 use App\Models\File;
+use Cloudinary;
 use Illuminate\Console\Command;
 
 class PruneOrphanedFiles extends Command
@@ -34,12 +36,12 @@ class PruneOrphanedFiles extends Command
     public function __construct()
     {
         parent::__construct();
-        \Cloudinary::config([
+        Cloudinary::config([
             'cloud_name' => config('filesystems.disks.cloudinary.cloud_name'),
             'api_key' => config('filesystems.disks.cloudinary.key'),
             'api_secret' => config('filesystems.disks.cloudinary.secret'),
         ]);
-        $this->cloudinaryApi = new \Cloudinary\Api();
+        $this->cloudinaryApi = new Cloudinary\Api();
     }
 
     /**
@@ -50,6 +52,9 @@ class PruneOrphanedFiles extends Command
      */
     public function handle(): bool
     {
+        // Get rid of soft-deleted DpsParses.
+        DpsParse::query()->onlyTrashed()->forceDelete();
+
         $hashesToDelete = [];
 
         /** @var File[] $files */
@@ -78,7 +83,7 @@ class PruneOrphanedFiles extends Command
                 $this->cloudinaryApi->delete_resources($chunk);
                 $this->info('Pruned Chunk #' . $id . ' with ' . count($chunk) . ' files');
                 File::destroy(collect($hashesToDelete));
-            } catch (\Cloudinary\Api\GeneralError $e) {
+            } catch (Cloudinary\Api\GeneralError $e) {
                 $this->error('Failed to prune Chunk #' . $id . ' with ' . count($chunk) . ' files: ' . $e->getMessage());
             }
         }
