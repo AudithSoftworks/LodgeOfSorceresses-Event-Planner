@@ -66,14 +66,15 @@ class CharactersController extends Controller
             throw new ValidationException($validator);
         }
 
-        /** @var \App\Models\User $me */
-        $me = app('auth.driver')->user();
-        if ($me->id !== $characterId) {
-            throw new AuthorizationException('Self-ranking disabled!');
+        if (!($character = Character::query()->with('owner')->find($characterId))) {
+            throw new ModelNotFoundException('Character not found!');
         }
 
-        if (!($character = Character::query()->find($characterId))) {
-            throw new ModelNotFoundException('Character not found!');
+        $user = $character->owner;
+        /** @var \App\Models\User $me */
+        $me = app('auth.driver')->user();
+        if ($me->id === $user->id) {
+            throw new AuthorizationException('Self-ranking disabled!');
         }
 
         if ($character->role === RoleTypes::ROLE_MAGICKA_DD || $character->role === RoleTypes::ROLE_STAMINA_DD) {
