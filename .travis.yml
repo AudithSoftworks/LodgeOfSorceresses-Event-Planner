@@ -3,7 +3,7 @@ branches:
     - master
 
 language: generic
-dist: xenial
+dist: bionic
 services:
   - docker
 
