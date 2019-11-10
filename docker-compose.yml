@@ -48,6 +48,7 @@ services:
       - .:/var/www
       - ./storage/build/configs/crontabs:/var/spool/cron/crontabs
       - $HOME/.npm:/home/audith/.npm
+      - $HOME/.cache:/home/audith/.cache
     working_dir: /var/www
     links:
       - mariadb
@@ -66,6 +67,18 @@ services:
     networks:
       default:
         ipv4_address: 172.72.0.108
+  cypress:
+    container_name: cypress
+    image: cypress/browsers:node12.0.0-chrome73-ff68
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+    links:
+      - nginx
+    extra_hosts:
+      - "planner.lodgeofsorceresses.test:172.72.0.105"
+    environment:
+      CYPRESS_baseUrl: http://planner.lodgeofsorceresses.test
 volumes:
   db-data: {}
 networks:
