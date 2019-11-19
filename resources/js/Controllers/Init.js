@@ -113,7 +113,7 @@ class Init extends PureComponent {
         } else {
             if (groups === null) {
                 return [<Loading key="loading" message="Fetching groups data..." />, <Notification key="notifications" />];
-            } else if (me.linkedAccountsParsed.discord && !authorizeUser(this.props)) {
+            } else if (me.linkedAccountsParsed && me.linkedAccountsParsed.discord && !authorizeUser(this.props)) {
                 this.renderPrechecksFailedNotification();
             } else if (authorizeUser(this.props)) {
                 if (!sets) {
