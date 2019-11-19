@@ -17,8 +17,6 @@ test -f .env || sed \
     -e "s/PMG_API_TOKEN=.*/PMG_API_TOKEN=${PMG_API_TOKEN}/g" \
     .env.example | tee .env > /dev/null 2>&1;
 
-docker-compose exec nginx bash -c "cat /etc/hosts | sed s/localhost/localhost\ planner.lodgeofsorceresses.test/g | tee /etc/hosts > /dev/null 2>&1";
-
 docker-compose exec php bash -c "
     export NPM_CONFIG_LOGLEVEL=warn;
 
@@ -76,6 +74,7 @@ docker-compose exec php bash -c "
     ./artisan db:seed;
     ./artisan pmg:skills;
     ./artisan pmg:sets;
+    ./artisan fixture:populate;
 
     ./vendor/bin/phpunit --debug --verbose --testsuite='Integration';
 #    ./artisan dusk -vvv;
