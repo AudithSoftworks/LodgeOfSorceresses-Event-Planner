@@ -81,4 +81,5 @@ docker-compose exec php bash -c "
 #    ./artisan dusk -vvv;
 #    ./vendor/bin/phpcov merge ./storage/coverage --clover ./storage/coverage/coverage-clover-merged.xml
 #    ./vendor/bin/phpunit --debug --verbose --no-coverage --testsuite='SauceWebDriver';
+    npx cypress run --record;
 ";

@@ -1,0 +1,82 @@
+{
+    "SOULSHRIVEN": {
+        "title": "Soulshriven",
+        "ipsGroupId": 3,
+        "discordRole": "499970844928507906",
+        "discordShrivenRole": "499970844928507906",
+        "isMember": true,
+        "isAdmin": false
+    },
+    "INITIATE": {
+        "title": "Initiate",
+        "ipsGroupId": 28,
+        "discordRole": "465486256810360832",
+        "discordShrivenRole": "592359837430579246",
+        "isMember": true,
+        "isAdmin": false
+    },
+    "NEOPHYTE": {
+        "title": "Neophyte",
+        "ipsGroupId": 8,
+        "discordRole": "465486430932566017",
+        "discordShrivenRole": "591367441297309703",
+        "isMember": true,
+        "isAdmin": false
+    },
+    "PRACTICUS": {
+        "title": "Practicus",
+        "ipsGroupId": 19,
+        "discordRole": "465486736269639680",
+        "discordShrivenRole": "591367589540659200",
+        "isMember": true,
+        "isAdmin": false
+    },
+    "ADEPTUS_MINOR": {
+        "title": "Adeptus Minor",
+        "ipsGroupId": 20,
+        "discordRole": "479643035639087106",
+        "discordShrivenRole": "591367585694613506",
+        "isMember": true,
+        "isAdmin": false
+    },
+    "ADEPTUS_MAJOR": {
+        "title": "Adeptus Major",
+        "ipsGroupId": 21,
+        "discordRole": "460567365038637056",
+        "discordShrivenRole": "591367721565028392",
+        "isMember": true,
+        "isAdmin": false
+    },
+    "DOMINUS_LIMINIS": {
+        "title": "Dominus Liminis",
+        "ipsGroupId": 22,
+        "discordRole": "479642604598722573",
+        "discordShrivenRole": null,
+        "isMember": true,
+        "isAdmin": false
+    },
+    "ADEPTUS_EXEMPTUS": {
+        "title": "Adeptus Exemptus",
+        "ipsGroupId": 25,
+        "discordRole": "534135978093182977",
+        "discordShrivenRole": null,
+        "isMember": true,
+        "isAdmin": false
+    },
+    "MAGISTER_TEMPLI": {
+        "title": "Magister Templi",
+        "ipsGroupId": 6,
+        "discordRole": "230086456943706113",
+        "discordShrivenRole": null,
+        "isMember": true,
+        "isAdmin": true
+    },
+    "IPSISSIMUS": {
+        "title": "Magister Templi",
+        "ipsGroupId": 4,
+        "discordRole": "230086456943706113",
+        "discordShrivenRole": null,
+        "isMember": true,
+        "isAdmin": true
+    }
+}

@@ -2,7 +2,9 @@ branches:
   only:
     - master
 
-language: generic
+language: node_js
+node_js:
+  - 12
 dist: bionic
 services:
   - docker
@@ -20,10 +22,10 @@ matrix:
         - DB_USERNAME=postgres
 
 cache:
+  npm: true
   directories:
     - ~/.cache/Cypress
     - ~/.cache/google-fonts
-    - ~/.npm
     - vendor
 
 install:
@@ -33,7 +35,7 @@ install:
   - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH"
   - export MYUID=$(id -u) MYGID=$(id -g);
   - docker-compose pull && docker-compose up -d && docker-compose logs php && docker-compose ps;
-  - echo $(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx) planner.lodgeofsorceresses.dev | sudo tee -a /etc/hosts > /dev/null 2>&1;
+  - echo $(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx) planner.lodgeofsorceresses.test | sudo tee -a /etc/hosts > /dev/null 2>&1;
 
 before_script:
   - chmod +x ./storage/build/scripts/ci/build.sh;

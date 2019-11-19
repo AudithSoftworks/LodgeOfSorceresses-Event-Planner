@@ -7,13 +7,13 @@ class IpsOauthAccount extends PureComponent {
         const { me } = this.props;
 
         return me.linkedAccountsParsed.ips ? (
-            <article className='jumbotron success ml-2 mr-2'>
+            <article className='jumbotron success ml-2 mr-2' data-cy='account-status-element'>
                 <h3>Your Lodge Forum Account:</h3>
                 <p>Linked</p>
                 <small className='half-transparent'>If you have problems with your Forum account, please contact the guild leader on Discord for assistance.</small>
             </article>
         ) : (
-            <article className='jumbotron warning ml-2 mr-2'>
+            <article className='jumbotron warning ml-2 mr-2' data-cy='account-status-element'>
                 <h3>Your Lodge Forum Account:</h3>
                 <p>Not Linked</p>
                 <small>If you are an actual member of Lodge in-game, you need to register at Lodge Forum as well (by logging in via Discord).</small>
