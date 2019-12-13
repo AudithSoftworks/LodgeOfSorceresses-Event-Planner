@@ -1,5 +1,6 @@
 .*
 /cypress/fixtures/.*.json
+/cypress/screenshots/*
 /cypress/videos/*
 /node_modules
 /public/build

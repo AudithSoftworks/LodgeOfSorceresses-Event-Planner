@@ -7,9 +7,9 @@ import { Link, Redirect } from "react-router-dom";
 import deleteMyCharacterAction from "../../actions/delete-my-character";
 import { infosAction } from "../../actions/notifications";
 import List from "../../Components/Characters/List";
-import { authorizeUser, deleteMyCharacter, renderActionList } from "../../helpers";
-import { characters, user } from "../../vendor/data";
 import Notification from "../../Components/Notification";
+import { deleteMyCharacter, renderActionList } from "../../helpers";
+import { characters, user } from "../../vendor/data";
 
 class Characters extends PureComponent {
     constructor(props) {
@@ -46,12 +46,9 @@ class Characters extends PureComponent {
     };
 
     render = () => {
-        const { me, groups, location, myCharacters } = this.props;
-        if (!me || !myCharacters) {
+        const { me, location, myCharacters } = this.props;
+        if (!myCharacters) {
             return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
-        }
-        if (me && groups && !authorizeUser(this.props, true)) {
-            return <Redirect to="/" />;
         }
 
         const actionList = {
@@ -98,7 +95,6 @@ Characters.propTypes = {
 
     axiosCancelTokenSource: PropTypes.object,
     me: user,
-    groups: PropTypes.object,
     myCharacters: characters,
     notifications: PropTypes.array,
 
@@ -108,7 +104,6 @@ Characters.propTypes = {
 const mapStateToProps = state => ({
     axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
     me: state.getIn(["me"]),
-    groups: state.getIn(["groups"]),
     myCharacters: state.getIn(["myCharacters"]),
     notifications: state.getIn(["notifications"]),
 });

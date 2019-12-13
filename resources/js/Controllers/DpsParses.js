@@ -7,9 +7,9 @@ import { Link, Redirect } from 'react-router-dom';
 import deleteMyDpsParseAction from '../actions/delete-my-dps-parse';
 import { infosAction } from '../actions/notifications';
 import List from '../Components/DpsParses/List';
-import { authorizeUser, renderActionList } from '../helpers';
-import { characters, user } from '../vendor/data';
 import Notification from '../Components/Notification';
+import { renderActionList } from '../helpers';
+import { characters } from '../vendor/data';
 
 class DpsParses extends PureComponent {
     componentWillUnmount() {
@@ -60,12 +60,9 @@ class DpsParses extends PureComponent {
     };
 
     render = () => {
-        const { groups, me } = this.props;
-        if (!me) {
+        const { myCharacters } = this.props;
+        if (!myCharacters) {
             return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
-        }
-        if (me && groups && !authorizeUser(this.props, true)) {
-            return <Redirect to='/' />;
         }
         const character = this.getCharacter();
         if (!character) {
@@ -106,8 +103,6 @@ DpsParses.propTypes = {
     history: PropTypes.object.isRequired,
 
     axiosCancelTokenSource: PropTypes.object,
-    me: user,
-    groups: PropTypes.object,
     myCharacters: characters,
     notifications: PropTypes.array,
 
@@ -116,8 +111,6 @@ DpsParses.propTypes = {
 
 const mapStateToProps = state => ({
     axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
-    me: state.getIn(['me']),
-    groups: state.getIn(['groups']),
     myCharacters: state.getIn(['myCharacters']),
     notifications: state.getIn(['notifications']),
 });

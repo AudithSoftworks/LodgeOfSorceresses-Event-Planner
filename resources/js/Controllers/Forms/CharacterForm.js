@@ -213,8 +213,8 @@ class CharacterForm extends PureComponent {
     };
 
     render = () => {
-        const { me } = this.props;
-        if (!me) {
+        const { myCharacters } = this.props;
+        if (!myCharacters) {
             return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
         const character = this.getCharacter();
@@ -229,7 +229,6 @@ CharacterForm.propTypes = {
     history: PropTypes.object.isRequired,
 
     axiosCancelTokenSource: PropTypes.object,
-    me: user,
     sets,
     skills,
     content,
@@ -242,7 +241,6 @@ CharacterForm.propTypes = {
 
 const mapStateToProps = state => ({
     axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
-    me: state.getIn(['me']),
     sets: state.getIn(['sets']),
     skills: state.getIn(['skills']),
     content: state.getIn(['content']),

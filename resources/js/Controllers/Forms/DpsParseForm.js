@@ -276,8 +276,8 @@ class DpsParseForm extends PureComponent {
     };
 
     render = () => {
-        const { me } = this.props;
-        if (!me) {
+        const { myCharacters } = this.props;
+        if (!myCharacters) {
             return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
         const character = this.getCharacter();
@@ -295,7 +295,6 @@ DpsParseForm.propTypes = {
     history: PropTypes.object.isRequired,
 
     axiosCancelTokenSource: PropTypes.object,
-    me: user,
     sets: PropTypes.array,
     myCharacters: characters,
     notifications: PropTypes.array,
@@ -308,7 +307,6 @@ DpsParseForm.propTypes = {
 
 const mapStateToProps = state => ({
     axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
-    me: state.getIn(['me']),
     sets: state.getIn(['sets']),
     myCharacters: state.getIn(['myCharacters']),
     notifications: state.getIn(['notifications']),

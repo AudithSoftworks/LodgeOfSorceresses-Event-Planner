@@ -184,13 +184,9 @@ class Users extends PureComponent {
     };
 
     render = () => {
-        const { me, groups, location, match } = this.props;
+        const { me, location, match } = this.props;
         if (!me) {
             return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
-        }
-
-        if (me && groups && !authorizeUser(this.props, true)) {
-            return <Redirect to="/" />;
         }
 
         const { allUsers, user } = this.state;
@@ -214,13 +210,11 @@ Users.propTypes = {
 
     axiosCancelTokenSource: PropTypes.object,
     me: user,
-    groups: PropTypes.object,
     notifications: PropTypes.array,
 };
 
 const mapStateToProps = state => ({
     me: state.getIn(["me"]),
-    groups: state.getIn(["groups"]),
     notifications: state.getIn(["notifications"]),
 });
 

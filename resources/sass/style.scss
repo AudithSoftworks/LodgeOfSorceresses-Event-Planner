@@ -4,20 +4,23 @@
 @import "global/fonts/asapcondensed";
 @import "global/fonts/opensans";
 @import "global/fonts/planewalker";
+@import "global/buttons";
 @import "global/notifications";
 
 //noinspection CssUnknownTarget
 body {
-    background: black url('/images/bg-sm.jpg') fixed no-repeat 50% 0;
-    background-size: auto 100%;
-    @include media-breakpoint-up(sm) {
-        background-size: 100% auto;
-    }
-    @include media-breakpoint-up(md) {
-        background-image: url('/images/bg-md.jpg');
-    }
-    @include media-breakpoint-up(lg) {
-        background-image: url('/images/bg-xl.jpg');
+    &[data-initialized="true"] {
+        background: black url('/images/bg-sm.jpg') fixed no-repeat 50% 0;
+        background-size: auto 100%;
+        @include media-breakpoint-up(sm) {
+            background-size: 100% auto;
+        }
+        @include media-breakpoint-up(md) {
+            background-image: url('/images/bg-md.jpg');
+        }
+        @include media-breakpoint-up(lg) {
+            background-image: url('/images/bg-xl.jpg');
+        }
     }
     font-size: 16px;
 
