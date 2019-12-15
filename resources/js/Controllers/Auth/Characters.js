@@ -1,4 +1,4 @@
-import { faTachometerAlt, faUserPlus } from "@fortawesome/pro-duotone-svg-icons";
+import { faTachometerAlt, faUserPlus } from "@fortawesome/pro-light-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PropTypes from "prop-types";
 import React, { Fragment, PureComponent } from "react";

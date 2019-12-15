@@ -1,4 +1,4 @@
-import { faCalendarPlus } from '@fortawesome/pro-duotone-svg-icons';
+import { faCalendarPlus } from '@fortawesome/pro-light-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';

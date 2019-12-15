@@ -29,9 +29,9 @@ body {
     }
 
     &.theme-default {
+        --fa-primary-color: #f7b697;
+        --fa-secondary-color: #a47b63;
         --fa-secondary-opacity: 1.0;
-        --fa-primary-color: #AC7863;
-        --fa-secondary-color: #F4B75C;
     }
 
     > main.container {
@@ -59,7 +59,7 @@ body {
 
             > ul.ne-corner {
                 position: absolute;
-                top: 0;
+                top: 3px;
                 right: $grid-gutter-width / 2;
                 display: flex;
                 flex-direction: row;
@@ -69,6 +69,8 @@ body {
                     margin-left: 10px;
 
                     > a, > button {
+                        font-size: 1.2rem;
+
                         &.success {
                             color: $success;
                         }
@@ -78,19 +80,13 @@ body {
                         }
                     }
 
-                    > a {
-                        font-size: 1.75rem;
-                    }
-
                     > button {
                         outline: none;
-                        background-color: #edffed;
-                        border: #aaffaa 1px solid;
-                        font-size: 1rem;
+                        border: none;
+                        padding: 0;
 
                         &.inactive {
-                            background-color: #ffeded;
-                            border: #ffaaaa 1px solid;
+                            opacity: 0.5;
                         }
                     }
                 }
@@ -124,19 +120,19 @@ body {
                             vertical-align: top;
                             padding: 3px;
 
-                            > ul.actionList {
-                                position: absolute;
-                                right: 3px;
-                                top: 1px;
-                                display: none;
+                            > ul.action-list {
+                                display: flex;
+                                //@media (hover: hover) {
+                                //    display: none;
+                                //}
                                 margin: 0;
                                 list-style: none;
                                 flex-direction: row;
-                                justify-content: space-between;
+                                justify-content: flex-end;
 
                                 > li {
-                                    margin-left: $grid-gutter-width / 4;
-                                    font-size: 1.25rem;
+                                    margin-left: $grid-gutter-width / 2;
+                                    font-size: 1.1rem;
                                 }
                             }
 
@@ -146,7 +142,7 @@ body {
                         }
 
                         &:hover {
-                            ul.actionList {
+                            ul.action-list {
                                 display: flex;
                             }
                         }

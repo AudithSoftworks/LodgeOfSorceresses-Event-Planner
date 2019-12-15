@@ -4,7 +4,7 @@ import(
     '../../../sass/_pending_dps_parses.scss'
 );
 
-import { faUserCheck, faUserTimes } from '@fortawesome/pro-duotone-svg-icons';
+import { faUserCheck, faUserTimes } from '@fortawesome/pro-light-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
@@ -146,7 +146,7 @@ class DpsParses extends PureComponent {
                     </a>
                 </td>
                 <td>
-                    <ul className="actionList">{actionListRendered}</ul>
+                    <ul className="action-list">{actionListRendered}</ul>
                 </td>
             </tr>
         );

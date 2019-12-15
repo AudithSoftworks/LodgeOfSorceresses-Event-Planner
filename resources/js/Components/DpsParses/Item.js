@@ -40,7 +40,7 @@ class Item extends PureComponent {
                     <a href={dpsParse.superstar_file_hash.large} target="_blank">
                         <img src={dpsParse.superstar_file_hash.thumbnail} alt="Superstar screenshot" />
                     </a>
-                    <ul className="actionList">{renderActionList(dpsParse.actionList)}</ul>
+                    <ul className="action-list">{renderActionList(dpsParse.actionList)}</ul>
                 </td>
             </tr>
         );

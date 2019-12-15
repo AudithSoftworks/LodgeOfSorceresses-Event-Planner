@@ -91,7 +91,7 @@ class Header extends Component {
         );
 
         const memberBarFirstSection = me ? (
-            <li className="chevron">
+            <li className="chevron" aria-haspopup='true'>
                 <figure>
                     <img alt={email || 'The Soulless One'} src={me && me.avatar ? me.avatar : '/images/touch-icon-ipad.png'} />
                     <figcaption>{email || 'The Soulless One'}</figcaption>

@@ -36,10 +36,10 @@ table.character-list-table {
                         width: 30%;
                     }
                     &:nth-of-type(2) {
-                        width: 57%;
+                        width: 52%;
                     }
                     &:nth-of-type(3) {
-                        width: 13%;
+                        width: 18%;
                     }
                 }
 
@@ -61,32 +61,30 @@ table.character-list-table {
     > tbody {
         > tr {
             > td {
-                @include media-breakpoint-up(lg) {
-                    vertical-align: middle !important;
-                }
+                vertical-align: middle !important;
             }
         }
     }
 }
 
 tr {
-    &.no_clearance {
+    &.no-clearance {
         background-color: rgba(150, 150, 150, 0.2);
     }
 
-    &.tier_1 {
+    &.tier-1 {
         background-color: rgba(46, 204, 113, 0.2);
     }
 
-    &.tier_2 {
+    &.tier-2 {
         background-color: rgba(52, 152, 219, 0.2);
     }
 
-    &.tier_3 {
+    &.tier-3 {
         background-color: rgba(155, 89, 182, 0.2);
     }
 
-    &.tier_4 {
+    &.tier-4 {
         background-color: rgba(230, 126, 34, 0.2);
     }
 }

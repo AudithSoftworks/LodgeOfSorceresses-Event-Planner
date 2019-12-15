@@ -1,4 +1,4 @@
-import { faSunrise, faSunset, faThList, faTrashAlt } from "@fortawesome/pro-duotone-svg-icons";
+import { faSunrise, faSunset, faChevronCircleLeft, faTrashAlt } from "@fortawesome/pro-light-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PropTypes from "prop-types";
 import React, { PureComponent } from "react";
@@ -34,7 +34,7 @@ class Item extends PureComponent {
         const actionList = {
             return: (
                 <Link to={"/users/" + character.owner.id} title="Back to User">
-                    <FontAwesomeIcon icon={faThList} />
+                    <FontAwesomeIcon icon={faChevronCircleLeft} />
                 </Link>
             ),
             promote:
