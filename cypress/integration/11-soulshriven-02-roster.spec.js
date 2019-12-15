@@ -42,7 +42,5 @@ describe('Dashboard Screen for Soulshriven user', function () {
         cy.get('table.character-list-table > tbody > tr.no-clearance').should('have.length', 1);
         cy.get('table.character-list-table > tbody > tr.tier-4').should('have.length', 4);
         cy.get('table.character-list-table > tbody > tr:first-of-type > td > ul.action-list').should('be.hidden');
-        cy.get('table.character-list-table > tbody > tr.no-clearance').click('right', {force: true});
-        cy.get('table.character-list-table > tbody > tr:first-of-type > td > ul.action-list').should('be.visible');
     });
 });
