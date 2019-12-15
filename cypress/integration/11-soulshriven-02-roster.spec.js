@@ -5,7 +5,7 @@ import { stubFetchingUsers } from "../fixtures/helpers/users";
 import { stubFetchingUserHeiims } from "../fixtures/helpers/users/heiims";
 import { stubSoulshrivenUserAfterNameChange } from "../fixtures/helpers/users/soulshriven-after-name-change";
 
-describe('Dashboard Screen for Soulshriven user', function () {
+describe('Roster Screen for Soulshriven user', function () {
     it('visits Roster page', function () {
         cy.server();
         stubSoulshrivenUserAfterNameChange(cy);
@@ -41,6 +41,6 @@ describe('Dashboard Screen for Soulshriven user', function () {
         cy.get('table.character-list-table > tbody > tr').should('have.length', 5);
         cy.get('table.character-list-table > tbody > tr.no-clearance').should('have.length', 1);
         cy.get('table.character-list-table > tbody > tr.tier-4').should('have.length', 4);
-        cy.get('table.character-list-table > tbody > tr:first-of-type > td > ul.action-list').should('be.hidden');
+        cy.get('table.character-list-table > tbody > tr:first-of-type > td > ul.action-list').should('be.visible');
     });
 });

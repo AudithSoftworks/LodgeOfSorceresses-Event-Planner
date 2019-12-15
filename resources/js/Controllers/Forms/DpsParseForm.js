@@ -216,6 +216,7 @@ class DpsParseForm extends PureComponent {
                     <b>Usage tips:</b>
                     <ul>
                         <li>Please use 21-million-HP Trial Dummy for parsing.</li>
+                        <li>Don't submit parses older than 2 weeks!</li>
                         <li>Make sure you have minimum 5850 Penetration in your parse screenshots. Penetration cannot go lower than this number ever!</li>
                         <li>Every new parse will renew your clearance level, i.e. sending lower DPS numbers can revoke its clearance and demote your account.</li>
                         <li>When creating a Parse, include only the sets used for that particular parse, removing everything else.</li>
