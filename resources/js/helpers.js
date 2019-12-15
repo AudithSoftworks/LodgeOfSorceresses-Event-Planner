@@ -1,7 +1,7 @@
 import React from "react";
 
 export const authorizeAdmin = ({ me, groups }) => {
-    if (!me || !groups || !me.linkedAccountsParsed.ips) {
+    if (!me || !groups || !me.linkedAccountsParsed || !me.linkedAccountsParsed.ips) {
         return false;
     }
 
@@ -11,7 +11,7 @@ export const authorizeAdmin = ({ me, groups }) => {
 };
 
 export const authorizeUser = ({ me, groups }, withAdditionalPrechecks = false) => {
-    if (!me || !groups || !me.linkedAccountsParsed.discord) {
+    if (!me || !groups || !me.linkedAccountsParsed || !me.linkedAccountsParsed.discord) {
         return false;
     }
 

@@ -14,7 +14,7 @@ class Name extends PureComponent {
     };
 
     renderUpdateNameForm = () => (
-        <form className="jumbotron danger ml-2 mr-2" onSubmit={this.handleSubmit} key="update-name-form">
+        <form className="jumbotron danger ml-2 mr-2" onSubmit={this.handleSubmit} key="update-name-form" data-cy='account-status-element'>
             <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')} />
             <h3>Your ESO ID:</h3>
             <input type='text' name='name' required placeholder='e.g. Glevissig (Gelmir)' />
@@ -24,7 +24,7 @@ class Name extends PureComponent {
     );
 
     renderName = user => (
-        <article className='jumbotron success ml-2 mr-2'>
+        <article className='jumbotron success ml-2 mr-2' data-cy='account-status-element'>
             <h3>Your ESO ID:</h3>
             <p>{'@' + user.name}</p>
             <small className='half-transparent'>To update your ESO ID, please contact the guild leader on Discord.</small>

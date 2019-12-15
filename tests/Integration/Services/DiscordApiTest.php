@@ -24,7 +24,7 @@ class DiscordApiTest extends IlluminateTestCase
      */
     public function testCreateMessageInChannel(): array
     {
-        $channelId = env('DISCORD_TEST_CHANNEL_ID');
+        $channelId = config('services.discord.channels.officer_hq');
         $resultOne = $this->discordApi->createMessageInChannel($channelId, [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode(['content' => 'Test 1'])
@@ -59,7 +59,7 @@ class DiscordApiTest extends IlluminateTestCase
      */
     public function testReactToMessageInChannel(array $messageIds): array
     {
-        $channelId = env('DISCORD_TEST_CHANNEL_ID');
+        $channelId = config('services.discord.channels.officer_hq');
         $result = $this->discordApi->reactToMessageInChannel($channelId, $messageIds[0], '✅');
         $this->assertIsBool($result);
         $this->assertTrue($result);
@@ -74,7 +74,7 @@ class DiscordApiTest extends IlluminateTestCase
      */
     public function testDeleteMessageInChannel(array $messageIds): void
     {
-        $channelId = env('DISCORD_TEST_CHANNEL_ID');
+        $channelId = config('services.discord.channels.officer_hq');
         $result = $this->discordApi->deleteMessagesInChannel($channelId, [array_shift($messageIds)]);
         $this->assertIsBool($result);
         $this->assertTrue($result);

@@ -2,7 +2,9 @@ branches:
   only:
     - master
 
-language: generic
+language: node_js
+node_js:
+  - 12
 dist: bionic
 services:
   - docker
@@ -20,20 +22,20 @@ matrix:
         - DB_USERNAME=postgres
 
 cache:
+  npm: true
   directories:
     - ~/.cache/Cypress
     - ~/.cache/google-fonts
-    - ~/.npm
     - vendor
 
 install:
-  - chmod -R 0777 ./storage/logs
+  - chmod -R 0777 ./storage/logs ./storage/framework/views
   - export PR=https://api.github.com/repos/$TRAVIS_REPO_SLUG/pulls/$TRAVIS_PULL_REQUEST
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo `curl -s $PR | jq -r .head.ref`; fi)
   - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH"
   - export MYUID=$(id -u) MYGID=$(id -g);
   - docker-compose pull && docker-compose up -d && docker-compose logs php && docker-compose ps;
-  - echo $(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx) planner.lodgeofsorceresses.dev | sudo tee -a /etc/hosts > /dev/null 2>&1;
+  - echo $(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx) planner.lodgeofsorceresses.test | sudo tee -a /etc/hosts;
 
 before_script:
   - chmod +x ./storage/build/scripts/ci/build.sh;

@@ -1,11 +1,14 @@
 .*
+/cypress/fixtures/.*.json
+/cypress/screenshots/*
+/cypress/videos/*
 /node_modules
-/vendor
 /public/build
 /public/fonts/*
 /public/storage
 /storage/*.key
 /storage/coverage*
+/vendor
 !.babelrc
 !.env.*
 !.git*

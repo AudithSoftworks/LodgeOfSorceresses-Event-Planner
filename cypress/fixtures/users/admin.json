@@ -1,0 +1,46 @@
+{
+    "id": 1,
+    "name": "Admin",
+    "email": "admin@lodgeofsorceresses.com",
+    "avatar": "//s3.eu-central-1.amazonaws.com/lodgeofsorceresses-forums/monthly_2019_07/Capture.PNG.ad418487120c9b799dc1316a6272d9c1.PNG",
+    "created_at": "2019-04-14 19:37:26",
+    "updated_at": "2019-07-14 16:32:42",
+    "deleted_at": null,
+    "isSoulshriven": false,
+    "isMember": true,
+    "linkedAccountsParsed": {
+        "ips": {
+            "id": 1,
+            "user_id": 1,
+            "remote_provider": "ips",
+            "remote_primary_group": 4,
+            "remote_secondary_groups": [
+                "6"
+            ],
+            "nickname": null,
+            "email": "admin@lodgeofsorceresses.com",
+            "avatar": "//s3.eu-central-1.amazonaws.com/lodgeofsorceresses-forums/monthly_2019_03/Capture.PNG.8c393cd38ed546b7aae37b649c3b8825.PNG",
+            "verified": 1,
+            "created_at": "2019-04-14 19:37:26",
+            "updated_at": "2019-06-29 20:38:19"
+        },
+        "discord": {
+            "id": 2,
+            "user_id": 1,
+            "remote_provider": "discord",
+            "remote_primary_group": null,
+            "remote_secondary_groups": [
+                "230086132799504394",
+                "230086456943706113",
+                "465486256810360832",
+                "534135978093182977"
+            ],
+            "nickname": null,
+            "email": "admin@lodgeofsorceresses.com",
+            "avatar": null,
+            "verified": 1,
+            "created_at": "2019-04-14 19:37:33",
+            "updated_at": "2019-11-03 20:05:02"
+        }
+    }
+}

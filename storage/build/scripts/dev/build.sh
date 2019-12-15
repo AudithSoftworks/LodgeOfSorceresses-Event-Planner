@@ -8,8 +8,6 @@ docker-compose ps;
 
 test -f .env || cat .env.example | tee .env > /dev/null 2>&1;
 
-docker-compose exec nginx bash -c "cat /etc/hosts | sed s/localhost/localhost\ planner.lodgeofsorceresses.test/g | tee /etc/hosts";
-
 docker-compose exec php bash -c "
     crontab -l;
     npm config set "@fortawesome:registry" https://npm.fontawesome.com/ && \
@@ -61,7 +59,8 @@ docker-compose exec php bash -c "
     ./artisan db:seed;
     ./artisan pmg:skills;
     ./artisan pmg:sets;
-    ./artisan cache:warmup
+    ./artisan cache:warmup;
+    ./artisan fixture:populate;
 
     ./vendor/bin/phpunit --debug --verbose --testsuite='Integration';
 #    ./artisan dusk -vvv;

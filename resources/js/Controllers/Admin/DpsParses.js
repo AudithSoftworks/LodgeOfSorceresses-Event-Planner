@@ -4,17 +4,15 @@ import(
     '../../../sass/_pending_dps_parses.scss'
 );
 
-import { faUserCheck, faUserTimes } from '@fortawesome/pro-duotone-svg-icons';
+import { faUserCheck, faUserTimes } from '@fortawesome/pro-light-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import { Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { errorsAction, infosAction, successAction } from '../../actions/notifications';
-import { authorizeAdmin } from '../../helpers';
 import { deletePendingDpsParse, getPendingDpsParses, updatePendingDpsParse } from '../../vendor/api/admin';
 import axios from '../../vendor/axios';
-import { user } from '../../vendor/data';
 import Loading from '../../Components/Loading';
 import Notification from '../../Components/Notification';
 
@@ -31,21 +29,18 @@ class DpsParses extends PureComponent {
     };
 
     componentDidMount = () => {
-        const { me } = this.props;
-        if (me) {
-            this.cancelTokenSource = axios.CancelToken.source();
-            getPendingDpsParses(this.cancelTokenSource)
-                .then(dpsParses => {
-                    this.cancelTokenSource = null;
-                    this.setState({ dpsParses });
-                })
-                .catch(error => {
-                    if (!axios.isCancel(error)) {
-                        const message = error.response.data.message || error.response.statusText || error.message;
-                        this.props.dispatch(errorsAction(message));
-                    }
-                });
-        }
+        this.cancelTokenSource = axios.CancelToken.source();
+        getPendingDpsParses(this.cancelTokenSource)
+            .then(dpsParses => {
+                this.cancelTokenSource = null;
+                this.setState({ dpsParses });
+            })
+            .catch(error => {
+                if (!axios.isCancel(error)) {
+                    const message = error.response.data.message || error.response.statusText || error.message;
+                    this.props.dispatch(errorsAction(message));
+                }
+            });
     };
 
     handleDisapprove = event => {
@@ -151,7 +146,7 @@ class DpsParses extends PureComponent {
                     </a>
                 </td>
                 <td>
-                    <ul className="actionList">{actionListRendered}</ul>
+                    <ul className="action-list">{actionListRendered}</ul>
                 </td>
             </tr>
         );
@@ -226,15 +221,6 @@ class DpsParses extends PureComponent {
     };
 
     render = () => {
-        const { me, location } = this.props;
-        if (!me) {
-            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname }}} />;
-        }
-
-        if (!authorizeAdmin(this.props)) {
-            return history.push('/');
-        }
-
         const { dpsParses } = this.state;
         if (!dpsParses) {
             return [<Loading message="Fetching the list of pending DPS parses..." key="loading" />, <Notification key="notifications" />];
@@ -250,14 +236,10 @@ DpsParses.propTypes = {
     location: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
 
-    me: user,
-    groups: PropTypes.object,
     notifications: PropTypes.array,
 };
 
 const mapStateToProps = state => ({
-    me: state.getIn(['me']),
-    groups: state.getIn(['groups']),
     notifications: state.getIn(['notifications']),
 });
 

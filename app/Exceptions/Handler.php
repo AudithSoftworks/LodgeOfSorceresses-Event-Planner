@@ -7,6 +7,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Validation\ValidationException as IlluminateValidationException;
 use Laravel\Socialite\Two\InvalidStateException;
@@ -62,13 +63,13 @@ class Handler extends ExceptionHandler
 
         if ($e instanceof InvalidStateException) {
             return $requestExpectsJson
-                ? response()->json(['message' => 'Session Expired. Please refresh the page!'], 401)
+                ? response()->json(['message' => 'Session Expired. Please refresh the page!'], JsonResponse::HTTP_UNAUTHORIZED)
                 : redirect()->guest('/logout')->withErrors('Access Denied!');
         }
 
         if ($e instanceof AuthorizationException) {
             return $requestExpectsJson
-                ? response()->json(['message' => $e->getMessage()], 403)
+                ? response()->json(['message' => $e->getMessage()], JsonResponse::HTTP_FORBIDDEN)
                 : redirect()->guest('/logout')->withErrors($e->getMessage());
         }
 

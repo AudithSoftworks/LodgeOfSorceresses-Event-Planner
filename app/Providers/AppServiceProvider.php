@@ -2,7 +2,7 @@
 
 use App\Extensions\Socialite\DiscordProvider;
 use App\Extensions\Socialite\IpsProvider;
-use App\Services\MonologDiscordHandler;
+use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Dusk\DuskServiceProvider;
@@ -36,7 +36,7 @@ class AppServiceProvider extends ServiceProvider
         Passport::ignoreMigrations();
 
         if (!app()->environment('production')) {
-            app()->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
+            app()->register(IdeHelperServiceProvider::class);
         }
     }
 

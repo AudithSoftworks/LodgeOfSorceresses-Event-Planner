@@ -1,4 +1,4 @@
-import { faPortrait, faTachometerAlt, faTrashAlt, faUserEdit } from '@fortawesome/pro-duotone-svg-icons';
+import { faPortrait, faTachometerAlt, faTrashAlt, faUserEdit } from '@fortawesome/pro-light-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
@@ -42,9 +42,9 @@ class Item extends PureComponent {
                 ) : null,
         };
 
-        let rowBgColor = 'no_clearance';
+        let rowBgColor = 'no-clearance';
         if (character['approved_for_tier'] !== 0) {
-            rowBgColor = 'tier_' + character['approved_for_tier'];
+            rowBgColor = 'tier-' + character['approved_for_tier'];
         }
 
         return (
@@ -56,7 +56,7 @@ class Item extends PureComponent {
                 </td>
                 <td className='sets'>{characterSets.reduce((prev, curr) => [prev, ' ', curr], [])}</td>
                 <td>
-                    <ul className="actionList">{renderActionList(character.actionList)}</ul>
+                    <ul className="action-list">{renderActionList(character.actionList)}</ul>
                 </td>
             </tr>
         );

@@ -4,8 +4,7 @@ import(
     "../../sass/_users.scss"
 );
 
-import { faUser, faUserCrown } from "@fortawesome/pro-regular-svg-icons";
-import { faThList } from "@fortawesome/pro-duotone-svg-icons";
+import { faChevronCircleLeft, faUser, faUserSlash } from "@fortawesome/pro-light-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PropTypes from "prop-types";
 import React, { Fragment, PureComponent } from "react";
@@ -15,7 +14,7 @@ import { errorsAction, infosAction } from "../actions/notifications";
 import List from "../Components/Characters/List";
 import Loading from "../Components/Loading";
 import Notification from "../Components/Notification";
-import { authorizeUser, filter, renderActionList } from "../helpers";
+import { filter, renderActionList } from "../helpers";
 import { getAllUsers, getUser } from "../vendor/api";
 import axios from "../vendor/axios";
 import { user } from "../vendor/data";
@@ -80,7 +79,7 @@ class Users extends PureComponent {
         const actionList = {
             return: (
                 <Link to={"/users"} title="Back to Roster">
-                    <FontAwesomeIcon icon={faThList} />
+                    <FontAwesomeIcon icon={faChevronCircleLeft} />
                 </Link>
             ),
         };
@@ -141,12 +140,12 @@ class Users extends PureComponent {
         const filterList = {
             members: (
                 <button type="button" onClick={event => this.filter(event, "members")} className={"ne-corner " + (filters.members || "inactive")} title="Filter Actual Members">
-                    <FontAwesomeIcon icon={faUserCrown} />
+                    <FontAwesomeIcon icon={faUser} />
                 </button>
             ),
             soulshriven: (
                 <button type="button" onClick={event => this.filter(event, "soulshriven")} className={"ne-corner " + (filters.soulshriven || "inactive")} title="Filter Soulshriven">
-                    <FontAwesomeIcon icon={faUser} />
+                    <FontAwesomeIcon icon={faUserSlash} />
                 </button>
             ),
         };
@@ -184,13 +183,9 @@ class Users extends PureComponent {
     };
 
     render = () => {
-        const { me, groups, location, match } = this.props;
+        const { me, location, match } = this.props;
         if (!me) {
             return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
-        }
-
-        if (me && groups && !authorizeUser(this.props, true)) {
-            return <Redirect to="/" />;
         }
 
         const { allUsers, user } = this.state;
@@ -214,13 +209,11 @@ Users.propTypes = {
 
     axiosCancelTokenSource: PropTypes.object,
     me: user,
-    groups: PropTypes.object,
     notifications: PropTypes.array,
 };
 
 const mapStateToProps = state => ({
     me: state.getIn(["me"]),
-    groups: state.getIn(["groups"]),
     notifications: state.getIn(["notifications"]),
 });
 

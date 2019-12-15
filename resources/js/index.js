@@ -2,8 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import '../sass/style.scss';
-import Application from './Controllers/Application';
 import configureStore, { history } from './configureStore';
+import Application from './Controllers/Application';
 
 import(
     /* webpackPreload: true */
@@ -17,12 +17,9 @@ import(
 );
 
 const store = configureStore();
-const render = () =>
-    ReactDOM.render(
-        <Provider store={store}>
-            <Application history={history} />
-        </Provider>,
-        document.getElementById('root')
-    );
-
-render();
+ReactDOM.render(
+    <Provider store={store}>
+        <Application history={history} />
+    </Provider>,
+    document.getElementById('root')
+);

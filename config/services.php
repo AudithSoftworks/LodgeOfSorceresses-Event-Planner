@@ -39,12 +39,12 @@ return [
         'redirect' => env('DISCORD_REDIRECT_URI'),
         'bot_token' => env('DISCORD_BOT_TOKEN'),
         'url' => 'https://discordapp.com/api',
-        'guild_id' => env('DISCORD_GUILD_ID', 229980402574557184),
+        'guild_id' => env('DISCORD_GUILD_ID', '229980402574557184'),
         'channels' => [
-            'announcements' => env('APP_ENV') === 'production' ? env('DISCORD_ANNOUNCEMENTS_CHANNEL_ID') : env('DISCORD_TEST_CHANNEL_ID'),
-            'subscriptions' => env('APP_ENV') === 'production' ? env('DISCORD_SUBSCRIPTIONS_CHANNEL_ID') : env('DISCORD_TEST_CHANNEL_ID'),
-            'officer_hq' => env('APP_ENV') === 'production' ? env('DISCORD_OFFICER_HQ_CHANNEL_ID') : env('DISCORD_TEST_CHANNEL_ID'),
-            'dps_parses' => env('APP_ENV') === 'production' ? env('DISCORD_DPS_PARSES_CHANNEL_ID') : env('DISCORD_TEST_CHANNEL_ID'),
+            'announcements' => env('DISCORD_ANNOUNCEMENTS_CHANNEL_ID', '551378145500987392'),
+            'subscriptions' => env('DISCORD_SUBSCRIPTIONS_CHANNEL_ID', '551378145500987392'),
+            'officer_hq' => env('DISCORD_OFFICER_HQ_CHANNEL_ID', '551378145500987392'),
+            'dps_parses' => env('DISCORD_DPS_PARSES_CHANNEL_ID', '551378145500987392'),
         ],
     ],
     'pmg' => [

@@ -1,6 +1,46 @@
-version: '3'
+version: '3.7'
 
 services:
+  nginx:
+    container_name: nginx
+    image: nginx
+    volumes:
+      - ./storage/build/configs/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - .:/var/www
+    working_dir: /var/www
+    links:
+      - php
+    networks:
+      default:
+        aliases:
+          - planner.lodgeofsorceresses.test
+        ipv4_address: 172.72.0.110
+  php:
+    container_name: php
+    image: audithsoftworks/docker:php
+    volumes:
+      - .:/var/www
+      - ./storage/build/configs/crontabs:/var/spool/cron/crontabs
+      - $HOME/.npm:/home/audith/.npm
+      - $HOME/.cache:/home/audith/.cache
+    working_dir: /var/www
+    links:
+      - mariadb
+      - postgres
+      - redis
+    environment:
+      XDEBUG_CONFIG: "remote_host=172.72.0.1"
+      REDIS_PORT: 6379
+      WORKDIR: "/var/www"
+      MYUID: "${MYUID:-1000}"
+      MYGID: "${MYGID:-1000}"
+    entrypoint: storage/build/scripts/docker-entrypoint.sh
+    command: php-fpm
+    stdin_open: true
+    tty: true
+    networks:
+      default:
+        ipv4_address: 172.72.0.100
   mariadb:
     container_name: mariadb
     image: mariadb:10
@@ -20,52 +60,13 @@ services:
       POSTGRES_PASSWORD: ""
     networks:
       default:
-        ipv4_address: 172.72.0.102
+        ipv4_address: 172.72.0.120
   redis:
     container_name: redis
     image: redis
     networks:
       default:
-        ipv4_address: 172.72.0.103
-  nginx:
-    container_name: nginx
-    image: nginx
-    volumes:
-      - ./storage/build/configs/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - .:/var/www
-    working_dir: /var/www
-    links:
-      - php
-    networks:
-      default:
-        aliases:
-          - basis.audith.org
-        ipv4_address: 172.72.0.105
-  php:
-    container_name: php
-    image: audithsoftworks/docker:php
-    volumes:
-      - .:/var/www
-      - ./storage/build/configs/crontabs:/var/spool/cron/crontabs
-      - $HOME/.npm:/home/audith/.npm
-    working_dir: /var/www
-    links:
-      - mariadb
-      - postgres
-      - redis
-    environment:
-      XDEBUG_CONFIG: "remote_host=172.72.0.1"
-      REDIS_PORT: 6379
-      WORKDIR: "/var/www"
-      MYUID: "${MYUID:-1000}"
-      MYGID: "${MYGID:-1000}"
-    entrypoint: storage/build/scripts/docker-entrypoint.sh
-    command: php-fpm
-    stdin_open: true
-    tty: true
-    networks:
-      default:
-        ipv4_address: 172.72.0.108
+        ipv4_address: 172.72.0.130
 volumes:
   db-data: {}
 networks:

@@ -1,7 +1,11 @@
-import React, { Component, Fragment, Suspense } from 'react';
+import PropTypes from "prop-types";
+import React, { Fragment, PureComponent, Suspense } from 'react';
+import { connect } from "react-redux";
 import { Route, Switch } from 'react-router-dom';
-import Loading from '../Loading';
 import NoMatch from '../../Controllers/NoMatch';
+import { authorizeAdmin, authorizeUser } from "../../helpers";
+import { user } from "../../vendor/data";
+import Loading from '../Loading';
 
 const Init = React.lazy(() =>
     import(
@@ -22,7 +26,7 @@ const Users = React.lazy(() =>
         /* webpackPrefetch: true */
         /* webpackChunkName: "controllers-users" */
         '../../Controllers/Users'
-        )
+    )
 );
 const Characters = React.lazy(() =>
     import(
@@ -89,7 +93,45 @@ const AdminDpsParses = React.lazy(() =>
     )
 );
 
-class Main extends Component {
+class Main extends PureComponent {
+    fetchUserRoutes = () => {
+        return authorizeUser(this.props, true) ? [
+            <Route exact path="/users" component={props => <Users {...props} />} key="/users" />,
+            <Route exact path="/users/:id" component={props => <Users {...props} />} key="/users/:id" />,
+            <Route exact path="/characters/:id" component={props => <Characters {...props} />} key="/characters/:id" />,
+            <Route exact path="/events" component={props => <Events {...props} />} key="/events" />,
+            <Route exact path="/events/create" component={props => <EventForm {...props} />} key="/events/create" />,
+            <Route
+                key="/@me/characters"
+                path="/@me/characters"
+                render={({ match: { url } }) => (
+                    <Fragment>
+                        <Route exact path={url} component={props => <MyCharacters {...props} />} />
+                        <Route path={url + '/create'} component={props => <CharacterForm {...props} />} />
+                        <Route path={url + '/:id/edit'} component={props => <CharacterForm {...props} />} />
+                        <Route exact path={url + '/:id/parses'} component={props => <DpsParses {...props} />} />
+                        <Route path={url + '/:id/parses/create'} component={props => <DpsParseForm {...props} />} />
+                    </Fragment>
+                )}
+            />
+        ] : [];
+    };
+
+    fetchAdminRoutes = () => {
+        return authorizeAdmin(this.props) ? [
+            <Route
+                key="/admin"
+                path="/admin"
+                render={({ match: { url } }) => (
+                    <Fragment>
+                        <Route exact path={url} component={props => <AdminHome {...props} />} />
+                        <Route path={url + '/parses'} component={props => <AdminDpsParses {...props} />} />
+                    </Fragment>
+                )}
+            />
+        ] : [];
+    };
+
     render = () => {
         return [
             <main key="main" className="container">
@@ -97,32 +139,8 @@ class Main extends Component {
                     <Switch>
                         <Route exact path="/" component={props => <Init {...props} />} />
                         <Route exact path="/dashboard" component={props => <Home {...props} />} />
-                        <Route exact path="/users" component={props => <Users {...props} />} />
-                        <Route exact path="/users/:id" component={props => <Users {...props} />} />
-                        <Route exact path="/characters/:id" component={props => <Characters {...props} />} />
-                        <Route exact path="/events" component={props => <Events {...props} />} />
-                        <Route exact path="/events/create" component={props => <EventForm {...props} />} />
-                        <Route
-                            path="/@me/characters"
-                            render={({ match: { url }}) => (
-                                <Fragment>
-                                    <Route exact path={url} component={props => <MyCharacters {...props} />} />
-                                    <Route path={url + '/create'} component={props => <CharacterForm {...props} />} />
-                                    <Route path={url + '/:id/edit'} component={props => <CharacterForm {...props} />} />
-                                    <Route exact path={url + '/:id/parses'} component={props => <DpsParses {...props} />} />
-                                    <Route path={url + '/:id/parses/create'} component={props => <DpsParseForm {...props} />} />
-                                </Fragment>
-                            )}
-                        />
-                        <Route
-                            path="/admin"
-                            render={({ match: { url }}) => (
-                                <Fragment>
-                                    <Route exact path={url} component={props => <AdminHome {...props} />} />
-                                    <Route path={url + '/parses'} component={props => <AdminDpsParses {...props} />} />
-                                </Fragment>
-                            )}
-                        />
+                        {[...this.fetchUserRoutes()]}
+                        {[...this.fetchAdminRoutes()]}
                         <Route component={NoMatch} />
                     </Switch>
                 </Suspense>
@@ -131,4 +149,22 @@ class Main extends Component {
     };
 }
 
-export default Main;
+Main.propTypes = {
+    me: user,
+    groups: PropTypes.object,
+};
+
+const mapStateToProps = state => ({
+    me: state.getIn(['me']),
+    groups: state.getIn(['groups']),
+});
+
+const mapDispatchToProps = dispatch => ({
+    dispatch,
+});
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Main);
+

@@ -7,7 +7,7 @@ import Animated from 'react-select/animated';
 import postMyCharacterAction from '../../actions/post-my-character';
 import putMyCharacterAction from '../../actions/put-my-character';
 import Notification from '../../Components/Notification';
-import { content, user } from '../../vendor/data';
+import { content } from '../../vendor/data';
 
 class EventForm extends PureComponent {
     componentWillUnmount = () => {
@@ -132,8 +132,8 @@ class EventForm extends PureComponent {
     };
 
     render = () => {
-        const { me } = this.props;
-        if (!me) {
+        const { content } = this.props;
+        if (!content) {
             return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
 
@@ -147,7 +147,6 @@ EventForm.propTypes = {
     history: PropTypes.object.isRequired,
 
     axiosCancelTokenSource: PropTypes.object,
-    me: user,
     content,
     notifications: PropTypes.array,
 
@@ -157,7 +156,6 @@ EventForm.propTypes = {
 
 const mapStateToProps = state => ({
     axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
-    me: state.getIn(['me']),
     content: state.getIn(['content']),
     notifications: state.getIn(['notifications']),
 });

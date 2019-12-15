@@ -105,49 +105,49 @@ table.admin-character-list-table {
 }
 
 button {
-    &.tier_1 {
+    &.tier-1 {
         color: rgb(46, 204, 113);
     }
 
-    &.tier_2 {
+    &.tier-2 {
         color: rgb(52, 152, 219);
     }
 
-    &.tier_3 {
+    &.tier-3 {
         color: rgb(155, 89, 182);
     }
 
-    &.tier_4 {
+    &.tier-4 {
         color: rgb(230, 126, 34);;
     }
 }
 
 tr {
-    &.no_clearance {
+    &.no-clearance {
         > td {
             background-color: rgba(150, 150, 150, 0.2);
         }
     }
 
-    &.tier_1 {
+    &.tier-1 {
         > td {
             background-color: rgba(46, 204, 113, 0.2);
         }
     }
 
-    &.tier_2 {
+    &.tier-2 {
         > td {
             background-color: rgba(52, 152, 219, 0.2);
         }
     }
 
-    &.tier_3 {
+    &.tier-3 {
         > td {
             background-color: rgba(155, 89, 182, 0.2);
         }
     }
 
-    &.tier_4 {
+    &.tier-4 {
         > td {
             background-color: rgba(230, 126, 34, 0.2);
         }

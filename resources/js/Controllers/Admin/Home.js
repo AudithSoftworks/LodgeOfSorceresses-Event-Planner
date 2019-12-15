@@ -1,26 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import { Link, Redirect } from 'react-router-dom';
-import { authorizeAdmin } from '../../helpers';
-import { characters, user } from '../../vendor/data';
+import { Link } from 'react-router-dom';
 import Notification from '../../Components/Notification';
+import { characters } from '../../vendor/data';
 
 class Home extends PureComponent {
-    componentWillUnmount = () => {
-        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
-    };
-
     render = () => {
-        const { me, location } = this.props;
-        if (!me) {
-            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
-        }
-
-        if (!authorizeAdmin(this.props)) {
-            return history.push('/');
-        }
-
         return [
             <section className="col-md-24 p-0 mb-4" key="characterList">
                 <h2 className="form-title col-md-24">Dashboard</h2>
@@ -45,20 +31,12 @@ Home.propTypes = {
     location: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
 
-    axiosCancelTokenSource: PropTypes.object,
-    me: user,
-    groups: PropTypes.object,
     notifications: PropTypes.array,
-
     allCharacters: characters,
 };
 
 const mapStateToProps = state => ({
-    axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
-    me: state.getIn(['me']),
-    groups: state.getIn(['groups']),
     notifications: state.getIn(['notifications']),
-
     allCharacters: state.getIn(['allCharacters']),
 });
 
