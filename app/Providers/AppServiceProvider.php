@@ -1,11 +1,12 @@
-<?php namespace App\Providers;
+<?php
+
+namespace App\Providers;
 
 use App\Extensions\Socialite\DiscordProvider;
 use App\Extensions\Socialite\IpsProvider;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Passport\Passport;
 use Laravel\Socialite\Contracts\Factory;
 
@@ -29,10 +30,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        if (app()->environment('local', 'testing')) {
-            app()->register(DuskServiceProvider::class);
-        }
-
         Passport::ignoreMigrations();
 
         if (!app()->environment('production')) {

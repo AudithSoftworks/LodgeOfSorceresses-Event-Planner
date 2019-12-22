@@ -1,8 +1,8 @@
-## Lodge of Sorceresses - Event Planner (powered by Laravel 6)
+## Lodge of Sorceresses - Guild Planner (powered by Laravel 6)
 
 [![Build Status](https://travis-ci.com/AudithSoftworks/LodgeOfSorceresses-Event-Planner.svg?branch=master)](https://travis-ci.com/AudithSoftworks/LodgeOfSorceresses-Event-Planner)
 
-This is a custom Event Planner built for MMO guild [Lodge of Sorceresses](https://lodgeofsorceresses.com), integrated with our Guild Forums (powered by IPSCommunity).
+This is a custom Guild Planner built for MMO guild [Lodge of Sorceresses](https://lodgeofsorceresses.com), integrated with our Guild Forums (powered by IPSCommunity).
 
 ### Installation
 
