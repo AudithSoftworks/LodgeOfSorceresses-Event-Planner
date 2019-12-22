@@ -65,6 +65,11 @@ class Init extends PureComponent {
     };
 
     renderLoginForm = () => {
+        const { location } = this.props;
+        if (location.state && location.state.prevPath) {
+            localStorage.setItem('redirectUri', location.state.prevPath);
+        }
+
         return (
             <form className="col-md-24 d-flex flex-row flex-wrap p-0" onSubmit={this.handleSubmit} key="characterCreationForm">
                 <h2 className="form-title col-md-24 text-center pr-0 mt-md-5 mb-md-5" title="Login">Login</h2>
@@ -79,7 +84,7 @@ class Init extends PureComponent {
     };
 
     render = () => {
-        const { location, me, myCharacters, sets, skills, content } = this.props;
+        const { me, myCharacters, sets, skills, content } = this.props;
         if (me === null) {
             return [this.renderLoginForm()];
         } else {
@@ -91,9 +96,10 @@ class Init extends PureComponent {
                 }
             }
 
-            let redirectUri = '/dashboard';
-            if (location.state && location.state.prevPath) {
-                redirectUri = location.state.prevPath;
+            let redirectUri = localStorage.getItem('redirectUri');
+            localStorage.removeItem('redirectUri');
+            if (!redirectUri || redirectUri === '') {
+                redirectUri = '/dashboard';
             }
 
             return <Redirect to={redirectUri} />;

@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { Redirect } from "react-router-dom";
 
 class NoMatch extends PureComponent {
     constructor(props) {
@@ -28,7 +29,7 @@ class NoMatch extends PureComponent {
             );
         }
 
-        return this.props.children;
+        return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
     }
 }
 
