@@ -13,16 +13,13 @@ class CharactersController extends Controller
     use IsCharacter, HasOrIsDpsParse;
 
     /**
-     * Display a listing of the resource.
-     *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function index(): JsonResponse
     {
         $this->authorize('user', User::class);
-        $query = Character::query();
-        $characterIds = $query
+        $characterIds = Character::query()
             ->orderBy('id', 'desc')
             ->get(['id'])->pluck('id');
 
@@ -37,8 +34,6 @@ class CharactersController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
      * @param int $characterId
      *
      * @return JsonResponse

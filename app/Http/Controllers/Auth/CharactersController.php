@@ -44,7 +44,7 @@ class CharactersController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param \Illuminate\Http\Request $request
      *
      * @return JsonResponse
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
@@ -98,7 +98,7 @@ class CharactersController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
+     * @param \Illuminate\Http\Request $request
      * @param int     $characterId
      *
      * @return JsonResponse
@@ -135,7 +135,7 @@ class CharactersController extends Controller
                 ->where('id', $characterId);
         })->first(['id', 'name', 'class', 'role', 'sets']);
         if (!$character) {
-            return response()->json(['message' => 'Character not found!'])->setStatusCode(404);
+            throw new ModelNotFoundException('Character not found!');
         }
         $character->user_id = app('auth.driver')->id();
         $request->filled('name') && $character->name = $request->get('name');
