@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Team;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -95,6 +95,7 @@ class TeamsController extends Controller
     public function show(int $teamId): JsonResponse
     {
         $this->authorize('user', User::class);
+
         Cache::has('team-' . $teamId); // Trigger Recache listener.
         $team = Cache::get('team-' . $teamId);
         if (!$team) {
@@ -116,15 +117,16 @@ class TeamsController extends Controller
     {
         $this->authorize('user', User::class);
 
-        $query = Team::query()->whereId($teamId);
-        if (Gate::denies('is-admin')) {
-            $myId = Auth::id();
-            $query->where(static function (Builder $query) use ($myId) {
-                $query->where('led_by', $myId)->orWhere('created_by', $myId);
-            });
+        $myId = Auth::id();
+        Cache::has('team-' . $teamId); // Recache trigger.
+        /** @var \App\Models\Team $team */
+        $team = Cache::get('team-' . $teamId);
+        if (!$team) {
+            throw new ModelNotFoundException('Team not found!');
         }
-        /** @var Team $team */
-        $team = $query->firstOrFail();
+        if ($team->led_by !== $myId && $team->created_by !== $myId && Gate::denies('is-admin')) {
+            throw new ModelNotFoundException('Team not found!');
+        }
 
         $validatorErrorMessages = [
             'name.required' => 'Team name is required.',
@@ -175,15 +177,16 @@ class TeamsController extends Controller
     {
         $this->authorize('user', User::class);
 
-        $query = Team::query()->whereId($teamId);
-        if (Gate::denies('is-admin')) {
-            $myId = Auth::id();
-            $query->where(static function (Builder $query) use ($myId) {
-                $query->where('led_by', $myId)->orWhere('created_by', $myId);
-            });
+        $myId = Auth::id();
+        Cache::has('team-' . $teamId); // Recache trigger.
+        /** @var \App\Models\Team $team */
+        $team = Cache::get('team-' . $teamId);
+        if (!$team) {
+            throw new ModelNotFoundException('Team not found!');
         }
-        /** @var Team $team */
-        $team = $query->firstOrFail();
+        if ($team->led_by !== $myId && $team->created_by !== $myId && Gate::denies('is-admin')) {
+            throw new ModelNotFoundException('Team not found!');
+        }
 
         $team->delete();
 
