@@ -78,7 +78,7 @@ class TeamsControllerTest extends IlluminateTestCase
         $this->assertCount(2, $responseOriginalContent);
         $this->assertCount(1, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
-        $response->assertJsonPath('errors.led_by.0', 'User doesn\'t have an eligible characer to join this team.');
+        $response->assertJsonPath('errors.led_by.0', 'User doesn\'t have an eligible character to join this team.');
     }
 
     public function testStoreForSuccess(): void
@@ -184,7 +184,7 @@ class TeamsControllerTest extends IlluminateTestCase
         $this->assertCount(2, $responseOriginalContent);
         $this->assertCount(1, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
-        $response->assertJsonPath('errors.led_by.0', 'User doesn\'t have an eligible characer to join this team.');
+        $response->assertJsonPath('errors.led_by.0', 'User doesn\'t have an eligible character to join this team.');
 
         # Case 5: Non-admin trying to edit someone else's team
         $response = $this

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Events\Team\TeamCreated;
 use App\Events\Team\TeamDeleted;
 use App\Events\Team\TeamUpdated;
 use Illuminate\Database\Eloquent\Builder;

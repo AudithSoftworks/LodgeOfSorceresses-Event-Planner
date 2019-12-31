@@ -15,6 +15,6 @@ class TeamPolicy
     {
         return app('teams.eligibility')->determineTeamMembershipEligibility($team, $user, $role)
             ? $this->allow()
-            : $this->deny('User doesn\'t have an eligible characer to join this team.');
+            : $this->deny('User doesn\'t have an eligible character to join this team.');
     }
 }
