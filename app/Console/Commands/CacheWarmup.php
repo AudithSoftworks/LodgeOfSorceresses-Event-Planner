@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Character;
+use App\Models\Team;
 use Illuminate\Cache\Repository;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -35,9 +36,22 @@ class CacheWarmup extends Command
         $this->info('Skills successfully cached!');
         $cacheService->has('content');
         $this->info('Content successfully cached!');
+        $this->cacheAllTeams($cacheService);
+        $this->info('Teams successfully cached!');
         $this->cacheAllUsersAndCharacters($cacheService);
         $this->info('Users & Characters successfully cached!');
         $this->info('Cache-warmup successfully finished!');
+    }
+
+    private function cacheAllTeams(Repository $cacheService): void
+    {
+        /** @var \App\Models\Team[] $teams */
+        $teams = Team::query()
+            ->with(['members'])
+            ->get();
+        foreach ($teams as $team) {
+            $cacheService->has('team-' . $team->id);
+        }
     }
 
     private function cacheAllUsersAndCharacters(Repository $cacheService): void

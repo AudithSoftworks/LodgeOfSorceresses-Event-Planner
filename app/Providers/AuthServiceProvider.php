@@ -27,6 +27,7 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerPolicies();
+
         Passport::withoutCookieSerialization();
 
         Gate::define('is-admin', 'App\Policies\UserPolicy@admin');

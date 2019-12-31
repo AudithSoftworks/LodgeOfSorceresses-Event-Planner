@@ -64,6 +64,13 @@ class EventServiceProvider extends ServiceProvider
             Listeners\DpsParse\AnnounceDpsDisapprovalOnDiscord::class,
         ],
 
+        Events\Team\TeamDeleted::class => [
+            Listeners\Cache\DeleteTeamCache::class,
+        ],
+        Events\Team\TeamUpdated::class => [
+            Listeners\Cache\DeleteTeamCache::class,
+        ],
+
         Events\File\Uploaded::class => [
             Listeners\File\ValidateUploadRealMimeAgainstAllowedTypes::class,
             Listeners\File\PersistUploadedFile::class

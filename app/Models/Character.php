@@ -6,6 +6,7 @@ use App\Events\Character\CharacterDeleted;
 use App\Events\Character\CharacterDeleting;
 use App\Events\Character\CharacterUpdated;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -17,17 +18,19 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $name
  * @property int $class
  * @property int $role
- * @property string $sets
- * @property string|null $skills
- * @property string|null $content
- * @property int $approved_for_tier
- * @property int|null $last_submitted_dps_amount
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\User $owner
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\DpsParse[] $dpsParses
- * @property \Illuminate\Database\Eloquent\Collection|\App\Models\DpsParse[] $dps_parses_processed
- * @property \Illuminate\Database\Eloquent\Collection|\App\Models\DpsParse[] $dps_parses_pending
+ * @property string                                         $sets
+ * @property string|null                                    $skills
+ * @property string|null                                    $content
+ * @property int                                            $approved_for_tier
+ * @property int|null                                       $last_submitted_dps_amount
+ * @property \Illuminate\Support\Carbon|null                $created_at
+ * @property \Illuminate\Support\Carbon|null                $updated_at
+ * @property-read \App\Models\User                          $owner
+ * @property-read EloquentCollection|Team[]                 $teams
+ * @property-read int|null                                  $teams_count
+ * @property-read EloquentCollection|\App\Models\DpsParse[] $dpsParses
+ * @property EloquentCollection|\App\Models\DpsParse[]      $dps_parses_processed
+ * @property EloquentCollection|\App\Models\DpsParse[]      $dps_parses_pending
  * @method EloquentBuilder|Character newModelQuery()
  * @method EloquentBuilder|Character newQuery()
  * @method static EloquentBuilder|Character query()
@@ -88,5 +91,10 @@ class Character extends Model
     public function dpsParses(): HasMany
     {
         return $this->hasMany(DpsParse::class);
+    }
+
+    public function teams(): BelongsToMany
+    {
+        return $this->belongsToMany(Team::class, 'teams_characters')->withTimestamps()->withPivot(['role', 'status', 'accepted_terms']);
     }
 }
