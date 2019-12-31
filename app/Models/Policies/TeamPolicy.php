@@ -11,9 +11,9 @@ class TeamPolicy
 {
     use HandlesAuthorization;
 
-    public function canJoin(User $user, Team $team, int $role = null): Response
+    public function canJoin(User $user, Team $team): Response
     {
-        return app('teams.eligibility')->determineTeamMembershipEligibility($team, $user, $role)
+        return app('teams.eligibility')->isUserEligibleToJoin($team, $user)
             ? $this->allow()
             : $this->deny('User doesn\'t have an eligible character to join this team.');
     }
