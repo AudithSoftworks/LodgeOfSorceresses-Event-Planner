@@ -2,23 +2,13 @@
 
 namespace App\Providers;
 
-use App\Models\User;
-use App\Policies\UserPolicy;
+use App\Models\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
 
 class AuthServiceProvider extends ServiceProvider
 {
-    /**
-     * The policy mappings for the application.
-     *
-     * @var array
-     */
-    protected $policies = [
-        User::class => UserPolicy::class,
-    ];
-
     /**
      * Register any authentication / authorization services.
      *
@@ -30,8 +20,8 @@ class AuthServiceProvider extends ServiceProvider
 
         Passport::withoutCookieSerialization();
 
-        Gate::define('is-admin', 'App\Policies\UserPolicy@admin');
-        Gate::define('has-app-access', 'App\Policies\UserPolicy@user');
-        Gate::define('is-logged-in', 'App\Policies\UserPolicy@limited');
+        Gate::define('is-admin', UserPolicy::class . '@admin');
+        Gate::define('has-app-access', UserPolicy::class . '@user');
+        Gate::define('is-logged-in', UserPolicy::class . '@limited');
     }
 }

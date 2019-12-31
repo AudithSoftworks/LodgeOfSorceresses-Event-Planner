@@ -78,7 +78,7 @@ class TeamsControllerTest extends IlluminateTestCase
         $this->assertCount(2, $responseOriginalContent);
         $this->assertCount(1, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
-        $response->assertJsonPath('errors.led_by.0', 'Selected member is not eligible to lead a Tier-4 team, as they don\'t have a character with such clearance!');
+        $response->assertJsonPath('errors.led_by.0', 'User doesn\'t have an eligible characer to join this team.');
     }
 
     public function testStoreForSuccess(): void
@@ -116,6 +116,9 @@ class TeamsControllerTest extends IlluminateTestCase
         $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
     }
 
+    /**
+     * @depends testStoreForSuccess
+     */
     public function testShowForSuccess(): void
     {
         $response = $this
@@ -181,7 +184,7 @@ class TeamsControllerTest extends IlluminateTestCase
         $this->assertCount(2, $responseOriginalContent);
         $this->assertCount(1, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
-        $response->assertJsonPath('errors.led_by.0', 'Selected member is not eligible to lead a Tier-4 team, as they don\'t have a character with such clearance!');
+        $response->assertJsonPath('errors.led_by.0', 'User doesn\'t have an eligible characer to join this team.');
 
         # Case 5: Non-admin trying to edit someone else's team
         $response = $this
@@ -197,6 +200,9 @@ class TeamsControllerTest extends IlluminateTestCase
         Event::assertNotDispatched(TeamUpdated::class);
     }
 
+    /**
+     * @depends testStoreForSuccess
+     */
     public function testUpdateForSuccess(): void
     {
         Event::fake([TeamUpdated::class]);
@@ -260,6 +266,9 @@ class TeamsControllerTest extends IlluminateTestCase
         Event::assertNotDispatched(TeamDeleted::class);
     }
 
+    /**
+     * @depends testUpdateForSuccess
+     */
     public function testDestroyForSuccess(): void
     {
         Event::fake([TeamDeleted::class]);

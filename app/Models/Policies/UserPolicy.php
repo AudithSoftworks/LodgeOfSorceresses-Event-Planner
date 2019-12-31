@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies;
+namespace App\Models\Policies;
 
 use App\Services\DiscordApi;
 use Illuminate\Auth\Access\HandlesAuthorization;
