@@ -5,7 +5,7 @@ use App\Models\DpsParse;
 use App\Models\User;
 use UnexpectedValueException;
 
-class GuildRankAndClearance
+class GuildRanksAndClearance
 {
     public const RANK_SOULSHRIVEN = [
         'title' => 'Soulshriven',
@@ -131,7 +131,7 @@ class GuildRankAndClearance
         $tableDbConnection = app('db.connection')->table('characters');
         $result = $tableDbConnection->selectRaw('MAX(approved_for_tier) AS max')->where('user_id', $user->id)->get('max')->first();
 
-        return $result->max;
+        return $result && $result->max !== null ? $result->max : 0;
     }
 
     public function determineIfUserHasOtherRankedCharactersWithGivenRole(User $user, int $role): bool

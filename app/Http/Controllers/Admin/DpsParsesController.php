@@ -9,7 +9,7 @@ use App\Models\DpsParse;
 use App\Models\User;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
-use App\Traits\Characters\HasOrIsDpsParse;
+use App\Traits\Character\HasOrIsDpsParse;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;

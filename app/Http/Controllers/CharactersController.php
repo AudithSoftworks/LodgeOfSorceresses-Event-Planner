@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Character;
 use App\Models\User;
-use App\Traits\Characters\HasOrIsDpsParse;
-use App\Traits\Characters\IsCharacter;
+use App\Traits\Character\HasOrIsDpsParse;
+use App\Traits\Character\IsCharacter;
 use Illuminate\Http\JsonResponse;
 
 class CharactersController extends Controller

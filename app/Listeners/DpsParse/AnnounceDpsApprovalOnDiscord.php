@@ -2,7 +2,7 @@
 
 use App\Events\DpsParse\DpsParseApproved;
 use App\Models\Set;
-use App\Services\GuildRankAndClearance;
+use App\Services\GuildRanksAndClearance;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
 use Cloudinary;
@@ -78,9 +78,9 @@ class AnnounceDpsApprovalOnDiscord
         foreach ($gearSets as $set) {
             $gearSetsParsed[] = '[' . $set->name . '](https://eso-sets.com/set/' . $set->id . ')';
         }
-        $rankTitle = $playerClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['rank']['title'] : GuildRankAndClearance::RANK_INITIATE['title'];
-        $playerClearanceTitle = $playerClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['title'] : null;
-        $characterClearanceTitle = $characterClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$characterClearance]['title'] : null;
+        $rankTitle = $playerClearance ? GuildRanksAndClearance::CLEARANCE_LEVELS[$playerClearance]['rank']['title'] : GuildRanksAndClearance::RANK_INITIATE['title'];
+        $playerClearanceTitle = $playerClearance ? GuildRanksAndClearance::CLEARANCE_LEVELS[$playerClearance]['title'] : null;
+        $characterClearanceTitle = $characterClearance ? GuildRanksAndClearance::CLEARANCE_LEVELS[$characterClearance]['title'] : null;
         $className = ClassTypes::getClassName($character->class);
         $responseDecoded = $discordApi->createMessageInChannel($dpsParsesChannelId, [
             RequestOptions::FORM_PARAMS => [

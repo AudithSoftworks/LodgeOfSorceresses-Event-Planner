@@ -2,7 +2,7 @@
 
 use App\Models\UserOAuth;
 use App\Services\DiscordApi;
-use App\Services\GuildRankAndClearance;
+use App\Services\GuildRanksAndClearance;
 use App\Services\IpsApi;
 use App\Singleton\RoleTypes;
 use Cloudinary;
@@ -70,7 +70,7 @@ class RerankPlayerOnIpsAndDiscord
             return;
         }
 
-        $memberGroupId = $clearanceLevel ? GuildRankAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['ipsGroupId'] : IpsApi::MEMBER_GROUPS_INITIATE;
+        $memberGroupId = $clearanceLevel ? GuildRanksAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['ipsGroupId'] : IpsApi::MEMBER_GROUPS_INITIATE;
 
         if ($remoteIpsUser->remote_primary_group === IpsApi::MEMBER_GROUPS_SOULSHRIVEN) {
             $remoteSecondaryGroups = [(string)$memberGroupId];
@@ -124,9 +124,9 @@ class RerankPlayerOnIpsAndDiscord
             }
         }
 
-        $newRoleToAssign = $clearanceLevel ? GuildRankAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['discordRole'] : DiscordApi::ROLE_INITIATE;
+        $newRoleToAssign = $clearanceLevel ? GuildRanksAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['discordRole'] : DiscordApi::ROLE_INITIATE;
         if (in_array(DiscordApi::ROLE_SOULSHRIVEN, $usersDiscordRoles, true)) {
-            $newRoleToAssign = $clearanceLevel ? GuildRankAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['discordShrivenRole'] : DiscordApi::ROLE_SOULSHRIVEN;
+            $newRoleToAssign = $clearanceLevel ? GuildRanksAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['discordShrivenRole'] : DiscordApi::ROLE_SOULSHRIVEN;
         }
         $rolesToAssign = array_unique(array_merge($existingSpecialRoles, [$newRoleToAssign]));
         $result = app('discord.api')->modifyGuildMember($remoteDiscordUser->remote_id, ['roles' => $rolesToAssign]);
@@ -139,8 +139,8 @@ class RerankPlayerOnIpsAndDiscord
     private function announceRerankToThePlayerViaDiscordDm(DiscordApi $discordApi, UserOAuth $remoteDiscordUser, int $clearanceLevel): void
     {
         $playerNewRankTitle = $clearanceLevel
-            ? GuildRankAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['title']
-            : GuildRankAndClearance::RANK_INITIATE['title'];
+            ? GuildRanksAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['title']
+            : GuildRanksAndClearance::RANK_INITIATE['title'];
 
         $dmChannel = $discordApi->createDmChannel($remoteDiscordUser->remote_id);
         $responseDecoded = $discordApi->createMessageInChannel($dmChannel['id'], [
@@ -160,8 +160,8 @@ class RerankPlayerOnIpsAndDiscord
     {
         $officerChannelId = config('services.discord.channels.officer_hq');
 
-        $mentionedOfficerGroup = '<@&' . GuildRankAndClearance::RANK_MAGISTER_TEMPLI['discordRole'] . '>';
-        $rankTitle = $clearanceLevel ? GuildRankAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['title'] : GuildRankAndClearance::RANK_INITIATE['title'];
+        $mentionedOfficerGroup = '<@&' . GuildRanksAndClearance::RANK_MAGISTER_TEMPLI['discordRole'] . '>';
+        $rankTitle = $clearanceLevel ? GuildRanksAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['title'] : GuildRanksAndClearance::RANK_INITIATE['title'];
 
         $discordApi->createMessageInChannel($officerChannelId, [
             RequestOptions::FORM_PARAMS => [

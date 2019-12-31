@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Traits\Characters;
+namespace App\Traits\Character;
 
 use App\Models\Character;
 

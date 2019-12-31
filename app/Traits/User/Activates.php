@@ -1,4 +1,6 @@
-<?php namespace App\Traits\Users;
+<?php
+
+namespace App\Traits\User;
 
 use App\Models\User;
 use App\Models\UserActivation;

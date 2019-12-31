@@ -1,5 +1,6 @@
 <?php namespace App\Providers;
 
+use App\Services\GuildRanksAndClearance;
 use Illuminate\Support\ServiceProvider;
 
 class GuildRanksAndClearanceServiceProvider extends ServiceProvider
@@ -19,7 +20,7 @@ class GuildRanksAndClearanceServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton('guild.ranks.clearance', \App\Services\GuildRankAndClearance::class);
+        $this->app->singleton('guild.ranks.clearance', GuildRanksAndClearance::class);
     }
 
     /**

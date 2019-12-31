@@ -7,7 +7,7 @@ use App\Events\DpsParse\DpsParseSubmitted;
 use App\Http\Controllers\Controller;
 use App\Models\DpsParse;
 use App\Models\User;
-use App\Traits\Characters\HasOrIsDpsParse;
+use App\Traits\Character\HasOrIsDpsParse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
