@@ -50,7 +50,7 @@ class Team extends Model
 
     public function members(): BelongsToMany
     {
-        return $this->belongsToMany(Character::class, 'teams_characters')->withTimestamps()->withPivot(['role', 'status', 'accepted_terms']);
+        return $this->belongsToMany(Character::class, 'teams_characters')->withTimestamps()->withPivot(['status', 'accepted_terms']);
     }
 
     public function ledBy(): BelongsTo
