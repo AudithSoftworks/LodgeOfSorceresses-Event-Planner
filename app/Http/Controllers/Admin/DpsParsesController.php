@@ -29,7 +29,9 @@ class DpsParsesController extends Controller
         $dpsParses = DpsParse::query()
             ->with(['owner', 'character'])
             ->whereHas('owner', static function (Builder $queryToGetOauthAccounts) {
-                $queryToGetOauthAccounts->whereHas('linkedAccounts', static function (Builder $queryToGetDiscordOauthAccounts) {
+                $queryToGetOauthAccounts
+                    ->whereNotNull('name')
+                    ->whereHas('linkedAccounts', static function (Builder $queryToGetDiscordOauthAccounts) {
                     $queryToGetDiscordOauthAccounts->where('remote_provider', '=', 'discord');
                 });
             })
