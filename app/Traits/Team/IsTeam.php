@@ -26,9 +26,12 @@ trait IsTeam
     {
         $cacheStore = app('cache.store');
         $newMemberList = collect();
-        foreach ($team->members as $member) {
-            $cacheStore->has('user-' . $member->id); // Recache trigger.
-            $newMemberList->add($cacheStore->get('user-' . $member->id));
+        foreach ($team->members as $character) {
+            $cacheStore->has('character-' . $character->id); // Recache trigger.
+            $cachedCharacter = $cacheStore->get('character-' . $character->id);
+            /** @var \App\Models\Character $cachedCharacter */
+            $cachedCharacter->setRelation('teamMembership', $character->teamMembership);
+            $newMemberList->add($cachedCharacter);
         }
         $team->setRelation('members', $newMemberList);
     }

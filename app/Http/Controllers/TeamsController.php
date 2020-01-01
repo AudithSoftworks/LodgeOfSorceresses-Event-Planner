@@ -146,6 +146,10 @@ class TeamsController extends Controller
         }
 
         $team->name = $request->get('name');
+        if (!app('teams.eligibility')->areAllMembersOfTeamEligibleForPossibleNewTeamTier($team, $request->get('tier'))) { // Team tier increase needs handling.
+            $validator->errors()->add('tier', 'Requested Tier is too high for some members of this team! Consider removing these members before increasing Tier.');
+            throw new ValidationException($validator);
+        }
         $team->tier = $request->get('tier');
         $team->discord_id = $request->get('discord_id');
         $team->created_by = Auth::id();

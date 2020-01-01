@@ -15,4 +15,19 @@ class TeamsAndEligibility
 
         return false;
     }
+
+    public function areAllMembersOfTeamEligibleForPossibleNewTeamTier(Team $team, int $newTier): bool
+    {
+        if ($team->tier > $newTier) {
+            return true;
+        }
+
+        foreach ($team->members as $member) {
+            if ($member->approved_for_tier < $newTier) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

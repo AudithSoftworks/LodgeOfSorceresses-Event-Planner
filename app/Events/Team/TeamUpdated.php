@@ -10,11 +10,6 @@ class TeamUpdated implements TeamNeedsRecacheInterface
     public $team;
 
     /**
-     * @var \App\Models\User
-     */
-    public $owner;
-
-    /**
      * @param \App\Models\Team $team
      */
     public function __construct(Team $team)

@@ -95,6 +95,10 @@ class Character extends Model
 
     public function teams(): BelongsToMany
     {
-        return $this->belongsToMany(Team::class, 'teams_characters')->withTimestamps()->withPivot(['status', 'accepted_terms']);
+        return $this
+            ->belongsToMany(Team::class, 'teams_characters')
+            ->as('teamMembership')
+            ->withTimestamps()
+            ->withPivot(['status', 'accepted_terms']);
     }
 }

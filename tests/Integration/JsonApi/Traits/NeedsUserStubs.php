@@ -63,21 +63,21 @@ trait NeedsUserStubs
         return $adminUser;
     }
 
-    private function stubTierOneMemberUser(): User
+    private function stubTierXMemberUser(int $tier): User
     {
         /** @var UserOAuth $memberUserOauth */
         $memberUserOauth = factory(UserOAuth::class)->states('member')->create([
             'user_id' => factory(User::class)->states('member')->create()
         ]);
-        /** @var \App\Models\User $tierOneMemberUser */
-        $tierOneMemberUser = $memberUserOauth->owner()->first();
-        $tierOneCharacter = factory(Character::class)->states('tier-1')->create([
-            'user_id' => $tierOneMemberUser
+        /** @var \App\Models\User $tierXMemberUser */
+        $tierXMemberUser = $memberUserOauth->owner()->first();
+        $tierXCharacter = factory(Character::class)->states('tier-' . $tier)->create([
+            'user_id' => $tierXMemberUser
         ]);
-        $tierOneMemberUser->setRelation('characters', collect([$tierOneCharacter]));
-        $tierOneMemberUser->save();
+        $tierXMemberUser->setRelation('characters', collect([$tierXCharacter]));
+        $tierXMemberUser->save();
 
-        return $tierOneMemberUser;
+        return $tierXMemberUser;
     }
 
     private function stubTierFourMemberUser(): void

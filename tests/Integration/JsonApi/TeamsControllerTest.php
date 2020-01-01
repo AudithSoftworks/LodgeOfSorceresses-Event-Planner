@@ -170,7 +170,7 @@ class TeamsControllerTest extends IlluminateTestCase
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
 
         # Case 4: Non-eligible team leader
-        $tierOneMember = $this->stubTierOneMemberUser();
+        $tierOneMember = $this->stubTierXMemberUser(1);
         $response = $this
             ->actingAs(static::$adminUser)
             ->postJson('/api/teams', [

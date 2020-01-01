@@ -41,6 +41,14 @@ $factory->state(Character::class, 'tier-1', [
     'approved_for_tier' => 1,
 ]);
 
+$factory->state(Character::class, 'tier-2', [
+    'approved_for_tier' => 2,
+]);
+
+$factory->state(Character::class, 'tier-3', [
+    'approved_for_tier' => 3,
+]);
+
 $factory->state(Character::class, 'tier-4', [
     'approved_for_tier' => 4,
 ]);
