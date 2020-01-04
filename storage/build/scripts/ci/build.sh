@@ -81,4 +81,6 @@ docker-compose exec php bash -c "
 #    ./vendor/bin/phpcov merge ./storage/coverage --clover ./storage/coverage/coverage-clover-merged.xml
 #    ./vendor/bin/phpunit --debug --verbose --no-coverage --testsuite='SauceWebDriver';
     npx cypress run --record --key ${CYPRESS_KEY};
+
+    NODE_ENV=production npm run build;
 ";
