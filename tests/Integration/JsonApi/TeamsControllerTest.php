@@ -6,23 +6,32 @@ use App\Events\Team\TeamDeleted;
 use App\Events\Team\TeamUpdated;
 use App\Tests\IlluminateTestCase;
 use App\Tests\Integration\JsonApi\Traits\NeedsUserStubs;
-use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Event;
 
 class TeamsControllerTest extends IlluminateTestCase
 {
     use NeedsUserStubs;
 
-    public static function setUpBeforeClass(): void
+    /**
+     * @var bool
+     */
+    protected static $setupHasRunOnce = false;
+
+    public function setUp(): void
     {
-        app(ConsoleKernel::class)->call('migrate:refresh');
+        parent::setUp();
+        if (!static::$setupHasRunOnce) {
+            Artisan::call('migrate:fresh');
+            static::$setupHasRunOnce = true;
+        }
     }
 
     public function testStoreForFailure(): void
     {
         $this->stubTierFourMemberUser();
-        $tierFourAdmin = $this->stubTierFourAdminUser();
+        $this->stubTierFourAdminUser();
         $tierOneAdmin = $this->stubTierOneAdminUser();
 
         # Case 1: No authentication
@@ -30,7 +39,7 @@ class TeamsControllerTest extends IlluminateTestCase
             ->withoutMiddleware()
             ->postJson('/api/teams', [
                 'tier' => 7,
-                'led_by' => static::$adminUser,
+                'led_by' => static::$adminUser->id,
             ]);
         $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
 
@@ -48,11 +57,11 @@ class TeamsControllerTest extends IlluminateTestCase
 
         # Case 3: Invalid input
         $response = $this
-            ->actingAs($tierFourAdmin)
+            ->actingAs(static::$adminUser)
             ->postJson('/api/teams', [
                 'tier' => 7,
                 'discord_id' => 'bogus',
-                'led_by' => $tierFourAdmin,
+                'led_by' => static::$adminUser,
             ]);
         $responseOriginalContent = $response->getOriginalContent();
         $this->assertCount(2, $responseOriginalContent);

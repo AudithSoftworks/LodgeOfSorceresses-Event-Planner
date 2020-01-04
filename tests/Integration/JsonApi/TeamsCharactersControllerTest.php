@@ -3,13 +3,14 @@
 namespace App\Tests\Integration\JsonApi;
 
 use App\Events\Team\TeamUpdated;
+use App\Models\Character;
 use App\Models\Team;
 use App\Tests\IlluminateTestCase;
 use App\Tests\Integration\JsonApi\Traits\NeedsTeamStubs;
 use App\Tests\Integration\JsonApi\Traits\NeedsUserStubs;
-use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Event;
 
 class TeamsCharactersControllerTest extends IlluminateTestCase
@@ -17,20 +18,86 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
     use NeedsTeamStubs, NeedsUserStubs;
 
     /**
+     * @var bool
+     */
+    protected static $setupHasRunOnce = false;
+
+    /**
      * @var \App\Models\Team
      */
     protected static $team;
 
-    public static function setUpBeforeClass(): void
+    public function setUp(): void
     {
-        app(ConsoleKernel::class)->call('migrate:refresh');
+        parent::setUp();
+        if (!static::$setupHasRunOnce) {
+            Artisan::call('migrate:fresh');
+            static::$setupHasRunOnce = true;
+        }
+    }
+
+    public function testStoreForFailure(): void
+    {
+        Event::fake([TeamUpdated::class]);
+
+        static::$team = $this->stubTierXAdminUserTeam(2);
+        $this->stubTierFourAdminUser();
+
+        # Case 1: No authentication
+        $response = $this
+            ->withoutMiddleware()
+            ->postJson('/api/teams/' . static::$team->id . '/characters', [
+                'characterIds' => [
+                    static::$team->ledBy->characters->first()->id,
+                ],
+            ]);
+        $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
+
+        # Case 2: Invalid input
+        $response = $this
+            ->actingAs(static::$team->ledBy)
+            ->withoutMiddleware()
+            ->postJson('/api/teams/' . static::$team->id . '/characters', [
+                'characterIds' => ['a'],
+            ]);
+        $responseOriginalContent = $response->getOriginalContent();
+        $this->assertCount(2, $responseOriginalContent);
+        $this->assertCount(1, $responseOriginalContent['errors']);
+        $response->assertJsonPath('message', 'The given data was invalid.');
+        $response->assertJsonFragment(['characterIds.0' => [0 => 'The characterIds.0 must be a number.']]);
+        $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+
+        # Case 3: Team doesn't exist
+        $response = $this
+            ->actingAs(static::$team->ledBy)
+            ->withoutMiddleware()
+            ->postJson('/api/teams/1000/characters', [
+                'characterIds' => [
+                    static::$team->ledBy->characters->first()->id,
+                ],
+            ]);
+        $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
+        $response->assertJsonPath('message', 'Team not found!');
+
+        # Case 4: Non-leader/non-creator attempting to invite.
+        $response = $this
+            ->actingAs(static::$adminUser)
+            ->withoutMiddleware()
+            ->postJson('/api/teams/' . static::$team->id . '/characters', [
+                'characterIds' => [
+                    static::$team->ledBy->characters->first()->id,
+                ],
+            ]);
+        $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
+        $response->assertJsonPath('message', 'Only team leader or creator can invite new members!');
+
+        Event::assertNotDispatched(TeamUpdated::class);
     }
 
     public function testStoreForSuccess(): void
     {
         Event::fake([TeamUpdated::class]);
 
-        static::$team = $this->stubTierXAdminUserTeam(2);
         $tierOneMemberUser = $this->stubTierXMemberUser(1);
         $tierTwoMemberUser = $this->stubTierXMemberUser(2);
         $tierThreeMemberUser = $this->stubTierXMemberUser(3);
@@ -61,6 +128,81 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
         }
 
         Event::assertDispatched(TeamUpdated::class);
+    }
+
+    public function testUpdateForFailure(): void
+    {
+        Event::fake([TeamUpdated::class]);
+
+        $teamLeader = static::$team->ledBy->loadMissing('characters');
+        /** @var \App\Models\Character $teamLeaderCharacter */
+        $teamLeaderCharacter = $teamLeader->characters->first();
+        $this->stubTierFourAdminUser();
+
+        # Case 1: No authentication
+        $response = $this
+            ->withoutMiddleware()
+            ->putJson('/api/teams/' . static::$team->id . '/characters/' . $teamLeaderCharacter->id, [
+                'accepted_terms' => '1',
+            ]);
+        $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
+
+        # Case 2: Invalid input
+        $response = $this
+            ->actingAs(static::$team->ledBy)
+            ->withoutMiddleware()
+            ->putJson('/api/teams/' . static::$team->id . '/characters/' . $teamLeaderCharacter->id);
+        $responseOriginalContent = $response->getOriginalContent();
+        $this->assertCount(2, $responseOriginalContent);
+        $this->assertCount(1, $responseOriginalContent['errors']);
+        $response->assertJsonPath('message', 'The given data was invalid.');
+        $response->assertJsonPath('errors.accepted_terms.0', 'The accepted terms field is required.');
+        $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+
+        $response = $this
+            ->actingAs(static::$team->ledBy)
+            ->withoutMiddleware()
+            ->putJson('/api/teams/' . static::$team->id . '/characters/' . $teamLeaderCharacter->id, [
+                'accepted_terms' => '3',
+            ]);
+        $responseOriginalContent = $response->getOriginalContent();
+        $this->assertCount(2, $responseOriginalContent);
+        $this->assertCount(1, $responseOriginalContent['errors']);
+        $response->assertJsonPath('message', 'The given data was invalid.');
+        $response->assertJsonPath('errors.accepted_terms.0', 'Please make sure you accept the terms of membership.');
+        $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+
+        # Case 3: Team membership record doesn't exist
+        $response = $this
+            ->actingAs(static::$team->ledBy)
+            ->withoutMiddleware()
+            ->putJson('/api/teams/' . static::$team->id . '/characters/1000', [
+                'accepted_terms' => '1',
+            ]);
+        $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
+        $response->assertJsonPath('message', 'Team has no such member!');
+
+        # Case 4: Managing someone else's team membership options
+        $response = $this
+            ->actingAs(static::$adminUser)
+            ->withoutMiddleware()
+            ->putJson('/api/teams/' . static::$team->id . '/characters/' . $teamLeaderCharacter->id, [
+                'accepted_terms' => '1',
+            ]);
+        $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
+        $response->assertJsonPath('message', 'You can\'t manage someone else\'s team membership options!');
+
+        # Case 5: Team doesn't exist
+        $response = $this
+            ->actingAs(static::$team->ledBy)
+            ->withoutMiddleware()
+            ->putJson('/api/teams/1000/characters/' . $teamLeaderCharacter->id, [
+                'accepted_terms' => '1',
+            ]);
+        $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
+        $response->assertJsonPath('message', 'Team not found!');
+
+        Event::assertNotDispatched(TeamUpdated::class);
     }
 
     public function testUpdateForSuccess(): void
@@ -99,6 +241,25 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
         Event::assertDispatched(TeamUpdated::class);
     }
 
+    public function testShowForFailure(): void
+    {
+        # Case 1: Team doesn't exist
+        $response = $this
+            ->actingAs(static::$team->ledBy)
+            ->withoutMiddleware()
+            ->getJson('/api/teams/1000/characters/1000');
+        $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
+        $response->assertJsonPath('message', 'Team not found!');
+
+        # Case 1: Team doesn't exist
+        $response = $this
+            ->actingAs(static::$team->ledBy)
+            ->withoutMiddleware()
+            ->getJson('/api/teams/' . static::$team->id . '/characters/1000');
+        $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
+        $response->assertJsonPath('message', 'Team has no such member!');
+    }
+
     public function testShowForSuccess(): void
     {
         $teamLeader = static::$team->ledBy->loadMissing('characters');
@@ -115,5 +276,61 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
         $this->assertInstanceOf(Pivot::class, $teamMembershipPivotFromResponse);
         $response->assertJsonPath('status', 1);
         $response->assertJsonPath('accepted_terms', 1);
+    }
+
+    public function testDestroyForFailure(): void
+    {
+        Event::fake([TeamUpdated::class]);
+
+        # Case 1: No authentication
+        $response = $this
+            ->withoutMiddleware()
+            ->deleteJson('/api/teams/' . static::$team->id . '/characters/' . static::$team->ledBy->characters->first()->id);
+        $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
+
+        # Case 2: Team doesn't exist
+        $response = $this
+            ->actingAs(static::$team->ledBy)
+            ->withoutMiddleware()
+            ->deleteJson('/api/teams/1000/characters/' . static::$team->ledBy->characters->first()->id);
+        $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
+        $response->assertJsonPath('message', 'Team not found!');
+
+        # Case 3: Only team leader/creator can remove members
+        $response = $this
+            ->actingAs(static::$adminUser)
+            ->withoutMiddleware()
+            ->deleteJson('/api/teams/' . static::$team->id . '/characters/' . static::$team->ledBy->characters->first()->id);
+        $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
+        $response->assertJsonPath('message', 'Only team leader or creator can remove members!');
+
+        $response = $this
+            ->actingAs(static::$team->ledBy)
+            ->withoutMiddleware()
+            ->deleteJson('/api/teams/' . static::$team->id . '/characters/1000');
+        $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
+        $response->assertJsonPath('message', 'Team has no such member!');
+
+        Event::assertNotDispatched(TeamUpdated::class);
+    }
+
+    public function testDestroyForSuccess(): void
+    {
+        Event::fake([TeamUpdated::class]);
+
+        $response = $this
+            ->actingAs(static::$team->ledBy)
+            ->withoutMiddleware()
+            ->deleteJson('/api/teams/' . static::$team->id . '/characters/' . static::$team->ledBy->characters->first()->id);
+        $response->assertStatus(JsonResponse::HTTP_NO_CONTENT);
+        $response->assertNoContent();
+
+        static::$team->refresh();
+        $this->assertEquals(3, static::$team->members->count());
+        $this->assertEquals(0, static::$team->members->filter(static function (Character $character) {
+            return $character->owner->id === static::$team->ledBy->id;
+        })->count());
+
+        Event::assertDispatched(TeamUpdated::class);
     }
 }

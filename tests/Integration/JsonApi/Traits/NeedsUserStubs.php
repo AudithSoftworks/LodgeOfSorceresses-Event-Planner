@@ -83,16 +83,7 @@ trait NeedsUserStubs
     private function stubTierFourMemberUser(): void
     {
         if (!static::$tierFourMemberUser) {
-            /** @var UserOAuth $memberUserOauth */
-            $memberUserOauth = factory(UserOAuth::class)->states('member')->create([
-                'user_id' => factory(User::class)->states('member')->create()
-            ]);
-            static::$tierFourMemberUser = $memberUserOauth->owner()->first();
-            $tierFourCharacter = factory(Character::class)->states('tier-4')->create([
-                'user_id' => static::$tierFourMemberUser
-            ]);
-            static::$tierFourMemberUser->setRelation('characters', collect([$tierFourCharacter]));
-            static::$tierFourMemberUser->save();
+            static::$tierFourMemberUser = $this->stubTierXMemberUser(4);
         }
     }
 

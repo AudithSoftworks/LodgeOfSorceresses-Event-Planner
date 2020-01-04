@@ -99,7 +99,7 @@ class TeamsController extends Controller
         Cache::has('team-' . $teamId); // Trigger Recache listener.
         $team = Cache::get('team-' . $teamId);
         if (!$team) {
-            return response()->json(['message' => 'Team not found!'])->setStatusCode(404);
+            return response()->json(['message' => 'Team not found!'])->setStatusCode(JsonResponse::HTTP_NOT_FOUND);
         }
 
         return response()->json($team);
