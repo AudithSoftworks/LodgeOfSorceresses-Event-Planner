@@ -2,7 +2,7 @@
 
 docker-compose pull;
 docker-compose down;
-docker system prune --force;
+docker system prune --force --volumes;
 docker-compose up -d;
 docker-compose ps;
 
