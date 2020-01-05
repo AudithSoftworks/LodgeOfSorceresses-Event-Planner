@@ -22,7 +22,6 @@ class Home extends PureComponent {
     render = () => {
         const { me, location } = this.props;
         if (!me) {
-console.log('REDIRECT', me);
             return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
         const accountStatusOptions = [<DiscordOauthAccount key='discord-oauth-status' />];
