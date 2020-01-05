@@ -4,7 +4,7 @@ import(
     '../../../sass/_header.scss'
 );
 
-import { faCalendarAlt, faChess, faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faCampfire } from '@fortawesome/pro-light-svg-icons';
+import { faCalendarAlt, faCampfire, faChess, faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faUsersClass } from '@fortawesome/pro-light-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome/index';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -49,7 +49,7 @@ class Header extends Component {
                 </NavLink>
             );
         }
-        if (authorizeUser(this.props) && me.name && me.name.length ) {
+        if (authorizeUser(this.props) && me.name && me.name.length) {
             navLinks.push(
                 <NavLink to="/events" activeClassName="active" title="Calendar">
                     <FontAwesomeIcon icon={faCalendarAlt} size="lg" />
@@ -60,6 +60,12 @@ class Header extends Component {
                 <NavLink to="/users" activeClassName="active" title="Roster">
                     <FontAwesomeIcon icon={faUsers} size="lg" />
                     <span className="d-none d-sm-inline-block">Roster</span>
+                </NavLink>
+            );
+            navLinks.push(
+                <NavLink to="/teams" activeClassName="active" title="Teams">
+                    <FontAwesomeIcon icon={faUsersClass} size="lg" />
+                    <span className="d-none d-sm-inline-block">Teams</span>
                 </NavLink>
             );
 
