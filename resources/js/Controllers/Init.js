@@ -41,13 +41,18 @@ class Init extends PureComponent {
         this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
     };
 
+    setRedirectUri = location => {
+        if (!localStorage.getItem('redirectUri') && location.state && location.state.prevPath) {
+            localStorage.setItem('redirectUri', location.state.prevPath);
+        }
+    };
+
     renderPrechecksFailedNotification = () => {
         const { dispatch } = this.props;
         const message = [
-            <Fragment key="f-1">Pre-checks failed! First, make sure your ESO ID is set!</Fragment>,
-            <Fragment key="f-2">Then, make sure you have <b>Soulshriven</b> or any member tag (<b>Initiate</b> etc) on Lodge Discord server.</Fragment>,
-            <Fragment key="f-3">Please contact guild leader on Discord if you need help with these issues.</Fragment>,
-            <Fragment key="f-4">You won't be able to use Planner until they are addressed!</Fragment>,
+            <Fragment key="f-1">Pre-check failed! Make sure you have <b>Soulshriven</b> or <b>Member</b> tag on Lodge Discord server.</Fragment>,
+            <Fragment key="f-3">Please contact guild leader on Discord if you need a help.</Fragment>,
+            <Fragment key="f-4">You won't be able to use Guild Planner until this is addressed!</Fragment>,
         ].reduce((acc, curr) => [acc, ' ', curr]);
         dispatch(
             errorsAction(
@@ -65,10 +70,7 @@ class Init extends PureComponent {
     };
 
     renderLoginForm = () => {
-        const { location } = this.props;
-        if (location.state && location.state.prevPath) {
-            localStorage.setItem('redirectUri', location.state.prevPath);
-        }
+        this.setRedirectUri(this.props.location);
 
         return (
             <form className="col-md-24 d-flex flex-row flex-wrap p-0" onSubmit={this.handleSubmit} key="characterCreationForm">
@@ -87,23 +89,22 @@ class Init extends PureComponent {
         const { me, myCharacters, sets, skills, content } = this.props;
         if (me === null) {
             return [this.renderLoginForm()];
-        } else {
-            if (me.linkedAccountsParsed && me.linkedAccountsParsed.discord && !authorizeUser(this.props)) {
-                this.renderPrechecksFailedNotification();
-            } else if (authorizeUser(this.props)) {
-                if (!sets || !skills || !content || !myCharacters) {
-                    return [<Loading key="loading" message="Loading data..." />, <Notification key="notifications" />];
-                }
-            }
-
-            let redirectUri = localStorage.getItem('redirectUri');
-            localStorage.removeItem('redirectUri');
-            if (!redirectUri || redirectUri === '') {
-                redirectUri = '/dashboard';
-            }
-
-            return <Redirect to={redirectUri} />;
         }
+
+        if (authorizeUser(this.props)) {
+            if (!sets || !skills || !content || !myCharacters) {
+                this.setRedirectUri(this.props.location);
+                return [<Loading key="loading" message="Loading data..." />, <Notification key="notifications" />];
+            }
+        }
+
+        let redirectUri = localStorage.getItem('redirectUri');
+        localStorage.removeItem('redirectUri');
+        if (!redirectUri || redirectUri === '') {
+            redirectUri = '/dashboard';
+        }
+
+        return <Redirect to={redirectUri} />;
     };
 }
 
