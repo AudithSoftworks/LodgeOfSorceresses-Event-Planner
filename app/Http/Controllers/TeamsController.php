@@ -82,8 +82,9 @@ class TeamsController extends Controller
         $team->led_by = $ledBy->id;
 
         $team->save();
+        Cache::has('team-' . $team->id); // Recache trigger.
 
-        return response()->json($team, JsonResponse::HTTP_CREATED);
+        return response()->json(Cache::get('team-' . $team->id), JsonResponse::HTTP_CREATED);
     }
 
     /**
@@ -166,8 +167,9 @@ class TeamsController extends Controller
         $team->led_by = $ledBy->id;
 
         $team->save();
+        Cache::has('team-' . $team->id); // Recache trigger.
 
-        return response()->json($team, JsonResponse::HTTP_OK);
+        return response()->json(Cache::get('team-' . $team->id), JsonResponse::HTTP_OK);
     }
 
     /**

@@ -107,7 +107,7 @@ class TeamsControllerTest extends IlluminateTestCase
         /** @var \App\Models\Team $responseOriginalContent */
         $responseOriginalContent = $response->getOriginalContent();
         $this->assertTrue($responseOriginalContent->exists);
-        $this->assertTrue($responseOriginalContent->wasRecentlyCreated);
+        $this->assertFalse($responseOriginalContent->wasRecentlyCreated); // Data returned is from cache, thus not new.
         $this->assertIsInt($responseOriginalContent->id);
     }
 

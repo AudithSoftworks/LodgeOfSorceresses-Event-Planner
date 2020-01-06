@@ -136,6 +136,8 @@ class Recache
             $this->parseCreatedBy($team);
             $this->parseLedBy($team);
             $this->parseMembers($team);
+            $this->calculateUserRank($team->ledBy);
+            $this->calculateUserRank($team->createdBy);
 
             return $team;
         }

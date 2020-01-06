@@ -14,7 +14,7 @@ import axios from "../../vendor/axios";
 import { teams } from "../../vendor/data";
 
 class TeamForm extends PureComponent {
-    tierOptions = [{ value: 1, label: 'Tier-1' }, { value: 2, label: 'Tier-2' }, { value: 3, label: 'Tier-3' }, { value: 4, label: 'Tier-4' }];
+    tierOptions = [{ value: '1', label: 'Tier-1' }, { value: '2', label: 'Tier-2' }, { value: '3', label: 'Tier-3' }, { value: '4', label: 'Tier-4' }];
 
     constructor(props) {
         super(props);
@@ -113,7 +113,7 @@ class TeamForm extends PureComponent {
                     <label>Content Tier:</label>
                     <Select
                         options={this.tierOptions}
-                        defaultValue={team ? this.tierOptions.filter(option => option.value === team.tier) : this.tierOptions[0]}
+                        defaultValue={team ? this.tierOptions.filter(option => team.tier === option.value) : this.tierOptions[0]}
                         components={Animated}
                         name="tier"
                     />
@@ -135,7 +135,7 @@ class TeamForm extends PureComponent {
                     <label>Team Leader</label>
                     <Select
                         options={userOptions}
-                        defaultValue={team ? userOptions.filter(option => team.led_by.id === option.id) : null}
+                        defaultValue={team ? userOptions.filter(option => team.led_by.id === option.value) : null}
                         placeholder="Team Leader..."
                         components={Animated}
                         name="led_by"

@@ -120,7 +120,7 @@ export const putTeam = (cancelToken, teamId, data) => axios.post('/api/teams/' +
     },
 }).then(
     response => {
-        if (response.status === 204) {
+        if (response.data) {
             return normalize(response.data, schema.team)
         }
 
