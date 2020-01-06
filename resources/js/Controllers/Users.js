@@ -28,7 +28,7 @@ class Users extends PureComponent {
                 soulshriven: true,
             },
             allUsers: null,
-            currentUser: null
+            user: null
         };
         this.filter = filter.bind(this);
     }
