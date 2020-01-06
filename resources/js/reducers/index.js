@@ -8,6 +8,7 @@ import notificationsReducer from './notifications';
 import selectedCharacterReducer from "./selected-character";
 import setsReducer from './sets';
 import skillsReducer from './skills';
+import teamsReducer from "./teams";
 import userReducer from './user';
 
 const rootReducer = history =>
@@ -20,6 +21,7 @@ const rootReducer = history =>
         content: contentReducer,
         selectedCharacter: selectedCharacterReducer,
         myCharacters: myCharactersReducer,
+        teams: teamsReducer,
         notifications: notificationsReducer,
         router: connectRouter(history),
     });

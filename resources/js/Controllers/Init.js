@@ -3,14 +3,14 @@ import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { faUserShield } from '@fortawesome/pro-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import getContentAction from '../actions/get-content';
 import getMyCharactersAction from '../actions/get-my-characters';
 import getSetsAction from '../actions/get-sets';
 import getSkillsAction from '../actions/get-skills';
-import { errorsAction } from '../actions/notifications';
+import getTeamsAction from "../actions/get-teams";
 import Loading from '../Components/Loading';
 import Notification from '../Components/Notification';
 import { authorizeUser } from '../helpers';
@@ -20,7 +20,7 @@ library.add(faDiscord, faUserShield);
 
 class Init extends PureComponent {
     componentDidMount = () => {
-        const { myCharacters, sets, skills, content } = this.props;
+        const { myCharacters, sets, skills, content, teams } = this.props;
         if (authorizeUser(this.props)) {
             if (!myCharacters) {
                 this.props.getMyCharactersAction();
@@ -34,6 +34,9 @@ class Init extends PureComponent {
             if (!content) {
                 this.props.getContentAction();
             }
+            if (!teams) {
+                this.props.getTeamsAction();
+            }
         }
     };
 
@@ -45,28 +48,6 @@ class Init extends PureComponent {
         if (!localStorage.getItem('redirectUri') && location.state && location.state.prevPath) {
             localStorage.setItem('redirectUri', location.state.prevPath);
         }
-    };
-
-    renderPrechecksFailedNotification = () => {
-        const { dispatch } = this.props;
-        const message = [
-            <Fragment key="f-1">Pre-check failed! Make sure you have <b>Soulshriven</b> or <b>Member</b> tag on Lodge Discord server.</Fragment>,
-            <Fragment key="f-3">Please contact guild leader on Discord if you need a help.</Fragment>,
-            <Fragment key="f-4">You won't be able to use Guild Planner until this is addressed!</Fragment>,
-        ].reduce((acc, curr) => [acc, ' ', curr]);
-        dispatch(
-            errorsAction(
-                message,
-                {
-                    container: 'bottom-center',
-                    animationIn: ['animated', 'bounceInDown'],
-                    animationOut: ['animated', 'bounceOutDown'],
-                    dismiss: { duration: 60000 },
-                    width: 450,
-                },
-                'access-denied'
-            )
-        );
     };
 
     renderLoginForm = () => {
@@ -86,13 +67,13 @@ class Init extends PureComponent {
     };
 
     render = () => {
-        const { me, myCharacters, sets, skills, content } = this.props;
+        const { me, myCharacters, sets, skills, content, teams } = this.props;
         if (me === null) {
             return [this.renderLoginForm()];
         }
 
         if (authorizeUser(this.props)) {
-            if (!sets || !skills || !content || !myCharacters) {
+            if (!sets || !skills || !content || !myCharacters || !teams) {
                 this.setRedirectUri(this.props.location);
                 return [<Loading key="loading" message="Loading data..." />, <Notification key="notifications" />];
             }
@@ -123,6 +104,7 @@ Init.propTypes = {
     getSkillsAction: PropTypes.func.isRequired,
     getContentAction: PropTypes.func.isRequired,
     getMyCharactersAction: PropTypes.func.isRequired,
+    getTeamsAction: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -133,6 +115,7 @@ const mapStateToProps = state => ({
     skills: state.getIn(['skills']),
     content: state.getIn(['content']),
     myCharacters: state.getIn(['myCharacters']),
+    teams: state.getIn(['teams']),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -141,6 +124,7 @@ const mapDispatchToProps = dispatch => ({
     getSkillsAction: () => dispatch(getSkillsAction()),
     getContentAction: () => dispatch(getContentAction()),
     getMyCharactersAction: () => dispatch(getMyCharactersAction()),
+    getTeamsAction: () => dispatch(getTeamsAction()),
 });
 
 export default connect(

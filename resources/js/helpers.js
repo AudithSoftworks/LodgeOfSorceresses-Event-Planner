@@ -56,6 +56,18 @@ export const deleteMyCharacter = function (event) {
     }
 };
 
+export const deleteTeam = function (event) {
+    event.preventDefault();
+    if (confirm("Are you sure you want to delete this team?")) {
+        const currentTarget = event.currentTarget;
+        const teamId = parseInt(currentTarget.getAttribute("data-id"));
+        if (teamId) {
+            const { deleteTeamAction } = this.props;
+            deleteTeamAction(teamId);
+        }
+    }
+};
+
 export const rerankCharacter = function (event) {
     event.preventDefault();
     if (confirm("Are you sure you want to **Rerank** this Character?")) {

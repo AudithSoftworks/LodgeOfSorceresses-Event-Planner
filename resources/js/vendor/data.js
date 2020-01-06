@@ -128,3 +128,13 @@ export const character = PropTypes.shape({
 });
 
 export const characters = PropTypes.arrayOf(character);
+
+export const team = PropTypes.shape({
+    id: PropTypes.number,
+    led_by: user,
+    created_by: user,
+    discord_id: PropTypes.number,
+    members: PropTypes.arrayOf(character),
+});
+
+export const teams = PropTypes.arrayOf(team);

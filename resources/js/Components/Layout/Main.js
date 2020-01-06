@@ -77,6 +77,20 @@ const EventForm = React.lazy(() =>
         '../../Controllers/Forms/EventForm'
     )
 );
+const Teams = React.lazy(() =>
+    import(
+        /* webpackPrefetch: true */
+        /* webpackChunkName: "controllers-teams" */
+        '../../Controllers/Teams'
+        )
+);
+const TeamForm = React.lazy(() =>
+    import(
+        /* webpackPrefetch: true */
+        /* webpackChunkName: "controllers-team_form" */
+        '../../Controllers/Forms/TeamForm'
+        )
+);
 
 const AdminHome = React.lazy(() =>
     import(
@@ -101,6 +115,8 @@ class Main extends PureComponent {
             <Route exact path="/characters/:id" component={props => <Characters {...props} />} key="/characters/:id" />,
             <Route exact path="/events" component={props => <Events {...props} />} key="/events" />,
             <Route exact path="/events/create" component={props => <EventForm {...props} />} key="/events/create" />,
+            <Route exact path="/teams" component={props => <Teams {...props} />} key="/teams" />,
+            <Route exact path="/teams/create" component={props => <TeamForm {...props} />} key="/teams/create" />,
             <Route
                 key="/@me/characters"
                 path="/@me/characters"

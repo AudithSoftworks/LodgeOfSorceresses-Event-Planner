@@ -17,3 +17,6 @@ export const listOfCharacters = new schema.Array(character);
 
 export const dpsParse = new schema.Entity('dpsParses');
 export const listOfDpsParses = new schema.Array(dpsParse);
+
+export const team = new schema.Entity('teams');
+export const listOfTeams = new schema.Array(team);

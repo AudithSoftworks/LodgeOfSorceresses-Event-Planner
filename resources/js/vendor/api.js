@@ -102,3 +102,45 @@ export const getCharacter = (cancelToken, characterId) => axios.get('/api/charac
 }).catch(error => {
     throw error;
 });
+
+export const getTeams = cancelToken => axios.get('/api/teams', {
+    cancelToken: cancelToken.token,
+}).then(response => {
+    if (response.data) {
+        return normalize(response.data, schema.listOfTeams)
+    }
+
+    return null;
+});
+
+export const putTeam = (cancelToken, teamId, data) => axios.post('/api/teams/' + teamId, data, {
+    cancelToken: cancelToken.token,
+    headers: {
+        'X-HTTP-Method-Override': 'PUT',
+    },
+}).then(
+    response => {
+        if (response.status === 204) {
+            return normalize(response.data, schema.team)
+        }
+
+        return null;
+    }
+
+).catch(error => {
+    throw error;
+});
+
+export const postTeam = (cancelToken, data) => axios.post('/api/teams', data, {
+    cancelToken: cancelToken.token,
+}).then(
+    response => {
+        if (response.data) {
+            return normalize(response.data, schema.team)
+        }
+
+        return null;
+    }
+).catch(error => {
+    throw error;
+});
