@@ -49,7 +49,7 @@ class Header extends Component {
                 </NavLink>
             );
         }
-        if (authorizeUser(this.props) && me.name && me.name.length) {
+        if (authorizeUser(this.props, true)) {
             navLinks.push(
                 <NavLink to="/events" activeClassName="active" title="Calendar">
                     <FontAwesomeIcon icon={faCalendarAlt} size="lg" />

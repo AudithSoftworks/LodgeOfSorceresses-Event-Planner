@@ -144,3 +144,11 @@ export const postTeam = (cancelToken, data) => axios.post('/api/teams', data, {
 ).catch(error => {
     throw error;
 });
+
+export const deleteTeam = (cancelToken, teamId) => axios.delete('/api/teams/' + teamId, {
+    cancelToken: cancelToken.token,
+}).then(
+    response => response.status === 204
+).catch(error => {
+    throw error;
+});

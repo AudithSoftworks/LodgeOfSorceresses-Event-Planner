@@ -18,6 +18,8 @@ use Illuminate\Validation\ValidationException;
 class TeamsCharactersController extends Controller
 {
     /**
+     * Endpoint to invite a team member.
+     *
      * @param \Illuminate\Http\Request $request
      * @param int                      $teamId
      *
@@ -73,6 +75,8 @@ class TeamsCharactersController extends Controller
     }
 
     /**
+     * Endpoint to show a team membership record.
+     *
      * @param int $teamId
      * @param int $characterId
      *
@@ -103,6 +107,8 @@ class TeamsCharactersController extends Controller
     }
 
     /**
+     * Endpoint for team member to update their membership record.
+     *
      * @param \Illuminate\Http\Request $request
      * @param int                      $teamId
      * @param int                      $characterId
@@ -156,6 +162,8 @@ class TeamsCharactersController extends Controller
     }
 
     /**
+     * Endpoint to remove a team member.
+     *
      * @param int $teamId
      * @param int $characterId
      *

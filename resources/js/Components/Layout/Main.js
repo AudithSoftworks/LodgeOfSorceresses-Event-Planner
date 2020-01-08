@@ -111,8 +111,8 @@ class Main extends PureComponent {
     fetchUserRoutes = () => {
         return authorizeUser(this.props, true) ? [
             <Route exact path="/users" component={props => <Users {...props} />} key="/users" />,
-            <Route exact path="/users/:id" component={props => <Users {...props} />} key="/users/:id" />,
-            <Route exact path="/characters/:id" component={props => <Characters {...props} />} key="/characters/:id" />,
+            <Route exact path="/users/:id(\d+)" component={props => <Users {...props} />} key="/users/:id" />,
+            <Route exact path="/characters/:id(\d+)" component={props => <Characters {...props} />} key="/characters/:id" />,
             <Route exact path="/events" component={props => <Events {...props} />} key="/events" />,
             <Route exact path="/events/create" component={props => <EventForm {...props} />} key="/events/create" />,
             <Route
@@ -121,8 +121,9 @@ class Main extends PureComponent {
                 render={({ match: { url } }) => (
                     <Fragment>
                         <Route exact path={url} component={props => <Teams {...props} />} />
-                        <Route path={url + '/create'} component={props => <TeamForm {...props} />} />
-                        <Route path={url + '/:id/edit'} component={props => <TeamForm {...props} />} />
+                        <Route exact path={url + '/create'} component={props => <TeamForm {...props} />} />
+                        <Route path={url + '/:id(\\d+)/edit'} component={props => <TeamForm {...props} />} />
+                        <Route exact path={url + '/:id(\\d+)'} component={props => <Teams {...props} />} />
                     </Fragment>
                 )}
             />,
@@ -133,9 +134,9 @@ class Main extends PureComponent {
                     <Fragment>
                         <Route exact path={url} component={props => <MyCharacters {...props} />} />
                         <Route path={url + '/create'} component={props => <CharacterForm {...props} />} />
-                        <Route path={url + '/:id/edit'} component={props => <CharacterForm {...props} />} />
-                        <Route exact path={url + '/:id/parses'} component={props => <DpsParses {...props} />} />
-                        <Route path={url + '/:id/parses/create'} component={props => <DpsParseForm {...props} />} />
+                        <Route path={url + '/:id(\\d+)/edit'} component={props => <CharacterForm {...props} />} />
+                        <Route path={url + '/:id(\\d+)/parses/create'} component={props => <DpsParseForm {...props} />} />
+                        <Route exact path={url + '/:id(\\d+)/parses'} component={props => <DpsParses {...props} />} />
                     </Fragment>
                 )}
             />

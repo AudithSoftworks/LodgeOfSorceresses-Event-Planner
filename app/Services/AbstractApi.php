@@ -20,6 +20,7 @@ abstract class AbstractApi implements ApiInterface
                     $this->waitForRateLimiting($e);
                     continue;
                 }
+                throw $e;
             }
         }
 

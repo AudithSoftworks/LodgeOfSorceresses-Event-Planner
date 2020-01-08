@@ -1,4 +1,4 @@
-import * as api from '../vendor/api/auth';
+import * as api from '../vendor/api';
 
 export const TYPE_DELETE_TEAM_SEND = 'DELETE_TEAM_SEND';
 
@@ -31,7 +31,7 @@ const deleteTeamAction = teamId => (dispatch, getState) => {
     dispatch(deleteTeamSendAction(teamId));
     const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
-        .deleteMyCharacter(axiosCancelTokenSource, teamId, dispatch)
+        .deleteTeam(axiosCancelTokenSource, teamId, dispatch)
         .then(response => {
             dispatch(deleteTeamSuccessAction(response, RESPONSE_MESSAGE_SUCCESS, teamId));
         })

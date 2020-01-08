@@ -170,10 +170,8 @@ class TeamsControllerTest extends IlluminateTestCase
             ]);
         $responseOriginalContent = $response->getOriginalContent();
         $this->assertCount(2, $responseOriginalContent);
-        $this->assertCount(4, $responseOriginalContent['errors']);
+        $this->assertCount(2, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
-        $response->assertJsonPath('errors.name.0', 'Team name is required.');
-        $response->assertJsonPath('errors.tier.0', 'Choose a tier for the content this team is specifialized in.');
         $response->assertJsonPath('errors.discord_id.0', 'The discord id must be a number.');
         $response->assertJsonPath('errors.led_by.0', 'The led by must be a number.');
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);

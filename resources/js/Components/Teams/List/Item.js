@@ -12,7 +12,7 @@ class Item extends PureComponent {
     };
 
     render = () => {
-        const { team, onDeleteHandler } = this.props;
+        const { team, deleteHandler } = this.props;
         team.actionList = {
             view: (
                 <Link to={'/teams/' + team.id} title="Team Details">
@@ -26,20 +26,15 @@ class Item extends PureComponent {
                     </Link>
                 ) : null,
             delete:
-                typeof onDeleteHandler === 'function' && team.members.length === 0 && this.canIManageThisTeam(this.props) ? (
-                    <Link to="#" onClick={onDeleteHandler} data-id={team.id} title="Delete Team">
+                typeof deleteHandler === 'function' && team.members.length === 0 && this.canIManageThisTeam(this.props) ? (
+                    <Link to="#" onClick={deleteHandler} data-id={team.id} title="Delete Team">
                         <FontAwesomeIcon icon={faTrashAlt} />
                     </Link>
                 ) : null,
         };
 
-        let rowBgColor = 'no-clearance';
-        if (team['tier'] !== 0) {
-            rowBgColor = 'tier-' + team['tier'];
-        }
-
         return (
-            <tr className={rowBgColor} key={'teamRow-' + team.id} data-id={team.id}>
+            <tr className={'tier-' + team.tier} key={'teamRow-' + team.id} data-id={team.id}>
                 <td>
                     {team.name}
                     <br/>
@@ -57,7 +52,7 @@ Item.propTypes = {
     me: user,
     authorizedAsAdmin: PropTypes.bool,
     team,
-    onDeleteHandler: PropTypes.func, // based on existense of this param, we render Delete button
+    deleteHandler: PropTypes.func, // based on existense of this param, we render Delete button
 };
 
 export default Item;

@@ -7,19 +7,35 @@ import { Link, Redirect } from "react-router-dom";
 import deleteTeamAction from "../actions/delete-team";
 import { infosAction } from "../actions/notifications";
 import Notification from "../Components/Notification";
+import Item from "../Components/Teams/Item";
 import List from "../Components/Teams/List";
 import { authorizeAdmin, deleteTeam, renderActionList } from "../helpers";
-import { characters, teams, user } from "../vendor/data";
+import { teams, user } from "../vendor/data";
 
 class Teams extends PureComponent {
     constructor(props) {
         super(props);
+        this.state = {
+            team: null
+        };
         this.handleDelete = deleteTeam.bind(this);
     }
 
-    componentWillUnmount() {
+    componentWillUnmount = () => {
         this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
-    }
+    };
+
+    componentDidMount = () => {
+        const { me, history, match, teams } = this.props;
+        const { team } = this.state;
+        if (me && match.params.id && teams && !team) {
+            const selectedTeam = teams.find(item => item.id === parseInt(match.params.id));
+            if (!selectedTeam) {
+                history.push('/teams');
+            }
+            this.setState({ team: selectedTeam })
+        }
+    };
 
     renderNoTeamsCreateOneNotification = authorizedAsAdmin => {
         const { dispatch, teams, notifications } = this.props;
@@ -48,12 +64,19 @@ class Teams extends PureComponent {
     };
 
     render = () => {
-        const { me, location, teams } = this.props;
+        const { me, match, location, teams } = this.props;
         if (!teams) {
             return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
         }
 
         const authorizedAsAdmin = authorizeAdmin(this.props);
+        const { team } = this.state;
+        if (match.params.id && team) {
+            return [<Item key='team-item' team={team} deleteHandler={this.handleDelete} />, <Notification key="notifications" />];
+        }
+
+        this.renderNoTeamsCreateOneNotification(authorizedAsAdmin);
+
         const actionList = {
             create: authorizedAsAdmin ? (
                 <Link to="/teams/create" className="ne-corner" title="Create a Team">
@@ -61,7 +84,6 @@ class Teams extends PureComponent {
                 </Link>
             ) : null,
         };
-        this.renderNoTeamsCreateOneNotification(authorizedAsAdmin);
 
         return [
             <section className="col-md-24 p-0 mb-4 table-responsive" key="teamList">
@@ -69,7 +91,7 @@ class Teams extends PureComponent {
                     Teams
                 </h2>
                 <ul className="ne-corner">{renderActionList(actionList)}</ul>
-                <List teams={teams} me={me} onDeleteHandler={this.handleDelete} authorizedAsAdmin={authorizedAsAdmin} />
+                <List teams={teams} me={me} deleteHandler={this.handleDelete} authorizedAsAdmin={authorizedAsAdmin} />
             </section>,
             <Notification key="notifications" />,
         ];
@@ -84,7 +106,6 @@ Teams.propTypes = {
     axiosCancelTokenSource: PropTypes.object,
     me: user,
     groups: PropTypes.object,
-    myCharacters: characters,
     teams,
     notifications: PropTypes.array,
 
@@ -95,14 +116,13 @@ const mapStateToProps = state => ({
     axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
     me: state.getIn(["me"]),
     groups: state.getIn(["groups"]),
-    myCharacters: state.getIn(["myCharacters"]),
     teams: state.getIn(["teams"]),
     notifications: state.getIn(["notifications"]),
 });
 
 const mapDispatchToProps = dispatch => ({
     dispatch,
-    deleteTeamAction: characterId => dispatch(deleteTeamAction(characterId)),
+    deleteTeamAction: teamId => dispatch(deleteTeamAction(teamId)),
 });
 
 export default connect(

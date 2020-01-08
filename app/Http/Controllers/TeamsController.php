@@ -57,7 +57,7 @@ class TeamsController extends Controller
             'name' => 'required|string',
             'tier' => 'required|integer|between:1,4',
             'discord_id' => 'required|string|numeric',
-            'led_by' => 'nullable|numeric|exists:users,id',
+            'led_by' => 'required|numeric|exists:users,id',
         ], $validatorErrorMessages);
         if ($validator->fails()) {
             throw new ValidationException($validator);
@@ -137,34 +137,37 @@ class TeamsController extends Controller
             'led_by.required' => 'Choose a team leader.',
         ];
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'tier' => 'required|integer|between:1,4',
-            'discord_id' => 'required|string|numeric',
-            'led_by' => 'nullable|numeric|exists:users,id',
+            'name' => 'sometimes|required|string',
+            'tier' => 'sometimes|required|integer|between:1,4',
+            'discord_id' => 'sometimes|required|string|numeric',
+            'led_by' => 'sometimes|required|numeric|exists:users,id',
         ], $validatorErrorMessages);
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }
 
-        $team->name = $request->get('name');
-        if (!app('teams.eligibility')->areAllMembersOfTeamEligibleForPossibleNewTeamTier($team, $request->get('tier'))) { // Team tier increase needs handling.
-            $validator->errors()->add('tier', 'Requested Tier is too high for some members of this team! Consider removing these members before increasing Tier.');
-            throw new ValidationException($validator);
+        $request->has('name') && $team->name = $request->get('name');
+        if ($request->has('tier')) {
+            if (!app('teams.eligibility')->areAllMembersOfTeamEligibleForPossibleNewTeamTier($team, $request->get('tier'))) { // Team tier increase needs handling.
+                $validator->errors()->add('tier', 'Requested Tier is too high for some members of this team! Consider removing these members before increasing Tier.');
+                throw new ValidationException($validator);
+            }
+            $team->tier = $request->get('tier');
         }
-        $team->tier = $request->get('tier');
-        $team->discord_id = $request->get('discord_id');
-        $team->created_by = Auth::id();
+        $request->has('discord_id') && $team->discord_id = $request->get('discord_id');
 
-        $ledByParam = $request->get('led_by');
-        Cache::has('user-' . $ledByParam); // Recache trigger.
-        /** @var \App\Models\User $ledBy */
-        $ledBy = Cache::get('user-' . $ledByParam);
-        $policyResponseForCanJoin = Gate::forUser($ledBy)->inspect('canJoin', $team);
-        if ($policyResponseForCanJoin->denied()) {
-            $validator->errors()->add('led_by', $policyResponseForCanJoin->message());
-            throw new ValidationException($validator);
+        if ($request->has('discord_id')) {
+            $ledByParam = $request->get('led_by');
+            Cache::has('user-' . $ledByParam); // Recache trigger.
+            /** @var \App\Models\User $ledBy */
+            $ledBy = Cache::get('user-' . $ledByParam);
+            $policyResponseForCanJoin = Gate::forUser($ledBy)->inspect('canJoin', $team);
+            if ($policyResponseForCanJoin->denied()) {
+                $validator->errors()->add('led_by', $policyResponseForCanJoin->message());
+                throw new ValidationException($validator);
+            }
+            $team->led_by = $ledBy->id;
         }
-        $team->led_by = $ledBy->id;
 
         $team->save();
         Cache::has('team-' . $team->id); // Recache trigger.

@@ -1,5 +1,4 @@
 import * as api from '../vendor/api';
-import { TYPE_GET_TEAMS_SUCCESS } from "./get-teams";
 
 export const TYPE_POST_TEAM_SEND = 'POST_TEAM_SEND';
 

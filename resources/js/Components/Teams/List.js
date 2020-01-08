@@ -11,7 +11,7 @@ import Item from '../Teams/List/Item';
 
 class List extends PureComponent {
     render = () => {
-        const { teams, className, me, authorizedAsAdmin, onDeleteHandler } = this.props;
+        const { teams, className, me, authorizedAsAdmin, deleteHandler } = this.props;
         let teamsRendered = teams
             .sort((a, b) => {
                 const aNameLower = a.name.toLowerCase();
@@ -24,7 +24,7 @@ class List extends PureComponent {
 
                 return 0;
             })
-            .map(team => <Item key={team.id} team={team} me={me} authorizedAsAdmin={authorizedAsAdmin} onDeleteHandler={onDeleteHandler} />);
+            .map(team => <Item key={team.id} team={team} me={me} authorizedAsAdmin={authorizedAsAdmin} deleteHandler={deleteHandler} />);
         if (teamsRendered.length) {
             teamsRendered = [
                 <table key="character-list-table" className={'pl-2 pr-2 col-md-24 character-list-table ' + className}>
@@ -49,7 +49,7 @@ List.propTypes = {
     me: user,
     authorizedAsAdmin: PropTypes.bool,
     teams,
-    onDeleteHandler: PropTypes.func, // based on existense of this param, we render Delete button inside <Item>
+    deleteHandler: PropTypes.func, // based on existense of this param, we render Delete button inside <Item>
 };
 
 export default List;
