@@ -51,7 +51,7 @@ class Home extends PureComponent {
             );
         } else if (me.isMember && !me.linkedAccountsParsed.ips) {
             accountStatusOptions.push(
-                <article key='forum-oauth' className='jumbotron warning ml-2 mr-2' data-cy='account-status-element'>
+                <article key='forum-oauth' className='jumbotron danger ml-2 mr-2' data-cy='account-status-element'>
                     <h3>Your Lodge Forum Account:</h3>
                     <p>Not Linked</p>
                     <small>If you are an actual member of Lodge in-game, you need to register at Lodge Forum as well (by logging in via Discord).</small>
