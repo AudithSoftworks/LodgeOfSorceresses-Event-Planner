@@ -121,7 +121,7 @@ class Main extends PureComponent {
                 render={({ match: { url } }) => (
                     <Fragment>
                         <Route exact path={url} component={props => <Teams {...props} />} />
-                        <Route exact path={url + '/create'} component={props => <TeamForm {...props} />} />
+                        <Route path={url + '/create'} component={props => <TeamForm {...props} />} />
                         <Route path={url + '/:id(\\d+)/edit'} component={props => <TeamForm {...props} />} />
                         <Route exact path={url + '/:id(\\d+)'} component={props => <Teams {...props} />} />
                     </Fragment>
