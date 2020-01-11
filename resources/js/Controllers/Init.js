@@ -1,6 +1,3 @@
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faDiscord } from '@fortawesome/free-brands-svg-icons';
-import { faUserShield } from '@fortawesome/pro-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
@@ -16,12 +13,15 @@ import Notification from '../Components/Notification';
 import { authorizeUser } from '../helpers';
 import { characters, user } from '../vendor/data';
 
-library.add(faDiscord, faUserShield);
-
 class Init extends PureComponent {
+    constructor(props) {
+        super(props);
+        this.authorizeUser = authorizeUser.bind(this);
+    }
+
     componentDidMount = () => {
         const { myCharacters, sets, skills, content, teams } = this.props;
-        if (authorizeUser(this.props)) {
+        if (this.authorizeUser()) {
             if (!myCharacters) {
                 this.props.getMyCharactersAction();
             }
@@ -72,7 +72,7 @@ class Init extends PureComponent {
             return [this.renderLoginForm()];
         }
 
-        if (authorizeUser(this.props)) {
+        if (this.authorizeUser()) {
             if (!sets || !skills || !content || !myCharacters || !teams) {
                 this.setRedirectUri(this.props.location);
                 return [<Loading key="loading" message="Loading data..." />, <Notification key="notifications" />];

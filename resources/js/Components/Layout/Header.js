@@ -14,6 +14,12 @@ import { authorizeAdmin, authorizeUser } from '../../helpers';
 import { characters, user } from '../../vendor/data';
 
 class Header extends Component {
+    constructor(props) {
+        super(props);
+        this.authorizeAdmin = authorizeAdmin.bind(this);
+        this.authorizeUser = authorizeUser.bind(this);
+    }
+
     renderNavLinks = navLinks => {
         return navLinks.map((item, idx) => {
             const { className } = item.props;
@@ -49,7 +55,7 @@ class Header extends Component {
                 </NavLink>
             );
         }
-        if (authorizeUser(this.props, true)) {
+        if (this.authorizeUser(true)) {
             navLinks.push(
                 <NavLink to="/events" activeClassName="active" title="Calendar">
                     <FontAwesomeIcon icon={faCalendarAlt} size="lg" />
@@ -82,7 +88,7 @@ class Header extends Component {
             email = email.slice(0, posOfAtSignInEmail + 1) + '...';
         }
 
-        if (authorizeAdmin(this.props)) {
+        if (this.authorizeAdmin()) {
             memberBarDropdownLinks.push(
                 <li key='officer_area'>
                     <Link to="/admin" title="Officer Area">

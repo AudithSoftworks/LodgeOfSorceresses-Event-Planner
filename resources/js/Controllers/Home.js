@@ -2,7 +2,7 @@ import(
     /* webpackPrefetch: true */
     /* webpackChunkName: "dashboard-jumbotron-scss" */
     '../../sass/global/_dashboard_jumbotron.scss'
-    );
+);
 
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
@@ -14,6 +14,11 @@ import { authorizeUser } from "../helpers";
 import { user } from '../vendor/data';
 
 class Home extends PureComponent {
+    constructor(props) {
+        super(props);
+        this.authorizeUser = authorizeUser.bind(this);
+    }
+
     componentWillUnmount = () => {
         this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
     };
@@ -40,7 +45,7 @@ class Home extends PureComponent {
                     <small>You won't be able to use Planner, until Discord is linked to it. <a href='/oauth/to/discord'>Click here</a> to fix this problem.</small>
                 </article>
             );
-        } else if (me.linkedAccountsParsed && me.linkedAccountsParsed.discord && !authorizeUser(this.props)) {
+        } else if (me.linkedAccountsParsed && me.linkedAccountsParsed.discord && !this.authorizeUser()) {
             accountStatusOptions.push(
                 <article key='pre-check-failed' className='jumbotron danger ml-2 mr-2' data-cy='account-status-element'>
                     <small>Pre-check failed! Make sure you have <i>Soulshriven</i> or <i>Member</i> tag on Lodge Discord server.</small>

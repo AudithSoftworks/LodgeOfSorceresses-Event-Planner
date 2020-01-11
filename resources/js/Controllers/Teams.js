@@ -18,7 +18,8 @@ class Teams extends PureComponent {
         this.state = {
             team: null
         };
-        this.handleDelete = deleteTeam.bind(this);
+        this.handleDeleteTeam = deleteTeam.bind(this);
+        this.authorizeAdmin = authorizeAdmin.bind(this);
     }
 
     componentWillUnmount = () => {
@@ -64,13 +65,13 @@ class Teams extends PureComponent {
     };
 
     render = () => {
-        const { me, match, location, teams } = this.props;
+        const { groups, location, match, me, teams } = this.props;
         if (!teams) {
             return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
         }
 
-        const authorizedAsAdmin = authorizeAdmin(this.props);
         const { team } = this.state;
+        const authorizedAsAdmin = this.authorizeAdmin();
         if (match.params.id && team) {
             return [<Item key='team-item' team={team} deleteHandler={this.handleDelete} />, <Notification key="notifications" />];
         }
@@ -99,25 +100,24 @@ class Teams extends PureComponent {
 }
 
 Teams.propTypes = {
-    match: PropTypes.object.isRequired,
-    location: PropTypes.object.isRequired,
-    history: PropTypes.object.isRequired,
-
     axiosCancelTokenSource: PropTypes.object,
-    me: user,
     groups: PropTypes.object,
-    teams,
+    history: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    match: PropTypes.object.isRequired,
+    me: user,
     notifications: PropTypes.array,
+    teams,
 
     deleteTeamAction: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
     axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
-    me: state.getIn(["me"]),
     groups: state.getIn(["groups"]),
-    teams: state.getIn(["teams"]),
+    me: state.getIn(["me"]),
     notifications: state.getIn(["notifications"]),
+    teams: state.getIn(["teams"]),
 });
 
 const mapDispatchToProps = dispatch => ({

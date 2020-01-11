@@ -108,8 +108,14 @@ const AdminDpsParses = React.lazy(() =>
 );
 
 class Main extends PureComponent {
+    constructor(props) {
+        super(props);
+        this.authorizeUser = authorizeUser.bind(this);
+        this.authorizeAdmin = authorizeAdmin.bind(this);
+    }
+
     fetchUserRoutes = () => {
-        return authorizeUser(this.props, true) ? [
+        return this.authorizeUser(true) ? [
             <Route exact path="/users" component={props => <Users {...props} />} key="/users" />,
             <Route exact path="/users/:id(\d+)" component={props => <Users {...props} />} key="/users/:id" />,
             <Route exact path="/characters/:id(\d+)" component={props => <Characters {...props} />} key="/characters/:id" />,
@@ -144,7 +150,7 @@ class Main extends PureComponent {
     };
 
     fetchAdminRoutes = () => {
-        return authorizeAdmin(this.props) ? [
+        return this.authorizeAdmin() ? [
             <Route
                 key="/admin"
                 path="/admin"

@@ -14,6 +14,8 @@ import { character, user } from "../vendor/data";
 class Characters extends PureComponent {
     constructor(props) {
         super(props);
+        this.authorizeUser = authorizeUser.bind(this);
+        this.authorizeAdmin = authorizeAdmin.bind(this);
         this.deleteMyCharacter = deleteMyCharacter.bind(this);
         this.rerankHandler = rerankCharacter.bind(this);
     }
@@ -37,7 +39,7 @@ class Characters extends PureComponent {
         }
 
         if (me && groups) {
-            if (!authorizeUser(this.props, true) || !match.params.id) {
+            if (!this.authorizeUser(true) || !match.params.id) {
                 return <Redirect to="/" />;
             }
         }
@@ -51,7 +53,7 @@ class Characters extends PureComponent {
         return [
             <Character
                 character={character}
-                rerankHandler={authorizeAdmin(this.props) ? this.rerankHandler : null}
+                rerankHandler={this.authorizeAdmin() ? this.rerankHandler : null}
                 deleteHandler={me.id === character.owner.id ? this.deleteMyCharacter : null}
                 key="character"
             />,
