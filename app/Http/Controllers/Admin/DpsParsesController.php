@@ -32,8 +32,8 @@ class DpsParsesController extends Controller
                 $queryToGetOauthAccounts
                     ->whereNotNull('name')
                     ->whereHas('linkedAccounts', static function (Builder $queryToGetDiscordOauthAccounts) {
-                    $queryToGetDiscordOauthAccounts->where('remote_provider', '=', 'discord');
-                });
+                        $queryToGetDiscordOauthAccounts->where('remote_provider', '=', 'discord');
+                    });
             })
             ->whereNull('processed_by')
             ->orderBy('id')
