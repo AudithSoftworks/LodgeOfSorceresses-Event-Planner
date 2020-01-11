@@ -3,6 +3,7 @@
 namespace App\Traits\Team;
 
 use App\Models\Team;
+use Illuminate\Database\Eloquent\Builder;
 
 trait IsTeam
 {
@@ -26,6 +27,16 @@ trait IsTeam
     {
         $cacheStore = app('cache.store');
         $newMemberList = collect();
+        $team
+            ->with(['members'])
+            ->whereHas('members', static function (Builder $queryTeamMembers) {
+                $queryTeamMembers
+                    ->orderBy('name')
+                    ->with('owner')
+                    ->whereHas('owner', static function (Builder $queryUser) {
+                        $queryUser->orderBy('name');
+                    });
+            });
         foreach ($team->members as $character) {
             $cacheStore->has('character-' . $character->id); // Recache trigger.
             $cachedCharacter = $cacheStore->get('character-' . $character->id);

@@ -36,11 +36,38 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
         }
     }
 
+    public function testIndexForFailure(): void
+    {
+        static::$team = $this->stubTierXAdminUserTeam(2);
+
+        # Case 1: No authentication
+        $response = $this
+            ->withoutMiddleware()
+            ->getJson('/api/teams/1000/characters');
+        $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
+
+        # Case 2: Non existent team
+        $response = $this
+            ->actingAs(static::$team->ledBy)
+            ->withoutMiddleware()
+            ->getJson('/api/teams/1000/characters');
+        $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
+        $response->assertJsonPath('message', 'Team not found!');
+    }
+
+    public function testIndexForEmpty(): void
+    {
+        $response = $this
+            ->actingAs(static::$team->ledBy)
+            ->withoutMiddleware()
+            ->getJson('/api/teams/' . static::$team->id . '/characters');
+        $response->assertStatus(JsonResponse::HTTP_OK);
+        $response->assertJsonCount(0);
+    }
+
     public function testStoreForFailure(): void
     {
         Event::fake([TeamUpdated::class]);
-
-        static::$team = $this->stubTierXAdminUserTeam(2);
         $this->stubTierFourAdminUser();
 
         # Case 1: No authentication
@@ -276,6 +303,16 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
         $this->assertInstanceOf(Pivot::class, $teamMembershipPivotFromResponse);
         $response->assertJsonPath('status', 1);
         $response->assertJsonPath('accepted_terms', 1);
+    }
+
+    public function testIndexForNonEmpty(): void
+    {
+        $response = $this
+            ->actingAs(static::$team->ledBy)
+            ->withoutMiddleware()
+            ->getJson('/api/teams/' . static::$team->id . '/characters');
+        $response->assertStatus(JsonResponse::HTTP_OK);
+        $response->assertJsonCount(1);
     }
 
     public function testDestroyForFailure(): void

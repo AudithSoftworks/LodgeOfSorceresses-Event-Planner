@@ -18,6 +18,32 @@ use Illuminate\Validation\ValidationException;
 class TeamsCharactersController extends Controller
 {
     /**
+     * Endpoint to list team membership records for a given team.
+     *
+     * @param int $teamId
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function index(int $teamId): JsonResponse
+    {
+        $this->authorize('user', User::class);
+
+        Cache::has('team-' . $teamId); // Trigger Recache listener.
+        /** @var \App\Models\Team $team */
+        $team = Cache::get('team-' . $teamId);
+        if (!$team) {
+            return response()->json(['message' => 'Team not found!'])->setStatusCode(JsonResponse::HTTP_NOT_FOUND);
+        }
+        $teamMembersFiltered = $team->members->filter(static function (Character $character) {
+            /** @noinspection PhpUndefinedFieldInspection */
+            return $character->teamMembership->status;
+        });
+
+        return response()->json($teamMembersFiltered, JsonResponse::HTTP_OK);
+    }
+
+    /**
      * Endpoint to invite a team member.
      *
      * @param \Illuminate\Http\Request $request

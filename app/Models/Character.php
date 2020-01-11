@@ -18,34 +18,33 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $name
  * @property int $class
  * @property int $role
- * @property string                                         $sets
- * @property string|null                                    $skills
- * @property string|null                                    $content
- * @property int                                            $approved_for_tier
- * @property int|null                                       $last_submitted_dps_amount
- * @property \Illuminate\Support\Carbon|null                $created_at
- * @property \Illuminate\Support\Carbon|null                $updated_at
- * @property-read \App\Models\User                          $owner
- * @property-read EloquentCollection|Team[]                 $teams
- * @property-read int|null                                  $teams_count
+ * @property string $sets
+ * @property string|null $skills
+ * @property int $approved_for_tier
+ * @property int|null $last_submitted_dps_amount
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read EloquentCollection|\App\Models\Content[] $content
+ * @property-read int|null $content_count
  * @property-read EloquentCollection|\App\Models\DpsParse[] $dpsParses
- * @property EloquentCollection|\App\Models\DpsParse[]      $dps_parses_processed
- * @property EloquentCollection|\App\Models\DpsParse[]      $dps_parses_pending
- * @method EloquentBuilder|Character newModelQuery()
- * @method EloquentBuilder|Character newQuery()
- * @method static EloquentBuilder|Character query()
- * @method EloquentBuilder|Character whereApprovedForTier($value)
- * @method EloquentBuilder|Character whereClass($value)
- * @method EloquentBuilder|Character whereContent($value)
- * @method EloquentBuilder|Character whereCreatedAt($value)
- * @method EloquentBuilder|Character whereId($value)
- * @method EloquentBuilder|Character whereLastSubmittedDpsAmount($value)
- * @method EloquentBuilder|Character whereName($value)
- * @method EloquentBuilder|Character whereRole($value)
- * @method EloquentBuilder|Character whereSets($value)
- * @method EloquentBuilder|Character whereSkills($value)
- * @method EloquentBuilder|Character whereUpdatedAt($value)
- * @method EloquentBuilder|Character whereUserId($value)
+ * @property-read int|null $dps_parses_count
+ * @property-read \App\Models\User $owner
+ * @property-read EloquentCollection|\App\Models\Team[] $teams
+ * @property-read int|null $teams_count
+ * @method static EloquentBuilder|$this newModelQuery()
+ * @method static EloquentBuilder|$this newQuery()
+ * @method static EloquentBuilder|$this query()
+ * @method static EloquentBuilder|$this whereApprovedForTier($value)
+ * @method static EloquentBuilder|$this whereClass($value)
+ * @method static EloquentBuilder|$this whereCreatedAt($value)
+ * @method static EloquentBuilder|$this whereId($value)
+ * @method static EloquentBuilder|$this whereLastSubmittedDpsAmount($value)
+ * @method static EloquentBuilder|$this whereName($value)
+ * @method static EloquentBuilder|$this whereRole($value)
+ * @method static EloquentBuilder|$this whereSets($value)
+ * @method static EloquentBuilder|$this whereSkills($value)
+ * @method static EloquentBuilder|$this whereUpdatedAt($value)
+ * @method static EloquentBuilder|$this whereUserId($value)
  */
 class Character extends Model
 {
