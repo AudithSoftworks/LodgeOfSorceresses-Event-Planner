@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import Select from 'react-select';
-import Animated from 'react-select/animated';
+import makeAnimated from "react-select/animated";
 import { errorsAction } from "../../actions/notifications";
 import postTeamAction from "../../actions/post-team";
 import putTeamAction from "../../actions/put-team";
@@ -89,6 +89,7 @@ class TeamForm extends PureComponent {
 
         const userOptions = Object.values(users.entities['user']).map(item => ({ value: item.id, label: item.name }));
         const heading = (match.params.id ? 'Edit' : 'Create') + ' Team';
+        const animated = makeAnimated();
 
         return (
             <form className="col-md-24 d-flex flex-row flex-wrap p-0" onSubmit={this.handleSubmit} key="teamCreationForm">
@@ -114,7 +115,7 @@ class TeamForm extends PureComponent {
                     <Select
                         options={this.tierOptions}
                         defaultValue={team ? this.tierOptions.filter(option => team.tier === option.value) : this.tierOptions[0]}
-                        components={Animated}
+                        components={animated}
                         name="tier"
                     />
                 </fieldset>
@@ -137,7 +138,7 @@ class TeamForm extends PureComponent {
                         options={userOptions}
                         defaultValue={team ? userOptions.filter(option => team.led_by.id === option.value) : null}
                         placeholder="Team Leader..."
-                        components={Animated}
+                        components={animated}
                         name="led_by"
                     />
                 </fieldset>

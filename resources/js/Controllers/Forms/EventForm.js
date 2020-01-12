@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import Select from 'react-select';
-import Animated from 'react-select/animated';
+import makeAnimated from 'react-select/animated';
 import postMyCharacterAction from '../../actions/post-my-character';
 import putMyCharacterAction from '../../actions/put-my-character';
 import Notification from '../../Components/Notification';
@@ -64,6 +64,7 @@ class EventForm extends PureComponent {
             { value: 2, label: 'Core Two' },
             { value: 3, label: 'Core Three' },
         ];
+        const animated = makeAnimated();
 
         return (
             <form className="col-md-24 d-flex flex-row flex-wrap p-0" onSubmit={this.handleSubmit} key="characterCreationForm">
@@ -76,7 +77,7 @@ class EventForm extends PureComponent {
                     <Select
                         options={contentOptions}
                         // defaultValue={character ? this.classOptions.filter(option => option.label === character.class) : this.classOptions[0]}
-                        components={Animated}
+                        components={animated}
                         name="content_id"
                         autoFocus
                     />
@@ -98,7 +99,7 @@ class EventForm extends PureComponent {
                     <Select
                         options={contentTierAdjustmentOptions}
                         defaultValue={contentTierAdjustmentOptions[0]}
-                        components={Animated}
+                        components={animated}
                         name="content_tier_adjustment"
                     />
                 </fieldset>
@@ -107,7 +108,7 @@ class EventForm extends PureComponent {
                     <Select
                         options={autoCheckInOptions}
                         defaultValue={autoCheckInOptions[0]}
-                        components={Animated}
+                        components={animated}
                         name="auto_check_in"
                     />
                 </fieldset>
@@ -115,7 +116,7 @@ class EventForm extends PureComponent {
                     <label>Mandated Team</label>
                     <Select
                         options={teamOptions}
-                        components={Animated}
+                        components={animated}
                         name="mandated_team_id"
                     />
                 </fieldset>

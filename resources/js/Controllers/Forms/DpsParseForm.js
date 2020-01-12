@@ -5,12 +5,12 @@ import Loadable from 'react-loadable';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import Select from 'react-select';
-import Animated from 'react-select/animated';
+import makeAnimated from 'react-select/animated';
 import postMyDpsParseAction from '../../actions/post-my-dps-parse';
 import putMyDpsParseAction from '../../actions/put-my-dps-parse';
-import { characters, user } from '../../vendor/data';
 import Loading from '../../Components/Loading';
 import Notification from '../../Components/Notification';
+import { characters } from '../../vendor/data';
 
 const Gallery = Loadable({
     loader: () =>
@@ -18,7 +18,7 @@ const Gallery = Loadable({
             /* webpackPrefetch: true */
             /* webpackChunkName: "react-fine-uploader" */
             'react-fine-uploader'
-        ),
+            ),
     loading: () => <Loading />,
 });
 
@@ -26,7 +26,7 @@ import(
     /* webpackPrefetch: true */
     /* webpackChunkName: "react-fine-uploader_gallery-css" */
     '../../../sass/vendor/_fine-uploader-gallery.scss'
-);
+    );
 
 class DpsParseForm extends PureComponent {
     classOptions = [
@@ -208,6 +208,7 @@ class DpsParseForm extends PureComponent {
         const { parseScreenshotHash, superstarScreenshotHash } = this.state;
         const setsOptions = Object.values(sets).map(item => ({ value: item.id, label: item.name }));
         const charactersSetsIds = character ? Object.values(character.sets).map(item => item.id) : [];
+        const animated = makeAnimated();
 
         return (
             <form className="col-md-24 d-flex flex-row flex-wrap p-0" onSubmit={this.handleSubmit} key="dpsParseForm">
@@ -238,22 +239,37 @@ class DpsParseForm extends PureComponent {
                         options={setsOptions}
                         defaultValue={setsOptions.filter(option => charactersSetsIds.includes(option.value))}
                         placeholder="Full sets you have..."
-                        components={Animated}
+                        components={animated}
                         name="sets[]"
                         isMulti
                     />
                 </fieldset>
                 <fieldset className="form-group col-md-8 col-lg-4">
                     <label>Class:</label>
-                    <Select options={this.classOptions} defaultValue={this.classOptions.filter(option => option.label === character.class)} isDisabled={true} components={Animated} name="class" />
+                    <Select
+                        options={this.classOptions}
+                        defaultValue={this.classOptions.filter(option => option.label === character.class)}
+                        isDisabled={true}
+                        components={animated} name="class" />
                 </fieldset>
                 <fieldset className="form-group col-md-8 col-lg-4">
                     <label>Role:</label>
-                    <Select options={this.roleOptions} defaultValue={this.roleOptions.filter(option => option.label === character.role)} isDisabled={true} components={Animated} name="role" />
+                    <Select
+                        options={this.roleOptions}
+                        defaultValue={this.roleOptions.filter(option => option.label === character.role)}
+                        isDisabled={true}
+                        components={animated}
+                        name="role" />
                 </fieldset>
                 <fieldset className="form-group col-md-8 col-lg-4">
                     <label htmlFor="dpsAmount">DPS amount:</label>
-                    <input type="number" name="dps_amount" id="dpsAmount" className="form-control form-control-md" placeholder="Enter..." autoComplete="off" required />
+                    <input type="number"
+                           name="dps_amount"
+                           id="dpsAmount"
+                           className="form-control form-control-md"
+                           placeholder="Enter..."
+                           autoComplete="off"
+                           required />
                 </fieldset>
 
                 <fieldset className="form-group col-md-12">
