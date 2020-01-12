@@ -166,3 +166,11 @@ export const postTeamsCharacters = (cancelToken, teamId, data) => axios.post('/a
 ).catch(error => {
     throw error;
 });
+
+export const deleteTeamsCharacters = (cancelToken, teamId, characterId) => axios.delete('/api/teams/' + teamId + '/characters/' + characterId, {
+    cancelToken: cancelToken.token,
+}).then(
+    response => response.status === 204
+).catch(error => {
+    throw error;
+});

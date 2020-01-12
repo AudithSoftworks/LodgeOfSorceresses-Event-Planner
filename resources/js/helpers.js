@@ -76,18 +76,6 @@ export const deleteTeam = function (event) {
     }
 };
 
-export const deleteTeamMembership = function (event) {
-    event.preventDefault();
-    if (confirm("Are you sure you want to remove this character from the team?")) {
-        const currentTarget = event.currentTarget;
-        const characterId = parseInt(currentTarget.getAttribute("data-id"));
-        if (characterId) {
-            const { deleteTeamMembershipAction } = this.props;
-            deleteTeamMembershipAction(characterId);
-        }
-    }
-};
-
 export const rerankCharacter = function (event) {
     event.preventDefault();
     if (confirm("Are you sure you want to **Rerank** this Character?")) {

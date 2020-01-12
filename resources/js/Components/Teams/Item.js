@@ -1,14 +1,15 @@
 import { faChevronCircleLeft, faSunrise, faSunset, faTrashAlt } from "@fortawesome/pro-light-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PropTypes from "prop-types";
-import React, { PureComponent } from "react";
+import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
+import deleteTeamsCharactersAction from "../../actions/delete-teams-characters";
 import { errorsAction } from "../../actions/notifications";
 import postTeamsCharactersAction from "../../actions/post-teams-characters";
-import { deleteTeamMembership, renderActionList } from "../../helpers";
+import { renderActionList } from "../../helpers";
 import { getAllCharacters } from "../../vendor/api";
 import axios from "../../vendor/axios";
 import { team, teams } from "../../vendor/data";
@@ -16,7 +17,7 @@ import Loading from "../Loading";
 import Notification from "../Notification";
 import List from "../TeamsCharacters/List";
 
-class Item extends PureComponent {
+class Item extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -24,7 +25,6 @@ class Item extends PureComponent {
             selectedCharacters: null,
             team: props.team,
         };
-        this.handleDeleteTeamMembership = deleteTeamMembership.bind(this);
     }
 
     getAllCharacters = tier => {
@@ -71,8 +71,28 @@ class Item extends PureComponent {
                             team: this.props.teams.find(t => t.id === team.id),
                         });
                     });
-
             });
+    };
+
+    handleTeamsCharactersDelete = event => {
+        event.preventDefault();
+        if (confirm("Are you sure you want to remove this character from the team?")) {
+            const currentTarget = event.currentTarget;
+            const characterId = parseInt(currentTarget.getAttribute("data-id"));
+            const { team } = this.state;
+
+            return this.props.deleteTeamsCharactersAction(team.id, characterId)
+                .then(() => {
+                    this.getAllCharacters(team.tier)
+                        .then(characters => {
+                            this.cancelTokenSource = null;
+                            this.setState({
+                                characters,
+                                team: this.props.teams.find(t => t.id === team.id),
+                            });
+                        });
+                });
+        }
     };
 
     handleSelectChange = event => {
@@ -170,7 +190,7 @@ class Item extends PureComponent {
                 <article className="col-lg-20">
                     {authorizedTeamManager ? this.renderAddMemberForm(characters) : null}
                 </article>
-                <List deleteTeamMembershipHandler={authorizedTeamManager ? this.handleDeleteTeamMembership : null} team={team} />
+                <List deleteTeamMembershipHandler={authorizedTeamManager ? this.handleTeamsCharactersDelete : null} team={team} />
             </section>
         ];
     };
@@ -184,6 +204,7 @@ Item.propTypes = {
     changeTierHandler: PropTypes.func, // based on existense of this param, we render ChangeTier buttons
 
     postTeamsCharactersAction: PropTypes.func.isRequired,
+    deleteTeamsCharactersAction: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -193,6 +214,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     dispatch,
     postTeamsCharactersAction: (teamId, data) => dispatch(postTeamsCharactersAction(teamId, data)),
+    deleteTeamsCharactersAction: (teamId, characterId) => dispatch(deleteTeamsCharactersAction(teamId, characterId)),
 });
 
 export default connect(

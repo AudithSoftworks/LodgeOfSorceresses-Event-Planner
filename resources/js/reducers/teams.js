@@ -3,6 +3,7 @@ import * as indexAction from '../actions/get-teams';
 import * as postAction from '../actions/post-team';
 import * as postTeamsCharactersAction from '../actions/post-teams-characters';
 import * as putAction from '../actions/put-team';
+import * as destroyTeamsCharactersAction from '../actions/delete-teams-characters';
 
 const teamsReducer = (state = null, action) => {
     if (action.type === indexAction.TYPE_GET_TEAMS_SUCCESS) {
@@ -46,15 +47,15 @@ const teamsReducer = (state = null, action) => {
         }
 
         return newState;
-    } /*else if (action.type === destroyDpsParseActions.TYPE_DELETE_MY_DPS_PARSE_SUCCESS) {
-            const newState = state === null ? [] : [...state];
-            const characterId = action.characterId;
-            const parseId = action.parseId;
-            const character = newState.find(item => item.id === characterId);
-            character.dps_parses_pending = character.dps_parses_pending.filter(item => item.id !== parseId);
+    } else if (action.type === destroyTeamsCharactersAction.TYPE_DELETE_TEAMS_CHARACTERS_SUCCESS) {
+        const newState = state === null ? [] : [...state];
+        const teamId = action.teamId;
+        const characterId = action.characterId;
+        const team = newState.find(t => t.id === teamId);
+        team.members = team.members.filter(c => c.id !== characterId);
 
-            return newState;
-        } */
+        return newState;
+    }
 
     return state;
 };

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { renderActionList } from "../../../helpers";
-import { character } from '../../../vendor/data';
+import { character, team } from '../../../vendor/data';
 
 class Item extends PureComponent {
     render = () => {
@@ -46,6 +46,7 @@ class Item extends PureComponent {
 Item.propTypes = {
     character: character.isRequired,
     deleteTeamMembershipHandler: PropTypes.func, // based on existense of this param, we render Delete button
+    team: team.isRequired,
 };
 
 export default Item;

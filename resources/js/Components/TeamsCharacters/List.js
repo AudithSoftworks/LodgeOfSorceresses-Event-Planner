@@ -5,15 +5,16 @@ import(
 );
 
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { team } from '../../vendor/data';
 import Item from './List/Item';
 
-class List extends PureComponent {
+class List extends Component {
     render = () => {
         const { className, deleteTeamMembershipHandler, team } = this.props;
         let teamMembersRendered = team.members
             .map(character => <Item key={character.id}
+                                    team={team}
                                     character={character}
                                     deleteTeamMembershipHandler={deleteTeamMembershipHandler} />);
         if (teamMembersRendered.length) {
