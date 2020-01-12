@@ -31,11 +31,10 @@ class Item extends PureComponent {
 
         return (
             <tr className={'tier-' + team.tier} key={'teamRow-' + team.id} data-id={team.id}>
-                <td>
-                    {team.name}
-                    <br />
-                    <small>{'Tier-' + team.tier} / {team.members.length + ' members'}</small>
-                </td>
+                <td>{team.name}</td>
+                <td>{'Tier-' + team.tier}</td>
+                <td>{'@' + team.led_by.name}</td>
+                <td>{team.members.length + ' characters'}</td>
                 <td>
                     <ul className="action-list">{renderActionList(team.actionList)}</ul>
                 </td>

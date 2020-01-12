@@ -1,7 +1,7 @@
 import(
     /* webpackPrefetch: true */
-    /* webpackChunkName: "characters-list-table-scss" */
-    '../../../sass/_character-list-table.scss'
+    /* webpackChunkName: "team-list-table-scss" */
+    '../../../sass/_team-list-table.scss'
 );
 
 import PropTypes from 'prop-types';
@@ -34,10 +34,13 @@ class List extends PureComponent {
             });
         if (teamsRendered.length) {
             teamsRendered = [
-                <table key="character-list-table" className={'pl-2 pr-2 col-md-24 character-list-table ' + className}>
+                <table key="team-list-table" className={'pl-2 pr-2 col-md-24 team-list-table ' + className}>
                     <thead>
                         <tr>
-                            <th scope="col">Name, Tier/# of Members</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Tier</th>
+                            <th scope="col">Leader</th>
+                            <th scope="col"># of Members</th>
                             <th scope="col" />
                         </tr>
                     </thead>
