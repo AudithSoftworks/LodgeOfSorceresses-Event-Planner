@@ -11,7 +11,7 @@ class Item extends PureComponent {
     renderDpsParses = character => {
         const pendingDpsParsesRendered = character.dps_parses_pending.length
             ? [
-                  <article className="col-lg-24 mt-5" key="pending-parses">
+                  <article className="col-lg-24" key="pending-parses">
                       <h3>Latest 10 DPS Parses Pending Inspection</h3>
                       <DpsParsesList dpsParses={character.dps_parses_pending.slice(0, 10)} />
                   </article>,
@@ -19,7 +19,7 @@ class Item extends PureComponent {
             : [];
         const processedDpsParsesRendered = character.dps_parses_processed.length
             ? [
-                  <article className="col-lg-24 mt-5 mb-5" key="processed-parses">
+                  <article className="col-lg-24 mb-5" key="processed-parses">
                       <h3>Latest 10 DPS Parses Approved</h3>
                       <DpsParsesList dpsParses={character.dps_parses_processed.slice(0, 10)} />
                   </article>,
@@ -79,7 +79,7 @@ class Item extends PureComponent {
             <section className="col-md-24 p-0 mb-4 d-flex flex-wrap" key="character">
                 <h2 className="form-title col-md-24">{character.name}</h2>
                 <ul className="ne-corner">{renderActionList(actionList)}</ul>
-                <dl className="col-lg-8">
+                <dl className="col-sm-12 col-md-6 col-lg-5 mb-5">
                     <dt>Ingame ID</dt>
                     <dd>{"@" + character.owner.name}</dd>
 
@@ -92,15 +92,15 @@ class Item extends PureComponent {
                     <dt>Content Clearance</dt>
                     <dd>{character.approved_for_tier ? 'Tier-' + character.approved_for_tier : 'None'}</dd>
                 </dl>
-                <article className="col-lg-6">
+                <article className="col-sm-12 col-md-10 col-lg-7 mb-5">
                     <h3>Content Cleared</h3>
                     {characterContent.length ? <ul>{characterContent}</ul> : "None"}
                 </article>
-                <article className="col-lg-5">
+                <article className="col-sm-12 col-md-8 col-lg-7 mb-5">
                     <h3>Sets Acquired</h3>
                     {characterSets.length ? <ul>{characterSets}</ul> : "None"}
                 </article>
-                <article className="col-lg-5">
+                <article className="col-sm-12 d-md-none d-lg-block col-lg-5 mb-5">
                     <h3>Skills Leveled</h3>
                     {characterSkills.length ? <ul>{characterSkills}</ul> : "None"}
                 </article>
