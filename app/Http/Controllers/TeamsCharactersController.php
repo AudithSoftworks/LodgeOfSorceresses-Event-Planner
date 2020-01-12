@@ -57,12 +57,13 @@ class TeamsCharactersController extends Controller
     {
         $this->authorize('user', User::class);
 
-        $validatorErrorMessages = [
-            'characterIds.*.required' => 'Provide character(s) to add to the team.',
-        ];
         $validator = Validator::make($request->all(), [
+            'characterIds' => 'required|array',
             'characterIds.*' => 'required|numeric|exists:characters,id',
-        ], $validatorErrorMessages);
+        ], [
+            'characterIds.required' => 'Select the character(s) to be added to the team.',
+            'characterIds.*.exists' => 'No such characters exist.',
+        ]);
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }
@@ -96,8 +97,9 @@ class TeamsCharactersController extends Controller
         $team->save();
 
         Event::dispatch(new TeamUpdated($team));
+        Cache::has('team-' . $team->id); // Recache trigger.
 
-        return response()->json($team, JsonResponse::HTTP_CREATED);
+        return response()->json(Cache::get('team-' . $team->id), JsonResponse::HTTP_CREATED);
     }
 
     /**
@@ -183,8 +185,9 @@ class TeamsCharactersController extends Controller
         $pivot->save();
 
         Event::dispatch(new TeamUpdated($team));
+        Cache::has('team-' . $team->id); // Recache trigger.
 
-        return response()->json($team, JsonResponse::HTTP_OK);
+        return response()->json(Cache::get('team-' . $team->id), JsonResponse::HTTP_OK);
     }
 
     /**

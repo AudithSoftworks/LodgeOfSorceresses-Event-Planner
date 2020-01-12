@@ -84,6 +84,17 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
         $response = $this
             ->actingAs(static::$team->ledBy)
             ->withoutMiddleware()
+            ->postJson('/api/teams/' . static::$team->id . '/characters');
+        $responseOriginalContent = $response->getOriginalContent();
+        $this->assertCount(2, $responseOriginalContent);
+        $this->assertCount(1, $responseOriginalContent['errors']);
+        $response->assertJsonPath('message', 'The given data was invalid.');
+        $response->assertJsonFragment(['characterIds' => [0 => 'Select the character(s) to be added to the team.']]);
+        $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+
+        $response = $this
+            ->actingAs(static::$team->ledBy)
+            ->withoutMiddleware()
             ->postJson('/api/teams/' . static::$team->id . '/characters', [
                 'characterIds' => ['a'],
             ]);
@@ -92,6 +103,19 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
         $this->assertCount(1, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
         $response->assertJsonFragment(['characterIds.0' => [0 => 'The characterIds.0 must be a number.']]);
+        $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+
+        $response = $this
+            ->actingAs(static::$team->ledBy)
+            ->withoutMiddleware()
+            ->postJson('/api/teams/' . static::$team->id . '/characters', [
+                'characterIds' => [1000],
+            ]);
+        $responseOriginalContent = $response->getOriginalContent();
+        $this->assertCount(2, $responseOriginalContent);
+        $this->assertCount(1, $responseOriginalContent['errors']);
+        $response->assertJsonPath('message', 'The given data was invalid.');
+        $response->assertJsonFragment(['characterIds.0' => [0 => 'No such characters exist.']]);
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
 
         # Case 3: Team doesn't exist
