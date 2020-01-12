@@ -357,14 +357,15 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
         $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
         $response->assertJsonPath('message', 'Team not found!');
 
-        # Case 3: Only team leader/creator can remove members
+        # Case 3: Not a team leader/creator and not the member themselves
         $response = $this
             ->actingAs(static::$adminUser)
             ->withoutMiddleware()
             ->deleteJson('/api/teams/' . static::$team->id . '/characters/' . static::$team->ledBy->characters->first()->id);
         $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
-        $response->assertJsonPath('message', 'Only team leader or creator can remove members!');
+        $response->assertJsonPath('message', 'Not allowed to terminate this team membership record! Only the member themselves or the team leader can do that.');
 
+        # Case 4: No such record
         $response = $this
             ->actingAs(static::$team->ledBy)
             ->withoutMiddleware()
@@ -388,6 +389,22 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
 
         static::$team->refresh();
         $this->assertEquals(3, static::$team->members->count());
+        $this->assertEquals(0, static::$team->members->filter(static function (Character $character) {
+            return $character->owner->id === static::$team->ledBy->id;
+        })->count());
+
+        /** @var Character $character */
+        $character = static::$team->members->first();
+        $character->loadMissing('owner');
+        $response = $this
+            ->actingAs($character->owner)
+            ->withoutMiddleware()
+            ->deleteJson('/api/teams/' . static::$team->id . '/characters/' . $character->id);
+        $response->assertStatus(JsonResponse::HTTP_NO_CONTENT);
+        $response->assertNoContent();
+
+        static::$team->refresh();
+        $this->assertEquals(2, static::$team->members->count());
         $this->assertEquals(0, static::$team->members->filter(static function (Character $character) {
             return $character->owner->id === static::$team->ledBy->id;
         })->count());

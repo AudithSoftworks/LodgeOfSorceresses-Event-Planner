@@ -209,10 +209,6 @@ class TeamsCharactersController extends Controller
         if (!$team) {
             return response()->json(['message' => 'Team not found!'])->setStatusCode(JsonResponse::HTTP_NOT_FOUND);
         }
-        $myId = Auth::id();
-        if ($team->led_by !== $myId && $team->created_by !== $myId) {
-            throw new AuthorizationException('Only team leader or creator can remove members!');
-        }
 
         $teamMembersFiltered = $team->members->filter(static function (Character $character) use ($characterId) {
             return $character->id === $characterId;
@@ -221,8 +217,16 @@ class TeamsCharactersController extends Controller
             return response()->json(['message' => 'Team has no such member!'])->setStatusCode(JsonResponse::HTTP_NOT_FOUND);
         }
 
+        $myId = Auth::id();
+        /** @var Character $character */
+        $character = $teamMembersFiltered->first();
+        if ($character->owner->id !== $myId && $team->led_by !== $myId && $team->created_by !== $myId) {
+            throw new AuthorizationException('Not allowed to terminate this team membership record! Only the member themselves or the team leader can do that.');
+        }
+
         /** @var \Illuminate\Database\Eloquent\Relations\Pivot $pivot */
-        $pivot = $teamMembersFiltered->first()->teamMembership;
+        /** @noinspection PhpUndefinedFieldInspection */
+        $pivot = $character->teamMembership;
         $pivot->delete();
 
         Event::dispatch(new TeamUpdated($team));
