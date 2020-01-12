@@ -1,7 +1,7 @@
 import(
     /* webpackPrefetch: true */
-    /* webpackChunkName: "characters-list-table-scss" */
-    '../../../sass/_character-list-table.scss'
+    /* webpackChunkName: "team-member-list-table-scss" */
+    '../../../sass/_team-member-list-table.scss'
 );
 
 import PropTypes from 'prop-types';
