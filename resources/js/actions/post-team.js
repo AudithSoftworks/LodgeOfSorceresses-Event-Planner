@@ -13,9 +13,10 @@ const postTeamSendAction = data => ({
     data,
 });
 
-const postTeamSuccessAction = response => ({
+const postTeamSuccessAction = (response, message) => ({
     type: TYPE_POST_TEAM_SUCCESS,
     response,
+    message,
 });
 
 const postTeamFailureAction = error => ({

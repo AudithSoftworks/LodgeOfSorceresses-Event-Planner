@@ -6,12 +6,13 @@ import(
 
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
+import { authorizeTeamManager } from "../../helpers";
 import { teams, user } from '../../vendor/data';
 import Item from '../Teams/List/Item';
 
 class List extends PureComponent {
     render = () => {
-        const { teams, className, me, authorizedAsAdmin, deleteHandler } = this.props;
+        const { authorizedAsAdmin, me, teams, className, deleteTeamHandler } = this.props;
         let teamsRendered = teams
             .sort((a, b) => {
                 const aNameLower = a.name.toLowerCase();
@@ -24,7 +25,13 @@ class List extends PureComponent {
 
                 return 0;
             })
-            .map(team => <Item key={team.id} team={team} me={me} authorizedAsAdmin={authorizedAsAdmin} deleteHandler={deleteHandler} />);
+            .map(team => {
+                const authorizedTeamManager = authorizeTeamManager({ me, team, authorizedAsAdmin });
+                return <Item key={team.id}
+                             authorizedTeamManager={authorizedTeamManager}
+                             team={team}
+                             deleteTeamHandler={deleteTeamHandler} />
+            });
         if (teamsRendered.length) {
             teamsRendered = [
                 <table key="character-list-table" className={'pl-2 pr-2 col-md-24 character-list-table ' + className}>
@@ -44,12 +51,11 @@ class List extends PureComponent {
 }
 
 List.propTypes = {
+    authorizedAsAdmin: PropTypes.bool.isRequired,
     className: PropTypes.string,
-
-    me: user,
-    authorizedAsAdmin: PropTypes.bool,
-    teams,
-    deleteHandler: PropTypes.func, // based on existense of this param, we render Delete button inside <Item>
+    deleteTeamHandler: PropTypes.func, // based on existense of this param, we render Delete button inside <Item>
+    me: user.isRequired,
+    teams: teams.isRequired,
 };
 
 export default List;

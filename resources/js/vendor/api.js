@@ -79,7 +79,7 @@ export const getUser = (cancelToken, userId) => axios.get('/api/users/' + userId
     throw error;
 });
 
-export const getAllCharacters = cancelToken => axios.get('/api/characters', {
+export const getAllCharacters = (cancelToken, tier) => axios.get('/api/characters?tier=' + tier, {
     cancelToken: cancelToken.token,
 }).then(response => {
     if (response.data) {
@@ -113,6 +113,20 @@ export const getTeams = cancelToken => axios.get('/api/teams', {
     return null;
 });
 
+export const postTeam = (cancelToken, data) => axios.post('/api/teams', data, {
+    cancelToken: cancelToken.token,
+}).then(
+    response => {
+        if (response.data) {
+            return normalize(response.data, schema.team)
+        }
+
+        return null;
+    }
+).catch(error => {
+    throw error;
+});
+
 export const putTeam = (cancelToken, teamId, data) => axios.post('/api/teams/' + teamId, data, {
     cancelToken: cancelToken.token,
     headers: {
@@ -131,7 +145,15 @@ export const putTeam = (cancelToken, teamId, data) => axios.post('/api/teams/' +
     throw error;
 });
 
-export const postTeam = (cancelToken, data) => axios.post('/api/teams', data, {
+export const deleteTeam = (cancelToken, teamId) => axios.delete('/api/teams/' + teamId, {
+    cancelToken: cancelToken.token,
+}).then(
+    response => response.status === 204
+).catch(error => {
+    throw error;
+});
+
+export const postTeamsCharacters = (cancelToken, teamId, data) => axios.post('/api/teams/' + teamId + '/characters', data, {
     cancelToken: cancelToken.token,
 }).then(
     response => {
@@ -141,14 +163,6 @@ export const postTeam = (cancelToken, data) => axios.post('/api/teams', data, {
 
         return null;
     }
-).catch(error => {
-    throw error;
-});
-
-export const deleteTeam = (cancelToken, teamId) => axios.delete('/api/teams/' + teamId, {
-    cancelToken: cancelToken.token,
-}).then(
-    response => response.status === 204
 ).catch(error => {
     throw error;
 });

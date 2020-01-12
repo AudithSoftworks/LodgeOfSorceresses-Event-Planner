@@ -9,7 +9,7 @@ import { infosAction } from "../actions/notifications";
 import Notification from "../Components/Notification";
 import Item from "../Components/Teams/Item";
 import List from "../Components/Teams/List";
-import { authorizeAdmin, deleteTeam, renderActionList } from "../helpers";
+import { authorizeAdmin, authorizeTeamManager, deleteTeam, renderActionList } from "../helpers";
 import { teams, user } from "../vendor/data";
 
 class Teams extends PureComponent {
@@ -73,9 +73,19 @@ class Teams extends PureComponent {
         const { team } = this.state;
         const authorizedAsAdmin = this.authorizeAdmin();
         if (match.params.id && team) {
-            return [<Item key='team-item' team={team} deleteHandler={this.handleDelete} />, <Notification key="notifications" />];
-        }
+            const authorizedTeamManager = authorizeTeamManager({ me, team, authorizedAsAdmin });
+            return [
+                <Item key='team-item'
+                      authorizedTeamManager={authorizedTeamManager}
+                      me={me}
+                      team={team}
+                      teams={teams}
+                      groups={groups}
+                      deleteTeamHandler={authorizedTeamManager ? this.handleDeleteTeam : null} />,
+                <Notification key="notifications" />
+            ];
 
+        }
         this.renderNoTeamsCreateOneNotification(authorizedAsAdmin);
 
         const actionList = {
@@ -92,7 +102,10 @@ class Teams extends PureComponent {
                     Teams
                 </h2>
                 <ul className="ne-corner">{renderActionList(actionList)}</ul>
-                <List teams={teams} me={me} deleteHandler={this.handleDelete} authorizedAsAdmin={authorizedAsAdmin} />
+                <List authorizedAsAdmin={authorizedAsAdmin}
+                      deleteTeamHandler={this.handleDeleteTeam}
+                      me={me}
+                      teams={teams} />
             </section>,
             <Notification key="notifications" />,
         ];
