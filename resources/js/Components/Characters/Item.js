@@ -13,7 +13,7 @@ class Item extends PureComponent {
             ? [
                   <article className="col-lg-24 mt-5" key="pending-parses">
                       <h3>Latest 10 DPS Parses Pending Inspection</h3>
-                      <DpsParsesList character={character} dpsParses={character.dps_parses_pending.slice(0, 10)} />
+                      <DpsParsesList dpsParses={character.dps_parses_pending.slice(0, 10)} />
                   </article>,
               ]
             : [];
@@ -21,7 +21,7 @@ class Item extends PureComponent {
             ? [
                   <article className="col-lg-24 mt-5 mb-5" key="processed-parses">
                       <h3>Latest 10 DPS Parses Approved</h3>
-                      <DpsParsesList character={character} dpsParses={character.dps_parses_processed.slice(0, 10)} />
+                      <DpsParsesList dpsParses={character.dps_parses_processed.slice(0, 10)} />
                   </article>,
               ]
             : [];
