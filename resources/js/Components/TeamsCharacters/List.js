@@ -6,14 +6,16 @@ import(
 
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { team } from '../../vendor/data';
+import { team, user } from '../../vendor/data';
 import Item from './List/Item';
 
 class List extends Component {
     render = () => {
-        const { className, deleteTeamMembershipHandler, team } = this.props;
+        const { authorizedTeamManager, className, deleteTeamMembershipHandler, me, team } = this.props;
         let teamMembersRendered = team.members
             .map(character => <Item key={character.id}
+                                    authorizedTeamManager={authorizedTeamManager}
+                                    me={me}
                                     team={team}
                                     character={character}
                                     deleteTeamMembershipHandler={deleteTeamMembershipHandler} />);
@@ -39,8 +41,10 @@ class List extends Component {
 }
 
 List.propTypes = {
+    authorizedTeamManager: PropTypes.bool.isRequired,
     className: PropTypes.string,
     deleteTeamMembershipHandler: PropTypes.func, // based on existense of this param, we render Delete button inside <Item>
+    me: user.isRequired,
     team: team.isRequired,
 };
 

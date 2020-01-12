@@ -172,14 +172,17 @@ class TeamsCharactersController extends Controller
             return response()->json(['message' => 'Team has no such member!'])->setStatusCode(JsonResponse::HTTP_NOT_FOUND);
         }
 
-        /** @var \Illuminate\Database\Eloquent\Relations\Pivot $pivot */
-        $pivot = $teamMembersFiltered->first()->teamMembership;
+        /** @var Character $character */
+        $character = $teamMembersFiltered->first();
+        $character->loadMissing('owner');
         $myId = Auth::id();
-        /** @noinspection PhpUndefinedFieldInspection */
-        if ($pivot->character_id !== $myId) {
+        if ($character->owner->id !== $myId) {
             throw new AuthorizationException('You can\'t manage someone else\'s team membership options!');
         }
 
+        /** @var \Illuminate\Database\Eloquent\Relations\Pivot $pivot */
+        /** @noinspection PhpUndefinedFieldInspection */
+        $pivot = $character->teamMembership;
         /** @noinspection PhpUndefinedFieldInspection */
         $pivot->status = $pivot->accepted_terms = true;
         $pivot->save();

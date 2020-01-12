@@ -140,7 +140,6 @@ export const putTeam = (cancelToken, teamId, data) => axios.post('/api/teams/' +
 
         return null;
     }
-
 ).catch(error => {
     throw error;
 });
@@ -155,6 +154,23 @@ export const deleteTeam = (cancelToken, teamId) => axios.delete('/api/teams/' + 
 
 export const postTeamsCharacters = (cancelToken, teamId, data) => axios.post('/api/teams/' + teamId + '/characters', data, {
     cancelToken: cancelToken.token,
+}).then(
+    response => {
+        if (response.data) {
+            return normalize(response.data, schema.team)
+        }
+
+        return null;
+    }
+).catch(error => {
+    throw error;
+});
+
+export const putTeamsCharacters = (cancelToken, teamId, characterId, data) => axios.post('/api/teams/' + teamId + '/characters/' + characterId, data, {
+    cancelToken: cancelToken.token,
+    headers: {
+        'X-HTTP-Method-Override': 'PUT',
+    },
 }).then(
     response => {
         if (response.data) {

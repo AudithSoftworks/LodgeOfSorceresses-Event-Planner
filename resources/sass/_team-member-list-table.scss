@@ -9,7 +9,7 @@ table.teams-characters-list-table {
             > th {
                 @include media-breakpoint-up(xs) {
                     &:nth-of-type(1) {
-                        width: 25%;
+                        width: 30%;
                     }
                     &:nth-of-type(2) {
                         width: 30%;
@@ -18,16 +18,16 @@ table.teams-characters-list-table {
                         display: none;
                     }
                     &:nth-of-type(4) {
-                        width: 35%;
+                        width: 40%;
                     }
                     &:nth-of-type(5) {
-                        width: 10%;
+                        display: none;
                     }
                 }
 
                 @include media-breakpoint-up(md) {
                     &:nth-of-type(1) {
-                        width: 31%;
+                        width: 27.5%;
                     }
                     &:nth-of-type(2) {
                         width: 35%;
@@ -36,7 +36,8 @@ table.teams-characters-list-table {
                         width: 25%;
                     }
                     &:nth-of-type(5) {
-                        width: 9%;
+                        display: table-cell;
+                        width: 12.5%;
                     }
                 }
 
@@ -45,17 +46,17 @@ table.teams-characters-list-table {
                         width: 20%;
                     }
                     &:nth-of-type(2) {
-                        width: 30%;
+                        width: 27.5%;
                     }
                     &:nth-of-type(3) {
                         display: table-cell;
                         width: 25%;
                     }
                     &:nth-of-type(4) {
-                        width: 20%;
+                        width: 17.5%;
                     }
                     &:nth-of-type(5) {
-                        width: 5%;
+                        width: 10%;
                     }
                 }
 
@@ -67,13 +68,13 @@ table.teams-characters-list-table {
                         width: 35%;
                     }
                     &:nth-of-type(3) {
-                        width: 20%;
+                        width: 22.5%;
                     }
                     &:nth-of-type(4) {
-                        width: 20%;
+                        width: 15%;
                     }
                     &:nth-of-type(5) {
-                        width: 5%;
+                        width: 7.5%;
                     }
                 }
             }
@@ -86,8 +87,14 @@ table.teams-characters-list-table {
                 vertical-align: middle !important;
 
                 @include media-breakpoint-up(xs) {
-                    &:nth-of-type(3) {
+                    &:nth-of-type(3), &:nth-of-type(5) {
                         display: none;
+                    }
+                }
+
+                @include media-breakpoint-up(md) {
+                    &:nth-of-type(5) {
+                        display: table-cell;
                     }
                 }
 

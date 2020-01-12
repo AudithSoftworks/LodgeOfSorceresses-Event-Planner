@@ -1,22 +1,27 @@
-import { faPortrait, faTrashAlt } from '@fortawesome/pro-light-svg-icons';
+import { faBadgeCheck, faPortrait, faTrashAlt } from '@fortawesome/pro-light-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { renderActionList } from "../../../helpers";
-import { character, team } from '../../../vendor/data';
+import { character, team, user } from '../../../vendor/data';
 
 class Item extends PureComponent {
     render = () => {
-        const { character, deleteTeamMembershipHandler } = this.props;
+        const { authorizedTeamManager, character, deleteTeamMembershipHandler, me, team } = this.props;
         const actionList = {
+            accept_terms: character.owner.id === me.id && !character.team_membership.status ? (
+                <Link to={'/teams/' + team.id + '/characters/' + character.id} title="Accept Invitation">
+                    <FontAwesomeIcon icon={faBadgeCheck} />
+                </Link>
+            ) : null,
             view: (
                 <Link to={'/characters/' + character.id} title="Character Sheet">
                     <FontAwesomeIcon icon={faPortrait} />
                 </Link>
             ),
             delete:
-                typeof deleteTeamMembershipHandler === 'function' ? (
+                typeof deleteTeamMembershipHandler === 'function' && (authorizedTeamManager || character.owner.id === me.id) ? (
                     <Link to="#" onClick={deleteTeamMembershipHandler} data-id={character.id} title="Remove Character">
                         <FontAwesomeIcon icon={faTrashAlt} />
                     </Link>
@@ -44,8 +49,10 @@ class Item extends PureComponent {
 }
 
 Item.propTypes = {
+    authorizedTeamManager: PropTypes.bool.isRequired,
     character: character.isRequired,
     deleteTeamMembershipHandler: PropTypes.func, // based on existense of this param, we render Delete button
+    me: user.isRequired,
     team: team.isRequired,
 };
 

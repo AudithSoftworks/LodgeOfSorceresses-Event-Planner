@@ -12,7 +12,7 @@ import postTeamsCharactersAction from "../../actions/post-teams-characters";
 import { renderActionList } from "../../helpers";
 import { getAllCharacters } from "../../vendor/api";
 import axios from "../../vendor/axios";
-import { team, teams } from "../../vendor/data";
+import { team, teams, user } from "../../vendor/data";
 import Loading from "../Loading";
 import Notification from "../Notification";
 import List from "../TeamsCharacters/List";
@@ -145,7 +145,7 @@ class Item extends Component {
             return [<Loading message="Fetching eligible character list..." key="loading" />, <Notification key="notifications" />];
         }
 
-        const { authorizedTeamManager, deleteTeamHandler, changeTierHandler } = this.props;
+        const { authorizedTeamManager, changeTierHandler, deleteTeamHandler, me } = this.props;
         const { team } = this.state;
         const actionList = {
             return: (
@@ -190,7 +190,7 @@ class Item extends Component {
                 <article className="col-lg-20">
                     {authorizedTeamManager ? this.renderAddMemberForm(characters) : null}
                 </article>
-                <List deleteTeamMembershipHandler={authorizedTeamManager ? this.handleTeamsCharactersDelete : null} team={team} />
+                <List authorizedTeamManager={authorizedTeamManager} deleteTeamMembershipHandler={this.handleTeamsCharactersDelete} me={me} team={team} />
             </section>
         ];
     };
@@ -198,10 +198,11 @@ class Item extends Component {
 
 Item.propTypes = {
     authorizedTeamManager: PropTypes.bool.isRequired,
+    changeTierHandler: PropTypes.func, // based on existense of this param, we render ChangeTier buttons
+    deleteTeamHandler: PropTypes.func, // based on existense of this param, we render Delete button
+    me: user.isRequired,
     team,
     teams,
-    deleteTeamHandler: PropTypes.func, // based on existense of this param, we render Delete button
-    changeTierHandler: PropTypes.func, // based on existense of this param, we render ChangeTier buttons
 
     postTeamsCharactersAction: PropTypes.func.isRequired,
     deleteTeamsCharactersAction: PropTypes.func.isRequired,

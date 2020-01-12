@@ -91,6 +91,13 @@ const TeamForm = React.lazy(() =>
         '../../Controllers/Forms/TeamForm'
         )
 );
+const TeamMembershipTerms = React.lazy(() =>
+    import(
+        /* webpackPrefetch: true */
+        /* webpackChunkName: "controllers-team_membership_terms" */
+        '../../Controllers/Forms/TeamMembershipTerms'
+        )
+);
 
 const AdminHome = React.lazy(() =>
     import(
@@ -128,6 +135,7 @@ class Main extends PureComponent {
                     <Fragment>
                         <Route exact path={url} component={props => <Teams {...props} />} />
                         <Route path={url + '/create'} component={props => <TeamForm {...props} />} />
+                        <Route path={url + '/:id(\\d+)/characters/:cId(\\d+)'} component={props => <TeamMembershipTerms {...props} />} />
                         <Route path={url + '/:id(\\d+)/edit'} component={props => <TeamForm {...props} />} />
                         <Route exact path={url + '/:id(\\d+)'} component={props => <Teams {...props} />} />
                     </Fragment>
