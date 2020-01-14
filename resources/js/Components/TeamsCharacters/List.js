@@ -13,6 +13,17 @@ class List extends Component {
     render = () => {
         const { authorizedTeamManager, className, deleteTeamMembershipHandler, me, team } = this.props;
         let teamMembersRendered = team.members
+            .sort((c1, c2) => {
+                const aNameLower = c1.owner.name.toLowerCase();
+                const bNameLower = c2.owner.name.toLowerCase();
+                if (aNameLower < bNameLower) {
+                    return -1;
+                } else if (aNameLower > bNameLower) {
+                    return 1;
+                }
+
+                return 0;
+            })
             .map(character => <Item key={character.id}
                                     authorizedTeamManager={authorizedTeamManager}
                                     me={me}
