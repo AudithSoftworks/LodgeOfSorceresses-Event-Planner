@@ -28,7 +28,7 @@ class AnnounceDpsDisapprovalOnDiscord
          | Prelim
          *-----------------------------------*/
 
-        $channelId = config('services.discord.channels.dps_parses');
+        $channelId = config('services.discord.channels.dps_parses_logs');
 
         $dpsParse = $event->getDpsParse();
         $parseAuthor = $event->getOwner();

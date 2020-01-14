@@ -36,7 +36,7 @@ class AnnounceDpsApprovalOnDiscord
          | Prelim
          *------------*/
 
-        $dpsParsesChannelId = config('services.discord.channels.dps_parses');
+        $dpsParsesChannelId = config('services.discord.channels.dps_parses_logs');
 
         $dpsParse = $event->getDpsParse();
         $parseAuthor = $event->getOwner();
