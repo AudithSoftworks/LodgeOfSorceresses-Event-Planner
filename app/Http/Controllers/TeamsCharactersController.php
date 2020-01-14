@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\Team\MemberInvited;
+use App\Events\Team\MemberJoined;
+use App\Events\Team\MemberRemoved;
 use App\Events\Team\TeamUpdated;
 use App\Models\Character;
 use App\Models\Team;
@@ -96,6 +99,9 @@ class TeamsCharactersController extends Controller
         $team->members()->sync($teamMemberIds);
         $team->save();
 
+        foreach ($teamMemberIds as $characterId) {
+            Event::dispatch(new MemberInvited(Cache::get('character-' . $characterId), $team));
+        }
         Event::dispatch(new TeamUpdated($team));
         Cache::has('team-' . $team->id); // Recache trigger.
 
@@ -187,6 +193,7 @@ class TeamsCharactersController extends Controller
         $pivot->status = $pivot->accepted_terms = true;
         $pivot->save();
 
+        Event::dispatch(new MemberJoined($character, $team));
         Event::dispatch(new TeamUpdated($team));
         Cache::has('team-' . $team->id); // Recache trigger.
 
@@ -227,11 +234,13 @@ class TeamsCharactersController extends Controller
             throw new AuthorizationException('Not allowed to terminate this team membership record! Only the member themselves or the team leader can do that.');
         }
 
-        /** @var \Illuminate\Database\Eloquent\Relations\Pivot $pivot */
         /** @noinspection PhpUndefinedFieldInspection */
+        /** @var \Illuminate\Database\Eloquent\Relations\Pivot $pivot */
         $pivot = $character->teamMembership;
+        $isMemberActive = (bool)$pivot->status;
         $pivot->delete();
 
+        $isMemberActive && Event::dispatch(new MemberRemoved($character, $team));
         Event::dispatch(new TeamUpdated($team));
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);

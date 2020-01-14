@@ -76,6 +76,16 @@ class EventServiceProvider extends ServiceProvider
             Listeners\File\PersistUploadedFile::class
         ],
 
+        Events\Team\MemberInvited::class => [
+            Listeners\Team\DmMemberUponInvitationOnDiscord::class,
+        ],
+        Events\Team\MemberJoined::class => [
+            Listeners\Team\AnnounceMemberJoiningOnDiscord::class,
+        ],
+        Events\Team\MemberRemoved::class => [
+            Listeners\Team\AnnounceMemberRemovalOnDiscord::class,
+        ],
+
         Events\User\LoggedIn::class => [],
         Events\User\LoggedOut::class => [],
         Events\User\Registered::class => [],

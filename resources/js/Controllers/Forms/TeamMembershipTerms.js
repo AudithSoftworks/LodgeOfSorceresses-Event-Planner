@@ -78,6 +78,9 @@ class TeamMembershipTerms extends PureComponent {
         if (!team || !character) {
             return [<Loading message="Fetching team membership records..." key="loading" />, <Notification key="notifications" />];
         }
+        if (character.owner.id !== me.id) {
+            history.push('/teams/' + team.id);
+        }
 
         return [
             <article key="tos" className="col-xs-24 p-0">
