@@ -10,11 +10,11 @@ use GuzzleHttp\RequestOptions;
 
 class AnnounceDpsApprovalOnDiscord
 {
-    private const TOPIC_URLS_CLEARANCE_GUIDE = 'https://lodgeofsorceresses.com/topic/5741-pve-content-clearance-guide/';
+    private const TOPIC_URLS_CONTENT_CLEARANCE_GUIDE = 'https://lodgeofsorceresses.com/topic/5741-pve-content-clearance-guide/';
 
-    private const TOPIC_URLS_CORE_GUIDELINES = 'https://lodgeofsorceresses.com/topic/5506-endgame-attendance-guidelines/';
+    private const TOPIC_URLS_ENDGAME_ATTENDANCE_GUIDELINES = 'https://lodgeofsorceresses.com/topic/5506-endgame-attendance-guidelines/';
 
-    private const TOPIC_URLS_CORE_REQUIREMENTS = 'https://lodgeofsorceresses.com/topic/4887-pve-raid-core-requirements-to-join/';
+    private const TOPIC_URLS_REQUIREMENTS_TO_JOIN_CORE = 'https://lodgeofsorceresses.com/topic/4887-requirements-to-join-a-core/';
 
     public function __construct()
     {
@@ -187,15 +187,15 @@ class AnnounceDpsApprovalOnDiscord
                                 ],
                                 [
                                     'name' => 'Content Clearance Guide',
-                                    'value' => 'Read [this topic](' . self::TOPIC_URLS_CLEARANCE_GUIDE . ') to learn more about Content Clearance Tiers',
+                                    'value' => 'Read [this topic](' . self::TOPIC_URLS_CONTENT_CLEARANCE_GUIDE . ') to learn more about Content Clearance Tiers',
                                 ],
                                 [
                                     'name' => 'Endgame Attendance Guidelines',
-                                    'value' => 'Read [this topic](' . self::TOPIC_URLS_CORE_GUIDELINES . ') as a preparation to join a Core',
+                                    'value' => 'Read [this topic](' . self::TOPIC_URLS_ENDGAME_ATTENDANCE_GUIDELINES . ') as a preparation to join a Core',
                                 ],
                                 [
                                     'name' => 'Raid Core Requirements to Join',
-                                    'value' => 'Read [this topic](' . self::TOPIC_URLS_CORE_REQUIREMENTS . ') as a preparation to join a Core',
+                                    'value' => 'Read [this topic](' . self::TOPIC_URLS_REQUIREMENTS_TO_JOIN_CORE . ') as a preparation to join a Core',
                                 ],
                             ],
                             'footer' => [
