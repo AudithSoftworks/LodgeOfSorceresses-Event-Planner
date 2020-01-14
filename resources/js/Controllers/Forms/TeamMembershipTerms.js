@@ -85,8 +85,10 @@ class TeamMembershipTerms extends PureComponent {
                     <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')} />
                     <fieldset className="form-group col-24 mt-5 pt-5 pb-5 text-center">
                         <input hidden="checkbox" name="accepted_terms" value="1" readOnly={true} />
-                        I have read & understood <a href='https://lodgeofsorceresses.com/topic/5506-endgame-attendance-guidelines/' target='_blank'>Endgame Attendance Guidelines</a>. By joining, I
-                        accept them.
+                        <p>I have read <a href='https://lodgeofsorceresses.com/topic/4887-pve-raid-core-requirements-to-join/' target='_blank'>Requirements to Join Endgame Guidelines</a>.</p>
+                        <p>I have read & understood <a href='https://lodgeofsorceresses.com/topic/5506-endgame-attendance-guidelines/' target='_blank'>Endgame Attendance Guidelines</a>.</p>
+                        <p>I have done what is described in <em>Requirements</em> section of <em>Endgame Attendance Guidelines</em> - installed Addons, configured the game accordingly etc.</p>
+                        <p>By joining, I accept the terms stated in <em>Endgame Attendance Guidelines</em>.</p>
                     </fieldset>
                     <fieldset className="form-group col-24 text-center">
                         <button className="btn btn-success btn-lg mb-4 ml-auto mr-auto d-block" type="submit">
