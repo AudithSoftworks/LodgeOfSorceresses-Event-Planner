@@ -1,6 +1,7 @@
 <?php namespace App\Listeners\Cache;
 
 use App\Events\Team\TeamNeedsRecacheInterface;
+use Illuminate\Support\Facades\Cache;
 
 class DeleteTeamCache
 {
@@ -12,7 +13,7 @@ class DeleteTeamCache
     public function handle(TeamNeedsRecacheInterface $event): bool
     {
         $team = $event->getTeam();
-        app('cache.store')->forget('team-' . $team->id);
+        Cache::forget('team-' . $team->id);
 
         return true;
     }

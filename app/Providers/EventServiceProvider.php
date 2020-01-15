@@ -80,9 +80,11 @@ class EventServiceProvider extends ServiceProvider
             Listeners\Team\DmMemberUponInvitationOnDiscord::class,
         ],
         Events\Team\MemberJoined::class => [
+            Listeners\Team\AssignDiscordTagToMemberJoining::class,
             Listeners\Team\AnnounceMemberJoiningOnDiscord::class,
         ],
         Events\Team\MemberRemoved::class => [
+            Listeners\Team\RemoveDiscordTagFromMemberLeaving::class,
             Listeners\Team\AnnounceMemberRemovalOnDiscord::class,
         ],
 

@@ -74,11 +74,11 @@ class AnnounceMemberRemovalOnDiscord
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
                     'content' => sprintf(
-                        '%s, your character _%s_ has been **removed** from %s by %s. If you are unsure how this happened, please contact the Team Leader!',
+                        '%s, your character _%s_ has been **removed** from %s by _%s_. If you are unsure how this happened, please contact the Team Leader!',
                         $memberMentionName,
                         $character->name,
                         $team->name,
-                        $myMentionName
+                        $me->name
                     ),
                     'tts' => false,
                 ]),

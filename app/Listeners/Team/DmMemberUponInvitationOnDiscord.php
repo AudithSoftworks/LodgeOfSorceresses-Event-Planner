@@ -39,11 +39,11 @@ class DmMemberUponInvitationOnDiscord
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
                     'content' => sprintf(
-                        '%s, your character _%s_ has been **invited** to join %s by %s. Please click here: <%s> to review and possibly accept/decline the invitation.',
+                        '%s, your character _%s_ has been **invited** to join %s by _%s_. Please click here: <%s> to review and possibly accept/decline the invitation.',
                         $memberMentionName,
                         $character->name,
                         $team->name,
-                        $myMentionName,
+                        $me->name,
                         $invitationLink
                     ),
                     'tts' => false,

@@ -40,8 +40,9 @@ class Item extends Component {
     };
 
     componentDidMount = () => {
+        const { authorizedTeamManager } = this.props;
         const { characters, team } = this.state;
-        if (!characters) {
+        if (authorizedTeamManager && !characters) {
             this.getAllCharacters(team.tier)
                 .then(characters => {
                     this.cancelTokenSource = null;
@@ -140,12 +141,13 @@ class Item extends Component {
     };
 
     render = () => {
+        const { authorizedTeamManager, changeTierHandler, deleteTeamHandler, me } = this.props;
         const { characters } = this.state;
-        if (!characters) {
+        if (authorizedTeamManager && !characters) {
             return [<Loading message="Fetching eligible character list..." key="loading" />, <Notification key="notifications" />];
+
         }
 
-        const { authorizedTeamManager, changeTierHandler, deleteTeamHandler, me } = this.props;
         const { team } = this.state;
         const actionList = {
             return: (

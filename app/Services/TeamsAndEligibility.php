@@ -16,6 +16,17 @@ class TeamsAndEligibility
         return false;
     }
 
+    public function isUserMemberOfTeam(Team $team, User $user): bool
+    {
+        foreach ($team->members as $character) {
+            if ($character->teamMembership->status && $character->owner->id === $user->id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function areAllMembersOfTeamEligibleForPossibleNewTeamTier(Team $team, int $newTier): bool
     {
         if ($team->tier > $newTier) {
