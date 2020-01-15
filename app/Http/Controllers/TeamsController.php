@@ -46,19 +46,24 @@ class TeamsController extends Controller
     public function store(Request $request): JsonResponse
     {
         $this->authorize('admin', User::class);
-        $validatorErrorMessages = [
+
+        $discordRoleIds = collect(app('discord.api')->getGuildRoles())
+            ->reject(static function ($item) {
+                return $item['hoist'] === true || $item['mentionable'] === false;
+            })->implode('id', ',');
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string',
+            'tier' => 'required|integer|between:1,4',
+            'discord_id' => 'required|string|numeric|in:' . $discordRoleIds,
+            'led_by' => 'required|numeric|exists:users,id',
+        ], [
             'name.required' => 'Team name is required.',
             'tier.required' => 'Choose a tier for the content this team is specifialized in.',
             'tier.between' => 'Tier must be from 1 to 4.',
             'discord_id.required' => 'Discord Role-ID is required.',
+            'discord_id.in' => 'Discord Role-ID isn\'t valid.',
             'led_by.required' => 'Choose a team leader.',
-        ];
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'tier' => 'required|integer|between:1,4',
-            'discord_id' => 'required|string|numeric',
-            'led_by' => 'required|numeric|exists:users,id',
-        ], $validatorErrorMessages);
+        ]);
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }
@@ -129,19 +134,24 @@ class TeamsController extends Controller
             throw new ModelNotFoundException('Team not found!');
         }
 
-        $validatorErrorMessages = [
+        $discordRoleIds = collect(app('discord.api')->getGuildRoles())
+            ->reject(static function ($item) {
+                return $item['hoist'] === true || $item['mentionable'] === false;
+            })
+            ->implode('id', ',');
+        $validator = Validator::make($request->all(), [
+            'name' => 'sometimes|required|string',
+            'tier' => 'sometimes|required|integer|between:1,4',
+            'discord_id' => 'sometimes|required|string|numeric|in:' . $discordRoleIds,
+            'led_by' => 'sometimes|required|numeric|exists:users,id',
+        ], [
             'name.required' => 'Team name is required.',
             'tier.required' => 'Choose a tier for the content this team is specifialized in.',
             'tier.between' => 'Tier must be from 1 to 4.',
             'discord_id.required' => 'Discord Role-ID is required.',
+            'discord_id.in' => 'Discord Role-ID isn\'t valid.',
             'led_by.required' => 'Choose a team leader.',
-        ];
-        $validator = Validator::make($request->all(), [
-            'name' => 'sometimes|required|string',
-            'tier' => 'sometimes|required|integer|between:1,4',
-            'discord_id' => 'sometimes|required|string|numeric',
-            'led_by' => 'sometimes|required|numeric|exists:users,id',
-        ], $validatorErrorMessages);
+        ]);
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }

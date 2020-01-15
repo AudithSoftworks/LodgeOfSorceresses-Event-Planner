@@ -73,13 +73,29 @@ class TeamsControllerTest extends IlluminateTestCase
         $response->assertJsonPath('errors.led_by.0', 'The led by must be a number.');
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
 
-        # Case 4: Non-eligible team leader
+        # Case 4: Invalid discord_id
         $response = $this
             ->actingAs($tierOneAdmin)
             ->postJson('/api/teams', [
                 'name' => 'Team',
                 'tier' => 4,
                 'discord_id' => '491244517589254446',
+                'led_by' => $tierOneAdmin->id,
+            ]);
+        $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        $responseOriginalContent = $response->getOriginalContent();
+        $this->assertCount(2, $responseOriginalContent);
+        $this->assertCount(1, $responseOriginalContent['errors']);
+        $response->assertJsonPath('message', 'The given data was invalid.');
+        $response->assertJsonPath('errors.discord_id.0', 'Discord Role-ID isn\'t valid.');
+
+        # Case 4: Non-eligible team leader
+        $response = $this
+            ->actingAs($tierOneAdmin)
+            ->postJson('/api/teams', [
+                'name' => 'Team',
+                'tier' => 4,
+                'discord_id' => '499973058401140737',
                 'led_by' => $tierOneAdmin->id,
             ]);
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
@@ -100,7 +116,7 @@ class TeamsControllerTest extends IlluminateTestCase
             ->postJson('/api/teams', [
                 'name' => 'Core 1',
                 'tier' => 4,
-                'discord_id' => '491244517579254146',
+                'discord_id' => '499973058401140737',
                 'led_by' => static::$tierFourMemberUser->id,
             ]);
         $response->assertStatus(JsonResponse::HTTP_CREATED);
@@ -176,7 +192,7 @@ class TeamsControllerTest extends IlluminateTestCase
         $response->assertJsonPath('errors.led_by.0', 'The led by must be a number.');
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
 
-        # Case 4: Non-eligible team leader
+        # Case 4: Invalid discord_id
         $tierOneMember = $this->stubTierXMemberUser(1);
         $response = $this
             ->actingAs(static::$adminUser)
@@ -191,15 +207,32 @@ class TeamsControllerTest extends IlluminateTestCase
         $this->assertCount(2, $responseOriginalContent);
         $this->assertCount(1, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
+        $response->assertJsonPath('errors.discord_id.0', 'Discord Role-ID isn\'t valid.');
+
+        # Case 5: Non-eligible team leader
+        $tierOneMember = $this->stubTierXMemberUser(1);
+        $response = $this
+            ->actingAs(static::$adminUser)
+            ->postJson('/api/teams', [
+                'name' => 'Team',
+                'tier' => 4,
+                'discord_id' => '499973058401140737',
+                'led_by' => $tierOneMember->id,
+            ]);
+        $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        $responseOriginalContent = $response->getOriginalContent();
+        $this->assertCount(2, $responseOriginalContent);
+        $this->assertCount(1, $responseOriginalContent['errors']);
+        $response->assertJsonPath('message', 'The given data was invalid.');
         $response->assertJsonPath('errors.led_by.0', 'User doesn\'t have an eligible character to join this team.');
 
-        # Case 5: Non-admin trying to edit someone else's team
+        # Case 6: Non-admin trying to edit someone else's team
         $response = $this
             ->actingAs($tierOneMember)
             ->postJson('/api/teams', [
                 'name' => 'Team',
                 'tier' => 4,
-                'discord_id' => '491244517589254446',
+                'discord_id' => '499973058401140737',
                 'led_by' => static::$adminUser->id,
             ]);
         $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
@@ -221,7 +254,7 @@ class TeamsControllerTest extends IlluminateTestCase
             ->putJson('/api/teams/1', [
                 'name' => 'Core 2',
                 'tier' => 4,
-                'discord_id' => '491244517589254146',
+                'discord_id' => '499973058401140737',
                 'led_by' => static::$tierFourMemberUser->id,
             ]);
         $response->assertStatus(JsonResponse::HTTP_OK);
@@ -238,7 +271,7 @@ class TeamsControllerTest extends IlluminateTestCase
             ->putJson('/api/teams/1', [
                 'name' => 'Core 3',
                 'tier' => 4,
-                'discord_id' => '491244517589254146',
+                'discord_id' => '499973058401140737',
                 'led_by' => static::$tierFourMemberUser->id,
             ]);
         $response->assertStatus(JsonResponse::HTTP_OK);
