@@ -2,6 +2,9 @@
 
 namespace App\Tests\Integration\JsonApi;
 
+use App\Events\Team\MemberInvited;
+use App\Events\Team\MemberJoined;
+use App\Events\Team\MemberRemoved;
 use App\Events\Team\TeamUpdated;
 use App\Models\Character;
 use App\Models\Team;
@@ -67,7 +70,7 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
 
     public function testStoreForFailure(): void
     {
-        Event::fake([TeamUpdated::class]);
+        Event::fake([MemberInvited::class, TeamUpdated::class]);
         $this->stubTierFourAdminUser();
 
         # Case 1: No authentication
@@ -143,11 +146,12 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
         $response->assertJsonPath('message', 'Only team leader or creator can invite new members!');
 
         Event::assertNotDispatched(TeamUpdated::class);
+        Event::assertNotDispatched(MemberInvited::class);
     }
 
     public function testStoreForSuccess(): void
     {
-        Event::fake([TeamUpdated::class]);
+        Event::fake([MemberInvited::class, TeamUpdated::class]);
 
         $tierOneMemberUser = $this->stubTierXMemberUser(1);
         $tierTwoMemberUser = $this->stubTierXMemberUser(2);
@@ -179,11 +183,12 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
         }
 
         Event::assertDispatched(TeamUpdated::class);
+        Event::assertDispatched(MemberInvited::class);
     }
 
     public function testUpdateForFailure(): void
     {
-        Event::fake([TeamUpdated::class]);
+        Event::fake([MemberJoined::class, MemberRemoved::class, TeamUpdated::class]);
 
         $teamLeader = static::$team->ledBy->loadMissing('characters');
         /** @var \App\Models\Character $teamLeaderCharacter */
@@ -254,11 +259,13 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
         $response->assertJsonPath('message', 'Team not found!');
 
         Event::assertNotDispatched(TeamUpdated::class);
+        Event::assertNotDispatched(MemberJoined::class);
+        Event::assertNotDispatched(MemberRemoved::class);
     }
 
     public function testUpdateForSuccess(): void
     {
-        Event::fake([TeamUpdated::class]);
+        Event::fake([MemberJoined::class, TeamUpdated::class]);
 
         $teamLeader = static::$team->ledBy->loadMissing('characters');
         /** @var \App\Models\Character $teamLeaderCharacter */
@@ -290,6 +297,7 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
         }
 
         Event::assertDispatched(TeamUpdated::class);
+        Event::assertDispatched(MemberJoined::class);
     }
 
     public function testShowForFailure(): void
@@ -341,7 +349,7 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
 
     public function testDestroyForFailure(): void
     {
-        Event::fake([TeamUpdated::class]);
+        Event::fake([MemberRemoved::class, TeamUpdated::class]);
 
         # Case 1: No authentication
         $response = $this
@@ -374,11 +382,12 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
         $response->assertJsonPath('message', 'Team has no such member!');
 
         Event::assertNotDispatched(TeamUpdated::class);
+        Event::assertNotDispatched(MemberRemoved::class);
     }
 
     public function testDestroyForSuccess(): void
     {
-        Event::fake([TeamUpdated::class]);
+        Event::fake([MemberRemoved::class, TeamUpdated::class]);
 
         $response = $this
             ->actingAs(static::$team->ledBy)
@@ -410,5 +419,6 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
         })->count());
 
         Event::assertDispatched(TeamUpdated::class);
+        Event::assertDispatched(MemberRemoved::class);
     }
 }
