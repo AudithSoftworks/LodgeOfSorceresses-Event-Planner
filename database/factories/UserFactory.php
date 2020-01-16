@@ -1,8 +1,6 @@
 <?php
 
 use App\Models\User;
-use App\Models\UserOAuth;
-use Faker\Generator;
 use Illuminate\Support\Str;
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */

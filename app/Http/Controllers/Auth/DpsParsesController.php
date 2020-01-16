@@ -7,10 +7,11 @@ use App\Events\DpsParse\DpsParseSubmitted;
 use App\Http\Controllers\Controller;
 use App\Models\DpsParse;
 use App\Models\User;
-use App\Traits\Characters\HasOrIsDpsParse;
+use App\Traits\Character\HasOrIsDpsParse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class DpsParsesController extends Controller
@@ -46,24 +47,22 @@ class DpsParsesController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function store(Request $request, int $characterId): JsonResponse
     {
         $this->authorize('user', User::class);
-        $validatorErrorMessages = [
-            'parse_file_hash.required' => 'Parse screenshot needs to be uploaded.',
-            'superstar_file_hash.required' => 'Superstar screenshot needs to be uploaded.',
-            'dps_amount.required' => 'DPS Number is required.',
-            'sets.*.required' => 'Select sets worn during the parse.',
-        ];
-        $validator = app('validator')->make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'parse_file_hash' => 'required|string',
             'superstar_file_hash' => 'required|string',
             'dps_amount' => 'required|numeric',
             'sets.*' => 'sometimes|required|numeric|exists:sets,id',
-        ], $validatorErrorMessages);
+        ], [
+            'parse_file_hash.required' => 'Parse screenshot needs to be uploaded.',
+            'superstar_file_hash.required' => 'Superstar screenshot needs to be uploaded.',
+            'dps_amount.required' => 'DPS Number is required.',
+            'sets.*.required' => 'Select sets worn during the parse.',
+        ]);
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }

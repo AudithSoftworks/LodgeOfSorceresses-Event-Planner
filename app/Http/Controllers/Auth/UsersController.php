@@ -3,7 +3,7 @@
 use App\Events\User\Updated;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Traits\Users\IsUser;
+use App\Traits\User\IsUser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;

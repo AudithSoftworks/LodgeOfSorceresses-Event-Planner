@@ -3,11 +3,11 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import Select from 'react-select';
-import Animated from 'react-select/animated';
+import makeAnimated from 'react-select/animated';
 import postMyCharacterAction from '../../actions/post-my-character';
 import putMyCharacterAction from '../../actions/put-my-character';
-import { characters, content, sets, skills, user } from '../../vendor/data';
 import Notification from '../../Components/Notification';
+import { characters, content, sets, skills } from '../../vendor/data';
 
 class CharacterForm extends PureComponent {
     classOptions = [
@@ -126,6 +126,7 @@ class CharacterForm extends PureComponent {
         const charactersSkillsIds = character ? Object.values(character.skills).map(item => item.id) : [];
         const charactersContentIds = character ? Object.values(character.content).map(item => item.id) : [];
         const heading = (match.params.id ? 'Edit' : 'Create') + ' Character';
+        const animated = makeAnimated();
 
         return (
             <form className="col-md-24 d-flex flex-row flex-wrap p-0" onSubmit={this.handleSubmit} key="characterCreationForm">
@@ -152,7 +153,7 @@ class CharacterForm extends PureComponent {
                     <Select
                         options={this.classOptions}
                         defaultValue={character ? this.classOptions.filter(option => option.label === character.class) : this.classOptions[0]}
-                        components={Animated}
+                        components={animated}
                         isDisabled={!!(character && character.last_submitted_dps_amount)}
                         name="class"
                     />
@@ -162,7 +163,7 @@ class CharacterForm extends PureComponent {
                     <Select
                         options={this.roleOptions}
                         defaultValue={character ? this.roleOptions.filter(option => option.label === character.role) : this.roleOptions[0]}
-                        components={Animated}
+                        components={animated}
                         isDisabled={!!(character && character.last_submitted_dps_amount)}
                         name="role"
                     />
@@ -173,7 +174,7 @@ class CharacterForm extends PureComponent {
                         options={contentOptions}
                         defaultValue={character ? contentOptions.filter(option => charactersContentIds.includes(option.value)) : charactersContentIds}
                         placeholder="Content which you actively progressed and cleared (no carries)..."
-                        components={Animated}
+                        components={animated}
                         name="content[]"
                         isMulti
                     />
@@ -184,7 +185,7 @@ class CharacterForm extends PureComponent {
                         options={setsOptions}
                         defaultValue={character ? setsOptions.filter(option => charactersSetsIds.includes(option.value)) : charactersSetsIds}
                         placeholder="List full sets only (2/2 or 5/5 etc)..."
-                        components={Animated}
+                        components={animated}
                         name="sets[]"
                         isMulti
                     />
@@ -195,7 +196,7 @@ class CharacterForm extends PureComponent {
                         options={skillsOptions}
                         defaultValue={character ? skillsOptions.filter(option => charactersSkillsIds.includes(option.value)) : charactersSkillsIds}
                         placeholder="All support skills you've unlocked and fully leveled..."
-                        components={Animated}
+                        components={animated}
                         name="skills[]"
                         isMulti
                     />

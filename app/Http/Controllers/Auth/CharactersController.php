@@ -5,12 +5,13 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Character;
 use App\Models\User;
-use App\Traits\Characters\HasOrIsDpsParse;
-use App\Traits\Characters\IsCharacter;
+use App\Traits\Character\HasOrIsDpsParse;
+use App\Traits\Character\IsCharacter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class CharactersController extends Controller
@@ -44,32 +45,30 @@ class CharactersController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param \Illuminate\Http\Request $request
      *
      * @return JsonResponse
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      * @throws \Illuminate\Validation\ValidationException
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function store(Request $request): JsonResponse
     {
         $this->authorize('user', User::class);
-        $validatorErrorMessages = [
-            'name.required' => 'Character name is required.',
-            'role.required' => 'Choose a role.',
-            'class.required' => 'Choose a class.',
-            'content.*.required' => 'Select all content this Character has cleared.',
-            'sets.*.required' => 'Select all full sets your Character has.',
-            'skills.*.required' => 'Select all support skills your Character has unlocked and fully leveled.',
-        ];
-        $validator = app('validator')->make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'role' => 'required|integer|min:1|max:4',
             'class' => 'required|integer|min:1|max:6',
             'content.*' => 'nullable|numeric|exists:content,id',
             'sets.*' => 'required|numeric|exists:sets,id',
             'skills.*' => 'nullable|numeric|exists:skills,id',
-        ], $validatorErrorMessages);
+        ], [
+            'name.required' => 'Character name is required.',
+            'role.required' => 'Choose a role.',
+            'class.required' => 'Choose a class.',
+            'content.*.required' => 'Select all content this Character has cleared.',
+            'sets.*.required' => 'Select all full sets your Character has.',
+            'skills.*.required' => 'Select all support skills your Character has unlocked and fully leveled.',
+        ]);
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }
@@ -98,7 +97,7 @@ class CharactersController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
+     * @param \Illuminate\Http\Request $request
      * @param int     $characterId
      *
      * @return JsonResponse
@@ -135,7 +134,7 @@ class CharactersController extends Controller
                 ->where('id', $characterId);
         })->first(['id', 'name', 'class', 'role', 'sets']);
         if (!$character) {
-            return response()->json(['message' => 'Character not found!'])->setStatusCode(404);
+            throw new ModelNotFoundException('Character not found!');
         }
         $character->user_id = app('auth.driver')->id();
         $request->filled('name') && $character->name = $request->get('name');

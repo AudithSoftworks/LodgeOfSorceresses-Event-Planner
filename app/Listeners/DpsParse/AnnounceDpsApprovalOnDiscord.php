@@ -2,7 +2,7 @@
 
 use App\Events\DpsParse\DpsParseApproved;
 use App\Models\Set;
-use App\Services\GuildRankAndClearance;
+use App\Services\GuildRanksAndClearance;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
 use Cloudinary;
@@ -10,11 +10,11 @@ use GuzzleHttp\RequestOptions;
 
 class AnnounceDpsApprovalOnDiscord
 {
-    private const TOPIC_URLS_CLEARANCE_GUIDE = 'https://lodgeofsorceresses.com/topic/5741-pve-content-clearance-guide/';
+    private const TOPIC_URLS_CONTENT_CLEARANCE_GUIDE = 'https://lodgeofsorceresses.com/topic/5741-pve-content-clearance-guide/';
 
-    private const TOPIC_URLS_CORE_GUIDELINES = 'https://lodgeofsorceresses.com/topic/5506-endgame-attendance-guidelines/';
+    private const TOPIC_URLS_ENDGAME_ATTENDANCE_GUIDELINES = 'https://lodgeofsorceresses.com/topic/5506-endgame-attendance-guidelines/';
 
-    private const TOPIC_URLS_CORE_REQUIREMENTS = 'https://lodgeofsorceresses.com/topic/4887-pve-raid-core-requirements-to-join/';
+    private const TOPIC_URLS_REQUIREMENTS_TO_JOIN_CORE = 'https://lodgeofsorceresses.com/topic/4887-requirements-to-join-a-core/';
 
     public function __construct()
     {
@@ -36,7 +36,7 @@ class AnnounceDpsApprovalOnDiscord
          | Prelim
          *------------*/
 
-        $dpsParsesChannelId = config('services.discord.channels.dps_parses');
+        $dpsParsesChannelId = config('services.discord.channels.dps_parses_logs');
 
         $dpsParse = $event->getDpsParse();
         $parseAuthor = $event->getOwner();
@@ -78,9 +78,9 @@ class AnnounceDpsApprovalOnDiscord
         foreach ($gearSets as $set) {
             $gearSetsParsed[] = '[' . $set->name . '](https://eso-sets.com/set/' . $set->id . ')';
         }
-        $rankTitle = $playerClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['rank']['title'] : GuildRankAndClearance::RANK_INITIATE['title'];
-        $playerClearanceTitle = $playerClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$playerClearance]['title'] : null;
-        $characterClearanceTitle = $characterClearance ? GuildRankAndClearance::CLEARANCE_LEVELS[$characterClearance]['title'] : null;
+        $rankTitle = $playerClearance ? GuildRanksAndClearance::CLEARANCE_LEVELS[$playerClearance]['rank']['title'] : GuildRanksAndClearance::RANK_INITIATE['title'];
+        $playerClearanceTitle = $playerClearance ? GuildRanksAndClearance::CLEARANCE_LEVELS[$playerClearance]['title'] : null;
+        $characterClearanceTitle = $characterClearance ? GuildRanksAndClearance::CLEARANCE_LEVELS[$characterClearance]['title'] : null;
         $className = ClassTypes::getClassName($character->class);
         $responseDecoded = $discordApi->createMessageInChannel($dpsParsesChannelId, [
             RequestOptions::FORM_PARAMS => [
@@ -187,15 +187,15 @@ class AnnounceDpsApprovalOnDiscord
                                 ],
                                 [
                                     'name' => 'Content Clearance Guide',
-                                    'value' => 'Read [this topic](' . self::TOPIC_URLS_CLEARANCE_GUIDE . ') to learn more about Content Clearance Tiers',
+                                    'value' => 'Read [this topic](' . self::TOPIC_URLS_CONTENT_CLEARANCE_GUIDE . ') to learn more about Content Clearance Tiers',
                                 ],
                                 [
                                     'name' => 'Endgame Attendance Guidelines',
-                                    'value' => 'Read [this topic](' . self::TOPIC_URLS_CORE_GUIDELINES . ') as a preparation to join a Core',
+                                    'value' => 'Read [this topic](' . self::TOPIC_URLS_ENDGAME_ATTENDANCE_GUIDELINES . ') as a preparation to join a Core',
                                 ],
                                 [
                                     'name' => 'Raid Core Requirements to Join',
-                                    'value' => 'Read [this topic](' . self::TOPIC_URLS_CORE_REQUIREMENTS . ') as a preparation to join a Core',
+                                    'value' => 'Read [this topic](' . self::TOPIC_URLS_REQUIREMENTS_TO_JOIN_CORE . ') as a preparation to join a Core',
                                 ],
                             ],
                             'footer' => [

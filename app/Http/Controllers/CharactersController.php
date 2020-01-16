@@ -4,32 +4,35 @@ namespace App\Http\Controllers;
 
 use App\Models\Character;
 use App\Models\User;
-use App\Traits\Characters\HasOrIsDpsParse;
-use App\Traits\Characters\IsCharacter;
+use App\Traits\Character\HasOrIsDpsParse;
+use App\Traits\Character\IsCharacter;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class CharactersController extends Controller
 {
     use IsCharacter, HasOrIsDpsParse;
 
     /**
-     * Display a listing of the resource.
+     * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $this->authorize('user', User::class);
         $query = Character::query();
-        $characterIds = $query
-            ->orderBy('id', 'desc')
-            ->get(['id'])->pluck('id');
+        if ($request->has('tier') && is_numeric($tier = $request->get('tier'))) {
+            $query->where('approved_for_tier', '>=', (int)$tier);
+        }
+        $characterIds = $query->orderBy('user_id')->orderBy('name')->get(['id'])->pluck('id');
 
         $characters = collect();
         foreach ($characterIds as $characterId) {
-            app('cache.store')->has('character-' . $characterId); // Trigger Recache listener.
-            $character = app('cache.store')->get('character-' . $characterId);
+            Cache::has('character-' . $characterId); // Trigger Recache listener.
+            $character = Cache::get('character-' . $characterId);
             $characters->add($character);
         }
 
@@ -37,8 +40,6 @@ class CharactersController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
      * @param int $characterId
      *
      * @return JsonResponse
@@ -47,8 +48,8 @@ class CharactersController extends Controller
     public function show(int $characterId): JsonResponse
     {
         $this->authorize('limited', User::class);
-        app('cache.store')->has('character-' . $characterId); // Trigger Recache listener.
-        $character = app('cache.store')->get('character-' . $characterId);
+        Cache::has('character-' . $characterId); // Trigger Recache listener.
+        $character = Cache::get('character-' . $characterId);
         if (!$character) {
             return response()->json(['message' => 'Character not found!'])->setStatusCode(404);
         }

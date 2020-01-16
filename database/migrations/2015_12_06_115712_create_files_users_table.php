@@ -14,7 +14,6 @@ class CreateFilesUsersTable extends Migration
     public function up(): void
     {
         Schema::create('files_users', static function (Blueprint $table) {
-            $table->engine = 'InnoDb';
             $table->increments('id');
             $table->string('file_hash', 64);
             $table->unsignedInteger('user_id');

@@ -1,5 +1,6 @@
 <?php namespace App\Http\Middleware;
 
+use Closure;
 use Illuminate\Auth\AuthenticationException;
 use \Illuminate\Auth\Middleware\Authenticate as IlluminateAuthenticateMiddleware;
 
@@ -15,7 +16,7 @@ class Authenticate extends IlluminateAuthenticateMiddleware
      * @return mixed
      * @throws \Illuminate\Auth\AuthenticationException
      */
-    public function handle($request, \Closure $next, ...$guards)
+    public function handle($request, Closure $next, ...$guards)
     {
         try {
             $this->authenticate($request, $guards);
@@ -24,7 +25,7 @@ class Authenticate extends IlluminateAuthenticateMiddleware
                 throw $e;
             }
 
-            return redirect()->guest(route('oauth.to', 'ips', false));
+            return redirect()->guest(route('oauth.to', 'discord', false));
         }
 
         return $next($request);

@@ -79,7 +79,7 @@ export const getUser = (cancelToken, userId) => axios.get('/api/users/' + userId
     throw error;
 });
 
-export const getAllCharacters = cancelToken => axios.get('/api/characters', {
+export const getAllCharacters = (cancelToken, tier) => axios.get('/api/characters?tier=' + tier, {
     cancelToken: cancelToken.token,
 }).then(response => {
     if (response.data) {
@@ -100,5 +100,93 @@ export const getCharacter = (cancelToken, characterId) => axios.get('/api/charac
 
     return null;
 }).catch(error => {
+    throw error;
+});
+
+export const getTeams = cancelToken => axios.get('/api/teams', {
+    cancelToken: cancelToken.token,
+}).then(response => {
+    if (response.data) {
+        return normalize(response.data, schema.listOfTeams)
+    }
+
+    return null;
+});
+
+export const postTeam = (cancelToken, data) => axios.post('/api/teams', data, {
+    cancelToken: cancelToken.token,
+}).then(
+    response => {
+        if (response.data) {
+            return normalize(response.data, schema.team)
+        }
+
+        return null;
+    }
+).catch(error => {
+    throw error;
+});
+
+export const putTeam = (cancelToken, teamId, data) => axios.post('/api/teams/' + teamId, data, {
+    cancelToken: cancelToken.token,
+    headers: {
+        'X-HTTP-Method-Override': 'PUT',
+    },
+}).then(
+    response => {
+        if (response.data) {
+            return normalize(response.data, schema.team)
+        }
+
+        return null;
+    }
+).catch(error => {
+    throw error;
+});
+
+export const deleteTeam = (cancelToken, teamId) => axios.delete('/api/teams/' + teamId, {
+    cancelToken: cancelToken.token,
+}).then(
+    response => response.status === 204
+).catch(error => {
+    throw error;
+});
+
+export const postTeamsCharacters = (cancelToken, teamId, data) => axios.post('/api/teams/' + teamId + '/characters', data, {
+    cancelToken: cancelToken.token,
+}).then(
+    response => {
+        if (response.data) {
+            return normalize(response.data, schema.team)
+        }
+
+        return null;
+    }
+).catch(error => {
+    throw error;
+});
+
+export const putTeamsCharacters = (cancelToken, teamId, characterId, data) => axios.post('/api/teams/' + teamId + '/characters/' + characterId, data, {
+    cancelToken: cancelToken.token,
+    headers: {
+        'X-HTTP-Method-Override': 'PUT',
+    },
+}).then(
+    response => {
+        if (response.data) {
+            return normalize(response.data, schema.team)
+        }
+
+        return null;
+    }
+).catch(error => {
+    throw error;
+});
+
+export const deleteTeamsCharacters = (cancelToken, teamId, characterId) => axios.delete('/api/teams/' + teamId + '/characters/' + characterId, {
+    cancelToken: cancelToken.token,
+}).then(
+    response => response.status === 204
+).catch(error => {
     throw error;
 });

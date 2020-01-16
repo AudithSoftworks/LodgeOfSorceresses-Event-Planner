@@ -4,18 +4,21 @@ use App\Models\Character;
 use App\Models\Content;
 use App\Models\Set;
 use App\Models\Skill;
+use App\Models\Team;
 use App\Models\User;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
-use App\Traits\Characters\HasOrIsDpsParse;
-use App\Traits\Characters\IsCharacter;
-use App\Traits\Users\IsUser;
+use App\Traits\Character\HasOrIsDpsParse;
+use App\Traits\Character\IsCharacter;
+use App\Traits\Team\IsTeam;
+use App\Traits\User\IsUser;
 use Illuminate\Cache\Events\CacheMissed;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Recache
 {
-    use HasOrIsDpsParse, IsCharacter, IsUser;
+    use HasOrIsDpsParse, IsCharacter, IsTeam, IsUser;
 
     /**
      * @param \Illuminate\Cache\Events\CacheMissed $event
@@ -59,6 +62,14 @@ class Recache
                     'ttl' => null,
                 ];
                 break;
+            case strpos($key, 'team-') === 0:
+                $teamId = preg_replace('/\D/', '', $key);
+                $recache = [
+                    'data' => !empty($teamId) ? $this->getTeam((int)$teamId) : [],
+                    'ttl' => null,
+                ];
+                break;
+
         }
         if (empty($recache)) {
             return null;
@@ -92,7 +103,7 @@ class Recache
                     $query->orderBy('id', 'desc');
                 },
                 'content',
-                'owner'
+                'owner',
             ])
             ->whereId($characterId)
             ->first();
@@ -104,6 +115,31 @@ class Recache
             $this->processDpsParses($character);
 
             return $character;
+        }
+
+        return null;
+    }
+
+    private function getTeam(int $teamId): ?Team
+    {
+        /** @var \App\Models\Team $team */
+        $team = Team::query()
+            ->with([
+                'members' => static function (BelongsToMany $query) {
+                    $query->orderBy('id', 'asc');
+                },
+                'ledBy',
+            ])
+            ->whereId($teamId)
+            ->first();
+        if ($team) {
+            $this->parseCreatedBy($team);
+            $this->parseLedBy($team);
+            $this->parseMembers($team);
+            $this->calculateUserRank($team->ledBy);
+            $this->calculateUserRank($team->createdBy);
+
+            return $team;
         }
 
         return null;

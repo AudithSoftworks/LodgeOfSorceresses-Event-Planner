@@ -57,7 +57,7 @@ docker-compose exec php bash -c "
 
     mkdir -p ~/.ssh && touch ~/.ssh/known_hosts && chmod 0600 ~/.ssh/known_hosts;
     ssh-keyscan -H github.com >> ~/.ssh/known_hosts;
-    NODE_ENV=development npm run build;
+    NODE_ENV=production npm run build;
 ";
 
 echo ">>> WAITING for DB to get ready...";
@@ -76,9 +76,6 @@ docker-compose exec php bash -c "
     ./artisan pmg:sets;
     ./artisan fixture:populate;
 
-    ./vendor/bin/phpunit --debug --verbose --testsuite='Integration';
-#    ./artisan dusk -vvv;
-#    ./vendor/bin/phpcov merge ./storage/coverage --clover ./storage/coverage/coverage-clover-merged.xml
-#    ./vendor/bin/phpunit --debug --verbose --no-coverage --testsuite='SauceWebDriver';
-    npx cypress run --record --key ${CYPRESS_KEY};
+    ./vendor/bin/phpunit --debug --verbose --testsuite='Integration' || exit 1;
+#    npx cypress run --record --key ${CYPRESS_KEY} || exit 1;
 ";

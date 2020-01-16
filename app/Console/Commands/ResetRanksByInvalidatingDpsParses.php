@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Events\Character\CharacterReset;
 use App\Models\Character;
 use App\Models\DpsParse;
-use App\Services\GuildRankAndClearance;
+use App\Services\GuildRanksAndClearance;
 use Carbon\CarbonImmutable;
 use Exception;
 use Illuminate\Console\Command;
@@ -61,7 +61,7 @@ class ResetRanksByInvalidatingDpsParses extends Command
             ->get();
         foreach ($characters as $character) {
             $this->info('Character (id: ' . $character->id . ' with ' . $character->dpsParses->count() . ' processable parses) content clearance was reset.');
-            $character->approved_for_tier = GuildRankAndClearance::CLEARANCE_TIER_0;
+            $character->approved_for_tier = GuildRanksAndClearance::CLEARANCE_TIER_0;
             $character->save();
 
             $dpsParses = $character->dpsParses;

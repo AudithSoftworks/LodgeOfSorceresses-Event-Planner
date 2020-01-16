@@ -1,0 +1,127 @@
+@import "./global/variables";
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins/breakpoints";
+
+table.teams-characters-list-table {
+    > thead {
+        > tr {
+            > th {
+                @include media-breakpoint-up(xs) {
+                    &:nth-of-type(1) {
+                        width: 30%;
+                    }
+                    &:nth-of-type(2) {
+                        width: 30%;
+                    }
+                    &:nth-of-type(3) {
+                        display: none;
+                    }
+                    &:nth-of-type(4) {
+                        width: 40%;
+                    }
+                    &:nth-of-type(5) {
+                        display: none;
+                    }
+                }
+
+                @include media-breakpoint-up(md) {
+                    &:nth-of-type(1) {
+                        width: 27.5%;
+                    }
+                    &:nth-of-type(2) {
+                        width: 35%;
+                    }
+                    &:nth-of-type(4) {
+                        width: 25%;
+                    }
+                    &:nth-of-type(5) {
+                        display: table-cell;
+                        width: 12.5%;
+                    }
+                }
+
+                @include media-breakpoint-up(lg) {
+                    &:nth-of-type(1) {
+                        width: 20%;
+                    }
+                    &:nth-of-type(2) {
+                        width: 27.5%;
+                    }
+                    &:nth-of-type(3) {
+                        display: table-cell;
+                        width: 25%;
+                    }
+                    &:nth-of-type(4) {
+                        width: 17.5%;
+                    }
+                    &:nth-of-type(5) {
+                        width: 10%;
+                    }
+                }
+
+                @include media-breakpoint-up(xl) {
+                    &:nth-of-type(1) {
+                        width: 20%;
+                    }
+                    &:nth-of-type(2) {
+                        width: 35%;
+                    }
+                    &:nth-of-type(3) {
+                        width: 22.5%;
+                    }
+                    &:nth-of-type(4) {
+                        width: 15%;
+                    }
+                    &:nth-of-type(5) {
+                        width: 7.5%;
+                    }
+                }
+            }
+        }
+    }
+
+    > tbody {
+        > tr {
+            > td {
+                vertical-align: middle !important;
+
+                @include media-breakpoint-up(xs) {
+                    &:nth-of-type(3), &:nth-of-type(5) {
+                        display: none;
+                    }
+                }
+
+                @include media-breakpoint-up(md) {
+                    &:nth-of-type(5) {
+                        display: table-cell;
+                    }
+                }
+
+                @include media-breakpoint-up(lg) {
+                    &:nth-of-type(3) {
+                        display: table-cell;
+                    }
+                }
+            }
+        }
+    }
+}
+
+tr {
+    &.tier-1 {
+        background-color: rgba(46, 204, 113, 0.2);
+    }
+
+    &.tier-2 {
+        background-color: rgba(52, 152, 219, 0.2);
+    }
+
+    &.tier-3 {
+        background-color: rgba(155, 89, 182, 0.2);
+    }
+
+    &.tier-4 {
+        background-color: rgba(230, 126, 34, 0.2);
+    }
+}

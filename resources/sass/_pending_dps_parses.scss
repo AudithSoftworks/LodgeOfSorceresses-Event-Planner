@@ -8,17 +8,18 @@ table {
         > tr {
             > th {
                 @include media-breakpoint-up(xs) {
-                    &:nth-of-type(3), &:nth-of-type(5), &:nth-of-type(6), &:nth-of-type(7) {
+                    &:nth-of-type(3), &:nth-of-type(5), &:nth-of-type(6) {
                         display: none;
                     }
                     &:nth-of-type(1) {
-                        width: 33%;
+                        width: 30%;
                     }
                     &:nth-of-type(2) {
-                        width: 34%;
+                        width: 30%;
                     }
                     &:nth-of-type(4) {
-                        width: 33%;
+                        display: table-cell;
+                        width: 40%;
                     }
                 }
 
@@ -27,21 +28,15 @@ table {
                         width: 35%;
                     }
                     &:nth-of-type(2) {
-                        width: 18%;
+                        width: 35%;
                     }
                     &:nth-of-type(4) {
-                        width: 12%;
-                    }
-                    &:nth-of-type(5) {
                         display: table-cell;
-                        width: 35%;
+                        width: 30%;
                     }
                 }
 
                 @include media-breakpoint-up(md) {
-                    &:nth-of-type(6), &:nth-of-type(7) {
-                        display: table-cell;
-                    }
                     &:nth-of-type(1) {
                         width: 15%;
                     }
@@ -49,15 +44,13 @@ table {
                         width: 15%;
                     }
                     &:nth-of-type(4) {
-                        width: 8%;
+                        width: 18%;
                     }
                     &:nth-of-type(5) {
+                        display: table-cell;
                         width: 18%;
                     }
                     &:nth-of-type(6) {
-                        width: 18%;
-                    }
-                    &:nth-of-type(7) {
                         width: 6%;
                     }
                 }
@@ -67,48 +60,33 @@ table {
                         width: 15%;
                     }
                     &:nth-of-type(2) {
-                        width: 16%;
+                        width: 15%;
                     }
                     &:nth-of-type(3) {
                         display: table-cell;
-                        width: 21%;
+                        width: 18%;
                     }
                     &:nth-of-type(4) {
-                        width: 8%;
+                        width: 14%;
                     }
                     &:nth-of-type(5) {
-                        width: 17%;
+                        width: 14%;
                     }
                     &:nth-of-type(6) {
-                        width: 17%;
-                    }
-                    &:nth-of-type(7) {
+                        display: table-cell;
                         width: 6%;
                     }
                 }
 
                 @include media-breakpoint-up(xl) {
-                    &:nth-of-type(1) {
-                        display: table-cell;
-                        width: 10%;
-                    }
                     &:nth-of-type(2) {
-                        width: 20%;
+                        width: 19%;
                     }
                     &:nth-of-type(3) {
-                        width: 25%;
-                    }
-                    &:nth-of-type(4) {
-                        width: 10%;
-                    }
-                    &:nth-of-type(5) {
-                        width: 15%;
+                        width: 30%;
                     }
                     &:nth-of-type(6) {
-                        width: 15%;
-                    }
-                    &:nth-of-type(7) {
-                        width: 5%;
+                        width: 8%;
                     }
                 }
             }
@@ -118,26 +96,22 @@ table {
     > tbody {
         > tr {
             > td {
+                overflow-x: hidden;
+
                 @include media-breakpoint-up(xs) {
-                    &:nth-of-type(3), &:nth-of-type(5), &:nth-of-type(6), &:nth-of-type(7) {
+                    &:nth-of-type(3), &:nth-of-type(5), &:nth-of-type(6) {
                         display: none;
                     }
                 }
 
-                @include media-breakpoint-up(sm) {
+                @include media-breakpoint-up(md) {
                     &:nth-of-type(5) {
                         display: table-cell;
                     }
                 }
 
-                @include media-breakpoint-up(md) {
-                    &:nth-of-type(6), &:nth-of-type(7) {
-                        display: table-cell;
-                    }
-                }
-
                 @include media-breakpoint-up(lg) {
-                    &:nth-of-type(3) {
+                    &:nth-of-type(3), &:nth-of-type(6) {
                         display: table-cell;
                     }
                 }

@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Team;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -26,6 +28,7 @@ class RouteServiceProvider extends ServiceProvider
             'user' => '\d+',
             'character' => '\d+',
             'parse' => '\d+',
+            'team' => '\d+',
         ]);
 
         parent::boot();

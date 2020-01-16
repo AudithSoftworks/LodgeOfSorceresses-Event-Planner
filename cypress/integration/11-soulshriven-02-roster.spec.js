@@ -1,6 +1,7 @@
 import { stubFetchingGroups } from "../fixtures/helpers/groups";
 import { stubFetchingSets } from "../fixtures/helpers/sets";
 import { stubFetchingSkills } from "../fixtures/helpers/skills";
+import { stubFetchingTeams } from "../fixtures/helpers/teams";
 import { stubFetchingUsers } from "../fixtures/helpers/users";
 import { stubFetchingUserHeiims } from "../fixtures/helpers/users/heiims";
 import { stubSoulshrivenUserAfterNameChange } from "../fixtures/helpers/users/soulshriven-after-name-change";
@@ -12,6 +13,7 @@ describe('Roster Screen for Soulshriven user', function () {
         stubFetchingGroups(cy);
         stubFetchingSets(cy);
         stubFetchingSkills(cy);
+        stubFetchingTeams(cy);
         stubFetchingUsers(cy);
         cy.route('GET', '/api/users/@me/characters', []);
 

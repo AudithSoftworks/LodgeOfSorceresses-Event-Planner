@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Query\Builder;
+use InvalidArgumentException;
 
 /**
  * @property string                             $hash
@@ -18,7 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @property-read EloquentCollection|DpsParse[]         $asInfoScreenshotOfDpsParse
  * @property-read EloquentCollection|DpsParse[]         $asParseScreenshotOfDpsParse
- * @property-read EloquentCollection|\App\Models\User[] $uploaders
+ * @property-read EloquentCollection|User[] $uploaders
  *
  * @method static EloquentBuilder|File newModelQuery()
  * @method static EloquentBuilder|File newQuery()
@@ -50,10 +54,13 @@ class File extends Model
      * @return \Illuminate\Database\Query\Builder
      * @throws \Exception
      */
-    public function scopeOfType($query, $type = 'image'): \Illuminate\Database\Query\Builder
+    public function scopeOfType($query, $type = 'image'): Builder
     {
-        if (!in_array($type, ['plain', 'image', 'audio', 'video', 'application'])) {
-            throw new \Exception();
+        $allowedMimes = ['plain', 'image', 'audio', 'video', 'application'];
+        if (!in_array($type, $allowedMimes, true)) {
+            throw new InvalidArgumentException(
+                sprintf('Invalid File MIME provided (%s): expected one of [%s]', $type, implode('|', $allowedMimes))
+            );
         }
 
         return $query->where('mime', 'like', $type . '/%');
@@ -62,7 +69,7 @@ class File extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function uploaders(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function uploaders(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'files_users', 'file_hash', 'user_id')->withTimestamps()->withPivot(['id', 'qquuid', 'original_client_name', 'tag']);
     }
@@ -70,7 +77,7 @@ class File extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function asParseScreenshotOfDpsParse(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function asParseScreenshotOfDpsParse(): HasMany
     {
         return $this->hasMany(DpsParse::class, 'parse_file_hash', 'hash');
     }
@@ -78,7 +85,7 @@ class File extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function asInfoScreenshotOfDpsParse(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function asInfoScreenshotOfDpsParse(): HasMany
     {
         return $this->hasMany(DpsParse::class, 'superstar_file_hash', 'hash');
     }

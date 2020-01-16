@@ -28,7 +28,7 @@ class Users extends PureComponent {
                 soulshriven: true,
             },
             allUsers: null,
-            currentUser: null
+            user: null
         };
         this.filter = filter.bind(this);
     }
@@ -85,7 +85,7 @@ class Users extends PureComponent {
         };
 
         let rankFormatted = user.isSoulshriven ? 'None' : 'Initiate';
-        if (user.clearanceLevel.rank) {
+        if (user.clearanceLevel && user.clearanceLevel.rank) {
             rankFormatted = user.clearanceLevel.rank.title;
         }
         if (user.isSoulshriven) {

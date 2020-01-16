@@ -1,7 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Traits\Users\IsUser;
+use App\Traits\User\IsUser;
 use Illuminate\Http\JsonResponse;
 
 class UsersController extends Controller

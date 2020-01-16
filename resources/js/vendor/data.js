@@ -123,8 +123,26 @@ export const character = PropTypes.shape({
     last_submitted_dps_amount: PropTypes.number,
     dps_parses_processed: dpsParses,
     dps_parses_pending: dpsParses,
+    team_membership: PropTypes.shape({
+        team_id: PropTypes.number,
+        character_id: PropTypes.number,
+        status: PropTypes.number,
+        accepted_terms: PropTypes.number,
+        created_at: PropTypes.string,
+        updated_at: PropTypes.string,
+    }),
     created_at: PropTypes.string,
     updated_at: PropTypes.string,
 });
 
 export const characters = PropTypes.arrayOf(character);
+
+export const team = PropTypes.shape({
+    id: PropTypes.number,
+    led_by: user,
+    created_by: user,
+    discord_id: PropTypes.number,
+    members: PropTypes.arrayOf(character),
+});
+
+export const teams = PropTypes.arrayOf(team);

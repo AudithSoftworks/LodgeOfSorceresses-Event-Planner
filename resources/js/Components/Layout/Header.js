@@ -4,7 +4,7 @@ import(
     '../../../sass/_header.scss'
 );
 
-import { faCalendarAlt, faChess, faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faCampfire } from '@fortawesome/pro-light-svg-icons';
+import { faCalendarAlt, faCampfire, faChess, faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faUsersClass } from '@fortawesome/pro-light-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome/index';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -14,6 +14,12 @@ import { authorizeAdmin, authorizeUser } from '../../helpers';
 import { characters, user } from '../../vendor/data';
 
 class Header extends Component {
+    constructor(props) {
+        super(props);
+        this.authorizeAdmin = authorizeAdmin.bind(this);
+        this.authorizeUser = authorizeUser.bind(this);
+    }
+
     renderNavLinks = navLinks => {
         return navLinks.map((item, idx) => {
             const { className } = item.props;
@@ -49,17 +55,23 @@ class Header extends Component {
                 </NavLink>
             );
         }
-        if (authorizeUser(this.props) && me.name && me.name.length ) {
-            navLinks.push(
-                <NavLink to="/events" activeClassName="active" title="Calendar">
-                    <FontAwesomeIcon icon={faCalendarAlt} size="lg" />
-                    <span className="d-none d-sm-inline-block">Calendar</span>
-                </NavLink>
-            );
+        if (this.authorizeUser(true)) {
+            // navLinks.push(
+            //     <NavLink to="/events" activeClassName="active" title="Calendar">
+            //         <FontAwesomeIcon icon={faCalendarAlt} size="lg" />
+            //         <span className="d-none d-sm-inline-block">Calendar</span>
+            //     </NavLink>
+            // );
             navLinks.push(
                 <NavLink to="/users" activeClassName="active" title="Roster">
                     <FontAwesomeIcon icon={faUsers} size="lg" />
                     <span className="d-none d-sm-inline-block">Roster</span>
+                </NavLink>
+            );
+            navLinks.push(
+                <NavLink to="/teams" activeClassName="active" title="Teams">
+                    <FontAwesomeIcon icon={faUsersClass} size="lg" />
+                    <span className="d-none d-sm-inline-block">Teams</span>
                 </NavLink>
             );
 
@@ -73,10 +85,12 @@ class Header extends Component {
         let email = me ? me.email : null;
         if (email) {
             const posOfAtSignInEmail = email.indexOf('@');
-            email = email.slice(0, posOfAtSignInEmail + 1) + '...';
+            if (posOfAtSignInEmail !== -1) {
+                email = email.slice(0, posOfAtSignInEmail + 1) + '...';
+            }
         }
 
-        if (authorizeAdmin(this.props)) {
+        if (this.authorizeAdmin()) {
             memberBarDropdownLinks.push(
                 <li key='officer_area'>
                     <Link to="/admin" title="Officer Area">
@@ -93,8 +107,8 @@ class Header extends Component {
         const memberBarFirstSection = me ? (
             <li className="chevron" aria-haspopup='true'>
                 <figure>
-                    <img alt={email || 'The Soulless One'} src={me && me.avatar ? me.avatar : '/images/touch-icon-ipad.png'} />
-                    <figcaption>{email || 'The Soulless One'}</figcaption>
+                    <img alt={(me.name ? '@' + me.name : email) || 'The Soulless One'} src={me && me.avatar ? me.avatar : '/images/touch-icon-ipad.png'} />
+                    <figcaption>{(me.name ? '@' + me.name : email) || 'The Soulless One'}</figcaption>
                 </figure>
                 <FontAwesomeIcon icon={faChevronDown} className="ml-2" />
                 <ul className="member-bar-dropdown">
@@ -104,7 +118,7 @@ class Header extends Component {
         ) : (
             <li className="chevron">
                 <figure>
-                    <img alt={email || 'The Soulless One'} src={me && me.avatar ? me.avatar : '/images/touch-icon-ipad.png'} />
+                    <img alt='The Soulless One' src='/images/touch-icon-ipad.png' />
                     <figcaption>Welcome, Soulless One!</figcaption>
                 </figure>
             </li>

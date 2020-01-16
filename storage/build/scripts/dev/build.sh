@@ -2,7 +2,7 @@
 
 docker-compose pull;
 docker-compose down;
-docker system prune --force;
+docker system prune --force --volumes;
 docker-compose up -d;
 docker-compose ps;
 
@@ -63,6 +63,5 @@ docker-compose exec php bash -c "
     ./artisan fixture:populate;
 
     ./vendor/bin/phpunit --debug --verbose --testsuite='Integration';
-#    ./artisan dusk -vvv;
-#    ./vendor/bin/phpcov merge ./storage/coverage --html ./storage/coverage/merged/;
+    npx cypress run;
 ";

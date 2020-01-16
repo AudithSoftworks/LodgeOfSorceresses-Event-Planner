@@ -15,6 +15,8 @@ $router->middleware(['auth:api', 'throttle'])->group(static function (Router $ro
     $router->apiResource('skills', 'SkillsController')->only(['index']);
     $router->apiResource('users', 'UsersController')->only(['index', 'show']);
     $router->apiResource('characters', 'CharactersController')->only(['index', 'show']);
+    $router->apiResource('teams', 'TeamsController')->only(['index', 'store', 'show', 'update', 'destroy']);
+    $router->apiResource('teams/{team}/characters', 'TeamsCharactersController');
 
     $router->get('users/@me', 'Auth\UsersController@me')->name('users@me');
     $router->put('users/@me', 'Auth\UsersController@updateMe')->name('users@update');

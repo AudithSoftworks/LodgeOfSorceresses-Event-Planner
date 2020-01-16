@@ -165,6 +165,7 @@ return [
         App\Providers\GuildRanksAndClearanceServiceProvider::class,
         App\Providers\IpsApiServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\TeamsAndEligibilityServiceProvider::class,
     ],
 
     /*

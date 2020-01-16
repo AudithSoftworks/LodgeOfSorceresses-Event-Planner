@@ -64,9 +64,34 @@ class EventServiceProvider extends ServiceProvider
             Listeners\DpsParse\AnnounceDpsDisapprovalOnDiscord::class,
         ],
 
+        Events\Team\TeamDeleted::class => [
+            Listeners\Cache\DeleteTeamCache::class,
+        ],
+        Events\Team\TeamUpdated::class => [
+            Listeners\Cache\DeleteTeamCache::class,
+        ],
+
         Events\File\Uploaded::class => [
             Listeners\File\ValidateUploadRealMimeAgainstAllowedTypes::class,
             Listeners\File\PersistUploadedFile::class
+        ],
+
+        Events\Team\MemberInvited::class => [
+            Listeners\Cache\DeleteCharacterCache::class,
+            Listeners\Cache\DeleteUserCache::class,
+            Listeners\Team\DmMemberUponInvitationOnDiscord::class,
+        ],
+        Events\Team\MemberJoined::class => [
+            Listeners\Cache\DeleteCharacterCache::class,
+            Listeners\Team\AssignDiscordTagToMemberJoining::class,
+            Listeners\Cache\DeleteUserCache::class,
+            Listeners\Team\AnnounceMemberJoiningOnDiscord::class,
+        ],
+        Events\Team\MemberRemoved::class => [
+            Listeners\Cache\DeleteCharacterCache::class,
+            Listeners\Team\RemoveDiscordTagFromMemberLeaving::class,
+            Listeners\Cache\DeleteUserCache::class,
+            Listeners\Team\AnnounceMemberRemovalOnDiscord::class,
         ],
 
         Events\User\LoggedIn::class => [],

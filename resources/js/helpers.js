@@ -1,16 +1,8 @@
 import React from "react";
 
-export const authorizeAdmin = ({ me, groups }) => {
-    if (!me || !groups || !me.linkedAccountsParsed || !me.linkedAccountsParsed.ips) {
-        return false;
-    }
+export const authorizeUser = function (withAdditionalPrechecks = false) {
+    const { me, groups } = this.props;
 
-    const myGroup = Object.entries(groups).find(group => me.linkedAccountsParsed.ips.remote_primary_group === group[1]["ipsGroupId"]);
-
-    return !(!myGroup || !myGroup[1]["isAdmin"]);
-};
-
-export const authorizeUser = ({ me, groups }, withAdditionalPrechecks = false) => {
     if (!me || !groups || !me.linkedAccountsParsed || !me.linkedAccountsParsed.discord) {
         return false;
     }
@@ -33,6 +25,22 @@ export const authorizeUser = ({ me, groups }, withAdditionalPrechecks = false) =
     return false;
 };
 
+export const authorizeAdmin = function () {
+    const { me, groups } = this.props;
+
+    if (!me || !groups || !me.linkedAccountsParsed || !me.linkedAccountsParsed.ips) {
+        return false;
+    }
+
+    const myGroup = Object.entries(groups).find(group => me.linkedAccountsParsed.ips.remote_primary_group === group[1]["ipsGroupId"]);
+
+    return !(!myGroup || !myGroup[1]["isAdmin"]);
+};
+
+export const authorizeTeamManager = ({ me, team, authorizedAsAdmin }) => {
+    return me.id === team.led_by.id || me.id === team.created_by.id || authorizedAsAdmin;
+};
+
 export const renderActionList = actionList => {
     const actionListRendered = [];
     for (const [actionType, link] of Object.entries(actionList)) {
@@ -52,6 +60,18 @@ export const deleteMyCharacter = function (event) {
         if (characterId) {
             const { deleteMyCharacterAction } = this.props;
             deleteMyCharacterAction(characterId);
+        }
+    }
+};
+
+export const deleteTeam = function (event) {
+    event.preventDefault();
+    if (confirm("Are you sure you want to delete this team?")) {
+        const currentTarget = event.currentTarget;
+        const teamId = parseInt(currentTarget.getAttribute("data-id"));
+        if (teamId) {
+            const { deleteTeamAction } = this.props;
+            deleteTeamAction(teamId);
         }
     }
 };

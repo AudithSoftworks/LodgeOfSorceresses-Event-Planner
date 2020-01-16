@@ -9,7 +9,7 @@ use App\Models\DpsParse;
 use App\Models\User;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
-use App\Traits\Characters\HasOrIsDpsParse;
+use App\Traits\Character\HasOrIsDpsParse;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
@@ -29,9 +29,11 @@ class DpsParsesController extends Controller
         $dpsParses = DpsParse::query()
             ->with(['owner', 'character'])
             ->whereHas('owner', static function (Builder $queryToGetOauthAccounts) {
-                $queryToGetOauthAccounts->whereHas('linkedAccounts', static function (Builder $queryToGetDiscordOauthAccounts) {
-                    $queryToGetDiscordOauthAccounts->where('remote_provider', '=', 'discord');
-                });
+                $queryToGetOauthAccounts
+                    ->whereNotNull('name')
+                    ->whereHas('linkedAccounts', static function (Builder $queryToGetDiscordOauthAccounts) {
+                        $queryToGetDiscordOauthAccounts->where('remote_provider', '=', 'discord');
+                    });
             })
             ->whereNull('processed_by')
             ->orderBy('id')

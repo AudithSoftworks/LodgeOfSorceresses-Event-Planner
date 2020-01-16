@@ -125,7 +125,7 @@ class DpsParses extends PureComponent {
 
         return (
             <tr key={'dpsParseRow-' + dpsParse['id']}>
-                <td title={dpsParse['owner']['name']}>{dpsParse['owner']['name']}</td>
+                <td title={dpsParse['owner']['name']}>{'@' + dpsParse['owner']['name']}</td>
                 <td title={dpsParse['character']['name']}>
                     {dpsParse['character']['name']}
                     <br />
@@ -134,7 +134,6 @@ class DpsParses extends PureComponent {
                     </small>
                 </td>
                 <td>{parseSets.reduce((prev, curr) => [prev, ' ', curr])}</td>
-                <td className="text-right">{dpsParse['dps_amount']}</td>
                 <td className="text-right">
                     <a href={dpsParse['parse_file_hash']['large']} target="_blank">
                         <img src={dpsParse['parse_file_hash']['thumbnail']} alt="Parse screenshot" />
@@ -165,9 +164,6 @@ class DpsParses extends PureComponent {
                             <th scope="col">User</th>
                             <th scope="col">Character</th>
                             <th scope="col">Sets</th>
-                            <th scope="col" style={{ textAlign: 'right' }}>
-                                DPS
-                            </th>
                             <th scope="col" style={{ textAlign: 'right' }}>
                                 Parse Screenshot
                             </th>

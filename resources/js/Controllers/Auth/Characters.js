@@ -68,7 +68,6 @@ class Characters extends PureComponent {
                 <article className="alert-info">
                     <b>Usage tips:</b>
                     <ul>
-                        <li>Mouse-over the character name for action buttons to reveal to the right of row.</li>
                         <li>
                             Only Damage Dealers can submit DPS-parses. Click <FontAwesomeIcon icon={faTachometerAlt} /> icon to the right to create one for such Character.
                         </li>

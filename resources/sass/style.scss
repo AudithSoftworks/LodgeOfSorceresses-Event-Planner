@@ -10,18 +10,25 @@
 //noinspection CssUnknownTarget
 body {
     &[data-initialized="true"] {
-        background: black url('/images/bg-sm.jpg') fixed no-repeat 50% 0;
+        background: linear-gradient(180deg, transparent 50%, #3d302a 90%) no-repeat fixed 50% 100%, url('/images/bg2-sm.jpg') no-repeat fixed 50% 0 #3d302a;
         background-size: auto 100%;
         @include media-breakpoint-up(sm) {
             background-size: 100% auto;
         }
         @include media-breakpoint-up(md) {
-            background-image: url('/images/bg-md.jpg');
+            background: linear-gradient(180deg, transparent 50%, #3d302a 90%) no-repeat fixed 50% 100%, url('/images/bg2-md.jpg') no-repeat fixed 50% 0 #3d302a;
+            background-size: 100% auto;
         }
         @include media-breakpoint-up(lg) {
-            background-image: url('/images/bg-xl.jpg');
+            background: linear-gradient(180deg, transparent 50%, #3d302a 90%) no-repeat fixed 50% 100%, url('/images/bg2-lg.jpg') no-repeat fixed 50% 0 #3d302a;
+            background-size: 100% auto;
+        }
+        @include media-breakpoint-up(xl) {
+            background: linear-gradient(180deg, transparent 50%, #3d302a 90%) no-repeat fixed 50% 100%, url('/images/bg2-xl.jpg') no-repeat fixed 50% 0 #3d302a;
+            background-size: 100% auto;
         }
     }
+
     font-size: 16px;
 
     *:focus {
@@ -112,20 +119,14 @@ body {
 
                 > tbody {
                     > tr {
-                        &:hover {
-                            background-image: linear-gradient(rgba(200, 200, 200, 0.25) 0%, transparent 50%, rgba(200, 200, 200, 0.25) 100%);
-                        }
-
                         > td {
                             position: relative;
                             vertical-align: top;
                             padding: 3px;
+                            text-overflow: ellipsis;
 
                             > ul.action-list {
                                 display: flex;
-                                //@media (hover: hover) {
-                                //    display: none;
-                                //}
                                 margin: 0;
                                 list-style: none;
                                 flex-direction: row;

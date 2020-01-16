@@ -55,9 +55,9 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $e)
     {
         $requestExpectsJson = $request->expectsJson();
-        if ($e instanceof ModelNotFoundException || $e instanceof UserNotMemberInDiscord || $e instanceof UserNotActivatedException) {
+        if ($e instanceof ModelNotFoundException || $e instanceof AuthorizationException) {
             return $requestExpectsJson
-                ? response()->json(['message' => $e->getMessage() ?? 'Not found!'], $e instanceof ModelNotFoundException ? SymfonyHttpResponse::HTTP_NOT_FOUND : SymfonyHttpResponse::HTTP_FORBIDDEN)
+                ? response()->json(['message' => $e->getMessage() ?? 'Not found!'], $e instanceof ModelNotFoundException ? JsonResponse::HTTP_NOT_FOUND : JsonResponse::HTTP_FORBIDDEN)
                 : redirect()->guest('/logout')->withErrors($e->getMessage());
         }
 
@@ -65,12 +65,6 @@ class Handler extends ExceptionHandler
             return $requestExpectsJson
                 ? response()->json(['message' => 'Session Expired. Please refresh the page!'], JsonResponse::HTTP_UNAUTHORIZED)
                 : redirect()->guest('/logout')->withErrors('Access Denied!');
-        }
-
-        if ($e instanceof AuthorizationException) {
-            return $requestExpectsJson
-                ? response()->json(['message' => $e->getMessage()], JsonResponse::HTTP_FORBIDDEN)
-                : redirect()->guest('/logout')->withErrors($e->getMessage());
         }
 
         if ($request->method() !== 'GET' && $request->header('content-type') === 'application/x-www-form-urlencoded') {

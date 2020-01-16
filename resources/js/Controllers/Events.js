@@ -10,6 +10,11 @@ import { authorizeAdmin, renderActionList } from '../helpers';
 import { user } from '../vendor/data';
 
 class Events extends PureComponent {
+    constructor(props) {
+        super(props);
+        this.authorizeAdmin = authorizeAdmin.bind(this);
+    }
+
     componentWillUnmount = () => {
         this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
     };
@@ -21,7 +26,7 @@ class Events extends PureComponent {
         }
 
         const actionList = {
-            create: authorizeAdmin(this.props) ? (
+            create: this.authorizeAdmin() ? (
                 <Link to="/events/create" className="ne-corner" title="Add New Event">
                     <FontAwesomeIcon icon={faCalendarPlus} />
                 </Link>
