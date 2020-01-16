@@ -85,7 +85,9 @@ class Header extends Component {
         let email = me ? me.email : null;
         if (email) {
             const posOfAtSignInEmail = email.indexOf('@');
-            email = email.slice(0, posOfAtSignInEmail + 1) + '...';
+            if (posOfAtSignInEmail !== -1) {
+                email = email.slice(0, posOfAtSignInEmail + 1) + '...';
+            }
         }
 
         if (this.authorizeAdmin()) {
@@ -105,8 +107,8 @@ class Header extends Component {
         const memberBarFirstSection = me ? (
             <li className="chevron" aria-haspopup='true'>
                 <figure>
-                    <img alt={email || 'The Soulless One'} src={me && me.avatar ? me.avatar : '/images/touch-icon-ipad.png'} />
-                    <figcaption>{email || 'The Soulless One'}</figcaption>
+                    <img alt={(me.name ? '@' + me.name : email) || 'The Soulless One'} src={me && me.avatar ? me.avatar : '/images/touch-icon-ipad.png'} />
+                    <figcaption>{(me.name ? '@' + me.name : email) || 'The Soulless One'}</figcaption>
                 </figure>
                 <FontAwesomeIcon icon={faChevronDown} className="ml-2" />
                 <ul className="member-bar-dropdown">
@@ -116,7 +118,7 @@ class Header extends Component {
         ) : (
             <li className="chevron">
                 <figure>
-                    <img alt={email || 'The Soulless One'} src={me && me.avatar ? me.avatar : '/images/touch-icon-ipad.png'} />
+                    <img alt='The Soulless One' src='/images/touch-icon-ipad.png' />
                     <figcaption>Welcome, Soulless One!</figcaption>
                 </figure>
             </li>
