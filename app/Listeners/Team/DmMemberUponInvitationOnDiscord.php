@@ -25,7 +25,7 @@ class DmMemberUponInvitationOnDiscord
         /** @var \App\Models\UserOAuth $membersDiscordAccount */
         $membersDiscordAccount = $member->linkedAccounts()->where('remote_provider', 'discord')->first();
         $memberMentionName = $membersDiscordAccount ? '<@!' . $membersDiscordAccount->remote_id . '>' : $member->name;
-        $invitationLink = sprintf('http://planner.lodgeofsorceresses.test/teams/%d/characters/%d', $team->id, $character->id);
+        $invitationLink = sprintf(config('app.url') . '/teams/%d/characters/%d', $team->id, $character->id);
 
         /** @var \App\Models\User $me */
         $me = app('auth.driver')->user();
