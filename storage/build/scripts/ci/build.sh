@@ -57,7 +57,7 @@ docker-compose exec php bash -c "
 
     mkdir -p ~/.ssh && touch ~/.ssh/known_hosts && chmod 0600 ~/.ssh/known_hosts;
     ssh-keyscan -H github.com >> ~/.ssh/known_hosts;
-    NODE_ENV=development npm run build;
+    NODE_ENV=production npm run build;
 ";
 
 echo ">>> WAITING for DB to get ready...";
@@ -78,6 +78,4 @@ docker-compose exec php bash -c "
 
     ./vendor/bin/phpunit --debug --verbose --testsuite='Integration' || exit 1;
 #    npx cypress run --record --key ${CYPRESS_KEY} || exit 1;
-
-    NODE_ENV=production npm run build;
 ";
