@@ -74,7 +74,7 @@ docker-compose exec php bash -c "
     ./artisan db:seed;
     ./artisan pmg:skills;
     ./artisan pmg:sets;
-    ./artisan fixture:populate;
+#    ./artisan fixture:populate;
 
     ./vendor/bin/phpunit --debug --verbose --testsuite='Integration' || exit 1;
 #    npx cypress run --record --key ${CYPRESS_KEY} || exit 1;
