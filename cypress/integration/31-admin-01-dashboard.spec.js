@@ -1,19 +1,22 @@
+import { stubFetchingGroups } from "../fixtures/helpers/groups";
+import { stubFetchingSets } from "../fixtures/helpers/sets";
+import { stubFetchingSkills } from "../fixtures/helpers/skills";
+import { stubFetchingTeams } from "../fixtures/helpers/teams";
+import { stubFetchingAdminUser } from "../fixtures/helpers/users/admin-user";
+
 describe('Dashboard Screen for Admin user', function () {
     it('detects heading "Account Status"', function () {
         cy.server();
 
-        cy.fixture('users/admin.json').as('authenticatedAdminUser');
-        cy.route('GET', '/api/users/@me', '@authenticatedAdminUser');
+        cy.fixture('users/admin.json').as('adminUser');
+        cy.route('GET', '/api/users/@me', '@adminUser');
 
-        cy.fixture('groups.json').as('groups');
-        cy.route('GET', '/api/groups', '@groups');
+        stubFetchingGroups(cy);
+        stubFetchingAdminUser(cy);
+        stubFetchingSets(cy);
+        stubFetchingSkills(cy);
+        stubFetchingTeams(cy);
         cy.route('GET', '/api/users/@me/characters', []);
-
-        cy.fixture('.sets.json').as('sets');
-        cy.route('GET', '/api/sets', '@sets');
-
-        cy.fixture('.skills.json').as('skills');
-        cy.route('GET', '/api/skills', '@skills');
 
         cy.visit('/');
         cy.get('h2').should('have.text', 'Account Status');

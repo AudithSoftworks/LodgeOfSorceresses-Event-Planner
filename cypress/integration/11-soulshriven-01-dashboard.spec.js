@@ -1,6 +1,7 @@
 import { stubFetchingGroups } from "../fixtures/helpers/groups";
 import { stubFetchingSets } from "../fixtures/helpers/sets";
 import { stubFetchingSkills } from "../fixtures/helpers/skills";
+import { stubFetchingTeams } from "../fixtures/helpers/teams";
 import { stubSoulshrivenUserAfterNameChange } from "../fixtures/helpers/users/soulshriven-after-name-change";
 import { stubSoulshrivenUserBeforeNameChange } from "../fixtures/helpers/users/soulshriven-before-name-change";
 
@@ -11,15 +12,14 @@ describe('Dashboard Screen for Soulshriven user', function () {
         stubSoulshrivenUserBeforeNameChange(cy);
         stubFetchingSets(cy);
         stubFetchingSkills(cy);
+        stubFetchingTeams(cy);
         cy.route('GET', '/api/users/@me/characters', []);
 
         cy.visit('/');
         cy.get('h2').should('have.text', 'Account Status');
-        cy.get('[data-cy=account-status-element]').should('have.length', 2);
-        cy.get('[data-cy="account-status-element"].success').should('have.length', 1);
+        cy.get('[data-cy=account-status-element]').should('have.length', 1);
+        cy.get('[data-cy="account-status-element"].success').should('have.length', 0);
         cy.get('[data-cy="account-status-element"].danger').should('have.length', 1);
-        cy.get('[data-cy="account-status-element"].success > h3').should('have.text', 'Your Discord Account:');
-        cy.get('[data-cy="account-status-element"].success > p').should('have.text', 'Linked');
         cy.get('[data-cy="account-status-element"].danger').should('be.match', 'form');
         cy.get('[data-cy="account-status-element"].danger > h3').should('have.text', 'Your ESO ID:');
     });
@@ -40,7 +40,7 @@ describe('Dashboard Screen for Soulshriven user', function () {
             expect(response.body).to.be.undefined;
         });
         cy.get('[data-cy="account-status-element"].danger').should('have.length', 0);
-        cy.get('[data-cy="account-status-element"].success').should('have.length', 2);
+        cy.get('[data-cy="account-status-element"].success').should('have.length', 1);
 
         let userUpdatedNotificationMessage = cy.get('.react-notification-root ' +
             '> .notification-container-top-right ' +
