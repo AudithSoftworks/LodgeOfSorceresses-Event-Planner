@@ -126,8 +126,8 @@ class Main extends PureComponent {
             <Route exact path="/users" component={props => <Users {...props} />} key="/users" />,
             <Route exact path="/users/:id(\d+)" component={props => <Users {...props} />} key="/users/:id" />,
             <Route exact path="/characters/:id(\d+)" component={props => <Characters {...props} />} key="/characters/:id" />,
-            <Route exact path="/events" component={props => <Events {...props} />} key="/events" />,
-            <Route exact path="/events/create" component={props => <EventForm {...props} />} key="/events/create" />,
+            // <Route exact path="/events" component={props => <Events {...props} />} key="/events" />,
+            // <Route exact path="/events/create" component={props => <EventForm {...props} />} key="/events/create" />,
             <Route
                 key="/teams"
                 path="/teams"

@@ -56,12 +56,12 @@ class Header extends Component {
             );
         }
         if (this.authorizeUser(true)) {
-            navLinks.push(
-                <NavLink to="/events" activeClassName="active" title="Calendar">
-                    <FontAwesomeIcon icon={faCalendarAlt} size="lg" />
-                    <span className="d-none d-sm-inline-block">Calendar</span>
-                </NavLink>
-            );
+            // navLinks.push(
+            //     <NavLink to="/events" activeClassName="active" title="Calendar">
+            //         <FontAwesomeIcon icon={faCalendarAlt} size="lg" />
+            //         <span className="d-none d-sm-inline-block">Calendar</span>
+            //     </NavLink>
+            // );
             navLinks.push(
                 <NavLink to="/users" activeClassName="active" title="Roster">
                     <FontAwesomeIcon icon={faUsers} size="lg" />
