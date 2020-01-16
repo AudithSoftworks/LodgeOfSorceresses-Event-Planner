@@ -12,19 +12,13 @@ class CharacterDeleted implements UserNeedsRecacheInterface, CharacterNeedsRecac
     public $character;
 
     /**
-     * @var \App\Models\User
-     */
-    public $owner;
-
-    /**
      * @param \App\Models\Character $character
      */
     public function __construct(Character $character)
     {
-        $this->character = $character;
         $character->refresh();
         $character->loadMissing(['owner']);
-        $this->owner = $character->owner()->first();
+        $this->character = $character;
     }
 
     public function getCharacter(): Character
@@ -34,6 +28,6 @@ class CharacterDeleted implements UserNeedsRecacheInterface, CharacterNeedsRecac
 
     public function getOwner(): User
     {
-        return $this->owner;
+        return $this->character->owner;
     }
 }

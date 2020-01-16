@@ -11,8 +11,7 @@ class ProcessDpsParse
      */
     public function handle(DpsParseApproved $event): bool
     {
-        $dpsParse = $event->dpsParse;
-        $dpsParse->refresh();
+        $dpsParse = $event->getDpsParse();
 
         return app('guild.ranks.clearance')->processDpsParse($dpsParse);
     }

@@ -145,7 +145,7 @@ class GuildRanksAndClearance
     {
         $dpsParse->loadMissing('character');
         /** @var \App\Models\Character $character */
-        $character = $dpsParse->character()->first();
+        $character = $dpsParse->character;
         $class = $character->class;
         $role = $character->role;
 

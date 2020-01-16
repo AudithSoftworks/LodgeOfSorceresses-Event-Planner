@@ -1,7 +1,6 @@
 <?php namespace App\Listeners\DpsParse;
 
 use App\Events\DpsParse\DpsParseSubmitted;
-use App\Models\Character;
 use App\Models\Set;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
@@ -26,8 +25,7 @@ class PostNewDpsParseToDiscord
      */
     public function handle(DpsParseSubmitted $event): bool
     {
-        $dpsParse = $event->dpsParse;
-        $dpsParse->refresh();
+        $dpsParse = $event->getDpsParse();
 
         $owner = $event->getOwner();
         $character = $event->getCharacter();

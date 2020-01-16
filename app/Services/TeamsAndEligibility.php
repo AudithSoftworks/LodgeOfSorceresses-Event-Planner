@@ -27,6 +27,20 @@ class TeamsAndEligibility
         return false;
     }
 
+    public function isUserMemberOfAnyEndgameTeam(User $user): bool
+    {
+        foreach ($user->characters as $character) {
+            $character->loadMissing('teams');
+            foreach ($character->teams as $team) {
+                if ($team->teamMembership && $team->teamMembership->status) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public function areAllMembersOfTeamEligibleForPossibleNewTeamTier(Team $team, int $newTier): bool
     {
         if ($team->tier > $newTier) {

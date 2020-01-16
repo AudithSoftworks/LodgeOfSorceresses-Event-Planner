@@ -2,11 +2,13 @@
 
 namespace App\Events\Team;
 
-use App\Events\Character\GetCharacterInterface;
+use App\Events\Character\CharacterNeedsRecacheInterface;
+use App\Events\User\UserNeedsRecacheInterface;
 use App\Models\Character;
 use App\Models\Team;
+use App\Models\User;
 
-class MemberRemoved implements GetTeamInterface, GetCharacterInterface
+class MemberRemoved implements GetTeamInterface, CharacterNeedsRecacheInterface, UserNeedsRecacheInterface
 {
     /**
      * @var \App\Models\Character
@@ -38,5 +40,10 @@ class MemberRemoved implements GetTeamInterface, GetCharacterInterface
     public function getCharacter(): Character
     {
         return $this->character;
+    }
+
+    public function getOwner(): User
+    {
+        return $this->character->owner;
     }
 }

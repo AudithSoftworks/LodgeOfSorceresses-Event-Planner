@@ -13,16 +13,11 @@ class DpsParseDeleted implements GetDpsParseInterface, CharacterNeedsRecacheInte
      */
     public $dpsParse;
 
-    /**
-     * @var \App\Models\Character
-     */
-    public $character;
-
     public function __construct(DpsParse $dpsParse)
     {
+        $dpsParse->refresh();
+        $dpsParse->loadMissing(['character']);
         $this->dpsParse = $dpsParse;
-        $this->dpsParse->loadMissing(['character']);
-        $this->character = $this->dpsParse->character()->first();
     }
 
     public function getDpsParse(): DpsParse
@@ -32,6 +27,6 @@ class DpsParseDeleted implements GetDpsParseInterface, CharacterNeedsRecacheInte
 
     public function getCharacter(): Character
     {
-        return $this->character;
+        return $this->dpsParse->character;
     }
 }

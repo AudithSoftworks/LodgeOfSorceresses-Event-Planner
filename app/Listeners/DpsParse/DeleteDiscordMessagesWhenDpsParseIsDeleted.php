@@ -11,8 +11,7 @@ class DeleteDiscordMessagesWhenDpsParseIsDeleted
      */
     public function handle(DpsParseDeleted $event): bool
     {
-        $dpsParse = $event->dpsParse;
-        $dpsParse->refresh();
+        $dpsParse = $event->getDpsParse();
         $discordMessageIdsToDelete = explode(',', $dpsParse->discord_notification_message_ids);
         $response = app('discord.api')->deleteMessagesInChannel(config('services.discord.channels.dps_parses_logs'), $discordMessageIdsToDelete);
         if ($response) {
