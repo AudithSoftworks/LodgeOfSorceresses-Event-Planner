@@ -18,7 +18,7 @@ class TeamMembershipTerms extends PureComponent {
     }
 
     componentDidMount = () => {
-        const { me, history, match, teams } = this.props;
+        const { history, match, teams } = this.props;
         if (teams) {
             const { character, team } = this.state;
             if (!match.params.id || !match.params['cId']) {
@@ -26,13 +26,13 @@ class TeamMembershipTerms extends PureComponent {
             }
 
             if (!team || !character) {
-                const selectedTeam = teams.find(item => item.id === parseInt(match.params.id));
+                const selectedTeam = teams.find(t => t.id === parseInt(match.params.id));
                 if (!selectedTeam) {
                     history.push('/teams');
                 }
 
-                const character = selectedTeam.members.find(c => c.owner.id === me.id);
-                if (!character || character.id !== parseInt(match.params['cId'])) {
+                const character = selectedTeam.members.find(c => c.id === parseInt(match.params['cId']));
+                if (!character) {
                     history.push('/teams');
                 }
                 this.setState({ team: selectedTeam, character });
@@ -90,8 +90,9 @@ class TeamMembershipTerms extends PureComponent {
                         <input hidden="checkbox" name="accepted_terms" value="1" readOnly={true} />
                         <p>I have read <a href='https://lodgeofsorceresses.com/topic/4887-pve-raid-core-requirements-to-join/' target='_blank'>Requirements to Join Endgame Guidelines</a>.</p>
                         <p>I have read & understood <a href='https://lodgeofsorceresses.com/topic/5506-endgame-attendance-guidelines/' target='_blank'>Endgame Attendance Guidelines</a>.</p>
-                        <p>I have done what is described in <em>Requirements</em> section of <em>Endgame Attendance Guidelines</em> - installed Addons, configured the game accordingly etc.</p>
+                        <p><strong>For this character</strong>, I have done what is described in <em>Requirements</em> section of <em>Endgame Attendance Guidelines</em> - installed Addons, configured the game accordingly etc.</p>
                         <p>By joining, I accept the terms stated in <em>Endgame Attendance Guidelines</em>.</p>
+                        <p className='mt-5'><strong>PLEASE DO NOT ACCEPT THIS INVITATION, UNLESS THE ABOVE-STATED IS TRUE!</strong></p>
                     </fieldset>
                     <fieldset className="form-group col-24 text-center">
                         <button className="btn btn-success btn-lg mb-4 ml-auto mr-auto d-block" type="submit">
