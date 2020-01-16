@@ -139,10 +139,12 @@ export const characters = PropTypes.arrayOf(character);
 
 export const team = PropTypes.shape({
     id: PropTypes.number,
+    name: PropTypes.string,
+    tier: PropTypes.number,
+    discord_id: PropTypes.string,
+    members: PropTypes.arrayOf(character),
     led_by: user,
     created_by: user,
-    discord_id: PropTypes.number,
-    members: PropTypes.arrayOf(character),
 });
 
 export const teams = PropTypes.arrayOf(team);

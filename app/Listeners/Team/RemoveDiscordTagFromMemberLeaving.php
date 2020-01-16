@@ -19,7 +19,7 @@ class RemoveDiscordTagFromMemberLeaving
         $team = $event->getTeam();
         $character = $event->getCharacter();
 
-        $discordRoleId = (string)$team->discord_id;
+        $discordRoleId = $team->discord_id;
         $user = $character->owner;
         /** @var \App\Models\UserOAuth $usersDiscordAccount */
         $usersDiscordAccount = $user->linkedAccounts()->where('remote_provider', 'discord')->first();

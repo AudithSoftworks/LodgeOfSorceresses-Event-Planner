@@ -12,8 +12,8 @@ class CreateTeamsTable extends Migration
             $table->mediumIncrements('id');
             $table->string('name');
             $table->string('icon')->nullable();
-            $table->enum('tier', [1, 2, 3, 4]);
-            $table->unsignedBigInteger('discord_id');
+            $table->unsignedTinyInteger('tier');
+            $table->string('discord_id');
             $table->unsignedInteger('led_by');
             $table->unsignedInteger('created_by');
             $table->timestamps();

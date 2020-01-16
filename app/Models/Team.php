@@ -13,8 +13,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property int $id
  * @property string $name
  * @property string|null $icon
- * @property string $tier
- * @property int $discord_id
+ * @property int $tier
+ * @property string $discord_id
  * @property int $led_by
  * @property int $created_by
  * @property \Illuminate\Support\Carbon|null $created_at

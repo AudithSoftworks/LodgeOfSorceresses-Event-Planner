@@ -18,7 +18,7 @@ class AssignDiscordTagToMemberJoining
         $team = $event->getTeam();
         $character = $event->getCharacter();
 
-        $discordRoleId = (string)$team->discord_id;
+        $discordRoleId = $team->discord_id;
         $dominusLiminisRoleId = DiscordApi::ROLE_DOMINUS_LIMINIS;
         $user = $character->owner;
         /** @var \App\Models\UserOAuth $usersDiscordAccount */
