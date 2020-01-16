@@ -7,6 +7,19 @@
 //noinspection CssUnknownTarget
 body {
     > header.container {
+        position: relative;
+
+        &:after {
+            content: 'Background image: Concept art of Aldruhn, Skywind Project, tesrskywind.com';
+            position: absolute;
+            bottom: -250px;
+            right: -242px;
+            transform: rotate(90deg);
+            color: white;
+            font-size: 0.8em;
+            font-family: "Open Sans", sans-serif;
+        }
+
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
