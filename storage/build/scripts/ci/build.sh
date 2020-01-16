@@ -76,11 +76,11 @@ docker-compose exec php bash -c "
     ./artisan pmg:sets;
     ./artisan fixture:populate;
 
-    ./vendor/bin/phpunit --debug --verbose --testsuite='Integration';
+    ./vendor/bin/phpunit --debug --verbose --testsuite='Integration' || exit 1;
 #    ./artisan dusk -vvv;
 #    ./vendor/bin/phpcov merge ./storage/coverage --clover ./storage/coverage/coverage-clover-merged.xml
 #    ./vendor/bin/phpunit --debug --verbose --no-coverage --testsuite='SauceWebDriver';
-    npx cypress run --record --key ${CYPRESS_KEY};
+    npx cypress run --record --key ${CYPRESS_KEY} || exit 1;
 
     NODE_ENV=production npm run build;
 ";
