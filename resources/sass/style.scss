@@ -112,10 +112,6 @@ body {
 
                 > tbody {
                     > tr {
-                        &:hover {
-                            background-image: linear-gradient(rgba(200, 200, 200, 0.25) 0%, transparent 50%, rgba(200, 200, 200, 0.25) 100%);
-                        }
-
                         > td {
                             position: relative;
                             vertical-align: top;
