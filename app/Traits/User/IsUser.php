@@ -5,7 +5,6 @@ namespace App\Traits\User;
 use App\Models\User;
 use App\Services\DiscordApi;
 use App\Services\GuildRanksAndClearance;
-use stdClass;
 
 trait IsUser
 {
@@ -42,7 +41,7 @@ trait IsUser
     public function calculateUserRank(User $user): void
     {
         $clearanceLevel = app('guild.ranks.clearance')->calculateClearanceLevelOfUser($user);
-        $user->clearanceLevel = GuildRanksAndClearance::CLEARANCE_LEVELS[$clearanceLevel] ?? null;
+        $user->clearanceLevel = GuildRanksAndClearance::CLEARANCE_LEVELS[$clearanceLevel] ?? [];
         $user->makeVisible('clearanceLevel');
     }
 }
