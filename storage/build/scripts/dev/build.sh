@@ -63,8 +63,5 @@ docker-compose exec php bash -c "
     ./artisan fixture:populate;
 
     ./vendor/bin/phpunit --debug --verbose --testsuite='Integration';
-#    ./artisan dusk -vvv;
-#    ./vendor/bin/phpcov merge ./storage/coverage --html ./storage/coverage/merged/;
-
     npx cypress run;
 ";
