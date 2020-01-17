@@ -24,7 +24,6 @@ class AnnounceMemberJoiningOnDiscord
         $character = $event->getCharacter();
 
         $pveCoreAnnouncementsChannelId = config('services.discord.channels.pve_core_announcements');
-        $dpsParsesLogsChannelId = config('services.discord.channels.dps_parses_logs');
         $teamMentionName = '<@&' . $team->discord_id . '>';
         $member = $character->owner;
         /** @var \App\Models\UserOAuth $membersDiscordAccount */
@@ -34,7 +33,7 @@ class AnnounceMemberJoiningOnDiscord
         $discordApi = app('discord.api');
 
         /*--------------------------------------------------------------------------------------------------
-         | Post removal announcement in PvE-Cores#announcements & #dps-parses-logs channels
+         | Post removal announcement in PvE-Cores#announcements
          *-------------------------------------------------------------------------------------------------*/
 
         $discordApi->createMessageInChannel($pveCoreAnnouncementsChannelId, [
@@ -48,20 +47,6 @@ class AnnounceMemberJoiningOnDiscord
                         ClassTypes::getClassName($character->class),
                         RoleTypes::getShortRoleText($character->role),
                         $memberMentionName
-                    ),
-                    'tts' => false,
-                ]),
-            ]
-        ]);
-
-        $discordApi->createMessageInChannel($dpsParsesLogsChannelId, [
-            RequestOptions::FORM_PARAMS => [
-                'payload_json' => json_encode([
-                    'content' => sprintf(
-                        '%s\'s character _%s_ has **joined** %s.',
-                        $memberMentionName,
-                        $character->name,
-                        $teamMentionName
                     ),
                     'tts' => false,
                 ]),
