@@ -89,17 +89,16 @@ class TeamsCharactersController extends Controller
             $character = Cache::get('character-' . $characterId);
             $character && $characters->add($character);
         }
-        $eligibleCharacters = $characters->filter(static function (Character $character) use ($team) {
-            return $character->approved_for_tier >= $team->tier;
+        $existingMembersIds = $team->members->pluck('id');
+        $eligibleCharacters = $characters->reject(static function (Character $c) use ($team, $existingMembersIds) {
+            return $c->approved_for_tier < $team->tier || $existingMembersIds->contains($c->id);
         });
-
-        $teamMemberIds = $team->members->pluck('id')
-            ->merge($eligibleCharacters->pluck('id'))
-            ->unique();
+        $eligibleCharacterIds = $eligibleCharacters->pluck('id');
+        $teamMemberIds = $existingMembersIds->merge($eligibleCharacterIds)->unique();
         $team->members()->sync($teamMemberIds);
         $team->save();
 
-        foreach ($teamMemberIds as $characterId) {
+        foreach ($eligibleCharacterIds as $characterId) {
             Event::dispatch(new MemberInvited(Cache::get('character-' . $characterId), $team));
         }
         Event::dispatch(new TeamUpdated($team));

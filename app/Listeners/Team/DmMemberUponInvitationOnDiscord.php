@@ -3,6 +3,7 @@
 namespace App\Listeners\Team;
 
 use App\Events\Team\MemberInvited;
+use App\Models\Character;
 use GuzzleHttp\RequestOptions;
 
 class DmMemberUponInvitationOnDiscord
@@ -26,12 +27,8 @@ class DmMemberUponInvitationOnDiscord
         $membersDiscordAccount = $member->linkedAccounts()->where('remote_provider', 'discord')->first();
         $memberMentionName = $membersDiscordAccount ? '<@!' . $membersDiscordAccount->remote_id . '>' : $member->name;
         $invitationLink = sprintf(config('app.url') . '/teams/%d/characters/%d', $team->id, $character->id);
-
         /** @var \App\Models\User $me */
         $me = app('auth.driver')->user();
-        $myDiscordAccount = $me->linkedAccounts()->where('remote_provider', 'discord')->first();
-        $myMentionName = $myDiscordAccount ? '<@!' . $myDiscordAccount->remote_id . '>' : $me->name;
-
         $discordApi = app('discord.api');
 
         $dmChannel = $discordApi->createDmChannel($membersDiscordAccount->remote_id);

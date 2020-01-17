@@ -151,13 +151,12 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
 
     public function testStoreForSuccess(): void
     {
+        # Case 1: Regular store
         Event::fake([MemberInvited::class, TeamUpdated::class]);
-
         $tierOneMemberUser = $this->stubTierXMemberUser(1);
         $tierTwoMemberUser = $this->stubTierXMemberUser(2);
         $tierThreeMemberUser = $this->stubTierXMemberUser(3);
         $tierFourMemberUser = $this->stubTierXMemberUser(4);
-
         $response = $this
             ->actingAs(static::$team->ledBy)
             ->withoutMiddleware()
@@ -181,9 +180,26 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
         foreach ($teamFromResponse->members as $member) {
             $this->assertGreaterThanOrEqual(2, $member->approved_for_tier);
         }
-
         Event::assertDispatched(TeamUpdated::class);
         Event::assertDispatched(MemberInvited::class);
+
+        # Case 2: Storing the same people shouldn't do any changes.
+        Event::fake([MemberInvited::class, TeamUpdated::class]);
+        $response = $this
+            ->actingAs(static::$team->ledBy)
+            ->withoutMiddleware()
+            ->postJson('/api/teams/' . static::$team->id . '/characters', [
+                'characterIds' => [
+                    static::$team->ledBy->characters->first()->id,
+                    $tierOneMemberUser->characters->first()->id,
+                    $tierTwoMemberUser->characters->first()->id,
+                    $tierThreeMemberUser->characters->first()->id,
+                    $tierFourMemberUser->characters->first()->id,
+                ],
+            ]);
+        $response->assertStatus(JsonResponse::HTTP_CREATED);
+        Event::assertDispatched(TeamUpdated::class);
+        Event::assertNotDispatched(MemberInvited::class);
     }
 
     public function testUpdateForFailure(): void
