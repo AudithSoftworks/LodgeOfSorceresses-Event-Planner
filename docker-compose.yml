@@ -38,6 +38,7 @@ services:
     command: php-fpm
     stdin_open: true
     tty: true
+    ipc: host
     networks:
       default:
         ipv4_address: 172.72.0.100
