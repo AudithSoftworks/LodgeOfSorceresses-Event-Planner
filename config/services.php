@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\User;
+
 return [
     'mailgun' => [
         'domain' => env('MAILGUN_DOMAIN'),
@@ -15,7 +17,7 @@ return [
         'region' => 'eu-central-1',
     ],
     'stripe' => [
-        'model' => \App\Models\User::class,
+        'model' => User::class,
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
         'webhook' => [
@@ -44,7 +46,7 @@ return [
             'announcements' => env('DISCORD_ANNOUNCEMENTS_CHANNEL_ID', '551378145500987392'),
             'subscriptions' => env('DISCORD_SUBSCRIPTIONS_CHANNEL_ID', '551378145500987392'),
             'dps_parses_logs' => env('DISCORD_DPS_PARSES_CHANNEL_ID', '551378145500987392'),
-            'pve_core_announcements' => env('DISCORD_PVE_CORE_ANNOUNCEMENTS_CHANNEL_ID', '532982144058785807'),
+            'pve_core_announcements' => env('DISCORD_PVE_CORE_ANNOUNCEMENTS_CHANNEL_ID', '551378145500987392'),
             'officer_hq' => env('DISCORD_OFFICER_HQ_CHANNEL_ID', '551378145500987392'),
         ],
     ],
