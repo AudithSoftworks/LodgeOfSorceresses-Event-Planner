@@ -8,8 +8,13 @@ use App\Exceptions\Users\UserNotMemberInDiscord;
 use App\Extensions\Socialite\CustomOauthTwoUser;
 use App\Models\User;
 use App\Models\UserOAuth;
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Contracts\Factory as SocialiteContract;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -35,7 +40,6 @@ class LoginController extends Controller
      */
     public function handleOAuthRedirect(SocialiteContract $socialite, $provider): RedirectResponse
     {
-        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $socialite->driver($provider)->redirect();
     }
 
@@ -49,7 +53,6 @@ class LoginController extends Controller
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
      * @throws \App\Exceptions\Users\UserNotActivatedException
      * @throws \App\Exceptions\Users\UserNotMemberInDiscord
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function handleOAuthReturn(Request $request, SocialiteContract $socialite, $provider)
     {
@@ -69,10 +72,8 @@ class LoginController extends Controller
         /** @var CustomOauthTwoUser $oauthTwoUser */
         $oauthTwoUser = $socialite->driver($provider)->user();
         if ($this->loginViaOAuth($oauthTwoUser, $provider)) {
-            if (!empty($oauthTwoUser->token)) {
-                $request->session()->put('oauth_provider', $provider);
-                $request->session()->put('token', $oauthTwoUser->token);
-            }
+            !empty($oauthTwoUser->token) && $request->session()->put('token', $oauthTwoUser->token);
+            !empty($oauthTwoUser->refreshToken) && $request->session()->put('refreshToken', $oauthTwoUser->refreshToken);
 
             return redirect()->intended($this->redirectPath());
         }
@@ -85,9 +86,9 @@ class LoginController extends Controller
      * @param string             $provider
      *
      * @return bool
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      * @throws \App\Exceptions\Users\UserNotActivatedException
      * @throws \App\Exceptions\Users\UserNotMemberInDiscord
+     * @throws \Exception
      */
     protected function loginViaOAuth(CustomOauthTwoUser $oauthTwoUser, string $provider): bool
     {
@@ -108,12 +109,15 @@ class LoginController extends Controller
         /** @var UserOAuth $owningOAuthAccount */
         if ($owningOAuthAccount = UserOAuth::whereRemoteProvider($provider)->whereRemoteId($oauthTwoUser->id)->first()) {
             $ownerAccount = $owningOAuthAccount->owner;
-            app('auth.driver')->login($ownerAccount);
+            Auth::login($ownerAccount);
             event(new LoggedIn($ownerAccount));
 
             $owningOAuthAccount->remote_secondary_groups !== $oauthTwoUser->remoteSecondaryGroups
             && $owningOAuthAccount->remote_secondary_groups = implode(',', $oauthTwoUser->getRemoteSecondaryGroups());
-            $owningOAuthAccount->isDirty() && $owningOAuthAccount->save() && app('cache.store')->forget('user-' . $ownerAccount->id);
+            $owningOAuthAccount->token = $oauthTwoUser->token;
+            $owningOAuthAccount->token_expires_at = new Carbon(sprintf('+%d seconds', $oauthTwoUser->expiresIn));
+            $owningOAuthAccount->refresh_token = $oauthTwoUser->refreshToken;
+            $owningOAuthAccount->isDirty() && $owningOAuthAccount->save() && Cache::forget('user-' . $ownerAccount->id);
 
             return true;
         }
@@ -126,20 +130,19 @@ class LoginController extends Controller
      * @param string                                       $provider
      *
      * @return bool
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws \Exception
      */
     protected function registerViaOAuth(CustomOauthTwoUser $oauthTwoUser, string $provider): bool
     {
-        $authDriver = app('auth.driver');
-
-        if ($authDriver->check()) {
-            $ownerAccount = $authDriver->user();
+        if (Auth::check()) {
+            $ownerAccount = Auth::user();
         } else {
             $ownerAccount = User::withTrashed()->whereEmail($oauthTwoUser->email)->first();
             if (!$ownerAccount) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 $ownerAccount = User::create([
                     'email' => $oauthTwoUser->getEmail(),
-                    'password' => app('hash')->make(uniqid('', true))
+                    'password' => Hash::make(uniqid('', true))
                 ]);
                 event(new Registered($ownerAccount, $provider));
             }
@@ -150,7 +153,7 @@ class LoginController extends Controller
             $ownerAccount->isDirty() && $ownerAccount->save();
         }
         $this->linkOAuthAccount($oauthTwoUser, $provider, $ownerAccount);
-        $authDriver->login($ownerAccount, true);
+        Auth::login($ownerAccount, true);
         event(new LoggedIn($ownerAccount));
 
         return true;
@@ -159,9 +162,11 @@ class LoginController extends Controller
     /**
      * @param \App\Extensions\Socialite\CustomOauthTwoUser $oauthTwoUser
      * @param string                                       $provider
-     * @param User                                         $ownerAccount
+     * @param \App\Models\User                             $ownerAccount
+     *
+     * @throws \Exception
      */
-    protected function linkOAuthAccount(CustomOauthTwoUser $oauthTwoUser, $provider, $ownerAccount): void
+    protected function linkOAuthAccount(CustomOauthTwoUser $oauthTwoUser, string $provider, User $ownerAccount): void
     {
         $linkedAccount = new UserOAuth();
         $linkedAccount->remote_provider = $provider;
@@ -174,6 +179,9 @@ class LoginController extends Controller
         }
         $linkedAccount->nickname = $oauthTwoUser->getNickname();
         $linkedAccount->name = $oauthTwoUser->getName();
+        $linkedAccount->token = $oauthTwoUser->token;
+        $linkedAccount->token_expires_at = new Carbon(sprintf('+%d seconds', $oauthTwoUser->expiresIn));
+        $linkedAccount->refresh_token = $oauthTwoUser->refreshToken;
         $ownerAccount->linkedAccounts()->save($linkedAccount);
     }
 
@@ -186,11 +194,10 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
-        $guard = app('auth.driver');
-        if ($guard->check()) {
-            $user = $guard->user();
-            $guard->logout();
-            app('events')->dispatch(new LoggedOut($user));
+        if (Auth::check()) {
+            $user = Auth::user();
+            Auth::logout();
+            Event::dispatch(new LoggedOut($user));
         }
         $request->session()->flush();
         $request->session()->regenerate();

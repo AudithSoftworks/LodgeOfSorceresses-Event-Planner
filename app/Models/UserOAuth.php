@@ -1,38 +1,47 @@
 <?php namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
  * @property int $user_id
  * @property string $remote_provider
  * @property string $remote_id
- * @property int $remote_primary_group
+ * @property int|null $remote_primary_group
  * @property string|null $remote_secondary_groups
  * @property string|null $nickname
  * @property string|null $name
  * @property string|null $email
  * @property string|null $avatar
+ * @property int $verified
+ * @property string $token
+ * @property string $token_expires_at
+ * @property string $refresh_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\User $owner
- * @method static Builder|UserOAuth newModelQuery()
- * @method static Builder|UserOAuth newQuery()
- * @method static Builder|UserOAuth ofProvider($provider)
- * @method static Builder|UserOAuth query()
- * @method static Builder|UserOAuth whereAvatar($value)
- * @method static Builder|UserOAuth whereCreatedAt($value)
- * @method static Builder|UserOAuth whereEmail($value)
- * @method static Builder|UserOAuth whereId($value)
- * @method static Builder|UserOAuth whereName($value)
- * @method static Builder|UserOAuth whereNickname($value)
- * @method static Builder|UserOAuth whereRemoteId($value)
- * @method static Builder|UserOAuth whereRemotePrimaryGroup($value)
- * @method static Builder|UserOAuth whereRemoteProvider($value)
- * @method static Builder|UserOAuth whereRemoteSecondaryGroups($value)
- * @method static Builder|UserOAuth whereUpdatedAt($value)
- * @method static Builder|UserOAuth whereUserId($value)
+ * @method static EloquentBuilder|$this newModelQuery()
+ * @method static EloquentBuilder|$this newQuery()
+ * @method static EloquentBuilder|$this ofProvider($provider)
+ * @method static EloquentBuilder|$this query()
+ * @method static EloquentBuilder|$this whereAvatar($value)
+ * @method static EloquentBuilder|$this whereCreatedAt($value)
+ * @method static EloquentBuilder|$this whereEmail($value)
+ * @method static EloquentBuilder|$this whereId($value)
+ * @method static EloquentBuilder|$this whereName($value)
+ * @method static EloquentBuilder|$this whereNickname($value)
+ * @method static EloquentBuilder|$this whereRefreshToken($value)
+ * @method static EloquentBuilder|$this whereRemoteId($value)
+ * @method static EloquentBuilder|$this whereRemotePrimaryGroup($value)
+ * @method static EloquentBuilder|$this whereRemoteProvider($value)
+ * @method static EloquentBuilder|$this whereRemoteSecondaryGroups($value)
+ * @method static EloquentBuilder|$this whereToken($value)
+ * @method static EloquentBuilder|$this whereTokenExpiresAt($value)
+ * @method static EloquentBuilder|$this whereUpdatedAt($value)
+ * @method static EloquentBuilder|$this whereUserId($value)
+ * @method static EloquentBuilder|$this whereVerified($value)
  */
 class UserOAuth extends Model
 {
@@ -45,18 +54,18 @@ class UserOAuth extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function owner(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     /**
-     * @param Builder $query
+     * @param EloquentBuilder $query
      * @param string  $provider
      *
      * @return mixed
      */
-    public function scopeOfProvider(Builder $query, $provider)
+    public function scopeOfProvider(EloquentBuilder $query, $provider)
     {
         return $query->where('remote_provider', '=', $provider);
     }
