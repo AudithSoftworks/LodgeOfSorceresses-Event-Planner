@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Events\DpsParse\DpsParseApproved;
 use App\Events\DpsParse\DpsParseDisapproved;
+use App\Events\Team\TeamUpdated;
 use App\Http\Controllers\Controller;
 use App\Models\DpsParse;
 use App\Models\User;
@@ -14,6 +15,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Event;
 
 class DpsParsesController extends Controller
 {
@@ -26,6 +29,7 @@ class DpsParsesController extends Controller
     public function index(): JsonResponse
     {
         $this->authorize('admin', User::class);
+
         $dpsParses = DpsParse::query()
             ->with(['owner', 'character'])
             ->whereHas('owner', static function (Builder $queryToGetOauthAccounts) {
@@ -59,7 +63,7 @@ class DpsParsesController extends Controller
         $this->authorize('admin', User::class);
 
         /** @var \App\Models\User $me */
-        $me = app('auth.driver')->user();
+        $me = Auth::user();
 
         $dpsParse = DpsParse::query()
             ->with(['character'])
@@ -74,7 +78,10 @@ class DpsParsesController extends Controller
         $dpsParse->processed_by = $me->id;
         $dpsParse->save();
 
-        app('events')->dispatch(new DpsParseApproved($dpsParse));
+        Event::dispatch(new DpsParseApproved($dpsParse));
+        foreach ($dpsParse->character->teams as $team) {
+            Event::dispatch(new TeamUpdated($team));
+        }
 
         return response()->json(['message' => 'Parse approved.']);
     }
@@ -92,7 +99,7 @@ class DpsParsesController extends Controller
         $this->authorize('admin', User::class);
 
         /** @var \App\Models\User $me */
-        $me = app('auth.driver')->user();
+        $me = Auth::user();
 
         $dpsParse = DpsParse::query()
             ->with(['character'])
@@ -108,7 +115,7 @@ class DpsParsesController extends Controller
 
         $dpsParse->delete();
 
-        app('events')->dispatch(new DpsParseDisapproved($dpsParse));
+        Event::dispatch(new DpsParseDisapproved($dpsParse));
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);
     }
