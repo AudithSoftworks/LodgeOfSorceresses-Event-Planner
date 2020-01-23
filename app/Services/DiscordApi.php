@@ -66,7 +66,6 @@ class DiscordApi extends AbstractApi
         parent::__construct('discord');
         $this->apiUrl = 'https://discordapp.com/api/';
         $this->discordGuildId = config('services.discord.guild_id');
-        $this->getToken();
     }
 
     protected function getApiClient(): Client
@@ -192,7 +191,8 @@ class DiscordApi extends AbstractApi
         $clientId = config('services.discord.client_id');
         $clientSecret = config('services.discord.client_secret');
         $redirectUri = config('services.discord.redirect');
-        $response = $this->oauthClient->post('oauth2/token', [
+        $httpClient = $this->createHttpClient();
+        $response = $httpClient->post('oauth2/token', [
             RequestOptions::FORM_PARAMS => [
                 'client_id' => $clientId,
                 'client_secret' => $clientSecret,
