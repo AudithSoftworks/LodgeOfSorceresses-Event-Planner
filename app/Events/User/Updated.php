@@ -2,7 +2,7 @@
 
 use App\Models\User;
 
-class Updated
+class Updated implements UserNeedsRecacheInterface
 {
     /**
      * @var \App\Models\User
@@ -14,6 +14,17 @@ class Updated
      */
     public function __construct(User $user)
     {
+        $user->refresh();
         $this->user = $user;
+    }
+
+    public function getUser(): User
+    {
+        return $this->getOwner();
+    }
+
+    public function getOwner(): User
+    {
+        return $this->user;
     }
 }

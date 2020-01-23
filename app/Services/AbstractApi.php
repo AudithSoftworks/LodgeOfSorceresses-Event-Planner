@@ -2,11 +2,40 @@
 
 namespace App\Services;
 
+use App\Models\UserOAuth;
+use Carbon\Carbon;
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 abstract class AbstractApi implements ApiInterface
 {
+    /**
+     * @var string
+     */
+    public $provider;
+
+    /**
+     * @var \GuzzleHttp\Client
+     */
+    protected $apiClient;
+
+    /**
+     * @var \GuzzleHttp\Client
+     */
+    protected $oauthClient;
+
+    /**
+     * @var string
+     */
+    protected $apiUrl;
+
+    public function __construct(string $provider)
+    {
+        $this->provider = $provider;
+    }
+
     public function executeCallback(callable $callable, ...$args)
     {
         while (true) {
@@ -56,4 +85,49 @@ abstract class AbstractApi implements ApiInterface
 
         throw $e;
     }
+
+    public function getToken(): ?string
+    {
+        /** @var \App\Models\User $me */
+        $me = Auth::user();
+        if ($me !== null) {
+            $me->loadMissing(['linkedAccounts']);
+            /** @var \App\Models\UserOAuth $oauthAccount */
+            $oauthAccount = $me->linkedAccounts()->where('remote_provider', $this->provider)->first();
+            if ($oauthAccount !== null) {
+                if ($this->hasTokenExpired($oauthAccount)) {
+                    $this->refreshToken($oauthAccount);
+                }
+
+                return $oauthAccount->token;
+            }
+        }
+
+        return null;
+    }
+
+    private function hasTokenExpired(UserOAuth $oauthAccount): bool
+    {
+        $now = new Carbon();
+        if ($now->isAfter($oauthAccount->token_expires_at)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    abstract protected function refreshToken(UserOAuth $oauthAccount): void;
+
+    protected function createHttpClient(array $options = []): Client
+    {
+        return new Client(
+            array_merge([
+                'base_uri' => $this->apiUrl,
+            ], $options)
+        );
+    }
+
+    abstract protected function getApiClient(): Client;
+
+    abstract protected function getOauthClient(): Client;
 }

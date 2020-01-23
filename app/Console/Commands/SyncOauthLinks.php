@@ -28,16 +28,6 @@ class SyncOauthLinks extends Command
     protected $description = 'Synchronizes OAuth accounts and deletes User accounts with no OAuth linking.';
 
     /**
-     * @var \App\Services\DiscordApi
-     */
-    private $discordApi;
-
-    /**
-     * @var \App\Services\IpsApi
-     */
-    private $ipsApi;
-
-    /**
      * @var \Illuminate\Support\Collection|\App\Models\User[]
      */
     private $usersMarkedForReexamination;
@@ -50,8 +40,6 @@ class SyncOauthLinks extends Command
     public function __construct()
     {
         parent::__construct();
-        $this->discordApi = app('discord.api');
-        $this->ipsApi = app('ips.api');
         $this->usersMarkedForReexamination = collect();
     }
 
@@ -96,7 +84,8 @@ class SyncOauthLinks extends Command
 
     private function syncDiscordMember(UserOAuth $oauthAccount): int
     {
-        $remoteUserDataFetchedThroughApi = $this->discordApi->getGuildMember($oauthAccount->remote_id);
+        $discordApi = app('discord.api');
+        $remoteUserDataFetchedThroughApi = $discordApi->getGuildMember($oauthAccount->remote_id);
         if ($remoteUserDataFetchedThroughApi === null) {
             return self::MEMBER_NOT_FOUND;
         }
@@ -134,7 +123,7 @@ class SyncOauthLinks extends Command
 
     private function syncIpsMember(UserOAuth $oauthAccount): int
     {
-        $remoteUserDataFetchedThroughApi = $this->ipsApi->getUser($oauthAccount->remote_id);
+        $remoteUserDataFetchedThroughApi = app('ips.api')->getUser($oauthAccount->remote_id);
         if (!$remoteUserDataFetchedThroughApi) {
             return self::MEMBER_NOT_FOUND;
         }
@@ -186,7 +175,7 @@ class SyncOauthLinks extends Command
                 $discordOauthAccount = $linkedAccounts->firstWhere('remote_provider', 'discord');
                 if ($ipsOauthAccount !== null && $discordOauthAccount === null) {
                     $this->warn('[' . $ipsOauthAccount->name . ']' . ' User has left Discord and has IPS account. Setting them as Soulshriven on IPS...');
-                    $this->ipsApi->editUser($ipsOauthAccount->remote_id, ['group' => IpsApi::MEMBER_GROUPS_SOULSHRIVEN, 'secondaryGroups' => []]);
+                    app('ips.api')->editUser($ipsOauthAccount->remote_id, ['group' => IpsApi::MEMBER_GROUPS_SOULSHRIVEN, 'secondaryGroups' => []]);
                     $this->warn('[@' . $user->name . ']' . ' Now deleting them on Planner...');
                     $user->forceDelete();
                     $this->info('[@' . $user->name . ']' . ' Deleted.');

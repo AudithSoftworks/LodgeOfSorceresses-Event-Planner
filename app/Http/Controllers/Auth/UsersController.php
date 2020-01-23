@@ -6,6 +6,9 @@ use App\Models\User;
 use App\Traits\User\IsUser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class UsersController extends Controller
@@ -36,28 +39,26 @@ class UsersController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      * @throws \Illuminate\Validation\ValidationException
      */
     public function updateMe(Request $request): JsonResponse
     {
         $this->authorize('user', User::class);
-        $validatorErrorMessages = [
-            'name.required' => 'ESO ID can\'t be empty!',
-        ];
-        $validator = app('validator')->make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string',
-        ], $validatorErrorMessages);
+        ], [
+            'name.required' => 'ESO ID can\'t be empty!',
+        ]);
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }
 
         /** @var \App\Models\User $me */
-        $me = app('auth.driver')->user();
+        $me = Auth::user();
         $me->name = ltrim($request->get('name'), '@');
         $me->save();
 
-        app('events')->dispatch(new Updated($me));
+        Event::dispatch(new Updated($me));
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);
     }

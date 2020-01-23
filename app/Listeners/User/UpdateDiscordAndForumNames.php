@@ -13,8 +13,7 @@ class UpdateDiscordAndForumNames
      */
     public function handle(Updated $event): bool
     {
-        $user = $event->user;
-        $user->refresh();
+        $user = $event->getUser();
         $ingameUserId = $user->name;
         /** @var \App\Models\UserOAuth $linkedAccount */
         foreach ($linkedAccounts = $user->linkedAccounts()->get() as $linkedAccount) {

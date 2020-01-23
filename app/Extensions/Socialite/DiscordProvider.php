@@ -49,6 +49,14 @@ class DiscordProvider extends AbstractProvider implements ProviderInterface
     /**
      * {@inheritdoc}
      */
+    protected function getCodeFields($state = null): array
+    {
+        return array_merge(parent::getCodeFields($state), ['prompt' => 'none']);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function getTokenUrl(): string
     {
         return $this->discordUrl . '/oauth2/token';
