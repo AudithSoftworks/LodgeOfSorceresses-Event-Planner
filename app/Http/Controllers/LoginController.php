@@ -101,6 +101,7 @@ class LoginController extends Controller
         }
         if ($provider === 'ips' && $ipsUser = app('ips.api')->getUser($oauthTwoUser->getId())) {
             $oauthTwoUser->verified = !(bool)$ipsUser['validating'];
+            ($ipsUser['secondaryGroups'] ?? null) !== null && $oauthTwoUser->remoteSecondaryGroups = array_column($ipsUser['secondaryGroups'], 'id');
         }
         if (!$oauthTwoUser->isVerified()) {
             throw new UserNotActivatedException('Your Discord/Forums account hasn\'t been activated! Please activate it and come back afterwards.');
