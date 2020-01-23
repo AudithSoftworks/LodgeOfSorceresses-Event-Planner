@@ -62,6 +62,6 @@ docker-compose exec php bash -c "
     ./artisan cache:warmup;
     ./artisan fixture:populate;
 
-    ./vendor/bin/phpunit --debug --verbose --testsuite='Integration';
+    ./vendor/bin/phpunit --debug --verbose;
     npx cypress run;
 ";
