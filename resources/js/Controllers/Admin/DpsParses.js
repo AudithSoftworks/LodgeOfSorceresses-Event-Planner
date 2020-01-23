@@ -132,6 +132,7 @@ class DpsParses extends PureComponent {
                     <small>
                         {dpsParse['character']['class']} / {dpsParse['character']['role']}
                     </small>
+                    <p>{dpsParse['dps_amount']} DPS</p>
                 </td>
                 <td>{parseSets.reduce((prev, curr) => [prev, ' ', curr])}</td>
                 <td className="text-right">
