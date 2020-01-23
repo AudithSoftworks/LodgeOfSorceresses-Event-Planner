@@ -2,10 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\UserOAuth;
 use Carbon\Carbon;
-use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class IpsApi extends AbstractApi
@@ -36,35 +35,39 @@ class IpsApi extends AbstractApi
 
     public const USER_ID_FOR_DANDELION = 2533;
 
-    /**
-     * @var \GuzzleHttp\Client
-     */
-    private $apiClient;
-
-    /**
-     * @var \GuzzleHttp\Client
-     */
-    private $oauthClient;
-
-    /**
-     * @var string
-     */
-    private $ipsUrl;
-
-    public function __construct(Request $request)
+    public function __construct()
     {
-        $this->ipsUrl = trim(config('services.ips.url'), '/') . '/api';
-        $this->apiClient = new Client([
-            'auth' => [config('services.ips.api_key'), '']
-        ]);
-        if ($request->hasSession()) {
-            $accessToken = $request->session()->get('token');
-            $this->oauthClient = new Client([
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $accessToken,
-                ],
-            ]);
+        parent::__construct('ips');
+        $ipsUrl = trim(config('services.ips.url'), '/');
+        $this->apiUrl = $ipsUrl . '/api/';
+    }
+
+    protected function getApiClient(): \GuzzleHttp\Client
+    {
+        if ($this->apiClient !== null) {
+            return $this->apiClient;
         }
+
+        $apiKey = config('services.ips.api_key');
+
+        return $this->apiClient = $this->createHttpClient([
+            'auth' => [$apiKey, '']
+        ]);
+    }
+
+    protected function getOauthClient(): \GuzzleHttp\Client
+    {
+        if ($this->oauthClient !== null) {
+            return $this->oauthClient;
+        }
+
+        $token = $this->getToken();
+
+        return $this->oauthClient = $this->createHttpClient([
+            'headers' => [
+                'Authorization' => 'Bearer ' . $token,
+            ],
+        ]);
     }
 
     /**
@@ -75,7 +78,7 @@ class IpsApi extends AbstractApi
     {
         $events = [];
         $page = 1;
-        while ($response = $this->apiClient->get($this->ipsUrl . '/calendar/events', [RequestOptions::QUERY => ['sortBy' => 'date', 'sortDir' => 'desc', 'page' => $page, 'perPage' => 100]])) {
+        while ($response = $this->getApiClient()->get('calendar/events', [RequestOptions::QUERY => ['sortBy' => 'date', 'sortDir' => 'desc', 'page' => $page, 'perPage' => 100]])) {
             $responseDecoded = json_decode($response->getBody()->getContents(), true);
             foreach ($responseDecoded['results'] as $event) {
                 $events[(new Carbon($event['start']))->getTimestamp()] = $event;
@@ -93,7 +96,7 @@ class IpsApi extends AbstractApi
 
     public function createCalendarEvent(string $title, string $description, Carbon $start, bool $rsvp = true, int $rsvpLimit = 99): ?array
     {
-        $response = $this->apiClient->post($this->ipsUrl . '/calendar/events', [
+        $response = $this->getApiClient()->post('calendar/events', [
             RequestOptions::QUERY => [
                 'calendar' => self::CALENDAR_MIDGAME,
                 'title' => $title,
@@ -121,7 +124,7 @@ class IpsApi extends AbstractApi
     public function getUser(int $remoteUserId): ?array
     {
         return $this->executeCallback(function (int $remoteUserId) {
-            $response = $this->apiClient->get($this->ipsUrl . '/core/members/' . $remoteUserId);
+            $response = $this->getApiClient()->get('core/members/' . $remoteUserId);
 
             return json_decode($response->getBody()->getContents(), true);
         }, $remoteUserId);
@@ -130,7 +133,7 @@ class IpsApi extends AbstractApi
     public function editUser(int $remoteUserId, array $params): array
     {
         return $this->executeCallback(function (int $remoteUserId, array $params) {
-            $response = $this->apiClient->post($this->ipsUrl . '/core/members/' . $remoteUserId, [RequestOptions::QUERY => $params]);
+            $response = $this->getApiClient()->post('core/members/' . $remoteUserId, [RequestOptions::QUERY => $params]);
 
             return json_decode($response->getBody()->getContents(), true);
         }, $remoteUserId, $params);
@@ -139,7 +142,7 @@ class IpsApi extends AbstractApi
     public function deleteUser(int $remoteUserId): bool
     {
         return $this->executeCallback(function (int $remoteUserId) {
-            $this->apiClient->delete($this->ipsUrl . '/core/members/' . $remoteUserId);
+            $this->getApiClient()->delete('core/members/' . $remoteUserId);
 
             return true;
         }, $remoteUserId);
@@ -148,7 +151,7 @@ class IpsApi extends AbstractApi
     public function createTopic(int $forum, string $title, string $post): array
     {
         return $this->executeCallback(function (int $forum, string $title, string $post) {
-            $response = $this->apiClient->post($this->ipsUrl . '/forums/topics/', [
+            $response = $this->getApiClient()->post('forums/topics/', [
                 RequestOptions::QUERY => [
                     'forum' => $forum,
                     'title' => $title,
@@ -159,5 +162,32 @@ class IpsApi extends AbstractApi
 
             return json_decode($response->getBody()->getContents(), true);
         }, $forum, $title, $post);
+    }
+
+    /**
+     * @param \App\Models\UserOAuth $oauthAccount
+     *
+     * @throws \Exception
+     */
+    protected function refreshToken(UserOAuth $oauthAccount): void
+    {
+        $clientId = config('services.ips.client_id');
+        $clientSecret = config('services.ips.client_secret');
+        $httpClient = $this->createHttpClient();
+
+        $response = $httpClient->post('/oauth/token/', [
+            RequestOptions::FORM_PARAMS => [
+                'grant_type' => 'refresh_token',
+                'response_type' => 'token',
+                'client_id' => $clientId,
+                'client_secret' => $clientSecret,
+                'refresh_token' => $oauthAccount->refresh_token,
+            ],
+        ]);
+        $responseBody = json_decode($response->getBody(), true);
+
+        $oauthAccount->token = $responseBody['access_token'];
+        $oauthAccount->token_expires_at = new Carbon(sprintf('+%d seconds', $responseBody['expires_in']));
+        $oauthAccount->save();
     }
 }

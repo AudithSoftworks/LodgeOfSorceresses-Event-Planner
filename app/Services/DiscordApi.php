@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\UserOAuth;
+use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Http\Response;
@@ -54,13 +56,6 @@ class DiscordApi extends AbstractApi
 
     public const ROLE_CORE_THREE = '531557176586797067';
 
-    private const DISCORD_API_ENDPOINT = 'https://discordapp.com/api/';
-
-    /**
-     * @var \GuzzleHttp\Client
-     */
-    private $discordClient;
-
     /**
      * @var string
      */
@@ -68,21 +63,47 @@ class DiscordApi extends AbstractApi
 
     public function __construct()
     {
+        parent::__construct('discord');
+        $this->apiUrl = 'https://discordapp.com/api/';
+        $this->discordGuildId = config('services.discord.guild_id');
+        $this->getToken();
+    }
+
+    protected function getApiClient(): Client
+    {
+        if ($this->apiClient !== null) {
+            return $this->apiClient;
+        }
+
         $botAccessToken = config('services.discord.bot_token');
-        $this->discordClient = new Client([
-            'base_uri' => self::DISCORD_API_ENDPOINT,
+
+        return $this->createHttpClient([
             'headers' => [
                 'Authorization' => 'Bot ' . $botAccessToken,
                 'Content-Type' => 'application/json'
+            ]
+        ]);
+    }
+
+    protected function getOauthClient(): Client
+    {
+        if ($this->oauthClient !== null) {
+            return $this->oauthClient;
+        }
+
+        $token = $this->getToken();
+
+        return $this->oauthClient = $this->createHttpClient([
+            'headers' => [
+                'Authorization' => 'Bearer ' . $token,
             ],
         ]);
-        $this->discordGuildId = config('services.discord.guild_id');
     }
 
     public function createMessageInChannel(string $channelId, array $params): array
     {
         return $this->executeCallback(function (string $channelId, array $params) {
-            $response = $this->discordClient->post('channels/' . $channelId . '/messages', $params);
+            $response = $this->getApiClient()->post('channels/' . $channelId . '/messages', $params);
 
             return json_decode($response->getBody()->getContents(), true);
         }, $channelId, $params);
@@ -95,13 +116,13 @@ class DiscordApi extends AbstractApi
                 return false;
             }
             if (count($messageIds) > 1) {
-                $response = $this->discordClient->post('channels/' . $channelId . '/messages/bulk-delete', [
+                $response = $this->getApiClient()->post('channels/' . $channelId . '/messages/bulk-delete', [
                     RequestOptions::JSON => [
                         'messages' => $messageIds,
                     ]
                 ]);
             } else {
-                $response = $this->discordClient->delete('channels/' . $channelId . '/messages/' . $messageIds[0]);
+                $response = $this->getApiClient()->delete('channels/' . $channelId . '/messages/' . $messageIds[0]);
             }
 
             return $response->getStatusCode() === Response::HTTP_NO_CONTENT;
@@ -113,7 +134,7 @@ class DiscordApi extends AbstractApi
     public function reactToMessageInChannel(string $channelId, string $messageId, string $reaction): bool
     {
         return $this->executeCallback(function (string $channelId, string $messageId, string $reaction) {
-            $response = $this->discordClient->put('channels/' . $channelId . '/messages/' . $messageId . '/reactions/' . $reaction . '/@me');
+            $response = $this->getApiClient()->put('channels/' . $channelId . '/messages/' . $messageId . '/reactions/' . $reaction . '/@me');
 
             return $response->getStatusCode() === Response::HTTP_NO_CONTENT;
         }, $channelId, $messageId, $reaction);
@@ -122,7 +143,7 @@ class DiscordApi extends AbstractApi
     public function getGuildMember(string $memberId): ?array
     {
         return $this->executeCallback(function (string $memberId) {
-            $response = $this->discordClient->get('guilds/' . $this->discordGuildId . '/members/' . $memberId);
+            $response = $this->getApiClient()->get('guilds/' . $this->discordGuildId . '/members/' . $memberId);
 
             return json_decode($response->getBody()->getContents(), true);
         }, $memberId);
@@ -131,7 +152,7 @@ class DiscordApi extends AbstractApi
     public function modifyGuildMember(string $memberId, array $params): bool
     {
         return $this->executeCallback(function (string $memberId, array $params) {
-            $response = $this->discordClient->patch('guilds/' . $this->discordGuildId . '/members/' . $memberId, [
+            $response = $this->getApiClient()->patch('guilds/' . $this->discordGuildId . '/members/' . $memberId, [
                 RequestOptions::JSON => $params
             ]);
 
@@ -142,7 +163,7 @@ class DiscordApi extends AbstractApi
     public function createDmChannel(string $recipientId): array
     {
         return $this->executeCallback(function (string $recipientId) {
-            $response = $this->discordClient->post('users/@me/channels', [
+            $response = $this->getApiClient()->post('users/@me/channels', [
                 RequestOptions::JSON => [
                     'recipient_id' => $recipientId,
                 ]
@@ -155,9 +176,37 @@ class DiscordApi extends AbstractApi
     public function getGuildRoles(): array
     {
         return $this->executeCallback(function () {
-            $response = $this->discordClient->get('guilds/' . $this->discordGuildId . '/roles');
+            $response = $this->getApiClient()->get('guilds/' . $this->discordGuildId . '/roles');
 
             return json_decode($response->getBody()->getContents(), true);
         });
+    }
+
+    /**
+     * @param \App\Models\UserOAuth $oauthAccount
+     *
+     * @throws \Exception
+     */
+    protected function refreshToken(UserOAuth $oauthAccount): void
+    {
+        $clientId = config('services.discord.client_id');
+        $clientSecret = config('services.discord.client_secret');
+        $redirectUri = config('services.discord.redirect');
+        $response = $this->oauthClient->post('oauth2/token', [
+            RequestOptions::FORM_PARAMS => [
+                'client_id' => $clientId,
+                'client_secret' => $clientSecret,
+                'redirect_uri' => $redirectUri,
+                'grant_type' => 'refresh_token',
+                'refresh_token' => $oauthAccount->refresh_token,
+                'scope' => 'identify email',
+            ],
+        ]);
+        $responseBody = json_decode($response->getBody(), true);
+
+        $oauthAccount->token = $responseBody['token'];
+        $oauthAccount->token_expires_at = new Carbon(sprintf('+%d seconds', $responseBody['token']));
+        $oauthAccount->refresh_token = $responseBody['refresh_token'];
+        $oauthAccount->save();
     }
 }

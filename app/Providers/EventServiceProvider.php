@@ -99,6 +99,7 @@ class EventServiceProvider extends ServiceProvider
         Events\User\Registered::class => [],
         Events\User\Updated::class => [
             Listeners\User\UpdateDiscordAndForumNames::class,
+            Listeners\Cache\DeleteUserCache::class,
         ],
     ];
 
