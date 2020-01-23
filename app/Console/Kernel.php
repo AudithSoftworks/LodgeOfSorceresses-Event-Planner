@@ -1,8 +1,7 @@
-<?php
+<?php /** @noinspection PhpIncludeInspection */
 
 namespace App\Console;
 
-use App\Console\Commands\FetchEventsUsingIpsApi;
 use App\Console\Commands\PruneOrphanedFiles;
 use App\Console\Commands\SyncOauthLinks;
 use App\Console\Commands\SyncYoutubeRssFeeds;
@@ -20,10 +19,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command(FetchEventsUsingIpsApi::class)->hourly()->sendOutputTo(self::LOG_FILE, true);
-        $schedule->command(SyncOauthLinks::class)->dailyAt('05:10')->sendOutputTo(self::LOG_FILE, true);
         $schedule->command(PruneOrphanedFiles::class)->weekly()->sendOutputTo(self::LOG_FILE, true);
-        $schedule->command(SyncYoutubeRssFeeds::class)->dailyAt('05:00')->sendOutputTo(self::LOG_FILE, true);
+        $schedule->command(SyncOauthLinks::class)->dailyAt('05:00')->sendOutputTo(self::LOG_FILE, true);
+        $schedule->command(SyncYoutubeRssFeeds::class)->dailyAt('05:15')->sendOutputTo(self::LOG_FILE, true);
     }
 
     /**
