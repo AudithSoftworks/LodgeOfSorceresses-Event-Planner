@@ -27,6 +27,8 @@ class IpsProvider extends AbstractProvider implements ProviderInterface
         'profile',
         'email',
         'calendar',
+        'forum',
+        'gallery',
     ];
 
     /**
