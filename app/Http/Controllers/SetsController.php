@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 
 class SetsController extends Controller
 {
@@ -17,8 +18,8 @@ class SetsController extends Controller
     {
         $this->authorize('user', User::class);
 
-        app('cache.store')->has('sets'); // Trigger Recache listener.
+        Cache::has('sets'); // Trigger Recache listener.
 
-        return response()->json(app('cache.store')->get('sets'));
+        return response()->json(Cache::get('sets'));
     }
 }
