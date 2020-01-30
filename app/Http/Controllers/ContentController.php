@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 
 class ContentController extends Controller
 {
@@ -13,8 +14,8 @@ class ContentController extends Controller
      */
     public function index(): JsonResponse
     {
-        app('cache.store')->has('content'); // Trigger Recache listener.
+        Cache::has('content'); // Trigger Recache listener.
 
-        return response()->json(app('cache.store')->get('content'));
+        return response()->json(Cache::get('content'));
     }
 }
