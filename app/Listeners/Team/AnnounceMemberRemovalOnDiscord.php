@@ -43,12 +43,11 @@ class AnnounceMemberRemovalOnDiscord
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
                     'content' => sprintf(
-                        '%s\'s character _%s_ has been **removed** from %s by %s. **Note**: %s may still be part of the team with other characters.',
+                        '%s\'s character _%s_ has been **removed** from %s by %s.',
                         $memberMentionName,
                         $character->name,
                         $teamMentionName,
-                        $myMentionName,
-                        $memberMentionName
+                        $myMentionName
                     ),
                     'tts' => false,
                 ]),
@@ -59,21 +58,23 @@ class AnnounceMemberRemovalOnDiscord
          | Post removal announcement as DM to the member
          *----------------------------------------------------------*/
 
-        $dmChannel = $discordApi->createDmChannel($membersDiscordAccount->remote_id);
-        $discordApi->createMessageInChannel($dmChannel['id'], [
-            RequestOptions::FORM_PARAMS => [
-                'payload_json' => json_encode([
-                    'content' => sprintf(
-                        '%s, your character _%s_ has been **removed** from %s by _%s_. If you are unsure how this happened, please contact the Team Leader!',
-                        $memberMentionName,
-                        $character->name,
-                        $team->name,
-                        $me->name
-                    ),
-                    'tts' => false,
-                ]),
-            ]
-        ]);
+        if ($me->id !== $member->id) {
+            $dmChannel = $discordApi->createDmChannel($membersDiscordAccount->remote_id);
+            $discordApi->createMessageInChannel($dmChannel['id'], [
+                RequestOptions::FORM_PARAMS => [
+                    'payload_json' => json_encode([
+                        'content' => sprintf(
+                            '%s, your character _%s_ has been **removed** from %s by _%s_. If you are unsure how this happened, please contact the Team Leader!',
+                            $memberMentionName,
+                            $character->name,
+                            $team->name,
+                            $me->name
+                        ),
+                        'tts' => false,
+                    ]),
+                ]
+            ]);
+        }
 
         return true;
     }
