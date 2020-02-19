@@ -43,7 +43,7 @@ use Laravel\Passport\Token as PassportToken;
  * @property array $clearanceLevel
  * @property bool $isSoulshriven
  * @property bool $isMember
- * @property array $linkedAccountsParsed
+ * @property EloquentCollection|UserOAuth[] $linkedAccountsParsed
  * @method static bool|null forceDelete()
  * @method static EloquentBuilder|$this newModelQuery()
  * @method static EloquentBuilder|$this newQuery()
