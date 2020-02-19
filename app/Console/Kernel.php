@@ -21,7 +21,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command(PruneOrphanedFiles::class)->weekly()->sendOutputTo(self::LOG_FILE, true);
-        $schedule->command(RequestDpsParseRenewal::class)->monthlyOn(20, '07:00')->sendOutputTo(self::LOG_FILE, true);
+        $schedule->command(RequestDpsParseRenewal::class)->monthlyOn(15, '07:00')->sendOutputTo(self::LOG_FILE, true);
         $schedule->command(SyncOauthLinks::class)->dailyAt('05:00')->sendOutputTo(self::LOG_FILE, true);
         $schedule->command(SyncYoutubeRssFeeds::class)->dailyAt('05:15')->sendOutputTo(self::LOG_FILE, true);
     }
