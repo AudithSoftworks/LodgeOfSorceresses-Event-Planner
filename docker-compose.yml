@@ -59,6 +59,7 @@ services:
     environment:
       POSTGRES_DB: "basis"
       POSTGRES_PASSWORD: ""
+      POSTGRES_HOST_AUTH_METHOD: "trust"
     networks:
       default:
         ipv4_address: 172.72.0.120
