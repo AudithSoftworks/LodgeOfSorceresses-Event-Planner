@@ -93,9 +93,9 @@ class RequestDpsParseRenewal extends Command
         $discordApi = app('discord.api');
         /** @var int $userId */
         foreach ($parsesGroupedByUserIdAndCharacterId as $userId => $parsesGroupedByCharacterId) {
-            Cache::has('user-' . 1); // Recache trigger.
+            Cache::has('user-' . $userId); // Recache trigger.
             /** @var \App\Models\User $user */
-            $user = Cache::get('user-' . 1);
+            $user = Cache::get('user-' . $userId);
             /** @var \App\Models\UserOAuth $parseOwnersDiscordAccount */
             $parseOwnersDiscordAccount = $user->linkedAccountsParsed->get('discord');
             $dmChannel = $parseOwnersDiscordAccount ? $discordApi->createDmChannel($parseOwnersDiscordAccount->remote_id) : null;
