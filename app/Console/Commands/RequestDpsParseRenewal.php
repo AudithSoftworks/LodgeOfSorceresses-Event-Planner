@@ -96,6 +96,9 @@ class RequestDpsParseRenewal extends Command
             Cache::has('user-' . $userId); // Recache trigger.
             /** @var \App\Models\User $user */
             $user = Cache::get('user-' . $userId);
+            if ($user->trashed()) {
+                continue;
+            }
             /** @var \App\Models\UserOAuth $parseOwnersDiscordAccount */
             $parseOwnersDiscordAccount = $user->linkedAccountsParsed->get('discord');
             $dmChannel = $parseOwnersDiscordAccount ? $discordApi->createDmChannel($parseOwnersDiscordAccount->remote_id) : null;
