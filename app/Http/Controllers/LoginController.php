@@ -149,7 +149,7 @@ class LoginController extends Controller
             }
 
             # If user account is soft-deleted, restore it.
-            $ownerAccount->trashed() && $ownerAccount::restore();
+            $ownerAccount->trashed() && $ownerAccount->restore();
 
             $ownerAccount->isDirty() && $ownerAccount->save();
         }
