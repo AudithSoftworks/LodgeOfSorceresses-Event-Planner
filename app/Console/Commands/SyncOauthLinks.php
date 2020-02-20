@@ -146,11 +146,13 @@ class SyncOauthLinks extends Command
 
     /**
      * @param \App\Models\UserOAuth $oauthAccount
+     *
+     * @throws \Exception
      */
     private function deleteOauthAccountAndAddUserToReexaminationList(UserOAuth $oauthAccount): void
     {
         $user = $oauthAccount->owner;
-        $oauthAccount->forceDelete();
+        $oauthAccount->delete();
         if ($user) {
             $user->loadMissing(['linkedAccounts'])->refresh();
             if (!$this->usersMarkedForReexamination->has($user->id)) {
@@ -163,6 +165,9 @@ class SyncOauthLinks extends Command
         }
     }
 
+    /**
+     * @throws \Exception
+     */
     private function processUsersListedForReexamination(): void
     {
         foreach ($this->usersMarkedForReexamination as $user) {
@@ -177,19 +182,19 @@ class SyncOauthLinks extends Command
                     $this->warn('[' . $ipsOauthAccount->name . ']' . ' User has left Discord and has IPS account. Setting them as Soulshriven on IPS...');
                     app('ips.api')->editUser($ipsOauthAccount->remote_id, ['group' => IpsApi::MEMBER_GROUPS_SOULSHRIVEN, 'secondaryGroups' => []]);
                     $this->warn('[@' . $user->name . ']' . ' Now deleting them on Planner...');
-                    $user->forceDelete();
+                    $user->delete();
                     $this->info('[@' . $user->name . ']' . ' Deleted.');
                 } elseif ($discordOauthAccount !== null) {
                     $discordRoles = explode(',', $discordOauthAccount->remote_secondary_groups);
                     if (!in_array(DiscordApi::ROLE_SOULSHRIVEN, $discordRoles, true) && !in_array(DiscordApi::ROLE_MEMBERS, $discordRoles, true)) {
                         $this->warn('[' . $discordOauthAccount->name . ']' . ' User has Discord account but lacks any roles. Deleting...');
-                        $user->forceDelete();
+                        $user->delete();
                         $this->info('[@' . $user->name . ']' . ' Deleted.');
                     }
                 }
             } else {
                 $this->warn('[@' . $user->name . ']' . ' User has no remaining OAuth links. Deleting...');
-                $user->forceDelete();
+                $user->delete();
                 $this->info('[@' . $user->name . ']' . ' Deleted.');
             }
             app('cache.store')->forget('user-' . $user->id);
