@@ -13,6 +13,7 @@ use App\Traits\Character\IsCharacter;
 use App\Traits\Team\IsTeam;
 use App\Traits\User\IsUser;
 use Illuminate\Cache\Events\CacheMissed;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -105,6 +106,9 @@ class Recache
                 'content',
                 'owner',
             ])
+            ->whereHas('owner', static function (Builder $query) {
+                $query->whereNull('deleted_at');
+            })
             ->whereId($characterId)
             ->first();
         if ($character) {

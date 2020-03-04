@@ -110,7 +110,7 @@ class Item extends Component {
             return acc;
         }, []);
         const characterOptions = Object.values(characters.entities['characters'])
-            .filter(c => teamMembersIds.indexOf(c.id) === -1)
+            .filter(c => teamMembersIds.indexOf(c.id) === -1 && c.owner !== null)
             .map(c => ({
                 value: c.id,
                 label: '@' + c.owner.name + ': ' + c.name + ' (' + c.class + '/' + c.role + ') [Tier-' + c.approved_for_tier + ']'
