@@ -16,6 +16,7 @@ use Illuminate\Cache\Events\CacheMissed;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Cache;
 
 class Recache
 {
@@ -89,6 +90,7 @@ class Recache
             },
             'characters'
         ])->whereNotNull('name')->find($userId);
+        unset($user->email);
         $this->parseLinkedAccounts($user);
         $this->parseCharacters($user);
         $this->calculateUserRank($user);
@@ -117,6 +119,7 @@ class Recache
             $character->sets = $this->parseCharacterSets($character);
             $character->skills = $this->parseCharacterSkills($character);
             $this->processDpsParses($character);
+            unset($character->owner->email);
 
             return $character;
         }
