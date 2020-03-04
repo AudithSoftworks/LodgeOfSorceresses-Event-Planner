@@ -50,7 +50,7 @@ class SetsControllerTest extends IlluminateTestCase
         $this->assertNotNull($responseOriginalContent);
         $this->assertIsIterable($responseOriginalContent);
         $firstEntry = array_shift($responseOriginalContent);
-        $this->assertEquals('Death\'s Wind', $firstEntry['name']);
+        $this->assertNotEmpty($firstEntry['name']);
     }
 
     public function testShowForFailure(): void
