@@ -3,6 +3,7 @@
 namespace App\Listeners\Team;
 
 use App\Events\Team\MemberJoined;
+use App\Services\TeamsAndEligibility;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
 use GuzzleHttp\RequestOptions;
@@ -23,7 +24,10 @@ class AnnounceMemberJoiningOnDiscord
         $team = $event->getTeam();
         $character = $event->getCharacter();
 
-        $pveCoreAnnouncementsChannelId = config('services.discord.channels.pve_core_announcements');
+        $channelToAnnounceTo = config('services.discord.channels.pve_core_announcements');
+        if ($team->tier === TeamsAndEligibility::TRAINING_TEAM_TIER) {
+            $channelToAnnounceTo = config('services.discord.channels.pve_open_events');
+        }
         $teamMentionName = '<@&' . $team->discord_id . '>';
         $member = $character->owner;
         /** @var \App\Models\UserOAuth $membersDiscordAccount */
@@ -36,17 +40,16 @@ class AnnounceMemberJoiningOnDiscord
          | Post removal announcement in PvE-Cores#announcements
          *-------------------------------------------------------------------------------------------------*/
 
-        $discordApi->createMessageInChannel($pveCoreAnnouncementsChannelId, [
+        $discordApi->createMessageInChannel($channelToAnnounceTo, [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
                     'content' => sprintf(
-                        '%s\'s character _%s_ has **joined** %s as _%s_ / _%s_. Please welcome him/her, folks! Good luck, %s!',
+                        '%s\'s character _%s_ has **joined** %s as _%s_ / _%s_.',
                         $memberMentionName,
                         $character->name,
                         $teamMentionName,
                         ClassTypes::getClassName($character->class),
-                        RoleTypes::getShortRoleText($character->role),
-                        $memberMentionName
+                        RoleTypes::getShortRoleText($character->role)
                     ),
                     'tts' => false,
                 ]),

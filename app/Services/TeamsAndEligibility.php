@@ -5,6 +5,8 @@ use App\Models\User;
 
 class TeamsAndEligibility
 {
+    public const TRAINING_TEAM_TIER = 1;
+
     public function isUserEligibleToJoin(Team $team, User $user): bool
     {
         foreach ($user->characters as $character) {
