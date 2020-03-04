@@ -5,6 +5,7 @@ namespace App\Traits\User;
 use App\Models\User;
 use App\Services\DiscordApi;
 use App\Services\GuildRanksAndClearance;
+use Illuminate\Support\Facades\Cache;
 
 trait IsUser
 {
@@ -20,6 +21,7 @@ trait IsUser
                     $user->isMember = in_array(DiscordApi::ROLE_MEMBERS, $linkedAccount->remote_secondary_groups, true);
                     $user->isSoulshriven = in_array(DiscordApi::ROLE_SOULSHRIVEN, $linkedAccount->remote_secondary_groups, true);
                 }
+                unset($linkedAccount->email);
             }
         }
         $user->linkedAccountsParsed = $linkedAccountsParsed;
@@ -29,11 +31,10 @@ trait IsUser
 
     public function parseCharacters(User $user): void
     {
-        $cacheStore = app('cache.store');
         $newCharacterList = collect();
         foreach ($user->characters as $character) {
-            $cacheStore->has('character-' . $character->id);
-            $newCharacterList->add($cacheStore->get('character-' . $character->id));
+            Cache::has('character-' . $character->id);
+            $newCharacterList->add(Cache::get('character-' . $character->id));
         }
         $user->setRelation('characters', $newCharacterList);
     }

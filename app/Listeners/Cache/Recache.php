@@ -13,8 +13,10 @@ use App\Traits\Character\IsCharacter;
 use App\Traits\Team\IsTeam;
 use App\Traits\User\IsUser;
 use Illuminate\Cache\Events\CacheMissed;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Cache;
 
 class Recache
 {
@@ -88,6 +90,7 @@ class Recache
             },
             'characters'
         ])->whereNotNull('name')->find($userId);
+        unset($user->email);
         $this->parseLinkedAccounts($user);
         $this->parseCharacters($user);
         $this->calculateUserRank($user);
@@ -105,6 +108,9 @@ class Recache
                 'content',
                 'owner',
             ])
+            ->whereHas('owner', static function (Builder $query) {
+                $query->whereNull('deleted_at');
+            })
             ->whereId($characterId)
             ->first();
         if ($character) {
@@ -113,6 +119,7 @@ class Recache
             $character->sets = $this->parseCharacterSets($character);
             $character->skills = $this->parseCharacterSkills($character);
             $this->processDpsParses($character);
+            unset($character->owner->email);
 
             return $character;
         }

@@ -82,7 +82,7 @@ class Header extends Component {
 
         const navLinksRendered = this.renderNavLinks(navLinks);
 
-        let email = me ? me.email : null;
+        let email = me && me.email ? me.email : null;
         if (email) {
             const posOfAtSignInEmail = email.indexOf('@');
             if (posOfAtSignInEmail !== -1) {
