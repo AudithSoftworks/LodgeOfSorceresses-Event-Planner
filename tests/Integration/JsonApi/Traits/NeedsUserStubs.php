@@ -63,7 +63,7 @@ trait NeedsUserStubs
         return $adminUser;
     }
 
-    private function stubTierXMemberUser(int $tier): User
+    private function stubTierXMemberUser(int $tier, string $role = 'magdd'): User
     {
         /** @var UserOAuth $memberUserOauth */
         $memberUserOauth = factory(UserOAuth::class)->states('member')->create([
@@ -71,7 +71,7 @@ trait NeedsUserStubs
         ]);
         /** @var \App\Models\User $tierXMemberUser */
         $tierXMemberUser = $memberUserOauth->owner()->first();
-        $tierXCharacter = factory(Character::class)->states('tier-' . $tier)->create([
+        $tierXCharacter = factory(Character::class)->states(['tier-' . $tier, $role])->create([
             'user_id' => $tierXMemberUser
         ]);
         $tierXMemberUser->setRelation('characters', collect([$tierXCharacter]));

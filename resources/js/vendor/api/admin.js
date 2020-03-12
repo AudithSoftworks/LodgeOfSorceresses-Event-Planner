@@ -13,7 +13,13 @@ export const putCharacter = (cancelToken, characterId, data) => axios.post('/api
         'X-HTTP-Method-Override': 'PUT',
     },
 }).then(
-    response => response
+    response => {
+        if (response.data) {
+            return normalize(response.data, schema.character)
+        }
+
+        return null;
+    }
 ).catch(error => {
     throw error;
 });
