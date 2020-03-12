@@ -14,6 +14,10 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class CharactersController extends Controller
@@ -21,47 +25,23 @@ class CharactersController extends Controller
     use IsCharacter, HasOrIsDpsParse;
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Auth\Access\AuthorizationException
-     */
-    public function index(): JsonResponse
-    {
-        $this->authorize('user', User::class);
-        $characterIds = Character::query()
-            ->orderBy('id', 'desc')
-            ->get(['id'])->pluck('id');
-
-        $characters = collect();
-        foreach ($characterIds as $characterId) {
-            app('cache.store')->has('character-' . $characterId); // Trigger Recache listener.
-            $character = app('cache.store')->get('character-' . $characterId);
-            $characters->add($character);
-        }
-
-        return response()->json($characters);
-    }
-
-    /**
      * @param \Illuminate\Http\Request $request
      * @param int                      $characterId
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      * @throws \Illuminate\Validation\ValidationException
      */
     public function update(Request $request, int $characterId): JsonResponse
     {
         $this->authorize('admin', User::class);
 
-        $validatorErrorMessages = [
-            'action.required' => 'Action should either be promote or demote.',
-        ];
-        $validator = app('validator')->make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'action' => 'required|string|in:promote,demote',
-        ], $validatorErrorMessages);
+        ], [
+            'action.required' => 'Action is required.',
+            'action.in' => 'Action should either be promote or demote.',
+        ]);
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }
@@ -72,27 +52,29 @@ class CharactersController extends Controller
 
         $user = $character->owner;
         /** @var \App\Models\User $me */
-        $me = app('auth.driver')->user();
+        $me = Auth::user();
         if ($me->id === $user->id) {
             throw new AuthorizationException('Self-ranking disabled!');
         }
 
         if ($character->role === RoleTypes::ROLE_MAGICKA_DD || $character->role === RoleTypes::ROLE_STAMINA_DD) {
-            throw new \InvalidArgumentException('Damage Dealers can only be ranked via Parse submission!');
+            $validator->errors()->add('action', 'Damage Dealers can only be ranked via Parse submission!');
+            throw new ValidationException($validator);
         }
 
         $guildRankingService = app('guild.ranks.clearance');
         switch ($actionParam = $request->get('action')) {
             case 'promote':
                 $guildRankingService->promoteCharacter($character);
-                app('events')->dispatch(new CharacterPromoted($character));
+                Event::dispatch(new CharacterPromoted($character));
                 break;
             case 'demote':
                 $guildRankingService->demoteCharacter($character);
-                app('events')->dispatch(new CharacterDemoted($character));
+                Event::dispatch(new CharacterDemoted($character));
                 break;
         }
+        Cache::has('character-' . $character->id); // Recache trigger.
 
-        return response()->json(['message' => 'Character reranked.']);
+        return response()->json(Cache::get('character-' . $character->id));
     }
 }

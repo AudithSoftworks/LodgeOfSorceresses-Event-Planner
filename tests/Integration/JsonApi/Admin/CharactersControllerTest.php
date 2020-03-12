@@ -1,0 +1,187 @@
+<?php
+
+namespace App\Tests\Integration\JsonApi\Admin;
+
+use App\Events\Character\CharacterDemoted;
+use App\Events\Character\CharacterPromoted;
+use App\Tests\IlluminateTestCase;
+use App\Tests\Integration\JsonApi\Traits\NeedsUserStubs;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Event;
+
+class CharactersControllerTest extends IlluminateTestCase
+{
+    use NeedsUserStubs;
+
+    /**
+     * @var bool
+     */
+    protected static $setupHasRunOnce = false;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        if (!static::$setupHasRunOnce) {
+            Artisan::call('migrate:fresh');
+            static::$setupHasRunOnce = true;
+        }
+    }
+
+    public function testIndexForFailure(): void
+    {
+        $response = $this
+            ->withoutMiddleware()
+            ->getJson('/api/admin/characters');
+        $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
+    }
+
+    public function testShowForFailure(): void
+    {
+        $response = $this
+            ->withoutMiddleware()
+            ->getJson('/api/admin/characters/1');
+        $response->assertStatus(JsonResponse::HTTP_METHOD_NOT_ALLOWED);
+    }
+
+    public function testStoreForFailure(): void
+    {
+        $response = $this
+            ->withoutMiddleware()
+            ->postJson('/api/admin/characters', []);
+        $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
+    }
+
+    public function testUpdateForFailure(): void
+    {
+        # Case: No authentication.
+        $response = $this
+            ->withoutMiddleware()
+            ->putJson('/api/admin/characters/1', []);
+        $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
+        $responseOriginalContent = $response->getOriginalContent();
+        $this->assertNotNull($responseOriginalContent);
+        $response->assertJsonPath('message', 'This action is unauthorized.');
+
+        # Case: Not found.
+        $this->stubTierFourAdminUser();
+        $response = $this
+            ->actingAs(static::$adminUser)
+            ->withoutMiddleware()
+            ->putJson('/api/admin/characters/1000', [
+                'action' => 'promote'
+            ]);
+        $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
+        $responseOriginalContent = $response->getOriginalContent();
+        $this->assertCount(1, $responseOriginalContent);
+        $response->assertJsonPath('message', 'Character not found!');
+
+        # Case: Self-ranking.
+        $this->stubTierFourAdminUser();
+        $response = $this
+            ->actingAs(static::$adminUser)
+            ->withoutMiddleware()
+            ->putJson('/api/admin/characters/' . static::$adminUser->characters->first()->id, [
+                'action' => 'promote'
+            ]);
+        $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
+        $responseOriginalContent = $response->getOriginalContent();
+        $this->assertCount(1, $responseOriginalContent);
+        $response->assertJsonPath('message', 'Self-ranking disabled!');
+
+        # Case: Attempting to rerank a Damage-Dealer
+        $tierTwoDdUser = $this->stubTierXMemberUser(2);
+        $response = $this
+            ->actingAs(static::$adminUser)
+            ->withoutMiddleware()
+            ->putJson('/api/admin/characters/' . $tierTwoDdUser->characters->first()->id, [
+                'action' => 'promote'
+            ]);
+        $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        $responseOriginalContent = $response->getOriginalContent();
+        $this->assertCount(2, $responseOriginalContent);
+        $this->assertCount(1, $responseOriginalContent['errors']);
+        $response->assertJsonPath('message', 'The given data was invalid.');
+        $response->assertJsonPath('errors.action.0', 'Damage Dealers can only be ranked via Parse submission!');
+
+        # Case: Missing 'action' parameter.
+        $tierTwoHealerUser = $this->stubTierXMemberUser(2, 'healer');
+        $response = $this
+            ->actingAs(static::$adminUser)
+            ->withoutMiddleware()
+            ->putJson('/api/admin/characters/' . $tierTwoHealerUser->characters->first()->id, []);
+        $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        $responseOriginalContent = $response->getOriginalContent();
+        $this->assertCount(2, $responseOriginalContent);
+        $this->assertCount(1, $responseOriginalContent['errors']);
+        $response->assertJsonPath('message', 'The given data was invalid.');
+        $response->assertJsonPath('errors.action.0', 'Action is required.');
+
+        # Case: Missing 'action' parameter.
+        $tierTwoHealerUser = $this->stubTierXMemberUser(2, 'healer');
+        $response = $this
+            ->actingAs(static::$adminUser)
+            ->withoutMiddleware()
+            ->putJson('/api/admin/characters/' . $tierTwoHealerUser->characters->first()->id, [
+                'action' => 'random-value'
+            ]);
+        $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        $responseOriginalContent = $response->getOriginalContent();
+        $this->assertCount(2, $responseOriginalContent);
+        $this->assertCount(1, $responseOriginalContent['errors']);
+        $response->assertJsonPath('message', 'The given data was invalid.');
+        $response->assertJsonPath('errors.action.0', 'Action should either be promote or demote.');
+    }
+
+    public function testUpdateForSuccessForActionPromote(): void
+    {
+        Event::fake([CharacterPromoted::class, CharacterDemoted::class]);
+
+        $tierTwoTankUser = $this->stubTierXMemberUser(2, 'tank');
+        $response = $this
+            ->actingAs(static::$adminUser)
+            ->withoutMiddleware()
+            ->putJson('/api/admin/characters/' . $tierTwoTankUser->characters->first()->id, [
+                'action' => 'promote'
+            ]);
+        $response->assertStatus(JsonResponse::HTTP_OK);
+        /** @var \App\Models\Character $responseOriginalContent */
+        $responseOriginalContent = $response->getOriginalContent();
+        $this->assertTrue($responseOriginalContent->exists);
+        $this->assertFalse($responseOriginalContent->wasRecentlyCreated);
+        $this->assertEquals(3, $responseOriginalContent->approved_for_tier);
+
+        Event::assertDispatched(CharacterPromoted::class);
+        Event::assertNotDispatched(CharacterDemoted::class);
+    }
+
+    public function testUpdateForSuccessForActionDemote(): void
+    {
+        Event::fake([CharacterPromoted::class, CharacterDemoted::class]);
+
+        $tierTwoHealerUser = $this->stubTierXMemberUser(2, 'healer');
+        $response = $this
+            ->actingAs(static::$adminUser)
+            ->withoutMiddleware()
+            ->putJson('/api/admin/characters/' . $tierTwoHealerUser->characters->first()->id, [
+                'action' => 'demote'
+            ]);
+        $response->assertStatus(JsonResponse::HTTP_OK);
+        /** @var \App\Models\Character $responseOriginalContent */
+        $responseOriginalContent = $response->getOriginalContent();
+        $this->assertTrue($responseOriginalContent->exists);
+        $this->assertFalse($responseOriginalContent->wasRecentlyCreated);
+        $this->assertEquals(1, $responseOriginalContent->approved_for_tier);
+
+        Event::assertDispatched(CharacterDemoted::class);
+        Event::assertNotDispatched(CharacterPromoted::class);
+    }
+
+    public function testDestroyForFailure(): void
+    {
+        $response = $this
+            ->withoutMiddleware()
+            ->deleteJson('/api/admin/characters/1');
+        $response->assertStatus(JsonResponse::HTTP_METHOD_NOT_ALLOWED);
+    }
+}
