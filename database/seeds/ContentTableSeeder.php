@@ -38,7 +38,7 @@ class ContentTableSeeder extends Seeder
             ['id' => 20, 'name' => 'Veteran Cloudrest', 'short_name' => 'vCR', 'version' => '+2 Fire & Lightning', 'type' => 'endgame', 'tier' => 4],
             ['id' => 21, 'name' => 'Veteran Cloudrest', 'short_name' => 'vCR', 'version' => '+2 Ice & Lightning', 'type' => 'endgame', 'tier' => 4],
             ['id' => 22, 'name' => 'Veteran Cloudrest', 'short_name' => 'vCR', 'version' => '+3', 'type' => 'endgame', 'tier' => 4],
-            ['id' => 23, 'name' => 'Veteran Sunspire', 'short_name' => 'vSS', 'version' => null, 'type' => 'endgame', 'tier' => 3],
+            ['id' => 23, 'name' => 'Veteran Sunspire', 'short_name' => 'vSS', 'version' => null, 'type' => 'endgame', 'tier' => 2],
             ['id' => 24, 'name' => 'Veteran Sunspire', 'short_name' => 'vSS', 'version' => 'Fire HM', 'type' => 'endgame', 'tier' => 4],
             ['id' => 25, 'name' => 'Veteran Sunspire', 'short_name' => 'vSS', 'version' => 'Ice HM', 'type' => 'endgame', 'tier' => 4],
             ['id' => 26, 'name' => 'Veteran Sunspire', 'short_name' => 'vSS', 'version' => 'Final HM', 'type' => 'endgame', 'tier' => 4],
