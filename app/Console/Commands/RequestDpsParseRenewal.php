@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\Cache;
 
 class RequestDpsParseRenewal extends Command
 {
-    private const SOFT_TIMEOUT = 30; // days
+    private const SOFT_TIMEOUT = 70; // days
 
-    private const HARD_TIMEOUT = 40; // days
+    private const HARD_TIMEOUT = 90; // days
 
     protected $signature = 'clearance:request-dps-renewal';
 
