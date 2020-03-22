@@ -75,7 +75,7 @@ return [
     'allowed_tags_and_limits' => [
         'avatar' => 1,
         'parse-screenshot' => 0, // 0 means no limit.
-        'superstar-screenshot' => 0,
+        'info-screenshot' => 0,
     ],
     'load_balancing' => [
         'enabled' => true,

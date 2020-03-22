@@ -21,7 +21,7 @@ class List extends PureComponent {
                             <th scope="col">Sets</th>
                             <th scope="col">DPS Number</th>
                             <th scope="col">Parse Screenshot</th>
-                            <th scope="col">Superstar Screenshot</th>
+                            <th scope="col">Info Screenshot</th>
                             <th scope="col" />
                         </tr>
                     </thead>

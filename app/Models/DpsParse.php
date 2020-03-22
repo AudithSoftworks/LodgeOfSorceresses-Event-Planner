@@ -8,47 +8,48 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Support\Carbon;
 
 /**
- * @property int                             $id
- * @property int                             $user_id
- * @property int                             $character_id
- * @property string                          $sets
- * @property int                             $dps_amount
- * @property string                          $parse_file_hash
- * @property string|null                     $superstar_file_hash
- * @property string|null                     $discord_notification_message_ids
- * @property int                             $processed_by
- * @property string|null                     $reason_for_disapproval
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\User           $approvedBy
- * @property-read \App\Models\Character      $character
- * @property-read \App\Models\User           $owner
- * @property-read \App\Models\File           $parseScreenshot
- * @property-read \App\Models\File           $superstarScreenshot
- * @method bool|null forceDelete()
- * @method EloquentBuilder|DpsParse newModelQuery()
- * @method EloquentBuilder|DpsParse newQuery()
- * @method QueryBuilder|DpsParse onlyTrashed()
- * @method static EloquentBuilder|DpsParse query()
- * @method bool|null restore()
- * @method EloquentBuilder|DpsParse whereCharacterId($value)
- * @method EloquentBuilder|DpsParse whereCreatedAt($value)
- * @method EloquentBuilder|DpsParse whereDeletedAt($value)
- * @method EloquentBuilder|DpsParse whereDiscordNotificationMessageIds($value)
- * @method EloquentBuilder|DpsParse whereDpsAmount($value)
- * @method EloquentBuilder|DpsParse whereId($value)
- * @method EloquentBuilder|DpsParse whereParseFileHash($value)
- * @method EloquentBuilder|DpsParse whereProcessedBy($value)
- * @method EloquentBuilder|DpsParse whereReasonForDisapproval($value)
- * @method EloquentBuilder|DpsParse whereSets($value)
- * @method EloquentBuilder|DpsParse whereSuperstarFileHash($value)
- * @method EloquentBuilder|DpsParse whereUpdatedAt($value)
- * @method EloquentBuilder|DpsParse whereUserId($value)
- * @method QueryBuilder|DpsParse withTrashed()
- * @method QueryBuilder|DpsParse withoutTrashed()
+ * @property int $id
+ * @property int $user_id
+ * @property int $character_id
+ * @property string $sets
+ * @property int $dps_amount
+ * @property string $parse_file_hash
+ * @property string|null $info_file_hash
+ * @property string|null $discord_notification_message_ids
+ * @property int|null $processed_by
+ * @property string|null $reason_for_disapproval
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property-read User $approvedBy
+ * @property-read Character $character
+ * @property-read File $infoScreenshot
+ * @property-read User $owner
+ * @property-read File $parseScreenshot
+ * @method static bool|null forceDelete()
+ * @method static EloquentBuilder|$this newModelQuery()
+ * @method static EloquentBuilder|$this newQuery()
+ * @method static QueryBuilder|$this onlyTrashed()
+ * @method static EloquentBuilder|$this query()
+ * @method static bool|null restore()
+ * @method static EloquentBuilder|$this whereCharacterId($value)
+ * @method static EloquentBuilder|$this whereCreatedAt($value)
+ * @method static EloquentBuilder|$this whereDeletedAt($value)
+ * @method static EloquentBuilder|$this whereDiscordNotificationMessageIds($value)
+ * @method static EloquentBuilder|$this whereDpsAmount($value)
+ * @method static EloquentBuilder|$this whereId($value)
+ * @method static EloquentBuilder|$this whereInfoFileHash($value)
+ * @method static EloquentBuilder|$this whereParseFileHash($value)
+ * @method static EloquentBuilder|$this whereProcessedBy($value)
+ * @method static EloquentBuilder|$this whereReasonForDisapproval($value)
+ * @method static EloquentBuilder|$this whereSets($value)
+ * @method static EloquentBuilder|$this whereUpdatedAt($value)
+ * @method static EloquentBuilder|$this whereUserId($value)
+ * @method static QueryBuilder|$this withTrashed()
+ * @method static QueryBuilder|$this withoutTrashed()
  */
 class DpsParse extends Model
 {
@@ -96,7 +97,7 @@ class DpsParse extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function superstarScreenshot(): HasOne
+    public function infoScreenshot(): HasOne
     {
         return $this->hasOne(File::class);
     }

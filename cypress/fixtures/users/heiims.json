@@ -459,7 +459,7 @@
                         "thumbnail": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/w_140\/577406d80868b376cbbb1bf0936fc9f2d5b4a73962cc2d8a92807de726d38a90",
                         "large": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/577406d80868b376cbbb1bf0936fc9f2d5b4a73962cc2d8a92807de726d38a90"
                     },
-                    "superstar_file_hash": {
+                    "info_file_hash": {
                         "thumbnail": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/w_140\/1974e5c865655a0b3ddfc597ba990e5969cbb35384ceb01c80888fbc9a5ff9ec",
                         "large": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/1974e5c865655a0b3ddfc597ba990e5969cbb35384ceb01c80888fbc9a5ff9ec"
                     },
@@ -569,7 +569,7 @@
                         "thumbnail": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/w_140\/773bad75c3932048e8b7d34f9c2c2c60e2746ef0b10aebb33e90a66222d7064d",
                         "large": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/773bad75c3932048e8b7d34f9c2c2c60e2746ef0b10aebb33e90a66222d7064d"
                     },
-                    "superstar_file_hash": {
+                    "info_file_hash": {
                         "thumbnail": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/w_140\/ea066b6e6cfed0762c7d374dbd449d7a0a72e4578e3e662ca558a1574e1ffb82",
                         "large": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/ea066b6e6cfed0762c7d374dbd449d7a0a72e4578e3e662ca558a1574e1ffb82"
                     },
@@ -1443,7 +1443,7 @@
                         "thumbnail": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/w_140\/27d946268fdea5d0da00d8cda012244255c989c44c124cddb878647802a46921",
                         "large": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/27d946268fdea5d0da00d8cda012244255c989c44c124cddb878647802a46921"
                     },
-                    "superstar_file_hash": {
+                    "info_file_hash": {
                         "thumbnail": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/w_140\/e99e2b25c790d0299e7ff9471d5d2230e6fbba7063943649f15b0adc9785fab8",
                         "large": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/e99e2b25c790d0299e7ff9471d5d2230e6fbba7063943649f15b0adc9785fab8"
                     },
@@ -2067,7 +2067,7 @@
                         "thumbnail": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/w_140\/c6d637fdd2b94a994b9cdabef2ee81dbc66b5bad6b7fd1d5d7129a35da4b1190",
                         "large": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/c6d637fdd2b94a994b9cdabef2ee81dbc66b5bad6b7fd1d5d7129a35da4b1190"
                     },
-                    "superstar_file_hash": {
+                    "info_file_hash": {
                         "thumbnail": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/w_140\/b4952779d0064f4a1256917a4a05343389f030d8c7eaaed91b71e26d7c344a30",
                         "large": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/b4952779d0064f4a1256917a4a05343389f030d8c7eaaed91b71e26d7c344a30"
                     },
@@ -2177,7 +2177,7 @@
                         "thumbnail": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/w_140\/db8d63f92aa70f7eedd19c68fcbadfc0047461ed7c7bb5233701a2236acd770d",
                         "large": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/db8d63f92aa70f7eedd19c68fcbadfc0047461ed7c7bb5233701a2236acd770d"
                     },
-                    "superstar_file_hash": {
+                    "info_file_hash": {
                         "thumbnail": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/w_140\/7ce0f116abc97fe5b72fa28924922cb9bf77873847dbed6695f27abebcd1a85f",
                         "large": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/7ce0f116abc97fe5b72fa28924922cb9bf77873847dbed6695f27abebcd1a85f"
                     },
@@ -2583,7 +2583,7 @@
                         "thumbnail": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/w_140\/5129c056bfbb69c3ed1e838886e4dd4c751e55e85525ed42c079afb50777c132",
                         "large": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/5129c056bfbb69c3ed1e838886e4dd4c751e55e85525ed42c079afb50777c132"
                     },
-                    "superstar_file_hash": {
+                    "info_file_hash": {
                         "thumbnail": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/w_140\/1fed7833307ddf54477fb543b43fabdccd1804f33ca33109d2a88d6fcc4eff9c",
                         "large": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/1fed7833307ddf54477fb543b43fabdccd1804f33ca33109d2a88d6fcc4eff9c"
                     },
@@ -2693,7 +2693,7 @@
                         "thumbnail": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/w_140\/36fc6b045ee53d05dfba6ba1dbfab5cc77383fcf9a870a996f86bc029cf8f31b",
                         "large": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/36fc6b045ee53d05dfba6ba1dbfab5cc77383fcf9a870a996f86bc029cf8f31b"
                     },
-                    "superstar_file_hash": {
+                    "info_file_hash": {
                         "thumbnail": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/w_140\/e95934bfcb798535665520c36723d4bae03c0759ca5c4a5e7a558caa57da4c8c",
                         "large": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/e95934bfcb798535665520c36723d4bae03c0759ca5c4a5e7a558caa57da4c8c"
                     },
@@ -2803,7 +2803,7 @@
                         "thumbnail": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/w_140\/55fbe7485f735c445ef89a7637ef93631b9d3ac4092deb59741dae80197c2af1",
                         "large": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/55fbe7485f735c445ef89a7637ef93631b9d3ac4092deb59741dae80197c2af1"
                     },
-                    "superstar_file_hash": {
+                    "info_file_hash": {
                         "thumbnail": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/w_140\/d65698a185d1b2325424d3af11904fb7e4c14b7bffcf6ffe13a8ad1a3d19a17b",
                         "large": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/d65698a185d1b2325424d3af11904fb7e4c14b7bffcf6ffe13a8ad1a3d19a17b"
                     },
@@ -2913,7 +2913,7 @@
                         "thumbnail": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/w_140\/9799829cec0ae65fc66b50e17823ecc13cc5f45d9433dc878c5dc1719cf1412c",
                         "large": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/9799829cec0ae65fc66b50e17823ecc13cc5f45d9433dc878c5dc1719cf1412c"
                     },
-                    "superstar_file_hash": {
+                    "info_file_hash": {
                         "thumbnail": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/w_140\/7ac0743050904f125dda96fc914221412b3609ea9de98b25b353b63d5070c918",
                         "large": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/7ac0743050904f125dda96fc914221412b3609ea9de98b25b353b63d5070c918"
                     },
@@ -3023,7 +3023,7 @@
                         "thumbnail": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/w_140\/461607b88349a8a08a8f785a6b09fc333f0b8c232d04917dffb18746710ea1e6",
                         "large": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/461607b88349a8a08a8f785a6b09fc333f0b8c232d04917dffb18746710ea1e6"
                     },
-                    "superstar_file_hash": {
+                    "info_file_hash": {
                         "thumbnail": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/w_140\/fbc734b543bd366324298926ecf8e57b722b68928e7a8e83efe0b630eccad355",
                         "large": "https:\/\/res.cloudinary.com\/audith-softworks\/image\/upload\/fbc734b543bd366324298926ecf8e57b722b68928e7a8e83efe0b630eccad355"
                     },
