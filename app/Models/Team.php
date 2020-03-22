@@ -4,10 +4,12 @@ namespace App\Models;
 
 use App\Events\Team\TeamDeleted;
 use App\Events\Team\TeamUpdated;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -17,25 +19,25 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string $discord_id
  * @property int $led_by
  * @property int $created_by
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\User $createdBy
- * @property-read \App\Models\User $ledBy
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Character[] $members
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User $createdBy
+ * @property-read User $ledBy
+ * @property-read EloquentCollection|Character[] $members
  * @property-read int|null $members_count
- * @method static Builder|$this newModelQuery()
- * @method static Builder|$this newQuery()
- * @method static Builder|$this query()
- * @method static Builder|$this whereDiscordId($value)
- * @method static Builder|$this whereLedBy($value)
- * @method static Builder|$this whereCreatedBy($value)
- * @method static Builder|$this whereIcon($value)
- * @method static Builder|$this whereId($value)
- * @method static Builder|$this whereName($value)
- * @method static Builder|$this whereOwner($value)
- * @method static Builder|$this whereTier($value)
- * @method static Builder|$this whereCreatedAt($value)
- * @method static Builder|$this whereUpdatedAt($value)
+ * @method static EloquentBuilder|$this newModelQuery()
+ * @method static EloquentBuilder|$this newQuery()
+ * @method static EloquentBuilder|$this query()
+ * @method static EloquentBuilder|$this whereDiscordId($value)
+ * @method static EloquentBuilder|$this whereLedBy($value)
+ * @method static EloquentBuilder|$this whereCreatedBy($value)
+ * @method static EloquentBuilder|$this whereIcon($value)
+ * @method static EloquentBuilder|$this whereId($value)
+ * @method static EloquentBuilder|$this whereName($value)
+ * @method static EloquentBuilder|$this whereOwner($value)
+ * @method static EloquentBuilder|$this whereTier($value)
+ * @method static EloquentBuilder|$this whereCreatedAt($value)
+ * @method static EloquentBuilder|$this whereUpdatedAt($value)
  */
 class Team extends Model
 {

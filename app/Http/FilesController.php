@@ -2,22 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\Common\ValidationException;
 use App\Exceptions\FileStream as FileStreamExceptions;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as IlluminateResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class FilesController extends Controller
 {
     /**
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(): JsonResponse
     {
         /** @var \App\Models\User $me */
-        $me = app('auth.driver')->user();
+        $me = Auth::user();
 
         return response()->json($me->files->toArray());
     }
@@ -26,13 +28,12 @@ class FilesController extends Controller
      * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\Common\ValidationException
      * @throws \ErrorException
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        $validator = app('validator')->make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'qquuid' => 'required|string|size:36',
             'qqfilename' => 'required|string',
             'qqtotalfilesize' => 'required|numeric',
@@ -46,8 +47,8 @@ class FilesController extends Controller
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }
-        if (strpos($request->header('content-type'), 'multipart/form-data') === false && !$request->has('post-process')) {
-            throw new FileStreamExceptions\UploadRequestIsNotMultipartFormDataException;
+        if (!$request->has('post-process') && strpos($request->header('content-type'), 'multipart/form-data') === false) {
+            throw new FileStreamExceptions\UploadRequestIsNotMultipartFormDataException();
         }
         $request->has('qqresume') && $request->get('qqresume') === 'true' && app('filestream')->isUploadResumable($request);
 

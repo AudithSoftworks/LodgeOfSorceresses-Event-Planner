@@ -8,6 +8,8 @@ use ErrorException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class FileStream
@@ -52,11 +54,11 @@ class FileStream
     {
         $this->filesystem = app('filesystem');
         $this->chunksExpireIn = config('filesystems.disks.public.chunks_expire_in');
-        if (is_int(config('filesystems.chunks_ttl')) && app('config')->has('filesystems.chunks_ttl')) {
-            $this->chunksExpireIn = config('filesystems.chunks_ttl');
+        if (is_int($chunksTtl = config('filesystems.chunks_ttl'))) {
+            $this->chunksExpireIn = $chunksTtl;
         }
-        if (is_int(config('filesystems.size_limit')) && app('config')->has('filesystems.size_limit')) {
-            $this->sizeLimit = config('filesystems.size_limit');
+        if (is_int($sizeLimit = config('filesystems.size_limit'))) {
+            $this->sizeLimit = $sizeLimit;
         }
         Cloudinary::config([
             'cloud_name' => config('filesystems.disks.cloudinary.cloud_name'),
@@ -271,7 +273,7 @@ class FileStream
     public function deleteFile($qquuid, $tag = ''): bool
     {
         /** @var \App\Models\User $me */
-        $me = app('auth.driver')->user();
+        $me = Auth::user();
 
         foreach ($me->files as $file) {
             /** @var \Illuminate\Database\Eloquent\Relations\Pivot $pivot */
@@ -282,7 +284,7 @@ class FileStream
             if ($pivot->qquuid === $qquuid && $tagCheck) {
                 $pivot->delete();
                 $file->loadMissing('uploaders');
-                !$file->uploaders->count() && app('filesystem')->disk($file->disk)->delete($file->path) && $file->delete();
+                !$file->uploaders->count() && Storage::disk($file->disk)->delete($file->path) && $file->delete();
             }
         }
 

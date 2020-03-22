@@ -54,6 +54,7 @@ class CharactersController extends Controller
     public function store(Request $request): JsonResponse
     {
         $this->authorize('user', User::class);
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'role' => 'required|integer|min:1|max:4',
@@ -101,29 +102,28 @@ class CharactersController extends Controller
      * @param int     $characterId
      *
      * @return JsonResponse
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      * @throws \Illuminate\Validation\ValidationException
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function update(Request $request, int $characterId): JsonResponse
     {
         $this->authorize('user', User::class);
-        $validatorErrorMessages = [
-            'name.required' => 'Character name can\'t be empty.',
-            'role.required' => 'Choose a role.',
-            'class.required' => 'Choose a class.',
-            'content.*.required' => 'Select all content this Character has cleared.',
-            'sets.*.required' => 'Select all full sets your Character has.',
-            'skills.*.required' => 'Select all support skills your Character has unlocked and fully leveled.',
-        ];
-        $validator = app('validator')->make($request->all(), [
+
+        $validator = Validator::make($request->all(), [
             'name' => 'sometimes|required|string',
             'role' => 'sometimes|required|integer|min:1|max:4',
             'class' => 'sometimes|required|integer|min:1|max:6',
             'content.*' => 'nullable|numeric|exists:content,id',
             'sets.*' => 'required|numeric|exists:sets,id',
             'skills.*' => 'nullable|numeric|exists:skills,id',
-        ], $validatorErrorMessages);
+        ], [
+            'name.required' => 'Character name can\'t be empty.',
+            'role.required' => 'Choose a role.',
+            'class.required' => 'Choose a class.',
+            'content.*.required' => 'Select all content this Character has cleared.',
+            'sets.*.required' => 'Select all full sets your Character has.',
+            'skills.*.required' => 'Select all support skills your Character has unlocked and fully leveled.',
+        ]);
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }

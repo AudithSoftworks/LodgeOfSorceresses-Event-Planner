@@ -24,7 +24,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
- * @property-read User $approvedBy
+ * @property-read User $processedBy
  * @property-read Character $character
  * @property-read File $infoScreenshot
  * @property-read User $owner
