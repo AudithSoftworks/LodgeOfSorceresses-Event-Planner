@@ -12,9 +12,9 @@ return [
         'token' => env('POSTMARK_TOKEN'),
     ],
     'ses' => [
-        'key' => env('SES_KEY'),
-        'secret' => env('SES_SECRET'),
-        'region' => 'eu-central-1',
+        'key' => env('AWS_ACCESS_KEY_ID'),
+        'secret' => env('AWS_SECRET_ACCESS_KEY'),
+        'region' => env('AWS_DEFAULT_REGION', 'eu-central-1'),
     ],
     'stripe' => [
         'model' => User::class,

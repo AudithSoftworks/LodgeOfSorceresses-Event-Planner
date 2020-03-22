@@ -1,8 +1,5 @@
 <?php namespace App\Exceptions;
 
-use App\Exceptions\Users\UserNotActivatedException;
-use App\Exceptions\Users\UserNotMemberInDiscord;
-use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -13,11 +10,12 @@ use Illuminate\Validation\ValidationException as IlluminateValidationException;
 use Laravel\Socialite\Two\InvalidStateException;
 use Symfony\Component\HttpFoundation\Response as SymfonyHttpResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Throwable;
 
 class Handler extends ExceptionHandler
 {
     /**
-     * A list of the exception types that should not be reported.
+     * A list of the exception types that are not reported.
      *
      * @var array
      */
@@ -31,15 +29,25 @@ class Handler extends ExceptionHandler
     ];
 
     /**
+     * A list of the inputs that are never flashed for validation exceptions.
+     *
+     * @var array
+     */
+    protected $dontFlash = [
+        'password',
+        'password_confirmation',
+    ];
+
+    /**
      * Report or log an exception.
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
      *
-     * @param \Exception $e
+     * @param \Throwable $e
      *
      * @return void
      * @throws \Exception
      */
-    public function report(Exception $e): void
+    public function report(Throwable $e): void
     {
         parent::report($e);
     }
@@ -48,11 +56,12 @@ class Handler extends ExceptionHandler
      * Render an exception into an HTTP response.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Exception               $e
+     * @param \Throwable               $e
      *
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse|\Symfony\Component\HttpFoundation\Response
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Throwable
      */
-    public function render($request, Exception $e)
+    public function render($request, Throwable $e): SymfonyHttpResponse
     {
         $requestExpectsJson = $request->expectsJson();
         if ($e instanceof ModelNotFoundException || $e instanceof AuthorizationException) {

@@ -6,7 +6,7 @@ return [
     | Application Name
     |--------------------------------------------------------------------------
     */
-    'name' => 'Lodge of Sorceresses Event Planner',
+    'name' => env('APP_NAME', 'Lodge of Sorceresses Guild Planner'),
 
     /*
     |--------------------------------------------------------------------------
@@ -30,7 +30,7 @@ return [
     | application. If disabled, a simple generic error page is shown.
     |
     */
-    'debug' => env('APP_DEBUG', false),
+    'debug' => (bool)env('APP_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -44,7 +44,7 @@ return [
     */
     'url' => env('APP_URL', 'https://planner.lodgeofsorceresses.com'),
 
-    'asset_url' => env('ASSET_URL', null),
+    'asset_url' => env('ASSET_URL'),
 
     /*
     |--------------------------------------------------------------------------
@@ -158,7 +158,7 @@ return [
          */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
-//        App\Providers\BroadcastServiceProvider::class,
+        App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\DiscordApiServiceProvider::class,
         App\Providers\FileStreamServiceProvider::class,

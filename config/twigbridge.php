@@ -1,5 +1,9 @@
 <?php
 
+use Illuminate\Contracts\Support\Htmlable;
+use TwigBridge\Extension as TwigBridgeExtension;
+use TwigBridge\Twig\Template;
+
 /**
  * Configuration options for Twig.
  */
@@ -27,7 +31,7 @@ return [
             // When set to true, the generated templates have a __toString() method
             // that you can use to display the generated nodes.
             // default: false
-            'debug' => config('app.debug', false),
+            'debug' => env('APP_DEBUG', false),
 
             // The charset used by the templates.
             // default: utf-8
@@ -35,7 +39,7 @@ return [
 
             // The base template class to use for generated templates.
             // default: TwigBridge\Twig\Template
-            'base_template_class' => 'TwigBridge\Twig\Template',
+            'base_template_class' => Template::class,
 
             // An absolute path where to store the compiled templates, or false to disable caching. If null
             // then the cache file path is used.
@@ -64,6 +68,19 @@ return [
 
         /*
         |--------------------------------------------------------------------------
+        | Safe Classes
+        |--------------------------------------------------------------------------
+        |
+        | When set, the output of the `__string` method of the following classes will not be escaped.
+        | default: Laravel's Htmlable, which the HtmlString class implements.
+        |
+        */
+        'safe_classes' => [
+            Htmlable::class => ['html'],
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
         | Global variables
         |--------------------------------------------------------------------------
         |
@@ -85,20 +102,20 @@ return [
         |
         */
         'enabled' => [
-            'TwigBridge\Extension\Loader\Facades',
-            'TwigBridge\Extension\Loader\Filters',
-            'TwigBridge\Extension\Loader\Functions',
-            'TwigBridge\Extension\Laravel\Auth',
-            'TwigBridge\Extension\Laravel\Config',
-            'TwigBridge\Extension\Laravel\Dump',
-            'TwigBridge\Extension\Laravel\Input',
-            'TwigBridge\Extension\Laravel\Session',
-            'TwigBridge\Extension\Laravel\Str',
-            'TwigBridge\Extension\Laravel\Translator',
-            'TwigBridge\Extension\Laravel\Url',
-            // 'TwigBridge\Extension\Laravel\Form',
-            // 'TwigBridge\Extension\Laravel\Html',
-            // 'TwigBridge\Extension\Laravel\Legacy\Facades'
+            TwigBridgeExtension\Loader\Facades::class,
+            TwigBridgeExtension\Loader\Filters::class,
+            TwigBridgeExtension\Loader\Functions::class,
+            TwigBridgeExtension\Laravel\Auth::class,
+            TwigBridgeExtension\Laravel\Config::class,
+            TwigBridgeExtension\Laravel\Dump::class,
+            TwigBridgeExtension\Laravel\Input::class,
+            TwigBridgeExtension\Laravel\Session::class,
+            TwigBridgeExtension\Laravel\Str::class,
+            TwigBridgeExtension\Laravel\Translator::class,
+            TwigBridgeExtension\Laravel\Url::class,
+//            TwigBridgeExtension\Laravel\Form::class,
+//            TwigBridgeExtension\Laravel\Html::class,
+//            TwigBridgeExtension\Laravel\Legacy\Facades::class
         ],
 
         /*
@@ -162,6 +179,7 @@ return [
             'elixir',
             'head',
             'last',
+            'mix',
         ],
 
         /*
@@ -192,6 +210,8 @@ return [
         | </code>
         |
         */
-        'filters' => [],
+        'filters' => [
+            'get' => 'data_get',
+        ],
     ],
 ];
