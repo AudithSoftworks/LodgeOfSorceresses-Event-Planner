@@ -349,8 +349,8 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
         /** @var \Illuminate\Database\Eloquent\Relations\Pivot $teamMembershipPivotFromResponse */
         $teamMembershipPivotFromResponse = $response->getOriginalContent();
         $this->assertInstanceOf(Pivot::class, $teamMembershipPivotFromResponse);
-        $response->assertJsonPath('status', 1);
-        $response->assertJsonPath('accepted_terms', 1);
+        $response->assertJsonPath('status', $_ENV['DB_CONNECTION'] === 'pgsql' ? true : 1);
+        $response->assertJsonPath('accepted_terms', $_ENV['DB_CONNECTION'] === 'pgsql' ? true : 1);
     }
 
     public function testIndexForNonEmpty(): void

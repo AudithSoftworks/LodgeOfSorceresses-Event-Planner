@@ -23,7 +23,7 @@ export const dpsParse = PropTypes.shape({
         thumbnail: PropTypes.string,
         large: PropTypes.string,
     }),
-    superstar_file_hash: PropTypes.shape({
+    info_file_hash: PropTypes.shape({
         thumbnail: PropTypes.string,
         large: PropTypes.string,
     }),

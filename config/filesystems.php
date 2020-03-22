@@ -28,6 +28,10 @@ return [
     | Filesystem Disks
     |--------------------------------------------------------------------------
     |
+    | Here you may configure as many filesystem "disks" as you wish, and you
+    | may even configure multiple disks of the same driver. Defaults have
+    | been setup for each driver as an example of the required options.
+    |
     | Supported Drivers: "local", "ftp", "sftp", "s3"
     |
     */
@@ -35,9 +39,12 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app'),
+        ],
+        'public' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public'),
             'url' => env('APP_URL') . '/storage',
             'visibility' => 'public',
-            'chunks_expire_in' => 604800,
         ],
         's3' => [
             'driver' => 's3',
@@ -55,7 +62,10 @@ return [
         ],
     ],
     'allowed_extensions' => [
-        'jpeg', 'jpg', 'png', 'gif'
+        'jpeg',
+        'jpg',
+        'png',
+        'gif'
     ],
     'allowed_mimetypes' => [
         'image/jpeg',
@@ -65,11 +75,25 @@ return [
     'allowed_tags_and_limits' => [
         'avatar' => 1,
         'parse-screenshot' => 0, // 0 means no limit.
-        'superstar-screenshot' => 0,
+        'info-screenshot' => 0,
     ],
     'load_balancing' => [
         'enabled' => true,
         'length' => 2,
         'depth' => 2
-    ]
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Symbolic Links
+    |--------------------------------------------------------------------------
+    |
+    | Here you may configure the symbolic links that will be created when the
+    | `storage:link` Artisan command is executed. The array keys should be
+    | the locations of the links and the values should be their targets.
+    |
+    */
+    'links' => [
+        public_path('storage') => storage_path('app/public'),
+    ],
 ];

@@ -54,12 +54,12 @@ class DpsParsesController extends Controller
         $this->authorize('user', User::class);
         $validator = Validator::make($request->all(), [
             'parse_file_hash' => 'required|string',
-            'superstar_file_hash' => 'required|string',
+            'info_file_hash' => 'required|string',
             'dps_amount' => 'required|numeric',
             'sets.*' => 'sometimes|required|numeric|exists:sets,id',
         ], [
-            'parse_file_hash.required' => 'Parse screenshot needs to be uploaded.',
-            'superstar_file_hash.required' => 'Superstar screenshot needs to be uploaded.',
+            'parse_file_hash.required' => 'CMX Combat screen screenshot needs to be uploaded.',
+            'info_file_hash.required' => 'CMX Info screen screenshot needs to be uploaded.',
             'dps_amount.required' => 'DPS Number is required.',
             'sets.*.required' => 'Select sets worn during the parse.',
         ]);
@@ -72,7 +72,7 @@ class DpsParsesController extends Controller
         $dpsParse->character_id = $characterId;
         $dpsParse->dps_amount = $request->get('dps_amount');
         $dpsParse->parse_file_hash = $request->get('parse_file_hash');
-        $dpsParse->superstar_file_hash = $request->get('superstar_file_hash');
+        $dpsParse->info_file_hash = $request->get('info_file_hash');
         $dpsParse->sets = !empty($request->get('sets')) ? implode(',', $request->get('sets')) : null;
         $dpsParse->save();
 

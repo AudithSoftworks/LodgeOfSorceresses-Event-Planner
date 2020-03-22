@@ -37,8 +37,8 @@ class Item extends PureComponent {
                     </a>
                 </td>
                 <td>
-                    <a href={dpsParse.superstar_file_hash.large} target="_blank">
-                        <img src={dpsParse.superstar_file_hash.thumbnail} alt="Superstar screenshot" />
+                    <a href={dpsParse.info_file_hash.large} target="_blank">
+                        <img src={dpsParse.info_file_hash.thumbnail} alt="Info screenshot" />
                     </a>
                 </td>
                 <td>

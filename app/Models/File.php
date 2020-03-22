@@ -8,34 +8,36 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Carbon;
 use InvalidArgumentException;
 
 /**
- * @property string                             $hash
- * @property string                             $disk
- * @property string                             $path
- * @property string                             $mime
- * @property int                                $size
- * @property string|null                        $metadata
- * @property \Illuminate\Support\Carbon|null    $created_at
- * @property \Illuminate\Support\Carbon|null    $updated_at
- *
- * @property-read EloquentCollection|DpsParse[]         $asInfoScreenshotOfDpsParse
- * @property-read EloquentCollection|DpsParse[]         $asParseScreenshotOfDpsParse
+ * @property string $hash
+ * @property string $disk
+ * @property string $path
+ * @property string $mime
+ * @property int $size
+ * @property string|null $metadata
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read EloquentCollection|DpsParse[] $asInfoScreenshotOfDpsParse
+ * @property-read int|null $as_info_screenshot_of_dps_parse_count
+ * @property-read EloquentCollection|DpsParse[] $asParseScreenshotOfDpsParse
+ * @property-read int|null $as_parse_screenshot_of_dps_parse_count
  * @property-read EloquentCollection|User[] $uploaders
- *
- * @method static EloquentBuilder|File newModelQuery()
- * @method static EloquentBuilder|File newQuery()
- * @method static EloquentBuilder|File ofType($type = 'image')
- * @method static EloquentBuilder|File query()
- * @method static EloquentBuilder|File whereCreatedAt($value)
- * @method static EloquentBuilder|File whereDisk($value)
- * @method static EloquentBuilder|File whereHash($value)
- * @method static EloquentBuilder|File whereMetadata($value)
- * @method static EloquentBuilder|File whereMime($value)
- * @method static EloquentBuilder|File wherePath($value)
- * @method static EloquentBuilder|File whereSize($value)
- * @method static EloquentBuilder|File whereUpdatedAt($value)
+ * @property-read int|null $uploaders_count
+ * @method static EloquentBuilder|$this newModelQuery()
+ * @method static EloquentBuilder|$this newQuery()
+ * @method static EloquentBuilder|$this ofType($type = 'image')
+ * @method static EloquentBuilder|$this query()
+ * @method static EloquentBuilder|$this whereCreatedAt($value)
+ * @method static EloquentBuilder|$this whereDisk($value)
+ * @method static EloquentBuilder|$this whereHash($value)
+ * @method static EloquentBuilder|$this whereMetadata($value)
+ * @method static EloquentBuilder|$this whereMime($value)
+ * @method static EloquentBuilder|$this wherePath($value)
+ * @method static EloquentBuilder|$this whereSize($value)
+ * @method static EloquentBuilder|$this whereUpdatedAt($value)
  */
 class File extends Model
 {
@@ -87,6 +89,6 @@ class File extends Model
      */
     public function asInfoScreenshotOfDpsParse(): HasMany
     {
-        return $this->hasMany(DpsParse::class, 'superstar_file_hash', 'hash');
+        return $this->hasMany(DpsParse::class, 'info_file_hash', 'hash');
     }
 }

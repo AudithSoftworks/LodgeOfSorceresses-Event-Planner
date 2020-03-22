@@ -24,12 +24,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int|null $last_submitted_dps_amount
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read EloquentCollection|\App\Models\Content[] $content
+ * @property-read EloquentCollection|Content[] $content
  * @property-read int|null $content_count
- * @property-read EloquentCollection|\App\Models\DpsParse[] $dpsParses
+ * @property-read EloquentCollection|DpsParse[] $dpsParses
+ * @property EloquentCollection|DpsParse[] $dps_parses_processed
+ * @property EloquentCollection|DpsParse[] $dps_parses_pending
  * @property-read int|null $dps_parses_count
  * @property-read \App\Models\User $owner
- * @property-read EloquentCollection|\App\Models\Team[] $teams
+ * @property-read EloquentCollection|Team[] $teams
  * @property-read int|null $teams_count
  * @method static EloquentBuilder|$this newModelQuery()
  * @method static EloquentBuilder|$this newQuery()

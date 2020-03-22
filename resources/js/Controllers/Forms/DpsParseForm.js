@@ -103,7 +103,7 @@ class DpsParseForm extends PureComponent {
         },
     });
 
-    superstarScreenshotUploader = new FineUploaderTraditional({
+    infoScreenshotUploader = new FineUploaderTraditional({
         options: {
             request: {
                 endpoint: '/api/files',
@@ -111,7 +111,7 @@ class DpsParseForm extends PureComponent {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 },
                 params: {
-                    qqtag: 'superstar-screenshot',
+                    qqtag: 'info-screenshot',
                 },
             },
             validation: {
@@ -143,7 +143,7 @@ class DpsParseForm extends PureComponent {
                 enabled: true,
                 endpoint: '/api/files',
                 params: {
-                    tag: 'superstar-screenshot',
+                    tag: 'info-screenshot',
                 },
                 customHeaders: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -152,13 +152,13 @@ class DpsParseForm extends PureComponent {
             callbacks: {
                 onComplete: (id, name, responseJson) => {
                     this.setState({
-                        superstarScreenshotHash: responseJson.hash,
+                        infoScreenshotHash: responseJson.hash,
                     });
                 },
                 onDeleteComplete: (id, xhr, isError) => {
                     if (!isError) {
                         this.setState({
-                            superstarScreenshotHash: null,
+                            infoScreenshotHash: null,
                         });
                     }
                 },
@@ -170,7 +170,7 @@ class DpsParseForm extends PureComponent {
         super(props);
         this.state = {
             parseScreenshotHash: null,
-            superstarScreenshotHash: null,
+            infoScreenshotHash: null,
         };
     }
 
@@ -205,7 +205,7 @@ class DpsParseForm extends PureComponent {
 
     renderForm = character => {
         const { sets } = this.props;
-        const { parseScreenshotHash, superstarScreenshotHash } = this.state;
+        const { parseScreenshotHash, infoScreenshotHash } = this.state;
         const setsOptions = Object.values(sets).map(item => ({ value: item.id, label: item.name }));
         const charactersSetsIds = character ? Object.values(character.sets).map(item => item.id) : [];
         const animated = makeAnimated();
@@ -221,18 +221,13 @@ class DpsParseForm extends PureComponent {
                         <li>Make sure you have minimum 5850 Penetration in your parse screenshots. Penetration cannot go lower than this number ever!</li>
                         <li>Every new parse will renew your clearance level, i.e. sending lower DPS numbers can revoke its clearance and demote your account.</li>
                         <li>When creating a Parse, include only the sets used for that particular parse, removing everything else.</li>
-                        <li>Each Parse needs to have both Combat Metrics and Superstar addon screenshots.</li>
-                        <li>
-                            Use the exact setup you will be using in Trials. And use reasonable food/potion you would use in Trials. E.g.: the usage of food that has no HP-buff to it (a case which in
-                            most cases wouldn't be realistic to Trial conditions) is not allowed! Unless your Base HP is within acceptable raiding ranges of course. Yes, we realize this kinda
-                            scenarios can be tricky, so we will also check your Superstar screenshots for Base-HP and other values, overall to decide whether the certain Parse looks cheesy or not.
-                        </li>
-                        <li>Every Character needs to send a fresh Parse every 15 days, latest. Failing to do so will revoke your Clearance automatically.</li>
+                        <li>Each Parse needs to have both Combat Metrics addon Combat and Info screen screenshots.</li>
+                        <li>Every Character needs their parses refreshed at least every 60 days. Failing to do so will revoke your Tier clearance automatically.</li>
                     </ul>
                 </article>
                 <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')} />
                 <input type="hidden" name="parse_file_hash" value={parseScreenshotHash || ''} />
-                <input type="hidden" name="superstar_file_hash" value={superstarScreenshotHash || ''} />
+                <input type="hidden" name="info_file_hash" value={infoScreenshotHash || ''} />
                 <fieldset className="form-group col-md-24 col-lg-12">
                     <label>Sets worn during Parse:</label>
                     <Select
@@ -277,8 +272,8 @@ class DpsParseForm extends PureComponent {
                     <Gallery uploader={this.parseScreenshotUploader} className="uploader" />
                 </fieldset>
                 <fieldset className="form-group col-md-12">
-                    <label htmlFor="parseFile">Superstar Screenshot:</label>
-                    <Gallery uploader={this.superstarScreenshotUploader} className="uploader" />
+                    <label htmlFor="parseFile">Info Screenshot:</label>
+                    <Gallery uploader={this.infoScreenshotUploader} className="uploader" />
                 </fieldset>
                 <fieldset className="form-group col-md-24 text-right">
                     <Link to={'/@me/characters/' + character.id + '/parses'} className="btn btn-info btn-lg mr-1">
@@ -316,7 +311,7 @@ DpsParseForm.propTypes = {
     myCharacters: characters,
     notifications: PropTypes.array,
     parseScreenshotHash: PropTypes.string,
-    superstarScreenshotHash: PropTypes.string,
+    infoScreenshotHash: PropTypes.string,
 
     postMyDpsParseAction: PropTypes.func.isRequired,
     putMyDpsParseAction: PropTypes.func.isRequired,

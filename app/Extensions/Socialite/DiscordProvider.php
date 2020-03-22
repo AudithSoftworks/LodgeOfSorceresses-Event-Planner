@@ -2,7 +2,6 @@
 
 namespace App\Extensions\Socialite;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Laravel\Socialite\Two\AbstractProvider;
 use Laravel\Socialite\Two\ProviderInterface;
@@ -10,11 +9,6 @@ use Laravel\Socialite\Two\User;
 
 class DiscordProvider extends AbstractProvider implements ProviderInterface
 {
-    /**
-     * @var string
-     */
-    private $discordUrl;
-
     /**
      * {@inheritdoc}
      */
@@ -31,19 +25,9 @@ class DiscordProvider extends AbstractProvider implements ProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function __construct(Request $request, string $clientId, string $clientSecret, string $redirectUrl, array $guzzle = [])
-    {
-        parent::__construct($request, $clientId, $clientSecret, $redirectUrl, $guzzle);
-
-        $this->discordUrl = trim(config('services.discord.url'), '/');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function getAuthUrl($state): string
     {
-        return $this->buildAuthUrlFromBase($this->discordUrl . '/oauth2/authorize', $state);
+        return $this->buildAuthUrlFromBase('https://discordapp.com/api/oauth2/authorize', $state);
     }
 
     /**
@@ -59,7 +43,7 @@ class DiscordProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getTokenUrl(): string
     {
-        return $this->discordUrl . '/oauth2/token';
+        return 'https://discordapp.com/api/oauth2/token';
     }
 
     /**
@@ -77,14 +61,14 @@ class DiscordProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getUserByToken($token): array
     {
-        $response = $this->getHttpClient()->get($this->discordUrl . '/users/@me', [
+        $response = $this->getHttpClient()->get('https://discordapp.com/api/users/@me', [
             'headers' => [
                 'Accept' => 'application/json',
                 'Authorization' => 'Bearer ' . $token,
             ],
         ]);
 
-        return json_decode($response->getBody(), true);
+        return json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**

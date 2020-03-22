@@ -3,10 +3,13 @@
 use App\Events\File\Uploaded;
 use App\Exceptions\FileStream as FileStreamExceptions;
 use App\Models\File;
+use Cloudinary;
 use ErrorException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class FileStream
@@ -51,13 +54,13 @@ class FileStream
     {
         $this->filesystem = app('filesystem');
         $this->chunksExpireIn = config('filesystems.disks.public.chunks_expire_in');
-        if (app('config')->has('filesystems.chunks_ttl') && is_int(config('filesystems.chunks_ttl'))) {
-            $this->chunksExpireIn = config('filesystems.chunks_ttl');
+        if (is_int($chunksTtl = config('filesystems.chunks_ttl'))) {
+            $this->chunksExpireIn = $chunksTtl;
         }
-        if (app('config')->has('filesystems.size_limit') && is_int(config('filesystems.size_limit'))) {
-            $this->sizeLimit = config('filesystems.size_limit');
+        if (is_int($sizeLimit = config('filesystems.size_limit'))) {
+            $this->sizeLimit = $sizeLimit;
         }
-        \Cloudinary::config([
+        Cloudinary::config([
             'cloud_name' => config('filesystems.disks.cloudinary.cloud_name'),
             'api_key' => config('filesystems.disks.cloudinary.key'),
             'api_secret' => config('filesystems.disks.cloudinary.secret'),
@@ -100,7 +103,7 @@ class FileStream
 
         # Temp folder writable?
         if (!is_writable($absolutePathToTemporaryChunksFolder = $this->getAbsolutePath($this->temporaryChunksFolder)) || !is_executable($absolutePathToTemporaryChunksFolder)) {
-            throw new FileStreamExceptions\TemporaryUploadFolderNotWritableException;
+            throw new FileStreamExceptions\TemporaryUploadFolderNotWritableException();
         }
 
         # Cleanup chunks.
@@ -115,14 +118,14 @@ class FileStream
             $this->filesizeFromHumanReadableToBytes(ini_get('post_max_size')) < $this->sizeLimit && $uploadIsTooLarge = true;
             $this->filesizeFromHumanReadableToBytes(ini_get('upload_max_filesize')) < $this->sizeLimit && $uploadIsTooLarge = true;
             if ($uploadIsTooLarge) {
-                throw new FileStreamExceptions\UploadTooLargeException;
+                throw new FileStreamExceptions\UploadTooLargeException();
             }
         }
 
         # Is there attempt for multiple file uploads?
         $collectionOfUploadedFiles = collect($request->file());
         if ($collectionOfUploadedFiles->count() > 1) {
-            throw new FileStreamExceptions\MultipleSimultaneousUploadsNotAllowedException;
+            throw new FileStreamExceptions\MultipleSimultaneousUploadsNotAllowedException();
         }
 
         /** @var UploadedFile $file */
@@ -133,7 +136,7 @@ class FileStream
         //--------------------
 
         if ($file->getSize() === 0) {
-            throw new FileStreamExceptions\UploadIsEmptyException;
+            throw new FileStreamExceptions\UploadIsEmptyException();
         }
 
         $name = $file->getClientOriginalName();
@@ -141,7 +144,7 @@ class FileStream
             $name = $request->get('qqfilename');
         }
         if (empty($name)) {
-            throw new FileStreamExceptions\UploadFilenameIsEmptyException;
+            throw new FileStreamExceptions\UploadFilenameIsEmptyException();
         }
 
         $totalNumberOfChunks = $request->has('qqtotalparts') ? (int)$request->get('qqtotalparts') : 1;
@@ -152,17 +155,15 @@ class FileStream
             if (!$this->filesystem->exists($targetFolder)) {
                 try {
                     $this->filesystem->makeDirectory($targetFolder);
-                } /** @noinspection PhpRedundantCatchClauseInspection */ catch (ErrorException $e) {
-                    /** @noinspection NotOptimalIfConditionsInspection */
+                } catch (ErrorException $e) {
                     if (!$this->filesystem->exists($targetFolder)) {
-                        /** @noinspection PhpUnhandledExceptionInspection */
                         throw $e;
                     }
                 }
             }
 
             if (!$file->isValid()) {
-                throw new FileStreamExceptions\UploadAttemptFailedException;
+                throw new FileStreamExceptions\UploadAttemptFailedException();
             }
             $file->move($this->getAbsolutePath($targetFolder), (string)$chunkIndex);
 
@@ -170,7 +171,7 @@ class FileStream
         }
 
         if (!$file->isValid()) {
-            throw new FileStreamExceptions\UploadAttemptFailedException;
+            throw new FileStreamExceptions\UploadAttemptFailedException();
         }
         $file->move($this->getAbsolutePath(''), $fineUploaderUuid);
 
@@ -188,7 +189,7 @@ class FileStream
         $chunkIndex = (int)$request->get('qqpartindex');
         $numberOfExistingChunks = count($this->filesystem->files($this->temporaryChunksFolder . DIRECTORY_SEPARATOR . $fineUploaderUuid));
         if ($numberOfExistingChunks < $chunkIndex) {
-            throw new FileStreamExceptions\UploadIncompleteException;
+            throw new FileStreamExceptions\UploadIncompleteException();
         }
 
         return true;
@@ -272,7 +273,7 @@ class FileStream
     public function deleteFile($qquuid, $tag = ''): bool
     {
         /** @var \App\Models\User $me */
-        $me = app('auth.driver')->user();
+        $me = Auth::user();
 
         foreach ($me->files as $file) {
             /** @var \Illuminate\Database\Eloquent\Relations\Pivot $pivot */
@@ -283,7 +284,7 @@ class FileStream
             if ($pivot->qquuid === $qquuid && $tagCheck) {
                 $pivot->delete();
                 $file->loadMissing('uploaders');
-                !$file->uploaders->count() && app('filesystem')->disk($file->disk)->delete($file->path) && $file->delete();
+                !$file->uploaders->count() && Storage::disk($file->disk)->delete($file->path) && $file->delete();
             }
         }
 
@@ -314,7 +315,7 @@ class FileStream
         # Do we have all chunks?
         $numberOfExistingChunks = count($this->filesystem->files($chunksFolder));
         if ($numberOfExistingChunks !== $totalNumberOfChunks) {
-            throw new FileStreamExceptions\UploadIncompleteException;
+            throw new FileStreamExceptions\UploadIncompleteException();
         }
 
         # We have all chunks, proceed with combine.

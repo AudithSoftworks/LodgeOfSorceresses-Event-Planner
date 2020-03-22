@@ -141,8 +141,8 @@ class DpsParses extends PureComponent {
                     </a>
                 </td>
                 <td className="text-right">
-                    <a href={dpsParse['superstar_file_hash']['large']} target="_blank">
-                        <img src={dpsParse['superstar_file_hash']['thumbnail']} alt="Superstar screenshot" />
+                    <a href={dpsParse['info_file_hash']['large']} target="_blank">
+                        <img src={dpsParse['info_file_hash']['thumbnail']} alt="Info screenshot" />
                     </a>
                 </td>
                 <td>
@@ -169,7 +169,7 @@ class DpsParses extends PureComponent {
                                 Parse Screenshot
                             </th>
                             <th scope="col" style={{ textAlign: 'right' }}>
-                                Superstar Screenshot
+                                Info Screenshot
                             </th>
                             <th scope="col" />
                         </tr>
@@ -188,7 +188,7 @@ class DpsParses extends PureComponent {
                         <li>Do the Characters on both screenshots have the same name as the Character listed?</li>
                         <li>Does Parse screenshot have the same DPS amount as it is listed in this table?</li>
                         <li>Is parse in the screenshot the same Role (Stamina vs Magicka) as the Character listed?</li>
-                        <li>Is the gear listed in Superstar screenshot the same as in the Character listed?</li>
+                        <li>Is the gear listed in Info screenshot the same as in the Character listed?</li>
                     </ul>
                     If any of these fail, please Reject the Parse by clicking <FontAwesomeIcon icon={faUserTimes} /> icon, and by stating the reason.
                 </article>

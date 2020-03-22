@@ -43,11 +43,11 @@ trait HasOrIsDpsParse
     public function parseScreenshotFiles(DpsParse $dpsParse): void
     {
         $parseFile = File::whereHash($dpsParse->parse_file_hash)->first();
-        $superstarFile = File::whereHash($dpsParse->superstar_file_hash)->first();
-        if (!$parseFile || !$superstarFile) {
+        $infoFile = File::whereHash($dpsParse->info_file_hash)->first();
+        if (!$parseFile || !$infoFile) {
             throw new UnexpectedValueException('Couldn\'t find screenshot file records!');
         }
         $dpsParse->parse_file_hash = app('filestream')->url($parseFile);
-        $dpsParse->superstar_file_hash = app('filestream')->url($superstarFile);
+        $dpsParse->info_file_hash = app('filestream')->url($infoFile);
     }
 }

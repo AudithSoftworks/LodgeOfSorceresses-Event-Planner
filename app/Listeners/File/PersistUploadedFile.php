@@ -2,8 +2,11 @@
 
 use App\Events\File\Uploaded;
 use App\Models\File;
+use Cloudinary;
+use Cloudinary\Uploader as CloudinaryUploader;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\File\File as SymfonyFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -22,7 +25,7 @@ class PersistUploadedFile
         /** @noinspection PhpUndefinedMethodInspection */
         $pathPrefix = app('filesystem.disk')->getDriver()->getAdapter()->getPathPrefix();
         /** @var \App\Models\User $me */
-        $me = app('auth.driver')->user();
+        $me = Auth::user();
 
         /*
         |--------------------------------------------------
@@ -43,12 +46,12 @@ class PersistUploadedFile
         $filesystem = app('filesystem');
         (!$filesystem->exists($destination)) ? $filesystem->move($uploadUuid, $destination) : $filesystem->delete($uploadUuid);
 
-        \Cloudinary::config([
+        Cloudinary::config([
             'cloud_name' => config('filesystems.disks.cloudinary.cloud_name'),
             'api_key' => config('filesystems.disks.cloudinary.key'),
             'api_secret' => config('filesystems.disks.cloudinary.secret'),
         ]);
-        \Cloudinary\Uploader::upload($pathPrefix . $destination, [
+        CloudinaryUploader::upload($pathPrefix . $destination, [
             'public_id' => $hash,
             'use_filename' => true,
             'unique_filename' => false,
@@ -103,7 +106,10 @@ class PersistUploadedFile
         }
 
         $fileUserPivot = $me->files()->newPivotStatement();
-        $fileUserPivot->whereTag($tag)->whereFileHash($hash)->delete();
+        $fileUserPivot
+            ->where('tag', '=', $tag)
+            ->where('file_hash', '=', $hash)
+            ->delete();
 
         $file->uploaders()->attach([
             $me->id => [
