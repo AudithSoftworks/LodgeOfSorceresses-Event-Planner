@@ -3,8 +3,7 @@
 cd /opt/lodgeofsorceresses/subdomains/planner/$1;
 chmod u+rwx ./storage/logs;
 
-echo "Clearing cache..." && ./artisan cache:clear;
-echo "Clearing config cache..." && ./artisan config:clear;
+echo "Clearing cached bootstrap files..." && ./artisan optimize:clear;
 echo "Attempting Db migrations..." && ./artisan migrate --force;
 echo "Seeding Db..." && ./artisan db:seed --force;
 echo "Renewing Skills-list from PMG..." && ./artisan pmg:skills;
