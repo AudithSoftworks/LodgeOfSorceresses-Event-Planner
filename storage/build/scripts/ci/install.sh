@@ -2,14 +2,14 @@
 
 cd /opt/lodgeofsorceresses/subdomains/planner/$1;
 
-./artisan migrate --force;
-./artisan db:seed --force;
-./artisan pmg:skills;
-./artisan pmg:sets;
-./artisan config:cache;
-./artisan route:cache;
-./artisan storage:link
-./artisan cache:warmup
+echo "Attempting Db migrations..." && ./artisan migrate --force;
+echo "Seeding Db..." && ./artisan db:seed --force;
+echo "Renewing Skills-list from PMG..." && ./artisan pmg:skills;
+echo "Renewing Sets-list from PMG..." && ./artisan pmg:sets;
+echo "Caching Configuration..." && ./artisan config:cache;
+echo "Caching Routes..." && ./artisan route:cache;
+echo "Linking Storage..." && ./artisan storage:link;
+echo "Cache warm-up..." && ./artisan cache:warmup;
 
 composer install --prefer-source --no-interaction --no-dev;
 
