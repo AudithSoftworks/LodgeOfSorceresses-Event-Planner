@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
 cd /opt/lodgeofsorceresses/subdomains/planner/$1;
-
-composer install --prefer-source --no-interaction --no-dev;
+chmod u+rwx ./storage/logs;
 
 echo "Clearing cache..." && ./artisan cache:clear;
 echo "Attempting Db migrations..." && ./artisan migrate --force;
@@ -13,6 +12,8 @@ echo "Caching Configuration..." && ./artisan config:cache;
 echo "Caching Routes..." && ./artisan route:cache;
 echo "Linking Storage..." && ./artisan storage:link;
 echo "Cache warm-up..." && ./artisan cache:warmup;
+
+composer install --prefer-source --no-interaction --no-dev;
 
 touch ./public/$1.php;
 echo "<?php opcache_reset(); unlink(__FILE__);" | tee ./public/$1.php;
