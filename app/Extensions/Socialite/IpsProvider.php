@@ -79,7 +79,7 @@ class IpsProvider extends AbstractProvider implements ProviderInterface
             ],
         ]);
 
-        return json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        return json_decode($response->getBody(), true);
     }
 
     /**
