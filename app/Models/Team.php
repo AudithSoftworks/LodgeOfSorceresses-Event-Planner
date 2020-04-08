@@ -16,7 +16,9 @@ use Illuminate\Support\Carbon;
  * @property string $name
  * @property string|null $icon
  * @property int $tier
- * @property string $discord_id
+ * @property string $discord_role_id
+ * @property string $discord_lobby_channel_id
+ * @property string $discord_rant_channel_id
  * @property int $led_by
  * @property int $created_by
  * @property Carbon|null $created_at

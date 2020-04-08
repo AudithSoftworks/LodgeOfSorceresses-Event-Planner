@@ -16,7 +16,6 @@ use Illuminate\Cache\Events\CacheMissed;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Cache;
 
 class Recache
 {
@@ -71,7 +70,6 @@ class Recache
                     'ttl' => null,
                 ];
                 break;
-
         }
         if (empty($recache)) {
             return null;
@@ -84,13 +82,14 @@ class Recache
 
     private function getUser(int $userId): ?User
     {
+        /** @var User $user */
         $user = User::with([
             'linkedAccounts' => static function (HasMany $query) {
                 $query->where('remote_provider', '=', 'discord')->whereNotNull('remote_secondary_groups');
             },
             'characters'
         ])->whereNotNull('name')->find($userId);
-        unset($user->email);
+        $user->makeHidden('email');
         $this->parseLinkedAccounts($user);
         $this->parseCharacters($user);
         $this->calculateUserRank($user);

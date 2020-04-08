@@ -97,7 +97,7 @@ class TeamForm extends PureComponent {
                     {heading}
                 </h2>
                 <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')} />
-                <fieldset className="form-group col-md-8 col-xl-7">
+                <fieldset className="form-group col-md-10 col-xl-12">
                     <label htmlFor="characterName">Team Name:</label>
                     <input
                         type="text"
@@ -110,7 +110,7 @@ class TeamForm extends PureComponent {
                         required
                     />
                 </fieldset>
-                <fieldset className="form-group col-md-8 col-xl-3">
+                <fieldset className="form-group col-md-6 col-xl-3">
                     <label>Content Tier:</label>
                     <Select
                         options={this.tierOptions}
@@ -119,20 +119,7 @@ class TeamForm extends PureComponent {
                         name="tier"
                     />
                 </fieldset>
-                <fieldset className="form-group col-md-8 col-xl-8">
-                    <label>Discord Role Id:</label>
-                    <input
-                        type="text"
-                        name="discord_id"
-                        id="discordId"
-                        className="form-control form-control-sm"
-                        placeholder="Discord Role Id"
-                        defaultValue={team ? team.discord_id : ''}
-                        autoComplete="off"
-                        required
-                    />
-                </fieldset>
-                <fieldset className="form-group col-md-24 col-xl-6">
+                <fieldset className="form-group col-md-8 col-xl-9">
                     <label>Team Leader</label>
                     <Select
                         options={userOptions}
@@ -140,6 +127,43 @@ class TeamForm extends PureComponent {
                         placeholder="Team Leader..."
                         components={animated}
                         name="led_by"
+                    />
+                </fieldset>
+                <fieldset className="form-group col-md-8 col-xl-8">
+                    <label>Discord Role Id:</label>
+                    <input
+                        type="text"
+                        name="discord_role_id"
+                        id="discordRoleId"
+                        className="form-control form-control-sm"
+                        placeholder="Discord Role Id"
+                        defaultValue={team ? team.discord_role_id : ''}
+                        autoComplete="off"
+                        required
+                    />
+                </fieldset>
+                <fieldset className="form-group col-md-8 col-xl-8">
+                    <label>Discord Lobby Channel Id:</label>
+                    <input
+                        type="text"
+                        name="discord_lobby_channel_id"
+                        id="discordLobbyChannelId"
+                        className="form-control form-control-sm"
+                        placeholder="Discord Lobby Channel Id"
+                        defaultValue={team ? team.discord_lobby_channel_id : ''}
+                        autoComplete="off"
+                    />
+                </fieldset>
+                <fieldset className="form-group col-md-8 col-xl-8">
+                    <label>Discord Rant Channel Id:</label>
+                    <input
+                        type="text"
+                        name="discord_rant_channel_id"
+                        id="discordRantChannelId"
+                        className="form-control form-control-sm"
+                        placeholder="Discord Rant Channel Id"
+                        defaultValue={team ? team.discord_rant_channel_id : ''}
+                        autoComplete="off"
                     />
                 </fieldset>
                 <fieldset className="form-group col-md-24 text-right">

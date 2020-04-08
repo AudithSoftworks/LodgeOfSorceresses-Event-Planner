@@ -4,13 +4,11 @@ namespace App\Listeners\Team;
 
 use App\Events\Team\MemberRemoved;
 use App\Services\DiscordApi;
-use App\Services\GuildRanksAndClearance;
-use Illuminate\Support\Facades\Cache;
 
 class RemoveDiscordTagFromMemberLeaving
 {
     /**
-     * @param \App\Events\Team\MemberRemoved $event;
+     * @param \App\Events\Team\MemberRemoved $event ;
      *
      * @return bool
      */
@@ -19,7 +17,7 @@ class RemoveDiscordTagFromMemberLeaving
         $team = $event->getTeam();
         $character = $event->getCharacter();
 
-        $discordRoleId = $team->discord_id;
+        $discordRoleId = $team->discord_role_id;
         $user = $character->owner;
         /** @var \App\Models\UserOAuth $usersDiscordAccount */
         $usersDiscordAccount = $user->linkedAccounts()->where('remote_provider', 'discord')->first();

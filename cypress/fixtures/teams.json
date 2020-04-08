@@ -4,7 +4,7 @@
         "name": "Core-2",
         "icon": null,
         "tier": "1",
-        "discord_id": 491244828680519680,
+        "discord_role_id": 491244828680519680,
         "led_by": {
             "id": 11,
             "name": "Maxime",
