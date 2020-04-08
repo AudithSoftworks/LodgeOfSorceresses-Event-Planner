@@ -172,6 +172,15 @@ class DiscordApi extends AbstractApi
         }, $recipientId);
     }
 
+    public function getGuildChannels(): array
+    {
+        return $this->executeCallback(function () {
+            $response = $this->getApiClient()->get('guilds/' . $this->discordGuildId . '/channels');
+
+            return json_decode($response->getBody()->getContents(), true);
+        });
+    }
+
     public function getGuildRoles(): array
     {
         return $this->executeCallback(function () {

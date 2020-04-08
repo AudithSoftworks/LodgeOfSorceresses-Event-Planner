@@ -28,7 +28,7 @@ class AnnounceMemberJoiningOnDiscord
         if ($team->tier === TeamsAndEligibility::TRAINING_TEAM_TIER) {
             $channelToAnnounceTo = config('services.discord.channels.pve_open_events');
         }
-        $teamMentionName = '<@&' . $team->discord_id . '>';
+        $teamMentionName = '<@&' . $team->discord_role_id . '>';
         $member = $character->owner;
         /** @var \App\Models\UserOAuth $membersDiscordAccount */
         $membersDiscordAccount = $member->linkedAccounts()->where('remote_provider', 'discord')->first();

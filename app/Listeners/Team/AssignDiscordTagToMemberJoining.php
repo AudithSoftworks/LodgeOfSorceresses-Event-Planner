@@ -19,7 +19,7 @@ class AssignDiscordTagToMemberJoining
         if ($team->tier > TeamsAndEligibility::TRAINING_TEAM_TIER) {
             $character = $event->getCharacter();
 
-            $discordRoleId = $team->discord_id;
+            $discordRoleId = $team->discord_role_id;
             $user = $character->owner;
             /** @var \App\Models\UserOAuth $usersDiscordAccount */
             $usersDiscordAccount = $user->linkedAccounts()->where('remote_provider', 'discord')->first();

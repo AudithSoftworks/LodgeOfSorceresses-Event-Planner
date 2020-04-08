@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TeamsRequests;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class TeamsController extends Controller
@@ -22,6 +21,7 @@ class TeamsController extends Controller
     public function index(): JsonResponse
     {
         $this->authorize('user', User::class);
+
         $teamIds = Team::query()
             ->orderBy('id', 'desc')
             ->get(['id'])->pluck('id');
@@ -37,42 +37,23 @@ class TeamsController extends Controller
     }
 
     /**
-     * @param \Illuminate\Http\Request $request
+     * @param \App\Http\Requests\TeamsRequests $request
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
-     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function store(Request $request): JsonResponse
+    public function store(TeamsRequests $request): JsonResponse
     {
-        $this->authorize('admin', User::class);
+        $validator = $request->getValidator();
 
-        $discordRoleIds = collect(app('discord.api')->getGuildRoles())
-            ->reject(static function ($item) {
-                return $item['hoist'] === true || $item['mentionable'] === false;
-            })->implode('id', ',');
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'tier' => 'required|integer|between:1,4',
-            'discord_id' => 'required|string|numeric|in:' . $discordRoleIds,
-            'led_by' => 'required|numeric|exists:users,id',
-        ], [
-            'name.required' => 'Team name is required.',
-            'tier.required' => 'Choose a tier for the content this team is specifialized in.',
-            'tier.between' => 'Tier must be from 1 to 4.',
-            'discord_id.required' => 'Discord Role-ID is required.',
-            'discord_id.in' => 'Discord Role-ID isn\'t valid.',
-            'led_by.required' => 'Choose a team leader.',
-        ]);
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
         $tierParam = $request->get('tier');
 
         $team = new Team();
         $team->name = $request->get('name');
         $team->tier = $tierParam;
-        $team->discord_id = $request->get('discord_id');
+        $team->discord_role_id = $request->get('discord_role_id');
+        $request->has('discord_lobby_channel_id') && $team->discord_lobby_channel_id = $request->get('discord_lobby_channel_id');
+        $request->has('discord_rant_channel_id') && $team->discord_rant_channel_id = $request->get('discord_rant_channel_id');
         $team->created_by = Auth::id();
 
         $ledByParam = $request->get('led_by');
@@ -112,21 +93,21 @@ class TeamsController extends Controller
     }
 
     /**
-     * @param \Illuminate\Http\Request $request
-     * @param int                      $teamId
+     * @param \App\Http\Requests\TeamsRequests $request
+     * @param int                              $teamId
      *
      * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Auth\Access\AuthorizationException
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function update(Request $request, int $teamId): JsonResponse
+    public function update(TeamsRequests $request, int $teamId): JsonResponse
     {
-        $this->authorize('user', User::class);
+        $validator = $request->getValidator();
 
         $myId = Auth::id();
         Cache::has('team-' . $teamId); // Recache trigger.
         /** @var \App\Models\Team $team */
         $team = Cache::get('team-' . $teamId);
+
         if (!$team) {
             throw new ModelNotFoundException('Team not found!');
         }
@@ -134,40 +115,20 @@ class TeamsController extends Controller
             throw new ModelNotFoundException('Team not found!');
         }
 
-        $discordRoleIds = collect(app('discord.api')->getGuildRoles())
-            ->reject(static function ($item) {
-                return $item['hoist'] === true || $item['mentionable'] === false;
-            })
-            ->implode('id', ',');
-        $validator = Validator::make($request->all(), [
-            'name' => 'sometimes|required|string',
-            'tier' => 'sometimes|required|integer|between:1,4',
-            'discord_id' => 'sometimes|required|string|numeric|in:' . $discordRoleIds,
-            'led_by' => 'sometimes|required|numeric|exists:users,id',
-        ], [
-            'name.required' => 'Team name is required.',
-            'tier.required' => 'Choose a tier for the content this team is specifialized in.',
-            'tier.between' => 'Tier must be from 1 to 4.',
-            'discord_id.required' => 'Discord Role-ID is required.',
-            'discord_id.in' => 'Discord Role-ID isn\'t valid.',
-            'led_by.required' => 'Choose a team leader.',
-        ]);
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
+        $team->name = $request->get('name');
+        $team->discord_role_id = $request->get('discord_role_id');
+        $request->has('discord_lobby_channel_id') && $team->discord_lobby_channel_id = $request->get('discord_lobby_channel_id');
+        $request->has('discord_rant_channel_id') && $team->discord_rant_channel_id = $request->get('discord_rant_channel_id');
 
-        $request->has('name') && $team->name = $request->get('name');
-        if ($request->has('tier')) {
-            if (!app('teams.eligibility')->areAllMembersOfTeamEligibleForPossibleNewTeamTier($team, $request->get('tier'))) { // Team tier increase needs handling.
+        if ($request->has('tier') && ($tierParam = (int)$request->get('tier')) !== $team->tier) {
+            if (!app('teams.eligibility')->areAllMembersOfTeamEligibleForPossibleNewTeamTier($team, $tierParam)) { // Team tier increase needs handling.
                 $validator->errors()->add('tier', 'Requested Tier is too high for some members of this team! Consider removing these members before increasing Tier.');
                 throw new ValidationException($validator);
             }
-            $team->tier = $request->get('tier');
+            $team->tier = $tierParam;
         }
-        $request->has('discord_id') && $team->discord_id = $request->get('discord_id');
 
-        if ($request->has('discord_id')) {
-            $ledByParam = $request->get('led_by');
+        if ($request->has('led_by') && ($ledByParam = (int)$request->get('led_by')) !== $team->led_by) {
             Cache::has('user-' . $ledByParam); // Recache trigger.
             /** @var \App\Models\User $ledBy */
             $ledBy = Cache::get('user-' . $ledByParam);
@@ -176,7 +137,7 @@ class TeamsController extends Controller
                 $validator->errors()->add('led_by', $policyResponseForCanJoin->message());
                 throw new ValidationException($validator);
             }
-            $team->led_by = $ledBy->id;
+            $team->led_by = $ledByParam;
         }
 
         $team->save();
