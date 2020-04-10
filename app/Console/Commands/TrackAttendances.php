@@ -6,6 +6,7 @@ use App\Models\Attendance;
 use App\Models\User;
 use App\Models\UserOAuth;
 use Carbon\CarbonImmutable;
+use GuzzleHttp\RequestOptions;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 
@@ -100,6 +101,7 @@ class TrackAttendances extends Command
                 $this->info(sprintf('Parsing Attendance report: "%s"...', $message['content']));
 
                 $message = $this->cleanMessage($message);
+                $this->notifyUsersWithoutIpsOauthAccount();
                 $attendance = $this->persistAttendance($message);
                 if ($attendance !== null) {
                     $this->uploadAttachmentToGallery($message, $userIpsOauth, $attendance);
@@ -107,7 +109,6 @@ class TrackAttendances extends Command
                 } else {
                     $this->warn('Already processed, skipping...');
                 }
-
             }
             if (count($messages) < 100) {
                 break;
@@ -221,5 +222,46 @@ class TrackAttendances extends Command
             ->first();
 
         return $userDiscordOauth->owner;
+    }
+
+    private function notifyUsersWithoutIpsOauthAccount(): void
+    {
+        if ($count = count($this->ipsOauthNotFoundList)) {
+            $discordApi = app('discord.api');
+            foreach ($this->ipsOauthNotFoundList as $discordRemoteId) {
+                $dmChannel = $discordApi->createDmChannel($discordRemoteId);
+                $discordApi->createMessageInChannel($dmChannel['id'], [
+                    RequestOptions::FORM_PARAMS => [
+                        'payload_json' => json_encode([
+                            'content' => '**Regarding Forum Account Not Being Linked**' . PHP_EOL
+                                . 'Hello! During Attendance tracking, we noticed you haven\'t linked your Forum account in Guild Planner. '
+                                . 'Please login to Guild Planner at your earliest convenience and make sure Account Status is green there.',
+                            'tts' => true,
+                            'embed' => [
+                                'color' => 0xaa0000,
+                                'thumbnail' => [
+                                    'url' => cloudinary_url('special/logo.png', [
+                                        'secure' => true,
+                                        'width' => 300,
+                                        'height' => 300,
+                                    ])
+                                ],
+                                'fields' => [
+                                    [
+                                        'name' => 'Guild Planner',
+                                        'value' => 'https://planner.lodgeofsorceresses.com',
+                                    ]
+                                ],
+                                'footer' => [
+                                    'text' => 'Sent via Lodge of Sorceresses Guild Planner at: https://planner.lodgeofsorceresses.com'
+                                ]
+                            ],
+                        ]),
+                    ]
+                ]);
+            }
+            $this->error(sprintf('%d users were notified about missing IPS accounts.', $count));
+            $this->ipsOauthNotFoundList = [];
+        }
     }
 }
