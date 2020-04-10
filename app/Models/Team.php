@@ -44,9 +44,7 @@ use Illuminate\Support\Carbon;
 class Team extends Model
 {
     protected $table = 'teams';
-    /**
-     * {@inheritdoc}
-     */
+
     protected $dispatchesEvents = [
         'deleted' => TeamDeleted::class,
         'updated' => TeamUpdated::class,
