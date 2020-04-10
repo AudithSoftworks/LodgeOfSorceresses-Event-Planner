@@ -183,6 +183,7 @@ class TrackAttendances extends Command
         $attendance->isDirty() && $attendance->save();
 
         $collectionOfMentions = collect($message['mentions']);
+        $collectionOfMentions->add($message['author']);
         $attendance->attendees()->sync($collectionOfMentions->pluck('id'));
         $attendance->save();
 
