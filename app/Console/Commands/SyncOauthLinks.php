@@ -89,6 +89,7 @@ class SyncOauthLinks extends Command
         if ($remoteUserDataFetchedThroughApi === null) {
             return self::MEMBER_NOT_FOUND;
         }
+        $oauthAccount->nickname = $remoteUserDataFetchedThroughApi['user']['username'] . '#' . $remoteUserDataFetchedThroughApi['user']['discriminator'];
         $oauthAccount->remote_secondary_groups = !empty($remoteUserDataFetchedThroughApi['roles'])
             ? implode(',', $remoteUserDataFetchedThroughApi['roles'])
             : null;
@@ -132,6 +133,7 @@ class SyncOauthLinks extends Command
 
             return $acc;
         }, []);
+        $oauthAccount->nickname = $remoteUserDataFetchedThroughApi['name'];
         $oauthAccount->remote_primary_group = $remoteUserDataFetchedThroughApi['primaryGroup']['id'];
         $oauthAccount->remote_secondary_groups = $remoteSecondaryGroups ? implode(',', $remoteSecondaryGroups) : null;
         if ($oauthAccount->isDirty()) {
