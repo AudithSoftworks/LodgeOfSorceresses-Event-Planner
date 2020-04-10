@@ -108,6 +108,19 @@ class DiscordApi extends AbstractApi
         }, $channelId, $params);
     }
 
+    public function getChannelMessages(string $channelId, array $params = []): array
+    {
+        return $this->executeCallback(function (string $channelId, array $params) {
+            $response = $this->getApiClient()->get('channels/' . $channelId . '/messages', [
+                RequestOptions::QUERY => [
+                    'limit' => 100,
+                ] + $params
+            ]);
+
+            return json_decode($response->getBody()->getContents(), true);
+        }, $channelId, $params);
+    }
+
     public function deleteMessagesInChannel(string $channelId, array $messageIds): bool
     {
         $return = $this->executeCallback(function (string $channelId, array $messageIds) {

@@ -117,7 +117,7 @@ class AnnounceDpsDisapprovalOnDiscord
                             ])
                         ],
                         'footer' => [
-                            'text' => 'Sent via Lodge of Sorceresses Planner at: https://planner.lodgeofsorceresses.com'
+                            'text' => 'Sent via Lodge of Sorceresses Guild Planner at: https://planner.lodgeofsorceresses.com'
                         ]
                     ],
                 ]),

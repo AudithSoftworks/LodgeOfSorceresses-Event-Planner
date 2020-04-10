@@ -12,6 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Laravel\Passport\Client as PassportClient;
 use Laravel\Passport\HasApiTokens;
 use Laravel\Passport\Token as PassportToken;
@@ -23,9 +24,9 @@ use Laravel\Passport\Token as PassportToken;
  * @property string|null $avatar
  * @property string $password
  * @property string|null $remember_token
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property-read EloquentCollection|Character[] $characters
  * @property-read int|null $characters_count
  * @property-read EloquentCollection|PassportClient[] $clients
@@ -40,6 +41,8 @@ use Laravel\Passport\Token as PassportToken;
  * @property-read int|null $teams_led_count
  * @property-read EloquentCollection|PassportToken[] $tokens
  * @property-read int|null $tokens_count
+ * @property-read EloquentCollection|Attendance[] $attendances
+ * @property-read int|null $attendances_count
  * @property array $clearanceLevel
  * @property bool $isSoulshriven
  * @property bool $isMember
@@ -103,5 +106,10 @@ class User extends Authenticatable
     public function teamsLed(): HasMany
     {
         return $this->hasMany(Team::class, 'owner', 'id');
+    }
+
+    public function attendances(): BelongsToMany
+    {
+        return $this->belongsToMany(Attendance::class, 'attendances_users')->as('attendances');
     }
 }

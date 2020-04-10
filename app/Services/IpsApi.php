@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\UserOAuth;
 use Carbon\Carbon;
+use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Http\Response;
 
@@ -42,7 +43,7 @@ class IpsApi extends AbstractApi
         $this->apiUrl = $ipsUrl . '/api/';
     }
 
-    protected function getApiClient(): \GuzzleHttp\Client
+    protected function getApiClient(): GuzzleClient
     {
         if ($this->apiClient !== null) {
             return $this->apiClient;
@@ -55,7 +56,7 @@ class IpsApi extends AbstractApi
         ]);
     }
 
-    protected function getOauthClient(): \GuzzleHttp\Client
+    protected function getOauthClient(): GuzzleClient
     {
         if ($this->oauthClient !== null) {
             return $this->oauthClient;
@@ -69,6 +70,37 @@ class IpsApi extends AbstractApi
             ],
         ]);
     }
+
+    /**
+     * @param \App\Models\UserOAuth $oauthAccount
+     *
+     * @throws \Exception
+     */
+    protected function refreshToken(UserOAuth $oauthAccount): void
+    {
+        $clientId = config('services.ips.client_id');
+        $clientSecret = config('services.ips.client_secret');
+        $httpClient = $this->createHttpClient();
+
+        $response = $httpClient->post('/oauth/token/', [
+            RequestOptions::FORM_PARAMS => [
+                'grant_type' => 'refresh_token',
+                'response_type' => 'token',
+                'client_id' => $clientId,
+                'client_secret' => $clientSecret,
+                'refresh_token' => $oauthAccount->refresh_token,
+            ],
+        ]);
+        $responseBody = json_decode($response->getBody(), true);
+
+        $oauthAccount->token = $responseBody['access_token'];
+        $oauthAccount->token_expires_at = new Carbon(sprintf('+%d seconds', $responseBody['expires_in']));
+        $oauthAccount->save();
+    }
+
+    /*------------------------------------
+     | /calendar/events
+     *-----------------------------------*/
 
     /**
      * @return array
@@ -116,6 +148,10 @@ class IpsApi extends AbstractApi
         return null;
     }
 
+    /*------------------------------------
+     | /core/members
+     *-----------------------------------*/
+
     /**
      * @param int $remoteUserId
      *
@@ -148,6 +184,10 @@ class IpsApi extends AbstractApi
         }, $remoteUserId);
     }
 
+    /*------------------------------------
+     | /forum/topics
+     *-----------------------------------*/
+
     public function createTopic(int $forum, string $title, string $post): array
     {
         return $this->executeCallback(function (int $forum, string $title, string $post) {
@@ -164,30 +204,25 @@ class IpsApi extends AbstractApi
         }, $forum, $title, $post);
     }
 
-    /**
-     * @param \App\Models\UserOAuth $oauthAccount
-     *
-     * @throws \Exception
-     */
-    protected function refreshToken(UserOAuth $oauthAccount): void
+    /*------------------------------------
+     | /gallery/images
+     *-----------------------------------*/
+
+    public function postGalleryImage(int $album, int $author, string $caption, string $filename, string $image): array
     {
-        $clientId = config('services.ips.client_id');
-        $clientSecret = config('services.ips.client_secret');
-        $httpClient = $this->createHttpClient();
+        return $this->executeCallback(function (int $album, int $author, string $caption, string $filename, string $image) {
+            $response = $this->getApiClient()->post('gallery/images/', [
+                RequestOptions::FORM_PARAMS => [
+                    'album' => $album,
+                    'author' => $author,
+                    'caption' => $filename,
+                    'filename' => $filename,
+                    'image' => $image,
+                    'description' => $caption,
+                ]
+            ]);
 
-        $response = $httpClient->post('/oauth/token/', [
-            RequestOptions::FORM_PARAMS => [
-                'grant_type' => 'refresh_token',
-                'response_type' => 'token',
-                'client_id' => $clientId,
-                'client_secret' => $clientSecret,
-                'refresh_token' => $oauthAccount->refresh_token,
-            ],
-        ]);
-        $responseBody = json_decode($response->getBody(), true);
-
-        $oauthAccount->token = $responseBody['access_token'];
-        $oauthAccount->token_expires_at = new Carbon(sprintf('+%d seconds', $responseBody['expires_in']));
-        $oauthAccount->save();
+            return json_decode($response->getBody()->getContents(), true);
+        }, $album, $author, $caption, $filename, $image);
     }
 }
