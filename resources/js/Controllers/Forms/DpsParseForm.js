@@ -7,7 +7,6 @@ import { Link, Redirect } from 'react-router-dom';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import postMyDpsParseAction from '../../actions/post-my-dps-parse';
-import putMyDpsParseAction from '../../actions/put-my-dps-parse';
 import Loading from '../../Components/Loading';
 import Notification from '../../Components/Notification';
 import { characters } from '../../vendor/data';
@@ -314,7 +313,6 @@ DpsParseForm.propTypes = {
     infoScreenshotHash: PropTypes.string,
 
     postMyDpsParseAction: PropTypes.func.isRequired,
-    putMyDpsParseAction: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -327,7 +325,6 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     dispatch,
     postMyDpsParseAction: (characterId, data) => dispatch(postMyDpsParseAction(characterId, data)),
-    putMyDpsParseAction: (characterId, parseId, data) => dispatch(putMyDpsParseAction(characterId, parseId, data)),
 });
 
 export default connect(

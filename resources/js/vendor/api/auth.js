@@ -69,33 +69,16 @@ export const deleteMyCharacter = (cancelToken, characterId) => axios.delete('/ap
     throw error;
 });
 
-export const getMyDpsParse = (cancelToken, characterId, parseId) => axios.get('/api/users/@me/characters/' + characterId + '/parses/' + parseId, {
-    cancelToken: cancelToken.token,
-}).then(response => {
-    if (response.data) {
-        return normalize(response.data, schema.dpsParse);
-    }
-
-    return null;
-}).catch(error => {
-    throw error;
-});
-
 export const postMyDpsParse = (cancelToken, characterId, data) => axios.post('/api/users/@me/characters/' + characterId + '/parses', data, {
     cancelToken: cancelToken.token,
 }).then(
-    response => response
-).catch(error => {
-    throw error;
-});
+    response => {
+        if (response.data) {
+            return normalize(response.data, schema.character);
+        }
 
-export const putMyDpsParse = (cancelToken, characterId, parseId, data) => axios.post('/api/users/@me/characters/' + characterId + '/parses/' + parseId, data, {
-    cancelToken: cancelToken.token,
-    headers: {
-        'X-HTTP-Method-Override': 'PUT',
-    },
-}).then(
-    response => response.status === 204
+        return null;
+    }
 ).catch(error => {
     throw error;
 });

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\UserOAuth;
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Http\Response;
@@ -208,9 +209,9 @@ class IpsApi extends AbstractApi
      | /gallery/images
      *-----------------------------------*/
 
-    public function postGalleryImage(int $album, int $author, string $caption, string $filename, string $image): array
+    public function postGalleryImage(int $album, int $author, string $caption, string $filename, string $image, CarbonInterface $date): array
     {
-        return $this->executeCallback(function (int $album, int $author, string $caption, string $filename, string $image) {
+        return $this->executeCallback(function (int $album, int $author, string $caption, string $filename, string $image, CarbonInterface $date) {
             $response = $this->getApiClient()->post('gallery/images/', [
                 RequestOptions::FORM_PARAMS => [
                     'album' => $album,
@@ -219,10 +220,11 @@ class IpsApi extends AbstractApi
                     'filename' => $filename,
                     'image' => $image,
                     'description' => $caption,
+                    'date' => $date->format('r'),
                 ]
             ]);
 
             return json_decode($response->getBody()->getContents(), true);
-        }, $album, $author, $caption, $filename, $image);
+        }, $album, $author, $caption, $filename, $image, $date);
     }
 }

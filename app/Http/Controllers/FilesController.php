@@ -28,8 +28,8 @@ class FilesController extends Controller
      * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\JsonResponse
-     * @throws \ErrorException
      * @throws \Illuminate\Validation\ValidationException
+     * @throws \ErrorException
      */
     public function store(Request $request): JsonResponse
     {

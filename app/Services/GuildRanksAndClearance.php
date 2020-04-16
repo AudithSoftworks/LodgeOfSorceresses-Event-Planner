@@ -144,7 +144,6 @@ class GuildRanksAndClearance
     public function processDpsParse(DpsParse $dpsParse): bool
     {
         $dpsParse->loadMissing('character');
-        /** @var \App\Models\Character $character */
         $character = $dpsParse->character;
         $class = $character->class;
         $role = $character->role;
@@ -163,6 +162,14 @@ class GuildRanksAndClearance
             $character->approved_for_tier = $clearanceLevel;
         }
         $character->last_submitted_dps_amount = $dpsParse->dps_amount;
+
+        $setsWornDuringParse = collect(explode(',', $dpsParse->sets));
+        $characterSets = collect(explode(',', $character->sets));
+        $setsToBeAddedToCharacter = $setsWornDuringParse->diff($characterSets);
+        if ($setsToBeAddedToCharacter->count()) {
+            $character->sets = $setsToBeAddedToCharacter->merge($characterSets)->unique()->implode(',');
+        }
+
         $character->save();
 
         return true;

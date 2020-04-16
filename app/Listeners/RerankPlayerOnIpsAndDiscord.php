@@ -146,7 +146,7 @@ class RerankPlayerOnIpsAndDiscord
         $responseDecoded = $discordApi->createMessageInChannel($dmChannel['id'], [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
-                    'content' => 'Hello! Planner triggered a Reranking of your account, due to the changes related to your character **' . $this->character->name . "**. Changes of:\n"
+                    'content' => 'Hello! Guild Planner triggered a Reranking of your account, due to the changes related to your character **' . $this->character->name . "**. Changes of:\n"
                         . "* DPS approval,\n* Tank/Healer clearance,\n* Character deletion,\n* Rank reset etc\n"
                         . 'type might have caused this. As a result of this, your current member rank was updated to **' . $playerNewRankTitle . '**',
                     'tts' => false,
@@ -158,7 +158,7 @@ class RerankPlayerOnIpsAndDiscord
 
     private function announceRerankInOfficerChannelOnDiscord(DiscordApi $discordApi, string $mentionedName, int $clearanceLevel): void
     {
-        $officerChannelId = config('services.discord.channels.officer_hq');
+        $officerChannelId = config('services.discord.channels.officer_logs');
 
         $mentionedOfficerGroup = '<@&' . GuildRanksAndClearance::RANK_MAGISTER_TEMPLI['discordRole'] . '>';
         $rankTitle = $clearanceLevel ? GuildRanksAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['title'] : GuildRanksAndClearance::RANK_INITIATE['title'];

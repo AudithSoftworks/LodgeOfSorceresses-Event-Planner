@@ -1,7 +1,7 @@
 import * as destroyActions from '../actions/delete-my-character';
 import * as getActions from '../actions/get-character';
 import * as indexActions from '../actions/get-my-characters';
-import * as showDpsParseActions from '../actions/get-my-dps-parse';
+import * as postDpsParseActions from '../actions/post-my-dps-parse';
 import * as destroyDpsParseActions from '../actions/delete-my-dps-parse';
 
 const myCharactersReducer = (state = null, action) => {
@@ -10,16 +10,19 @@ const myCharactersReducer = (state = null, action) => {
         if (action.response.result.length) {
             newState = [];
             Object.keys(action.response.entities.characters).forEach(key => {
-                newState.push(action.response.entities.characters[key]);
+                newState.push(action.response.entities['characters'][key]);
             });
         } else {
             newState = [];
         }
 
         return newState;
-    } else if (action.type === getActions.TYPE_GET_CHARACTER_SUCCESS) {
+    } else if (
+        action.type === getActions.TYPE_GET_CHARACTER_SUCCESS
+        || action.type === postDpsParseActions.TYPE_POST_MY_DPS_PARSE_SUCCESS
+    ) {
         const newState = state === null ? [] : [...state];
-        const character = action.response.entities.characters[action.response.result];
+        const character = action.response.entities['characters'][action.response.result];
         const indexOfCharacterUpdatedInStore = newState.findIndex(c => c.id === character.id);
         if (indexOfCharacterUpdatedInStore !== -1) {
             newState.splice(indexOfCharacterUpdatedInStore, 1, character);
@@ -32,20 +35,6 @@ const myCharactersReducer = (state = null, action) => {
         let newState = state === null ? [] : [...state];
         const characterId = action.characterId;
         newState = newState.filter(item => item.id !== characterId);
-
-        return newState;
-    }
-
-    if (action.type === showDpsParseActions.TYPE_GET_MY_DPS_PARSE_SUCCESS) {
-        const newState = state === null ? [] : [...state];
-        const { characterId, parseId } = action;
-        const indexOfCharacterDpsSubmittedFor = newState.findIndex(c => c.id === parseInt(characterId));
-        const characterDpsSubmittedFor = newState.find(c => c.id === parseInt(characterId));
-        if (characterDpsSubmittedFor) {
-            characterDpsSubmittedFor.dps_parses_pending.push(action.response.entities.dpsParses[parseId]); // We only store. No edits!
-            newState.splice(indexOfCharacterDpsSubmittedFor, 1);
-            newState.push(characterDpsSubmittedFor);
-        }
 
         return newState;
     } else if (action.type === destroyDpsParseActions.TYPE_DELETE_MY_DPS_PARSE_SUCCESS) {
