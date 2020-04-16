@@ -49,9 +49,9 @@ return [
             'subscriptions' => env('DISCORD_SUBSCRIPTIONS_CHANNEL_ID', '551378145500987392'),
             'dps_parses_logs' => env('DISCORD_DPS_PARSES_CHANNEL_ID', '551378145500987392'),
             'pve_core_announcements' => env('DISCORD_PVE_CORE_ANNOUNCEMENTS_CHANNEL_ID', '551378145500987392'),
-            'pve_open_events' => env('DISCORD_PVE_OPEN_EVENTS_CHANNEL_ID', '635780862809604098'),
+            'pve_open_events' => env('DISCORD_PVE_OPEN_EVENTS_CHANNEL_ID', '551378145500987392'),
             'officer_hq' => env('DISCORD_OFFICER_HQ_CHANNEL_ID', '551378145500987392'),
-            'officer_logs' => env('DISCORD_OFFICER_LOGS_CHANNEL_ID', '700249699701227520'),
+            'officer_logs' => env('DISCORD_OFFICER_LOGS_CHANNEL_ID', '551378145500987392'),
         ],
     ],
     'pmg' => [
