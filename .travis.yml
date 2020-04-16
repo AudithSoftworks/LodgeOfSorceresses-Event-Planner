@@ -25,7 +25,7 @@ cache:
   npm: true
   directories:
     - ~/.cache/Cypress
-    - ~/.cache/google-fonts
+#    - ~/.cache/google-fonts
     - public/fonts
     - vendor
 
