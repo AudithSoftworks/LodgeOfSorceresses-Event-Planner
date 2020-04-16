@@ -118,6 +118,12 @@ class TrackAttendances extends Command
         $this->info('Completed.');
     }
 
+    /**
+     * @param array $message
+     *
+     * @return array
+     * @throws \Exception
+     */
     private function cleanMessage(array $message): array
     {
         # Fetch mentioned IPS OAuth accounts
@@ -128,7 +134,7 @@ class TrackAttendances extends Command
                 continue;
             }
             $mentionUser = $this->getUserForGivenDiscordRemoteId($mention['id']);
-            /** @var UserOAuth $userIpsOauth */
+            /** @var UserOAuth $mentionUserOauth */
             $mentionUserOauth = $mentionUser->linkedAccounts()->where('remote_provider', 'ips')->first();
             if ($mentionUserOauth !== null) {
                 $slug = $mentionUserOauth->remote_id . '-member';
@@ -160,15 +166,11 @@ class TrackAttendances extends Command
         # Remove mentions not allowed by Discord
         $message['content'] = preg_replace('/<?@[\S]+/', ' ', $message['content']);
 
+        $message['timestamp'] = new CarbonImmutable($message['timestamp']);
+
         return $message;
     }
 
-    /**
-     * @param array $message
-     *
-     * @return \App\Models\Attendance|null
-     * @throws \Exception
-     */
     public function persistAttendance(array $message): ?Attendance
     {
         $attendance = Attendance::query()->where('discord_message_id', '=', $message['id'])->get()->first();
@@ -180,7 +182,7 @@ class TrackAttendances extends Command
         $attendance->text = $message['content'];
         $attendance->discord_message_id = $message['id'];
         $attendance->created_by = $message['author']->id;
-        $attendance->created_at = new CarbonImmutable($message['timestamp']);
+        $attendance->created_at = $message['timestamp'];
         $attendance->isDirty() && $attendance->save();
 
         $collectionOfMentions = collect($message['mentions']);
@@ -201,7 +203,8 @@ class TrackAttendances extends Command
                 $userIpsOauth->remote_id,
                 $message['content'] = trim($message['content']),
                 $attachment['filename'],
-                base64_encode($rawContent)
+                base64_encode($rawContent),
+                $message['timestamp']
             );
             $gallery_image_ids[] = $response['id'];
         }
