@@ -7,5 +7,4 @@ if [[ $(id -g audith) != $2 || $(id -u audith) != $1 ]]; then
     usermod -u $1 -g $2 audith
 fi;
 
-mkdir -p /home/audith
 chown -R audith:audith /home/audith
