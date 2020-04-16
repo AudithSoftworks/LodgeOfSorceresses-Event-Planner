@@ -27,7 +27,7 @@ cache:
     - ~/.cache/Cypress
 #    - ~/.cache/google-fonts
     - public/fonts
-    - vendor
+#    - vendor
 
 install:
   - chmod -R 0777 ./storage/logs ./storage/framework/views

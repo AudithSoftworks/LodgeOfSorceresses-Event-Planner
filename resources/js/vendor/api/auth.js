@@ -83,17 +83,6 @@ export const postMyDpsParse = (cancelToken, characterId, data) => axios.post('/a
     throw error;
 });
 
-export const putMyDpsParse = (cancelToken, characterId, parseId, data) => axios.post('/api/users/@me/characters/' + characterId + '/parses/' + parseId, data, {
-    cancelToken: cancelToken.token,
-    headers: {
-        'X-HTTP-Method-Override': 'PUT',
-    },
-}).then(
-    response => response.status === 204
-).catch(error => {
-    throw error;
-});
-
 export const deleteMyDpsParse = (cancelToken, characterId, parseId) => axios.delete('/api/users/@me/characters/' + characterId + '/parses/' + parseId, {
     cancelToken: cancelToken.token,
 }).then(response => {
