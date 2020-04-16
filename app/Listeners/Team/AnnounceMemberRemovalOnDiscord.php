@@ -3,7 +3,6 @@
 namespace App\Listeners\Team;
 
 use App\Events\Team\MemberRemoved;
-use App\Services\TeamsAndEligibility;
 use GuzzleHttp\RequestOptions;
 
 class AnnounceMemberRemovalOnDiscord
@@ -22,10 +21,6 @@ class AnnounceMemberRemovalOnDiscord
         $team = $event->getTeam();
         $character = $event->getCharacter();
 
-        $channelToAnnounceTo = config('services.discord.channels.pve_core_announcements');
-        if ($team->tier === TeamsAndEligibility::TRAINING_TEAM_TIER) {
-            $channelToAnnounceTo = config('services.discord.channels.pve_open_events');
-        }
         $teamMentionName = '<@&' . $team->discord_role_id . '>';
         $member = $character->owner;
         /** @var \App\Models\UserOAuth $membersDiscordAccount */
@@ -43,7 +38,7 @@ class AnnounceMemberRemovalOnDiscord
          | Post removal announcement in PvE-Cores#announcements
          *-------------------------------------------------------------------------------------------------*/
 
-        $discordApi->createMessageInChannel($channelToAnnounceTo, [
+        $discordApi->createMessageInChannel(config('services.discord.channels.dps_parses_logs'), [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
                     'content' => sprintf(
