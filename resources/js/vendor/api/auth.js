@@ -69,22 +69,16 @@ export const deleteMyCharacter = (cancelToken, characterId) => axios.delete('/ap
     throw error;
 });
 
-export const getMyDpsParse = (cancelToken, characterId, parseId) => axios.get('/api/users/@me/characters/' + characterId + '/parses/' + parseId, {
-    cancelToken: cancelToken.token,
-}).then(response => {
-    if (response.data) {
-        return normalize(response.data, schema.dpsParse);
-    }
-
-    return null;
-}).catch(error => {
-    throw error;
-});
-
 export const postMyDpsParse = (cancelToken, characterId, data) => axios.post('/api/users/@me/characters/' + characterId + '/parses', data, {
     cancelToken: cancelToken.token,
 }).then(
-    response => response
+    response => {
+        if (response.data) {
+            return normalize(response.data, schema.character);
+        }
+
+        return null;
+    }
 ).catch(error => {
     throw error;
 });

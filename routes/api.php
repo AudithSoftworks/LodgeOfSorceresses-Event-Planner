@@ -39,11 +39,10 @@ $router->middleware(['auth:api', 'throttle'])->group(static function (Router $ro
         ]);
     $router
         ->apiResource('users/@me/characters/{char}/parses', 'Auth\DpsParsesController')
+        ->except(['show', 'update'])
         ->names([
             'index' => '@me.characters.parses.index',
-            'show' => '@me.characters.parses.show',
             'store' => '@me.characters.parses.store',
-            'update' => '@me.characters.parses.update',
             'destroy' => '@me.characters.parses.destroy',
         ]);
 });

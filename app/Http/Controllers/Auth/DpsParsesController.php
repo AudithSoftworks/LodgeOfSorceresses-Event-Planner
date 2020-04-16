@@ -11,6 +11,8 @@ use App\Traits\Character\HasOrIsDpsParse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -75,38 +77,13 @@ class DpsParsesController extends Controller
         $dpsParse->dps_amount = $request->get('dps_amount');
         $dpsParse->parse_file_hash = $request->get('parse_file_hash');
         $dpsParse->info_file_hash = $request->get('info_file_hash');
-        $dpsParse->sets = !empty($request->get('sets')) ? implode(',', $request->get('sets')) : null;
+        $dpsParse->sets = implode(',', $request->get('sets'));
         $dpsParse->save();
 
-        app('events')->dispatch(new DpsParseSubmitted($dpsParse));
+        Event::dispatch(new DpsParseSubmitted($dpsParse));
+        Cache::has('character-' . $dpsParse->character->id); // Recache trigger.
 
-        return response()->json(['lastInsertId' => $dpsParse->id], JsonResponse::HTTP_CREATED);
-    }
-
-    /**
-     * @param int $characterId
-     * @param int $parseId
-     *
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Auth\Access\AuthorizationException
-     */
-    public function show(int $characterId, int $parseId): JsonResponse
-    {
-        $this->authorize('user', User::class);
-        $dpsParse = DpsParse::query()
-            ->whereUserId(app('auth.driver')->id())
-            ->whereCharacterId($characterId)
-            ->whereNull('processed_by')
-            ->whereId($parseId)
-            ->first();
-        if (!$dpsParse) {
-            throw new ModelNotFoundException('Parse Not Found!');
-        }
-
-        $dpsParse->sets = $this->parseDpsParseSets($dpsParse);
-        $this->parseScreenshotFiles($dpsParse);
-
-        return response()->json($dpsParse);
+        return response()->json(Cache::get('character-' . $dpsParse->character->id), JsonResponse::HTTP_CREATED);
     }
 
     /**
@@ -129,7 +106,7 @@ class DpsParsesController extends Controller
             throw new ModelNotFoundException('Parse not found (or already processed)!');
         }
         $dpsParse->delete();
-        app('events')->dispatch(new DpsParseDeleted($dpsParse));
+        Event::dispatch(new DpsParseDeleted($dpsParse));
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);
     }
