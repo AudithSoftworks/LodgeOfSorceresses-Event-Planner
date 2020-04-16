@@ -56,11 +56,13 @@ class DpsParsesController extends Controller
             'parse_file_hash' => 'required|string',
             'info_file_hash' => 'required|string',
             'dps_amount' => 'required|numeric',
+            'sets' => 'between:2,5',
             'sets.*' => 'sometimes|required|numeric|exists:sets,id',
         ], [
             'parse_file_hash.required' => 'CMX Combat screen screenshot needs to be uploaded.',
             'info_file_hash.required' => 'CMX Info screen screenshot needs to be uploaded.',
             'dps_amount.required' => 'DPS Number is required.',
+            'sets.max' => 'Number of sets worn during Parse should be between 2 and 5',
             'sets.*.required' => 'Select sets worn during the parse.',
         ]);
         if ($validator->fails()) {
