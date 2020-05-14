@@ -84,16 +84,16 @@ body {
                     &:hover > ul.member-bar-dropdown {
                         align-self: flex-end;
                         position: absolute;
-                        right: 50%;
+                        right: 60%;
                         top: 40px;
                         border: 1px #333333 solid;
                         border-radius: 5px;
                         padding: $grid-gutter-width / 4 $grid-gutter-width / 2;
-                        margin-right: -60%;
+                        margin-right: -50%;
                         display: flex;
                         flex-direction: column;
                         background-color: white;
-                        width: 120%;
+                        width: auto;
                         list-style: none;
                         font-size: 0.70em;
                         font-weight: 700;
@@ -161,6 +161,11 @@ body {
                         margin-right: 10px;
                         border-radius: 50%;
                         box-shadow: 0 0 3px 0 rgba(200, 200, 200, 0.75);
+
+                        &.guest {
+                            border-radius: 0;
+                            box-shadow: none;
+                        }
                     }
 
                     > figcaption {
