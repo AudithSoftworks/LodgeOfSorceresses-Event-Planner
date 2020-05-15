@@ -14,9 +14,8 @@ class RenameApprovedByInDpsParsesTable extends Migration
     public function up(): void
     {
         Schema::table('dps_parses', static function (Blueprint $table) {
-            $table->renameColumn('approved_by', 'processed_by');
             $table->dropForeign('dps_parses_approved_by_foreign');
-
+            $table->renameColumn('approved_by', 'processed_by');
             $table->foreign('processed_by')->references('id')->on('users')->onUpdate('cascade')->onDelete('restrict');
         });
     }
@@ -29,9 +28,8 @@ class RenameApprovedByInDpsParsesTable extends Migration
     public function down(): void
     {
         Schema::table('dps_parses', static function (Blueprint $table) {
-            $table->renameColumn('processed_by', 'approved_by');
             $table->dropForeign('dps_parses_processed_by_foreign');
-
+            $table->renameColumn('processed_by', 'approved_by');
             $table->foreign('approved_by')->references('id')->on('users')->onUpdate('cascade')->onDelete('restrict');
         });
     }
