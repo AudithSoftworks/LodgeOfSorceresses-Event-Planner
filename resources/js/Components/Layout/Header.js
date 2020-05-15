@@ -4,8 +4,8 @@ import(
     '../../../sass/_header.scss'
     );
 
-import { faCampfire, faChess, faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faUsersClass } from '@fortawesome/pro-light-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome/index';
+import { faAnalytics, faCampfire, faChess, faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faUsersClass } from '@fortawesome/pro-light-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -107,10 +107,10 @@ class Header extends Component {
         const memberBarFirstSection = me ? (
             <li className="chevron" aria-haspopup='true'>
                 <figure>
-                    <img alt={(me.name ? '@' + me.name : email) || 'The Soulless One'}
-                         src={me && me.avatar ? me.avatar : '/images/touch-icon-ipad.png'}
-                         className={me && me.avatar ? '' : 'guest'} />
-                    <figcaption>{(me.name ? '@' + me.name : email) || 'The Soulless One'}</figcaption>
+                    <img alt={(me.name ? '@' + me.name : email) || "The Soulless One"}
+                         src={me && me.avatar ? me.avatar : "/images/touch-icon-ipad.png"}
+                         className={me && me.avatar ? "" : "guest"} />
+                    <figcaption>{(me.name ? '@' + me.name : email) || "The Soulless One"}</figcaption>
                 </figure>
                 <FontAwesomeIcon icon={faChevronDown} className="ml-2" />
                 <ul className="member-bar-dropdown">
@@ -132,12 +132,22 @@ class Header extends Component {
 
         return (
             <header className="container">
-                <h1 className="col-xs-24 col-md-18">Lodge of Sorceresses</h1>
+                <h1 className="col-xs-24 col-md-17 col-lg-12">Lodge of Sorceresses</h1>
                 <ul className="member-bar d-none d-md-flex">
                     {memberBarFirstSection}
-                    <li>
-                        <a href="https://lodgeofsorceresses.com" title="Forums">
-                            <FontAwesomeIcon icon={faGlobe} size="lg" />
+                    <li className='d-none d-lg-block'>
+                        <a href="https://lodgeofsorceresses.com" title="Forums" target="_blank">
+                            <FontAwesomeIcon icon={faGlobe} size="lg" /> Forums
+                        </a>
+                    </li>
+                    <li className='d-none d-lg-block'>
+                        <a href="https://www.esologs.com/guild/autojoin/521/XTk263af" title="ESOLogs" target="_blank">
+                            <FontAwesomeIcon icon={faAnalytics} size="lg" /> ESOLogs
+                        </a>
+                    </li>
+                    <li className='d-none d-lg-block'>
+                        <a href="https://discord.gg/mK8aNVz" title="ESOLogs" target="_blank">
+                            <FontAwesomeIcon icon={['fab', 'discord']} size='lg' /> Discord
                         </a>
                     </li>
                 </ul>
