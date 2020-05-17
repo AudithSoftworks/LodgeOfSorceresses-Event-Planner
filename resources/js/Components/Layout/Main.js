@@ -8,19 +8,25 @@ import { user } from "../../vendor/data";
 import Loading from '../Loading';
 
 const Init = React.lazy(
-    () => import(/* webpackPrefetch: true, webpackChunkName: "controllers-init" */ '../../Controllers/Init')
+    () => import(/* webpackPreload: true, webpackChunkName: "controllers-init" */ '../../Controllers/Init')
+);
+const OnboardingMembersStep1 = React.lazy(
+    () => import(/* webpackPrefetch: 50, webpackChunkName: "controllers-init" */ '../../Components/Onboarding/Members/Step1')
+);
+const OnboardingSoulshrivenStep1 = React.lazy(
+    () => import(/* webpackPrefetch: 50, webpackChunkName: "controllers-init" */ '../../Components/Onboarding/Soulshriven/Step1')
 );
 const Home = React.lazy(
-    () => import(/* webpackPrefetch: true, webpackChunkName: "controllers-home" */ '../../Controllers/Home')
+    () => import(/* webpackPrefetch: 50, webpackChunkName: "controllers-home" */ '../../Controllers/Home')
 );
 const Users = React.lazy(
-    () => import(/* webpackPrefetch: true, webpackChunkName: "controllers-users" */ '../../Controllers/Users')
+    () => import(/* webpackPrefetch: 40, webpackChunkName: "controllers-users" */ '../../Controllers/Users')
 );
 const Characters = React.lazy(
     () => import(/* webpackPrefetch: true, webpackChunkName: "controllers-characters" */ '../../Controllers/Characters')
 );
 const MyCharacters = React.lazy(
-    () => import(/* webpackPrefetch: true, webpackChunkName: "controllers-my-characters" */ '../../Controllers/Auth/Characters')
+    () => import(/* webpackPrefetch: 40, webpackChunkName: "controllers-my-characters" */ '../../Controllers/Auth/Characters')
 );
 const CharacterForm = React.lazy(
     () => import(/* webpackPrefetch: true, webpackChunkName: "controllers-character_form" */ '../../Controllers/Forms/CharacterForm')
@@ -31,14 +37,14 @@ const DpsParses = React.lazy(
 const DpsParseForm = React.lazy(
     () => import(/* webpackPrefetch: true, webpackChunkName: "controllers-dps_parse_form" */ '../../Controllers/Forms/DpsParseForm')
 );
-const Events = React.lazy(
-    () => import(/* webpackPrefetch: true, webpackChunkName: "controllers-events" */ '../../Controllers/Events')
-);
-const EventForm = React.lazy(
-    () => import(/* webpackPrefetch: true, webpackChunkName: "controllers-event_form" */ '../../Controllers/Forms/EventForm')
-);
+// const Events = React.lazy(
+//     () => import(/* webpackPrefetch: 40, webpackChunkName: "controllers-events" */ '../../Controllers/Events')
+// );
+// const EventForm = React.lazy(
+//     () => import(/* webpackPrefetch: true, webpackChunkName: "controllers-event_form" */ '../../Controllers/Forms/EventForm')
+// );
 const Teams = React.lazy(
-    () => import(/* webpackPrefetch: true, webpackChunkName: "controllers-teams" */ '../../Controllers/Teams')
+    () => import(/* webpackPrefetch: 40, webpackChunkName: "controllers-teams" */ '../../Controllers/Teams')
 );
 const TeamForm = React.lazy(
     () => import(/* webpackPrefetch: true, webpackChunkName: "controllers-team_form" */ '../../Controllers/Forms/TeamForm')
@@ -48,7 +54,7 @@ const TeamMembershipTerms = React.lazy(
 );
 
 const AdminHome = React.lazy(
-    () => import(/* webpackPrefetch: true, webpackChunkName: "controllers-admin-home" */ '../../Controllers/Admin/Home')
+    () => import(/* webpackPrefetch: 40, webpackChunkName: "controllers-admin-home" */ '../../Controllers/Admin/Home')
 );
 const AdminDpsParses = React.lazy(
     () => import(/* webpackPrefetch: true, webpackChunkName: "controllers-admin-dps-parses" */ '../../Controllers/Admin/DpsParses')
@@ -118,6 +124,8 @@ class Main extends PureComponent {
                 <Suspense fallback={<Loading />}>
                     <Switch>
                         <Route exact path="/" component={props => <Init {...props} />} />
+                        <Route exact path="/onboarding/members/step-1" component={props => <OnboardingMembersStep1 {...props} />} />
+                        <Route exact path="/onboarding/soulshriven/step-1" component={props => <OnboardingSoulshrivenStep1 {...props} />} />
                         <Route exact path="/dashboard" component={props => <Home {...props} />} />
                         {[...this.fetchUserRoutes()]}
                         {[...this.fetchAdminRoutes()]}

@@ -113,8 +113,9 @@ class LoginController extends Controller
             Auth::login($ownerAccount);
             event(new LoggedIn($ownerAccount));
 
-            $owningOAuthAccount->remote_secondary_groups !== $oauthTwoUser->remoteSecondaryGroups
-            && $owningOAuthAccount->remote_secondary_groups = implode(',', $oauthTwoUser->getRemoteSecondaryGroups());
+            if ($owningOAuthAccount->remote_secondary_groups !== $oauthTwoUser->remoteSecondaryGroups) {
+                $owningOAuthAccount->remote_secondary_groups = implode(',', $oauthTwoUser->remoteSecondaryGroups ?? []);
+            }
             $owningOAuthAccount->token = $oauthTwoUser->token;
             $owningOAuthAccount->token_expires_at = new Carbon(sprintf('+%d seconds', $oauthTwoUser->expiresIn));
             $owningOAuthAccount->refresh_token = $oauthTwoUser->refreshToken;

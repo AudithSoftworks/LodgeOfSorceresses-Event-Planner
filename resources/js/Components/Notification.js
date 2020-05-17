@@ -1,6 +1,6 @@
-import { library } from '@fortawesome/fontawesome-svg-core/index';
-import { faCheckCircle, faExclamationCircle, faInfoCircle } from '@fortawesome/pro-solid-svg-icons/index';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome/index';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faCheckCircle, faExclamationCircle, faInfoCircle } from '@fortawesome/pro-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactNotification from 'react-notifications-component';
