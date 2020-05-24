@@ -15,25 +15,27 @@ class IpsApi extends AbstractApi
 
     public const CALENDAR_MIDGAME = 5;
 
-    public const MEMBER_GROUPS_SOULSHRIVEN = 3;
+    public const MEMBER_GROUP_SOULSHRIVEN = 3;
 
-    public const MEMBER_GROUPS_INITIATE = 28;
+    public const MEMBER_GROUP_MEMBERS = 30;
 
-    public const MEMBER_GROUPS_NEOPHYTE = 8;
+    public const MEMBER_GROUP_INITIATE = 28;
 
-    public const MEMBER_GROUPS_PRACTICUS = 19;
+    public const MEMBER_GROUP_NEOPHYTE = 8;
 
-    public const MEMBER_GROUPS_ADEPTUS_MINOR = 20;
+    public const MEMBER_GROUP_PRACTICUS = 19;
 
-    public const MEMBER_GROUPS_ADEPTUS_MAJOR = 21;
+    public const MEMBER_GROUP_ADEPTUS_MINOR = 20;
 
-    public const MEMBER_GROUPS_DOMINUS_LIMINIS = 22;
+    public const MEMBER_GROUP_ADEPTUS_MAJOR = 21;
 
-    public const MEMBER_GROUPS_ADEPTUS_EXEMPTUS = 25;
+    public const MEMBER_GROUP_DOMINUS_LIMINIS = 22;
 
-    public const MEMBER_GROUPS_MAGISTER_TEMPLI = 6;
+    public const MEMBER_GROUP_ADEPTUS_EXEMPTUS = 25;
 
-    public const MEMBER_GROUPS_IPSISSIMUS = 4;
+    public const MEMBER_GROUP_MAGISTER_TEMPLI = 6;
+
+    public const MEMBER_GROUP_IPSISSIMUS = 4;
 
     public const USER_ID_FOR_DANDELION = 2533;
 
@@ -226,5 +228,27 @@ class IpsApi extends AbstractApi
 
             return json_decode($response->getBody()->getContents(), true);
         }, $album, $author, $caption, $filename, $image, $date);
+    }
+
+    /*------------------------------------
+     | /cms/records
+     *-----------------------------------*/
+
+    public function getCmsRecords(int $database): array
+    {
+        return $this->executeCallback(function (int $database) {
+            $response = $this->getApiClient()->get('cms/records/' . $database);
+
+            return json_decode($response->getBody()->getContents(), true);
+        }, $database);
+    }
+
+    public function getCmsRecord(int $database, int $record): array
+    {
+        return $this->executeCallback(function (int $database, int $record) {
+            $response = $this->getApiClient()->get(sprintf('cms/records/%d/%d', $database, $record));
+
+            return json_decode($response->getBody()->getContents(), true);
+        }, $database, $record);
     }
 }

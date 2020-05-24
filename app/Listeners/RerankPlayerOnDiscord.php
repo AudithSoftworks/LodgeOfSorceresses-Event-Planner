@@ -3,12 +3,11 @@
 use App\Models\UserOAuth;
 use App\Services\DiscordApi;
 use App\Services\GuildRanksAndClearance;
-use App\Services\IpsApi;
 use App\Singleton\RoleTypes;
 use Cloudinary;
 use GuzzleHttp\RequestOptions;
 
-class RerankPlayerOnIpsAndDiscord
+class RerankPlayerOnDiscord
 {
     /**
      * @var \App\Models\Character
@@ -41,14 +40,9 @@ class RerankPlayerOnIpsAndDiscord
         $recalculatedClearanceLevelOfUser = $guildRankAndClearance->calculateClearanceLevelOfUser($parseAuthor);
         $userShouldRetainRoleTagOnDiscord = $guildRankAndClearance->determineIfUserHasOtherRankedCharactersWithGivenRole($parseAuthor, $this->character->role);
 
-        /** @var null|\App\Models\UserOAuth $parseOwnersIpsAccount */
-        $parseOwnersIpsAccount = $parseAuthor->linkedAccounts()->where('remote_provider', 'ips')->first();
         /** @var null|\App\Models\UserOAuth $parseOwnersDiscordAccount */
         $parseOwnersDiscordAccount = $parseAuthor->linkedAccounts()->where('remote_provider', 'discord')->first();
 
-        if ($parseOwnersIpsAccount !== null) {
-            $this->rerankUserOnIps($parseOwnersIpsAccount, $recalculatedClearanceLevelOfUser);
-        }
         $mentionedName = $parseAuthor->name;
         $isParseOwnerASoulshriven = true;
         if ($parseOwnersDiscordAccount !== null) {
@@ -62,26 +56,6 @@ class RerankPlayerOnIpsAndDiscord
         }
 
         return true;
-    }
-
-    private function rerankUserOnIps(UserOAuth $remoteIpsUser, int $clearanceLevel): void
-    {
-        if (in_array($remoteIpsUser->remote_primary_group, [IpsApi::MEMBER_GROUPS_IPSISSIMUS, IpsApi::MEMBER_GROUPS_MAGISTER_TEMPLI], false)) {
-            return;
-        }
-
-        $memberGroupId = $clearanceLevel ? GuildRanksAndClearance::CLEARANCE_LEVELS[$clearanceLevel]['rank']['ipsGroupId'] : IpsApi::MEMBER_GROUPS_INITIATE;
-
-        if ($remoteIpsUser->remote_primary_group === IpsApi::MEMBER_GROUPS_SOULSHRIVEN) {
-            $remoteSecondaryGroups = [(string)$memberGroupId];
-            app('ips.api')->editUser($remoteIpsUser->remote_id, ['secondaryGroups' => $remoteSecondaryGroups]);
-            $remoteIpsUser->remote_secondary_groups = implode(',', $remoteSecondaryGroups);
-        } else {
-            app('ips.api')->editUser($remoteIpsUser->remote_id, ['group' => $memberGroupId]);
-            $remoteIpsUser->remote_primary_group = $memberGroupId;
-        }
-
-        $remoteIpsUser->save();
     }
 
     private function rerankUserOnDiscord(UserOAuth $remoteDiscordUser, int $clearanceLevel, bool $userShouldRetainRoleTagOnDiscord): void

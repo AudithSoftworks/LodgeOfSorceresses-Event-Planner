@@ -9,7 +9,7 @@ class GuildRanksAndClearance
 {
     public const RANK_SOULSHRIVEN = [
         'title' => 'Soulshriven',
-        'ipsGroupId' => IpsApi::MEMBER_GROUPS_SOULSHRIVEN,
+        'ipsGroupId' => IpsApi::MEMBER_GROUP_SOULSHRIVEN,
         'discordRole' => DiscordApi::ROLE_SOULSHRIVEN,
         'discordShrivenRole' => DiscordApi::ROLE_SOULSHRIVEN,
         'isMember' => true,
@@ -18,7 +18,7 @@ class GuildRanksAndClearance
 
     public const RANK_INITIATE = [
         'title' => 'Initiate',
-        'ipsGroupId' => IpsApi::MEMBER_GROUPS_INITIATE,
+        'ipsGroupId' => IpsApi::MEMBER_GROUP_MEMBERS,
         'discordRole' => DiscordApi::ROLE_INITIATE,
         'discordShrivenRole' => DiscordApi::ROLE_INITIATE_SHRIVEN,
         'isMember' => true,
@@ -27,7 +27,7 @@ class GuildRanksAndClearance
 
     public const RANK_NEOPHYTE = [
         'title' => 'Neophyte',
-        'ipsGroupId' => IpsApi::MEMBER_GROUPS_NEOPHYTE,
+        'ipsGroupId' => IpsApi::MEMBER_GROUP_NEOPHYTE,
         'discordRole' => DiscordApi::ROLE_NEOPHYTE,
         'discordShrivenRole' => DiscordApi::ROLE_NEOPHYTE_SHRIVEN,
         'isMember' => true,
@@ -36,7 +36,7 @@ class GuildRanksAndClearance
 
     public const RANK_PRACTICUS = [
         'title' => 'Practicus',
-        'ipsGroupId' => IpsApi::MEMBER_GROUPS_PRACTICUS,
+        'ipsGroupId' => IpsApi::MEMBER_GROUP_PRACTICUS,
         'discordRole' => DiscordApi::ROLE_PRACTICUS,
         'discordShrivenRole' => DiscordApi::ROLE_PRACTICUS_SHRIVEN,
         'isMember' => true,
@@ -45,7 +45,7 @@ class GuildRanksAndClearance
 
     public const RANK_ADEPTUS_MINOR = [
         'title' => 'Adeptus Minor',
-        'ipsGroupId' => IpsApi::MEMBER_GROUPS_ADEPTUS_MINOR,
+        'ipsGroupId' => IpsApi::MEMBER_GROUP_ADEPTUS_MINOR,
         'discordRole' => DiscordApi::ROLE_ADEPTUS_MINOR,
         'discordShrivenRole' => DiscordApi::ROLE_ADEPTUS_MINOR_SHRIVEN,
         'isMember' => true,
@@ -54,7 +54,7 @@ class GuildRanksAndClearance
 
     public const RANK_ADEPTUS_MAJOR = [
         'title' => 'Adeptus Major',
-        'ipsGroupId' => IpsApi::MEMBER_GROUPS_ADEPTUS_MAJOR,
+        'ipsGroupId' => IpsApi::MEMBER_GROUP_ADEPTUS_MAJOR,
         'discordRole' => DiscordApi::ROLE_ADEPTUS_MAJOR,
         'discordShrivenRole' => DiscordApi::ROLE_ADEPTUS_MAJOR_SHRIVEN,
         'isMember' => true,
@@ -63,7 +63,7 @@ class GuildRanksAndClearance
 
     public const RANK_DOMINUS_LIMINIS = [
         'title' => 'Dominus Liminis',
-        'ipsGroupId' => IpsApi::MEMBER_GROUPS_DOMINUS_LIMINIS,
+        'ipsGroupId' => IpsApi::MEMBER_GROUP_DOMINUS_LIMINIS,
         'discordRole' => DiscordApi::ROLE_DOMINUS_LIMINIS,
         'discordShrivenRole' => null,
         'isMember' => true,
@@ -72,7 +72,7 @@ class GuildRanksAndClearance
 
     public const RANK_ADEPTUS_EXEMPTUS = [
         'title' => 'Adeptus Exemptus',
-        'ipsGroupId' => IpsApi::MEMBER_GROUPS_ADEPTUS_EXEMPTUS,
+        'ipsGroupId' => IpsApi::MEMBER_GROUP_ADEPTUS_EXEMPTUS,
         'discordRole' => DiscordApi::ROLE_ADEPTUS_EXEMPTUS,
         'discordShrivenRole' => null,
         'isMember' => true,
@@ -81,7 +81,7 @@ class GuildRanksAndClearance
 
     public const RANK_MAGISTER_TEMPLI = [
         'title' => 'Magister Templi',
-        'ipsGroupId' => IpsApi::MEMBER_GROUPS_MAGISTER_TEMPLI,
+        'ipsGroupId' => IpsApi::MEMBER_GROUP_MAGISTER_TEMPLI,
         'discordRole' => DiscordApi::ROLE_MAGISTER_TEMPLI,
         'discordShrivenRole' => null,
         'isMember' => true,
@@ -90,7 +90,7 @@ class GuildRanksAndClearance
 
     public const RANK_IPSISSIMUS = [
         'title' => 'Magister Templi',
-        'ipsGroupId' => IpsApi::MEMBER_GROUPS_IPSISSIMUS,
+        'ipsGroupId' => IpsApi::MEMBER_GROUP_IPSISSIMUS,
         'discordRole' => DiscordApi::ROLE_MAGISTER_TEMPLI,
         'discordShrivenRole' => null,
         'isMember' => true,

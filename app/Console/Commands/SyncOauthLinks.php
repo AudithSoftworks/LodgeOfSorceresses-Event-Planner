@@ -182,7 +182,7 @@ class SyncOauthLinks extends Command
                 $discordOauthAccount = $linkedAccounts->firstWhere('remote_provider', 'discord');
                 if ($ipsOauthAccount !== null && $discordOauthAccount === null) {
                     $this->warn('[' . $ipsOauthAccount->name . ']' . ' User has left Discord and has IPS account. Setting them as Soulshriven on IPS...');
-                    app('ips.api')->editUser($ipsOauthAccount->remote_id, ['group' => IpsApi::MEMBER_GROUPS_SOULSHRIVEN, 'secondaryGroups' => []]);
+                    app('ips.api')->editUser($ipsOauthAccount->remote_id, ['group' => IpsApi::MEMBER_GROUP_SOULSHRIVEN, 'secondaryGroups' => []]);
                     $this->warn('[@' . $user->name . ']' . ' Now deleting them on Planner...');
                     $user->delete();
                     $this->info('[@' . $user->name . ']' . ' Deleted.');
