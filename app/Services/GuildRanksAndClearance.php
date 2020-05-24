@@ -141,6 +141,26 @@ class GuildRanksAndClearance
         return !empty($resultSet);
     }
 
+    public function promoteCharacter(Character $character): bool
+    {
+        if ($character->approved_for_tier === self::CLEARANCE_TIER_4) {
+            throw new UnexpectedValueException('Failed! Character already has the highest clearance level.');
+        }
+        ++$character->approved_for_tier;
+
+        return $character->isDirty() && $character->save();
+    }
+
+    public function demoteCharacter(Character $character): bool
+    {
+        if ($character->approved_for_tier === self::CLEARANCE_TIER_0) {
+            throw new UnexpectedValueException('Failed! Character already has the lowest clearance level.');
+        }
+        --$character->approved_for_tier;
+
+        return $character->isDirty() && $character->save();
+    }
+
     public function processDpsParse(DpsParse $dpsParse): bool
     {
         $dpsParse->loadMissing('character');
@@ -165,33 +185,10 @@ class GuildRanksAndClearance
 
         $setsWornDuringParse = collect(explode(',', $dpsParse->sets));
         $characterSets = collect(explode(',', $character->sets));
-        $setsToBeAddedToCharacter = $setsWornDuringParse->diff($characterSets);
-        if ($setsToBeAddedToCharacter->count()) {
-            $character->sets = $setsToBeAddedToCharacter->merge($characterSets)->unique()->implode(',');
-        }
+        $character->sets = $characterSets->merge($setsWornDuringParse)->unique()->implode(',');
 
         $character->save();
 
         return true;
-    }
-
-    public function promoteCharacter(Character $character): bool
-    {
-        if ($character->approved_for_tier === self::CLEARANCE_TIER_4) {
-            throw new UnexpectedValueException('Failed! Character already has the highest clearance level.');
-        }
-        ++$character->approved_for_tier;
-
-        return $character->isDirty() && $character->save();
-    }
-
-    public function demoteCharacter(Character $character): bool
-    {
-        if ($character->approved_for_tier === self::CLEARANCE_TIER_0) {
-            throw new UnexpectedValueException('Failed! Character already has the lowest clearance level.');
-        }
-        --$character->approved_for_tier;
-
-        return $character->isDirty() && $character->save();
     }
 }
