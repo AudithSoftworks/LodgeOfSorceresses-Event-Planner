@@ -1,9 +1,7 @@
-// noinspection ES6CheckImport
 import { ConnectedRouter } from 'connected-react-router/immutable';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { connect } from "react-redux";
-import getGroupsAction from "../actions/get-groups";
 import getUserAction from "../actions/get-user";
 import Footer from '../Components/Layout/Footer';
 import Header from '../Components/Layout/Header';
@@ -20,16 +18,12 @@ class Application extends PureComponent {
     };
 
     componentDidMount = () => {
-        const { me } = this.props;
-        this.props.getGroupsAction()
-            .then(() => {
-                if (!me) {
-                    this.props.getUserAction()
-                        .then(() => {
-                            this.setState({ precheckDone: true });
-                        });
-                }
-            });
+        if (!this.props.me) {
+            this.props.getUserAction()
+                .then(() => {
+                    this.setState({ precheckDone: true });
+                });
+        }
     };
 
     render = () => {
@@ -55,20 +49,16 @@ Application.propTypes = {
     history: PropTypes.object.isRequired,
 
     me: user,
-    groups: PropTypes.object,
     getUserAction: PropTypes.func.isRequired,
-    getGroupsAction: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
     me: state.getIn(['me']),
-    groups: state.getIn(['groups']),
 });
 
 const mapDispatchToProps = dispatch => ({
     dispatch,
     getUserAction: () => dispatch(getUserAction()),
-    getGroupsAction: () => dispatch(getGroupsAction()),
 });
 
 export default connect(

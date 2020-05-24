@@ -4,7 +4,6 @@ use Illuminate\Routing\Router;
 
 /** @var \Illuminate\Routing\Router $router */
 $router->middleware(['api', 'throttle'])->group(static function (Router $router) {
-    $router->apiResource('groups', 'GroupsController')->only(['index']);
     $router->apiResource('content', 'ContentController')->only(['index']);
 });
 
