@@ -6,15 +6,10 @@ import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import * as Calendar from '../Components/Events/Calendar';
 import Notification from '../Components/Notification';
-import { authorizeAdmin, renderActionList } from '../helpers';
+import { renderActionList } from '../helpers';
 import { user } from '../vendor/data';
 
 class Events extends PureComponent {
-    constructor(props) {
-        super(props);
-        this.authorizeAdmin = authorizeAdmin.bind(this);
-    }
-
     componentWillUnmount = () => {
         this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
     };
@@ -26,7 +21,7 @@ class Events extends PureComponent {
         }
 
         const actionList = {
-            create: this.authorizeAdmin() ? (
+            create: me.isAdmin ? (
                 <Link to="/events/create" className="ne-corner" title="Add New Event">
                     <FontAwesomeIcon icon={faCalendarPlus} />
                 </Link>
@@ -53,14 +48,12 @@ Events.propTypes = {
 
     axiosCancelTokenSource: PropTypes.object,
     me: user,
-    groups: PropTypes.object,
     notifications: PropTypes.array,
 };
 
 const mapStateToProps = state => ({
     axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
     me: state.getIn(['me']),
-    groups: state.getIn(['groups']),
     notifications: state.getIn(['notifications']),
 });
 

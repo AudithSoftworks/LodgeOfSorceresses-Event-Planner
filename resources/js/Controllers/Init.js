@@ -96,7 +96,6 @@ Init.propTypes = {
 
     axiosCancelTokenSource: PropTypes.object,
     me: user,
-    groups: PropTypes.object,
     sets: PropTypes.array,
     skills: PropTypes.array,
     myCharacters: characters,
@@ -110,7 +109,6 @@ Init.propTypes = {
 const mapStateToProps = state => ({
     axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
     me: state.getIn(['me']),
-    groups: state.getIn(['groups']),
     sets: state.getIn(['sets']),
     skills: state.getIn(['skills']),
     content: state.getIn(['content']),

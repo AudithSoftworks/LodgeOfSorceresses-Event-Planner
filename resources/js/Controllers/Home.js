@@ -106,7 +106,6 @@ Home.propTypes = {
 
     axiosCancelTokenSource: PropTypes.object,
     me: user,
-    groups: PropTypes.object,
     notifications: PropTypes.array,
 
     putUserAction: PropTypes.func.isRequired,
@@ -115,7 +114,6 @@ Home.propTypes = {
 const mapStateToProps = state => ({
     axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
     me: state.getIn(['me']),
-    groups: state.getIn(['groups']),
     notifications: state.getIn(['notifications']),
 });
 

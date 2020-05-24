@@ -1,9 +1,8 @@
-import PropTypes from "prop-types";
 import React, { Fragment, PureComponent, Suspense } from 'react';
 import { connect } from "react-redux";
 import { Route, Switch } from 'react-router-dom';
 import NoMatch from '../../Controllers/NoMatch';
-import { authorizeAdmin, authorizeUser } from "../../helpers";
+import { authorizeUser } from "../../helpers";
 import { user } from "../../vendor/data";
 import Loading from '../Loading';
 
@@ -64,7 +63,6 @@ class Main extends PureComponent {
     constructor(props) {
         super(props);
         this.authorizeUser = authorizeUser.bind(this);
-        this.authorizeAdmin = authorizeAdmin.bind(this);
     }
 
     fetchUserRoutes = () => {
@@ -103,8 +101,8 @@ class Main extends PureComponent {
         ] : [];
     };
 
-    fetchAdminRoutes = () => {
-        return this.authorizeAdmin() ? [
+    fetchAdminRoutes = (me) => {
+        return me && me.isAdmin ? [
             <Route
                 key="/admin"
                 path="/admin"
@@ -119,6 +117,8 @@ class Main extends PureComponent {
     };
 
     render = () => {
+        const { me } = this.props;
+
         return [
             <main key="main" className="container">
                 <Suspense fallback={<Loading />}>
@@ -127,8 +127,8 @@ class Main extends PureComponent {
                         <Route exact path="/onboarding/members/step-1" component={props => <OnboardingMembersStep1 {...props} />} />
                         <Route exact path="/onboarding/soulshriven/step-1" component={props => <OnboardingSoulshrivenStep1 {...props} />} />
                         <Route exact path="/dashboard" component={props => <Home {...props} />} />
-                        {[...this.fetchUserRoutes()]}
-                        {[...this.fetchAdminRoutes()]}
+                        {[...this.fetchUserRoutes(me)]}
+                        {[...this.fetchAdminRoutes(me)]}
                         <Route component={NoMatch} />
                     </Switch>
                 </Suspense>
@@ -139,12 +139,10 @@ class Main extends PureComponent {
 
 Main.propTypes = {
     me: user,
-    groups: PropTypes.object,
 };
 
 const mapStateToProps = state => ({
     me: state.getIn(['me']),
-    groups: state.getIn(['groups']),
 });
 
 const mapDispatchToProps = dispatch => ({

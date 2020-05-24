@@ -1,9 +1,9 @@
 import React from "react";
 
 export const authorizeUser = function (withAdditionalPrechecks = false) {
-    const { me, groups } = this.props;
+    const { me } = this.props;
 
-    if (!me || !groups || !me.linkedAccountsParsed || !me.linkedAccountsParsed.discord) {
+    if (!me) {
         return false;
     }
 
@@ -11,34 +11,11 @@ export const authorizeUser = function (withAdditionalPrechecks = false) {
         return false;
     }
 
-    const discordGroups = me.linkedAccountsParsed.discord.remote_secondary_groups;
-    if (discordGroups && discordGroups.length) {
-        const listOfUserGroups = discordGroups.find(discordRole => {
-            const matchingGroup = Object.entries(groups).find(group => discordRole === group[1]["discordRole"]);
-
-            return matchingGroup === undefined ? false : matchingGroup["1"]["isMember"];
-        });
-
-        return listOfUserGroups !== undefined;
-    }
-
-    return false;
+    return me.isMember || me.isSoulshriven;
 };
 
-export const authorizeAdmin = function () {
-    const { me, groups } = this.props;
-
-    if (!me || !groups || !me.linkedAccountsParsed || !me.linkedAccountsParsed.ips) {
-        return false;
-    }
-
-    const myGroup = Object.entries(groups).find(group => me.linkedAccountsParsed.ips.remote_primary_group === group[1]["ipsGroupId"]);
-
-    return !(!myGroup || !myGroup[1]["isAdmin"]);
-};
-
-export const authorizeTeamManager = ({ me, team, authorizedAsAdmin }) => {
-    return me.id === team.led_by.id || me.id === team.created_by.id || authorizedAsAdmin;
+export const authorizeTeamManager = ({ me, team }) => {
+    return me.id === team.led_by.id || me.id === team.created_by.id || me.isAdmin;
 };
 
 export const renderActionList = actionList => {

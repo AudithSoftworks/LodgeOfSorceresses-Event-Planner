@@ -3,31 +3,25 @@
 namespace App\Traits\User;
 
 use App\Models\User;
-use App\Services\DiscordApi;
 use App\Services\GuildRanksAndClearance;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Gate;
 
 trait IsUser
 {
     public function parseLinkedAccounts(User $user): void
     {
-        /** @var \App\Models\UserOAuth[] $linkedAccountsParsed */
         $linkedAccountsParsed = $user->linkedAccounts->keyBy('remote_provider');
-        $user->isMember = $user->isSoulshriven = false;
         foreach ($linkedAccountsParsed as $linkedAccount) {
-            if ($linkedAccount->remote_secondary_groups !== null) {
-                $linkedAccount->remote_secondary_groups = empty($linkedAccount->remote_secondary_groups)
-                    ? []
-                    : explode(',', $linkedAccount->remote_secondary_groups);
-                if ($linkedAccount->remote_provider === 'discord') {
-                    $user->isMember = in_array(DiscordApi::ROLE_MEMBERS, $linkedAccount->remote_secondary_groups, true);
-                    $user->isSoulshriven = in_array(DiscordApi::ROLE_SOULSHRIVEN, $linkedAccount->remote_secondary_groups, true);
-                }
-                unset($linkedAccount->email);
-            }
+            $linkedAccount->remote_secondary_groups = !empty($linkedAccount->remote_secondary_groups)
+                ? explode(',', $linkedAccount->remote_secondary_groups)
+                : [];
         }
         $user->linkedAccountsParsed = $linkedAccountsParsed;
-        $user->makeVisible(['linkedAccountsParsed', 'isMember', 'isSoulshriven']);
+        $user->isMember = Gate::forUser($user)->allows('is-member');
+        $user->isSoulshriven = Gate::forUser($user)->allows('is-soulshriven');
+        $user->isAdmin = Gate::forUser($user)->allows('is-admin');
+        $user->makeVisible(['linkedAccountsParsed', 'isMember', 'isSoulshriven', 'isAdmin']);
         $user->makeHidden(['linkedAccounts']);
     }
 
