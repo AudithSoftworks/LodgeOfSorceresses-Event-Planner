@@ -101,11 +101,14 @@ class Recache
     {
         $character = Character::query()
             ->with([
+                'content',
                 'dpsParses' => static function (HasMany $query) {
                     $query->orderBy('id', 'desc');
                 },
-                'content',
                 'owner',
+                'teams' => static function (BelongsToMany $query) {
+                    $query->wherePivot('status', true);
+                },
             ])
             ->whereHas('owner', static function (Builder $query) {
                 $query->whereNull('deleted_at');
