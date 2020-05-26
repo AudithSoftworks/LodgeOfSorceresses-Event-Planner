@@ -97,7 +97,7 @@ class EventServiceProvider extends ServiceProvider
         Events\User\LoggedIn::class => [],
         Events\User\LoggedOut::class => [],
         Events\User\Registered::class => [],
-        Events\User\Updated::class => [
+        Events\User\NameUpdated::class => [
             Listeners\User\UpdateDiscordAndForumNames::class,
             Listeners\Cache\DeleteUserCache::class,
         ],

@@ -2,16 +2,16 @@
 
 namespace App\Listeners\User;
 
-use App\Events\User\Updated;
+use App\Events\User\NameUpdated;
 
 class UpdateDiscordAndForumNames
 {
     /**
-     * @param \App\Events\User\Updated $event
+     * @param \App\Events\User\NameUpdated $event
      *
      * @return bool
      */
-    public function handle(Updated $event): bool
+    public function handle(NameUpdated $event): bool
     {
         $user = $event->getUser();
         $ingameUserId = $user->name;

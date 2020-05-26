@@ -1,6 +1,6 @@
 <?php namespace App\Http\Controllers\Auth;
 
-use App\Events\User\Updated;
+use App\Events\User\NameUpdated;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Traits\User\IsUser;
@@ -37,9 +37,9 @@ class UsersController extends Controller
     /**
      * @param \Illuminate\Http\Request $request
      *
-     * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      * @throws \Illuminate\Validation\ValidationException
+     * @return \Illuminate\Http\JsonResponse
      */
     public function updateMe(Request $request): JsonResponse
     {
@@ -58,7 +58,7 @@ class UsersController extends Controller
         $me->name = ltrim($request->get('name'), '@');
         $me->save();
 
-        Event::dispatch(new Updated($me));
+        Event::dispatch(new NameUpdated($me));
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);
     }
