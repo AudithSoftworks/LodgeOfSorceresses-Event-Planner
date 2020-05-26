@@ -1,4 +1,6 @@
-<?php namespace App\Http\Controllers;
+<?php /** @noinspection PhpUnused */
+
+namespace App\Http\Controllers;
 
 use App\Events\User\LoggedIn;
 use App\Events\User\LoggedOut;
@@ -33,6 +35,30 @@ class LoginController extends Controller
     }
 
     /**
+     * Log the user out of the application.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     */
+    public function logout(Request $request)
+    {
+        if (Auth::check()) {
+            $user = Auth::user();
+            Auth::logout();
+            Event::dispatch(new LoggedOut($user));
+        }
+        $request->session()->flush();
+        $request->session()->regenerate();
+
+        if ($request->expectsJson()) {
+            return response()->json();
+        }
+
+        return redirect('/');
+    }
+
+    /**
      * @param \Laravel\Socialite\Contracts\Factory $socialite
      * @param string                               $provider
      *
@@ -53,6 +79,7 @@ class LoginController extends Controller
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
      * @throws \App\Exceptions\Users\UserNotActivatedException
      * @throws \App\Exceptions\Users\UserNotMemberInDiscord
+     * @throws \Exception
      */
     public function handleOAuthReturn(Request $request, SocialiteContract $socialite, $provider)
     {
@@ -77,6 +104,8 @@ class LoginController extends Controller
 
             return redirect()->intended($this->redirectPath());
         }
+
+        $this->registerViaOAuth($oauthTwoUser, $provider);
 
         return redirect('/');
     }
@@ -124,7 +153,7 @@ class LoginController extends Controller
             return true;
         }
 
-        return $this->registerViaOAuth($oauthTwoUser, $provider);
+        return false;
     }
 
     /**
@@ -134,7 +163,7 @@ class LoginController extends Controller
      * @return bool
      * @throws \Exception
      */
-    protected function registerViaOAuth(CustomOauthTwoUser $oauthTwoUser, string $provider): bool
+    private function registerViaOAuth(CustomOauthTwoUser $oauthTwoUser, string $provider): bool
     {
         if (Auth::check()) {
             $ownerAccount = Auth::user();
@@ -154,22 +183,8 @@ class LoginController extends Controller
 
             $ownerAccount->isDirty() && $ownerAccount->save();
         }
-        $this->linkOAuthAccount($oauthTwoUser, $provider, $ownerAccount);
-        Auth::login($ownerAccount, true);
-        event(new LoggedIn($ownerAccount));
 
-        return true;
-    }
-
-    /**
-     * @param \App\Extensions\Socialite\CustomOauthTwoUser $oauthTwoUser
-     * @param string                                       $provider
-     * @param \App\Models\User                             $ownerAccount
-     *
-     * @throws \Exception
-     */
-    protected function linkOAuthAccount(CustomOauthTwoUser $oauthTwoUser, string $provider, User $ownerAccount): void
-    {
+        # Create new OAuth account and link it.
         $linkedAccount = new UserOAuth();
         $linkedAccount->remote_provider = $provider;
         $linkedAccount->remote_id = $oauthTwoUser->id;
@@ -185,29 +200,11 @@ class LoginController extends Controller
         $linkedAccount->token_expires_at = new Carbon(sprintf('+%d seconds', $oauthTwoUser->expiresIn));
         $linkedAccount->refresh_token = $oauthTwoUser->refreshToken;
         $ownerAccount->linkedAccounts()->save($linkedAccount);
-    }
 
-    /**
-     * Log the user out of the application.
-     *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
-     */
-    public function logout(Request $request)
-    {
-        if (Auth::check()) {
-            $user = Auth::user();
-            Auth::logout();
-            Event::dispatch(new LoggedOut($user));
-        }
-        $request->session()->flush();
-        $request->session()->regenerate();
+        # Login
+        Auth::login($ownerAccount, true);
+        event(new LoggedIn($ownerAccount));
 
-        if ($request->expectsJson()) {
-            return response()->json();
-        }
-
-        return redirect('/');
+        return true;
     }
 }
