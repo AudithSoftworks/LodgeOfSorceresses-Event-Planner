@@ -40,9 +40,11 @@ trait IsTeam
         foreach ($team->members as $character) {
             $cacheStore->has('character-' . $character->id); // Recache trigger.
             $cachedCharacter = $cacheStore->get('character-' . $character->id);
-            /** @var \App\Models\Character $cachedCharacter */
-            $cachedCharacter->setRelation('teamMembership', $character->teamMembership);
-            $newMemberList->add($cachedCharacter);
+            if ($cachedCharacter !== null) { // Characters of deleted users might become unfetchable, thus NULL.
+                /** @var \App\Models\Character $cachedCharacter */
+                $cachedCharacter->setRelation('teamMembership', $character->teamMembership);
+                $newMemberList->add($cachedCharacter);
+            }
         }
         $team->setRelation('members', $newMemberList);
     }
