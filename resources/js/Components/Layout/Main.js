@@ -9,11 +9,8 @@ import Loading from '../Loading';
 const Init = React.lazy(
     () => import(/* webpackPreload: true, webpackChunkName: "controllers-init" */ '../../Controllers/Init')
 );
-const OnboardingMembersStep1 = React.lazy(
-    () => import(/* webpackPrefetch: 50, webpackChunkName: "controllers-init" */ '../../Components/Onboarding/Members/Step1')
-);
-const OnboardingSoulshrivenStep1 = React.lazy(
-    () => import(/* webpackPrefetch: 50, webpackChunkName: "controllers-init" */ '../../Components/Onboarding/Soulshriven/Step1')
+const Onboarding = React.lazy(
+    () => import(/* webpackPrefetch: 50, webpackChunkName: "controllers-onboarding" */ '../../Controllers/Onboarding')
 );
 const Home = React.lazy(
     () => import(/* webpackPrefetch: 50, webpackChunkName: "controllers-home" */ '../../Controllers/Home')
@@ -124,8 +121,7 @@ class Main extends PureComponent {
                 <Suspense fallback={<Loading />}>
                     <Switch>
                         <Route exact path="/" component={props => <Init {...props} />} />
-                        <Route exact path="/onboarding/members/step-1" component={props => <OnboardingMembersStep1 {...props} />} />
-                        <Route exact path="/onboarding/soulshriven/step-1" component={props => <OnboardingSoulshrivenStep1 {...props} />} />
+                        <Route exact path="/onboarding/:mode(members|soulshriven)" component={props => <Onboarding {...props} />} />
                         <Route exact path="/dashboard" component={props => <Home {...props} />} />
                         {[...this.fetchUserRoutes(me)]}
                         {[...this.fetchAdminRoutes(me)]}

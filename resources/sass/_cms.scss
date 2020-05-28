@@ -1,0 +1,14 @@
+@import "./global/variables";
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins/breakpoints";
+
+.cms-content {
+    .ipsAttachLink {
+        margin-bottom: $grid-gutter-width * 3 / 4;
+
+        &.ipsAttachLink_right {
+            margin-left: $grid-gutter-width * 3 / 2;
+        }
+    }
+}

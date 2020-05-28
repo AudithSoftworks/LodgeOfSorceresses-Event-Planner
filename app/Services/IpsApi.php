@@ -19,20 +19,6 @@ class IpsApi extends AbstractApi
 
     public const MEMBER_GROUP_MEMBERS = 30;
 
-    public const MEMBER_GROUP_INITIATE = 28;
-
-    public const MEMBER_GROUP_NEOPHYTE = 8;
-
-    public const MEMBER_GROUP_PRACTICUS = 19;
-
-    public const MEMBER_GROUP_ADEPTUS_MINOR = 20;
-
-    public const MEMBER_GROUP_ADEPTUS_MAJOR = 21;
-
-    public const MEMBER_GROUP_DOMINUS_LIMINIS = 22;
-
-    public const MEMBER_GROUP_ADEPTUS_EXEMPTUS = 25;
-
     public const MEMBER_GROUP_MAGISTER_TEMPLI = 6;
 
     public const MEMBER_GROUP_IPSISSIMUS = 4;
@@ -205,6 +191,28 @@ class IpsApi extends AbstractApi
 
             return json_decode($response->getBody()->getContents(), true);
         }, $forum, $title, $post);
+    }
+
+    public function getTopic(int $topic): array
+    {
+        return $this->executeCallback(function (int $topic) {
+            $response = $this->getApiClient()->get('forums/topics/' . $topic);
+
+            return json_decode($response->getBody()->getContents(), true);
+        }, $topic);
+    }
+
+    /*------------------------------------
+     | /forum/posts
+     *-----------------------------------*/
+
+    public function getPost(int $post): array
+    {
+        return $this->executeCallback(function (int $post) {
+            $response = $this->getApiClient()->get('forums/posts/' . $post);
+
+            return json_decode($response->getBody()->getContents(), true);
+        }, $post);
     }
 
     /*------------------------------------

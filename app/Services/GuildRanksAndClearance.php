@@ -3,6 +3,8 @@
 use App\Models\Character;
 use App\Models\DpsParse;
 use App\Models\User;
+use App\Singleton\RoleTypes;
+use Illuminate\Support\Facades\Cache;
 use UnexpectedValueException;
 
 class GuildRanksAndClearance
@@ -27,7 +29,7 @@ class GuildRanksAndClearance
 
     public const RANK_NEOPHYTE = [
         'title' => 'Neophyte',
-        'ipsGroupId' => IpsApi::MEMBER_GROUP_NEOPHYTE,
+        'ipsGroupId' => IpsApi::MEMBER_GROUP_MEMBERS,
         'discordRole' => DiscordApi::ROLE_NEOPHYTE,
         'discordShrivenRole' => DiscordApi::ROLE_NEOPHYTE_SHRIVEN,
         'isMember' => true,
@@ -36,7 +38,7 @@ class GuildRanksAndClearance
 
     public const RANK_PRACTICUS = [
         'title' => 'Practicus',
-        'ipsGroupId' => IpsApi::MEMBER_GROUP_PRACTICUS,
+        'ipsGroupId' => IpsApi::MEMBER_GROUP_MEMBERS,
         'discordRole' => DiscordApi::ROLE_PRACTICUS,
         'discordShrivenRole' => DiscordApi::ROLE_PRACTICUS_SHRIVEN,
         'isMember' => true,
@@ -45,7 +47,7 @@ class GuildRanksAndClearance
 
     public const RANK_ADEPTUS_MINOR = [
         'title' => 'Adeptus Minor',
-        'ipsGroupId' => IpsApi::MEMBER_GROUP_ADEPTUS_MINOR,
+        'ipsGroupId' => IpsApi::MEMBER_GROUP_MEMBERS,
         'discordRole' => DiscordApi::ROLE_ADEPTUS_MINOR,
         'discordShrivenRole' => DiscordApi::ROLE_ADEPTUS_MINOR_SHRIVEN,
         'isMember' => true,
@@ -54,7 +56,7 @@ class GuildRanksAndClearance
 
     public const RANK_ADEPTUS_MAJOR = [
         'title' => 'Adeptus Major',
-        'ipsGroupId' => IpsApi::MEMBER_GROUP_ADEPTUS_MAJOR,
+        'ipsGroupId' => IpsApi::MEMBER_GROUP_MEMBERS,
         'discordRole' => DiscordApi::ROLE_ADEPTUS_MAJOR,
         'discordShrivenRole' => DiscordApi::ROLE_ADEPTUS_MAJOR_SHRIVEN,
         'isMember' => true,
@@ -63,7 +65,7 @@ class GuildRanksAndClearance
 
     public const RANK_DOMINUS_LIMINIS = [
         'title' => 'Dominus Liminis',
-        'ipsGroupId' => IpsApi::MEMBER_GROUP_DOMINUS_LIMINIS,
+        'ipsGroupId' => IpsApi::MEMBER_GROUP_MEMBERS,
         'discordRole' => DiscordApi::ROLE_DOMINUS_LIMINIS,
         'discordShrivenRole' => null,
         'isMember' => true,
@@ -72,7 +74,7 @@ class GuildRanksAndClearance
 
     public const RANK_ADEPTUS_EXEMPTUS = [
         'title' => 'Adeptus Exemptus',
-        'ipsGroupId' => IpsApi::MEMBER_GROUP_ADEPTUS_EXEMPTUS,
+        'ipsGroupId' => IpsApi::MEMBER_GROUP_MEMBERS,
         'discordRole' => DiscordApi::ROLE_ADEPTUS_EXEMPTUS,
         'discordShrivenRole' => null,
         'isMember' => true,
@@ -190,5 +192,117 @@ class GuildRanksAndClearance
         $character->save();
 
         return true;
+    }
+
+    /**
+     * Persists (while onboarding) or Refreshes user's Discord Roles.
+     *
+     * @param \App\Models\User $user
+     * @param string           $membershipModeInTermsOfDiscordRole
+     */
+    public function refreshGivenUsersDiscordRoles(User $user, string $membershipModeInTermsOfDiscordRole = DiscordApi::ROLE_SOULSHRIVEN): void
+    {
+        if (!in_array($membershipModeInTermsOfDiscordRole, [DiscordApi::ROLE_MEMBERS, DiscordApi::ROLE_SOULSHRIVEN], true)) {
+            throw new UnexpectedValueException(
+                sprintf(
+                    'Membership Mode can be [%s|%s]; instead %s provided.',
+                    DiscordApi::ROLE_MEMBERS,
+                    DiscordApi::ROLE_SOULSHRIVEN,
+                    $membershipModeInTermsOfDiscordRole
+                )
+            );
+        }
+
+        /** @var null|\App\Models\UserOAuth $discordAccount */
+        $discordAccount = $user->linkedAccounts->firstWhere('remote_provider', 'discord');
+        if ($discordAccount === null) {
+            throw new UnexpectedValueException(sprintf('User (id: %s) has no Discord account linked?!', $user->id));
+        }
+
+        # Discord-Role-IDs for Special ranks
+        $usersCurrentDiscordRoles = collect(explode(',', $discordAccount->remote_secondary_groups));
+        $discordRoleIdsOfGivenUsersSpecialRoles = $usersCurrentDiscordRoles->intersect([
+            DiscordApi::ROLE_MAGISTER_TEMPLI,
+            DiscordApi::ROLE_RAID_LEADERS,
+            DiscordApi::ROLE_GUIDANCE,
+            DiscordApi::ROLE_ADEPTUS_EXEMPTUS,
+        ]);
+
+        # Discord-Role-IDs for Character-Roles user cleared for content
+        $discordRoleIdsOfGivenUsersRoles = $this->determineRolesGivenUserIsClearedFor($user, true);
+
+        # Discord-Role-IDs for Teams user is active part of
+        $discordRoleIdsOfGivenUsersTeams = $this->determineTeamsGivenUserIsMemberActiveMemberOf($user, true);
+
+        # Discord-Role-IDs for user Tier-level
+        $clearanceLevel = $this->calculateClearanceLevelOfUser($user);
+        if ($clearanceLevel === 0) {
+            $discordRoleIdForUserTierLevel = $membershipModeInTermsOfDiscordRole === DiscordApi::ROLE_MEMBERS
+                ? DiscordApi::ROLE_INITIATE
+                : DiscordApi::ROLE_INITIATE_SHRIVEN;
+        } else {
+            $discordRoleIdForUserTierLevel = $membershipModeInTermsOfDiscordRole === DiscordApi::ROLE_MEMBERS
+                ? self::CLEARANCE_LEVELS[$clearanceLevel]['rank']['discordRole']
+                : self::CLEARANCE_LEVELS[$clearanceLevel]['rank']['discordShrivenRole'];
+        }
+
+        $usersNewDiscordRoles = collect()
+            ->add($membershipModeInTermsOfDiscordRole)
+            ->add($discordRoleIdForUserTierLevel)
+            ->merge($discordRoleIdsOfGivenUsersSpecialRoles)
+            ->merge($discordRoleIdsOfGivenUsersRoles)
+            ->merge($discordRoleIdsOfGivenUsersTeams)
+            ->unique()
+            ->sort();
+
+        $result = app('discord.api')->modifyGuildMember($discordAccount->remote_id, ['roles' => $usersNewDiscordRoles->all()]);
+        if ($result) {
+            $discordAccount->remote_secondary_groups = $usersNewDiscordRoles->implode(',');
+            if ($discordAccount->isDirty()) {
+                $discordAccount->save();
+                Cache::forget('user-' . $user->id);
+            }
+        }
+    }
+
+    /**
+     * @param \App\Models\User $user
+     * @param bool             $returnDiscordRoleIdsInstead
+     *
+     * @return iterable|\Illuminate\Support\Collection
+     */
+    private function determineRolesGivenUserIsClearedFor(User $user, bool $returnDiscordRoleIdsInstead = false): iterable
+    {
+        $clearedRoles = collect();
+        foreach (RoleTypes::ROLES as $roleId => $role) {
+            if ($this->determineIfUserHasOtherRankedCharactersWithGivenRole($user, $roleId)) {
+                $clearedRoles->add($returnDiscordRoleIdsInstead === false ? $roleId : $role['discordRoleId']);
+            }
+        }
+
+        return $clearedRoles;
+    }
+
+    /**
+     * @param \App\Models\User $user
+     * @param bool             $returnDiscordRoleIdsInstead
+     *
+     * @return iterable|\Illuminate\Support\Collection
+     */
+    private function determineTeamsGivenUserIsMemberActiveMemberOf(User $user, bool $returnDiscordRoleIdsInstead = false): iterable
+    {
+        $teams = collect();
+        foreach ($user->characters as $character) {
+            foreach ($character->teams as $team) {
+                if ($team->discord_role_id !== null && !$teams->containsStrict('id', $team->id)) {
+                    $teams->add($returnDiscordRoleIdsInstead === false ? $team : $team->discord_role_id);
+                }
+            }
+        }
+        if ($returnDiscordRoleIdsInstead === true && $teams->count() > 0) {
+            $teams->add(DiscordApi::ROLE_DOMINUS_LIMINIS);
+        }
+
+        return $teams;
     }
 }

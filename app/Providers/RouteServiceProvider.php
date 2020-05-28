@@ -24,11 +24,12 @@ class RouteServiceProvider extends ServiceProvider
     public function boot(): void
     {
         app('router')->patterns([
-            'provider' => 'ips|discord',
-            'user' => '\d+',
             'character' => '\d+',
             'parse' => '\d+',
+            'provider' => 'ips|discord',
+            'step' => '\d+',
             'team' => '\d+',
+            'user' => '\d+',
         ]);
 
         parent::boot();

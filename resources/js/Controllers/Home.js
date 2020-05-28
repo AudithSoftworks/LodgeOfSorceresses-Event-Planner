@@ -7,7 +7,7 @@ import(
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import putUserAction from "../actions/put-user";
 import Notification from '../Components/Notification';
 import { authorizeUser } from "../helpers";
@@ -46,14 +46,9 @@ class Home extends PureComponent {
                 </article>
             );
         } else if (me.linkedAccountsParsed && me.linkedAccountsParsed.discord && !this.authorizeUser()) {
-            accountStatusOptions.push(
-                <article key='pre-check-failed' className='jumbotron danger ml-2 mr-2' data-cy='account-status-element'>
-                    <small>Pre-check failed! Make sure you have <i>Soulshriven</i> or <i>Member</i> tag on Lodge Discord server.</small>
-                    <small>Please check #guests-read-me channel on Discord to see your options.</small>
-                    <small>Please contact guild leader on Discord if you need a help.</small>
-                    <small>You won't be able to use Guild Planner until this is addressed!</small>
-                </article>
-            );
+            accountStatusOptions.push(<Link to='/onboarding/members' key='member-onboarding'>Become a Member</Link>);
+            accountStatusOptions.push(<br key='br' />);
+            accountStatusOptions.push(<Link to='/onboarding/soulshriven' key='soulshriven-onboarding'>Become a Soulshriven</Link>);
         } else if (me.isMember && !me.linkedAccountsParsed.ips) {
             accountStatusOptions.push(
                 <article key='forum-oauth' className='jumbotron danger ml-2 mr-2' data-cy='account-status-element'>

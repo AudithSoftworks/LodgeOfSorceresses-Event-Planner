@@ -78,3 +78,24 @@ export const filter = function (event, typeUpdating) {
         filters: temp,
     });
 };
+
+export const transformAnchors = (node, children) => {
+    if (node.tagName.toLowerCase() === 'a') {
+        const styleStr = node.getAttribute('style');
+        const styleObj = {};
+        if (styleStr !== null && styleStr.length) {
+            const styles = styleStr.split(';');
+            let i = styles.length;
+            while (i--) {
+                let styleKeyValues = styles[i].split(':');
+                const k = styleKeyValues[0];
+                const v = styleKeyValues[1];
+                if (k.length && v.length) {
+                    styleObj[k] = v;
+                }
+            }
+        }
+
+        return <a href={node.getAttribute('href')} className={node.className} style={styleObj} target='_blank'>{children}</a>;
+    }
+}
