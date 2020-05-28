@@ -6,7 +6,7 @@ export const TYPE_PUT_TEAM_SUCCESS = 'PUT_TEAM_SUCCESS';
 
 export const TYPE_PUT_TEAM_FAILURE = 'PUT_TEAM_FAILURE';
 
-const RESPONSE_MESSAGE_SUCCESS = 'Character updated.';
+const RESPONSE_MESSAGE_SUCCESS = 'Team updated.';
 
 const putTeamSendAction = (characterId, data) => ({
     type: TYPE_PUT_TEAM_SEND,
@@ -14,10 +14,11 @@ const putTeamSendAction = (characterId, data) => ({
     data,
 });
 
-const putTeamSuccessAction = (teamId, response) => ({
+const putTeamSuccessAction = (teamId, response, message) => ({
     type: TYPE_PUT_TEAM_SUCCESS,
     teamId,
     response,
+    message,
 });
 
 const putTeamFailureAction = error => ({
