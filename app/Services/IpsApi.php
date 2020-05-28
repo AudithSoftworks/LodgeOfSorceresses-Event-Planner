@@ -169,7 +169,7 @@ class IpsApi extends AbstractApi
         }, $remoteUserId);
     }
 
-    public function editUser(int $remoteUserId, array $params): array
+    public function editUser(int $remoteUserId, array $params): ?array
     {
         return $this->executeCallback(function (int $remoteUserId, array $params) {
             $response = $this->getApiClient()->post('core/members/' . $remoteUserId, [RequestOptions::QUERY => $params]);

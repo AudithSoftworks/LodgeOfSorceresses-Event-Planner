@@ -42,7 +42,7 @@ abstract class AbstractApi implements ApiInterface
             try {
                 return $callable(...$args);
             } catch (ClientException $e) {
-                if ($e->getCode() === Response::HTTP_NOT_FOUND) {
+                if (($errorCode = $e->getCode()) === Response::HTTP_NOT_FOUND || $errorCode === Response::HTTP_FORBIDDEN) {
                     break;
                 }
                 if ($e->getCode() === Response::HTTP_TOO_MANY_REQUESTS) {

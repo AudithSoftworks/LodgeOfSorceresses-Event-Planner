@@ -7,6 +7,7 @@ use App\Traits\User\IsUser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -28,10 +29,9 @@ class UsersController extends Controller
 
         /** @var \App\Models\User $me */
         $me = $guard->user();
-        $me->loadMissing('linkedAccounts');
-        $this->parseLinkedAccounts($me);
+        Cache::has('user-' . $me->id); // Recache trigger
 
-        return response()->json($me);
+        return response()->json(Cache::get('user-' . $me->id));
     }
 
     /**
@@ -59,7 +59,8 @@ class UsersController extends Controller
         $me->save();
 
         Event::dispatch(new NameUpdated($me));
+        Cache::has('user-' . $me->id); // Recache trigger
 
-        return response()->json([], JsonResponse::HTTP_NO_CONTENT);
+        return response()->json(Cache::get('user-' . $me->id));
     }
 }

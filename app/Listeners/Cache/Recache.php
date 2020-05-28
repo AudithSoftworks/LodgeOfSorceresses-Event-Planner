@@ -24,8 +24,8 @@ class Recache
     /**
      * @param \Illuminate\Cache\Events\CacheMissed $event
      *
-     * @return mixed
      * @throws \Exception
+     * @return mixed
      */
     public function handle(CacheMissed $event)
     {
@@ -34,19 +34,19 @@ class Recache
             case $key === 'sets':
                 $recache = [
                     'data' => Set::query()->get()->keyBy('id')->toArray(),
-                    'ttl' => Set::CACHE_TTL
+                    'ttl' => Set::CACHE_TTL,
                 ];
                 break;
             case $key === 'skills':
                 $recache = [
                     'data' => Skill::query()->get()->keyBy('id')->toArray(),
-                    'ttl' => Set::CACHE_TTL
+                    'ttl' => Set::CACHE_TTL,
                 ];
                 break;
             case $key === 'content':
                 $recache = [
                     'data' => Content::query()->orderBy('tier')->get()->keyBy('id')->toArray(),
-                    'ttl' => Content::CACHE_TTL
+                    'ttl' => Content::CACHE_TTL,
                 ];
                 break;
             case strpos($key, 'user-') === 0:
@@ -83,12 +83,7 @@ class Recache
     private function getUser(int $userId): ?User
     {
         /** @var User $user */
-        $user = User::with([
-            'linkedAccounts' => static function (HasMany $query) {
-                $query->where('remote_provider', '=', 'discord')->whereNotNull('remote_secondary_groups');
-            },
-            'characters'
-        ])->whereNotNull('name')->find($userId);
+        $user = User::with(['linkedAccounts', 'characters'])->find($userId);
         $user->makeHidden('email');
         $this->parseLinkedAccounts($user);
         $this->parseCharacters($user);
