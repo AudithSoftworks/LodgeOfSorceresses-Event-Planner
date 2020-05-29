@@ -21,7 +21,7 @@ class TrackAttendances extends Command
      *
      * @var string
      */
-    protected $signature = 'guild:attendance:track';
+    protected $signature = 'attendance:track';
 
     /**
      * The console command description.
@@ -181,7 +181,6 @@ class TrackAttendances extends Command
         $attendance = new Attendance();
         $attendance->text = $message['content'];
         $attendance->discord_message_id = $message['id'];
-        $attendance->created_by = $message['author']->id;
         $attendance->created_at = $message['timestamp'];
         $attendance->isDirty() && $attendance->save();
 
