@@ -46,6 +46,14 @@ export const putUser = (cancelToken, data) => axios.post('/api/users/@me', data,
     throw error;
 });
 
+export const deleteUser = (cancelToken) => axios.delete('/api/users/@me', {
+    cancelToken: cancelToken.token,
+}).then(
+    response => response.status === 204
+).catch(error => {
+    throw error;
+});
+
 export const getMyCharacters = cancelToken => axios.get('/api/users/@me/characters', {
     cancelToken: cancelToken.token,
 }).then(response => {

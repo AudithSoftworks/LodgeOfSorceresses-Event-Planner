@@ -6,6 +6,7 @@ import React, { PureComponent } from "react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import finalizeOnboardingAction from "../actions/finalize-onboarding";
+import deleteUserAction from "../actions/delete-user";
 import { errorsAction } from "../actions/notifications";
 import Loading from "../Components/Loading";
 import { authorizeUser, transformAnchors } from "../helpers";
@@ -76,6 +77,15 @@ class Onboarding extends PureComponent {
         finalizeOnboardingAction({ mode });
     };
 
+    deleteUserHandler = () => {
+        if (confirm('Are you sure you want to cancel your application and delete your account from our records?' +
+            '\n\nThis is *irreversible*!' +
+            '\n\nIf yes, please don\'t forget to revoke the authorization granted to "Lodge of Sorceresses" in User Settings > Authorized Apps on Discord.')) {
+            const { deleteUserAction } = this.props;
+            deleteUserAction();
+        }
+    };
+
     render = () => {
         const { match, me, location } = this.props;
         if (!me) {
@@ -128,7 +138,7 @@ class Onboarding extends PureComponent {
                 {
                     step !== numberOfSteps + 1
                         ? <a href={currentData['url']} target='_blank' className='pl-5 pr-5 ml-5 mr-5'>Read & Discuss this on Forums</a>
-                        : null
+                        : <button type='button' onClick={() => this.deleteUserHandler()} className='pl-5 pr-5 ml-5 mr-5 btn btn-danger btn-lg ml-5'>Cancel application & DELETE my account!</button>
                 }
                 <button type='button'
                         onClick={
@@ -136,7 +146,7 @@ class Onboarding extends PureComponent {
                                 ? () => this.setState({ step: step + 1 })
                                 : () => this.finalizeOnboardingHandler(mode)
                         }
-                        className='btn btn-primary btn-lg ml-5'>{step < numberOfSteps + 1 ? 'Continue' : 'Accept & Join'}</button>
+                        className='btn btn-success btn-lg ml-5'>{step < numberOfSteps + 1 ? 'Continue' : 'Accept & Join'}</button>
             </span>,
             <Notification key='notification' />
         ];
@@ -154,6 +164,7 @@ Onboarding.propTypes = {
 
     dispatch: PropTypes.func.isRequired,
     finalizeOnboardingAction: PropTypes.func.isRequired,
+    deleteUserAction: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -164,6 +175,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     dispatch,
     finalizeOnboardingAction: data => dispatch(finalizeOnboardingAction(data)),
+    deleteUserAction: data => dispatch(deleteUserAction(data)),
 });
 
 export default connect(

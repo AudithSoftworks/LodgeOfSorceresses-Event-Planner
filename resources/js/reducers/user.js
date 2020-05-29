@@ -1,5 +1,6 @@
 import * as getActions from '../actions/get-user';
 import * as putActions from '../actions/put-user';
+import * as destroyAction from '../actions/delete-user';
 import * as onboardingActions from '../actions/finalize-onboarding';
 
 const userReducer = (state = null, action) => {
@@ -14,6 +15,8 @@ const userReducer = (state = null, action) => {
         }
 
         return newState;
+    } else if (action.type === destroyAction.TYPE_DELETE_USER_SUCCESS) {
+        return null;
     }
 
     return state;

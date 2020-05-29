@@ -48,12 +48,12 @@ use Laravel\Passport\Token as PassportToken;
  * @property bool $isMember
  * @property bool $isAdmin
  * @property EloquentCollection|UserOAuth[] $linkedAccountsParsed
- * @method static bool|null forceDelete()
+ * @method bool|null restore()
+ * @method bool|null forceDelete()
  * @method static EloquentBuilder|$this newModelQuery()
  * @method static EloquentBuilder|$this newQuery()
  * @method static QueryBuilder|$this onlyTrashed()
  * @method static EloquentBuilder|$this query()
- * @method static bool|null restore()
  * @method static EloquentBuilder|$this whereAvatar($value)
  * @method static EloquentBuilder|$this whereCreatedAt($value)
  * @method static EloquentBuilder|$this whereDeletedAt($value)

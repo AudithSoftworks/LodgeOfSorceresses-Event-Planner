@@ -4,11 +4,13 @@ use App\Events\User\NameUpdated;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Traits\User\IsUser;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -62,5 +64,24 @@ class UsersController extends Controller
         Cache::has('user-' . $me->id); // Recache trigger
 
         return response()->json(Cache::get('user-' . $me->id));
+    }
+
+    /**
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Exception
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteMe(): JsonResponse
+    {
+        $this->authorize('limited', User::class);
+        if (Gate::allows('is-member') || Gate::allows('is-soulshriven')) {
+            throw new AuthorizationException('Members & Soulshriven can\'t delete their accounts! Please contact the guild leader for that.');
+        }
+
+        /** @var \App\Models\User $me */
+        $me = Auth::user();
+        $me->forceDelete();
+
+        return response()->json([], JsonResponse::HTTP_NO_CONTENT);
     }
 }

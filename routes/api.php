@@ -36,6 +36,7 @@ $router->middleware(['auth:api', 'throttle'])->group(static function (Router $ro
 
     $router->get('users/@me', 'Auth\UsersController@me')->name('@me.show');
     $router->put('users/@me', 'Auth\UsersController@updateMe')->name('@me.update');
+    $router->delete('users/@me', 'Auth\UsersController@deleteMe')->name('@me.delete');
     $router
         ->apiResource('users/@me/characters', 'Auth\CharactersController')
         ->except(['show'])

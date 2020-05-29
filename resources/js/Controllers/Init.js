@@ -63,7 +63,7 @@ class Init extends PureComponent {
     render = () => {
         const { me, myCharacters, sets, skills, content, teams } = this.props;
         if (me === null) {
-            return [this.renderLoginForm()];
+            return [this.renderLoginForm(), <Notification key="notifications" />];
         }
 
         if (!me.isMember && !me.isSoulshriven) {

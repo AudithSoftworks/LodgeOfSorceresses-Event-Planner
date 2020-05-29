@@ -94,7 +94,7 @@ class Handler extends ExceptionHandler
     protected function unauthenticated($request, AuthenticationException $exception): SymfonyHttpResponse
     {
         return $request->expectsJson()
-            ? response()->json(['message' => 'Session expired or No session! If you were in the middle of something, please refresh the page.'], SymfonyHttpResponse::HTTP_UNAUTHORIZED)
+            ? response()->json(['message' => 'Please login.'], SymfonyHttpResponse::HTTP_UNAUTHORIZED)
             : redirect()->guest('/');
     }
 }
