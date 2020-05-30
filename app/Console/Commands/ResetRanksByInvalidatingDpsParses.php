@@ -10,6 +10,7 @@ use Carbon\CarbonImmutable;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Event;
 
 class ResetRanksByInvalidatingDpsParses extends Command
 {
@@ -47,7 +48,6 @@ class ResetRanksByInvalidatingDpsParses extends Command
     private function processExistingValidDpsParsesAgainForGivenCharacterIds(iterable $idsOfCharactersAffected): void
     {
         $guildRankService = app('guild.ranks.clearance');
-        $eventService = app('events');
         $nrOfCharactersAffected = $idsOfCharactersAffected->count();
         $nrOfDpsParsesProcessed = 0;
         /** @var Character $character */
@@ -71,7 +71,7 @@ class ResetRanksByInvalidatingDpsParses extends Command
                 ++$nrOfDpsParsesProcessed;
             }
 
-            $eventService->dispatch(new CharacterReset($character));
+            Event::dispatch(new CharacterReset($character));
         }
         $this->info($nrOfCharactersAffected . ' Characters with their existing ' . $nrOfDpsParsesProcessed . ' DpsParses processed.');
     }
