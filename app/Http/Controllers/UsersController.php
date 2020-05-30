@@ -3,18 +3,20 @@
 use App\Models\User;
 use App\Traits\User\IsUser;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 
 class UsersController extends Controller
 {
     use IsUser;
 
     /**
-     * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(): JsonResponse
     {
         $this->authorize('user', User::class);
+
         $users = User::query()->whereNotNull('name')->orderBy('name')->get(['id', 'name']);
         foreach ($users as $user) {
             $this->parseLinkedAccounts($user);
@@ -26,15 +28,15 @@ class UsersController extends Controller
     /**
      * @param int $userId
      *
-     * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(int $userId): JsonResponse
     {
         $this->authorize('user', User::class);
-        $cacheStore = app('cache.store');
-        $cacheStore->has('user-' . $userId);
 
-        return response()->json($cacheStore->get('user-' . $userId));
+        Cache::has('user-' . $userId); // Recache trigger
+
+        return response()->json(Cache::get('user-' . $userId));
     }
 }

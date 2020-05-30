@@ -1,5 +1,7 @@
 <?php namespace App\Singleton;
 
+use App\Services\DiscordApi;
+
 class RoleTypes
 {
     public const ROLE_TANK = 1;
@@ -16,24 +18,28 @@ class RoleTypes
             'icon' => '🔰',
             'name' => 'Tank',
             'shortName' => 'Tank',
+            'discordRoleId' => DiscordApi::ROLE_TANK,
         ],
         self::ROLE_HEALER => [
             'id' => self::ROLE_HEALER,
             'icon' => '⛑',
             'name' => 'Healer',
             'shortName' => 'Healer',
+            'discordRoleId' => DiscordApi::ROLE_HEALER,
         ],
         self::ROLE_MAGICKA_DD => [
             'id' => self::ROLE_MAGICKA_DD,
             'icon' => '🔮',
             'name' => 'Damage Dealer (Magicka)',
             'shortName' => 'Magicka DD',
+            'discordRoleId' => DiscordApi::ROLE_DAMAGE_DEALER,
         ],
         self::ROLE_STAMINA_DD => [
             'id' => self::ROLE_STAMINA_DD,
             'icon' => '⚔',
             'name' => 'Damage Dealer (Stamina)',
             'shortName' => 'Stamina DD',
+            'discordRoleId' => DiscordApi::ROLE_DAMAGE_DEALER,
         ],
     ];
 

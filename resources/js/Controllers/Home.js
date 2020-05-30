@@ -1,13 +1,11 @@
-import(
-    /* webpackPrefetch: true */
-    /* webpackChunkName: "dashboard-jumbotron-scss" */
-    '../../sass/global/_dashboard_jumbotron.scss'
-);
+import(/* webpackPreload: true, webpackChunkName: "membership-image" */ '../../../public/images/membership.png');
+import(/* webpackPrefetch: true, webpackChunkName: "home-scss" */ '../../sass/_home.scss');
+import(/* webpackPrefetch: true, webpackChunkName: "dashboard-jumbotron-scss" */ '../../sass/global/_dashboard_jumbotron.scss');
 
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import putUserAction from "../actions/put-user";
 import Notification from '../Components/Notification';
 import { authorizeUser } from "../helpers";
@@ -37,21 +35,26 @@ class Home extends PureComponent {
             return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
         const accountStatusOptions = [];
-        if (!me.linkedAccountsParsed || !me.linkedAccountsParsed.discord) {
+        if (me.linkedAccountsParsed && me.linkedAccountsParsed.discord && !this.authorizeUser()) {
             accountStatusOptions.push(
-                <article key='discord-oauth' className='jumbotron danger ml-2 mr-2' data-cy='account-status-element'>
-                    <h3>Your Discord Account:</h3>
-                    <p>Not Linked</p>
-                    <small>You won't be able to use Planner, until Discord is linked to it. <a href='/oauth/to/discord'>Click here</a> to fix this problem.</small>
-                </article>
-            );
-        } else if (me.linkedAccountsParsed && me.linkedAccountsParsed.discord && !this.authorizeUser()) {
-            accountStatusOptions.push(
-                <article key='pre-check-failed' className='jumbotron danger ml-2 mr-2' data-cy='account-status-element'>
-                    <small>Pre-check failed! Make sure you have <i>Soulshriven</i> or <i>Member</i> tag on Lodge Discord server.</small>
-                    <small>Please check #guests-read-me channel on Discord to see your options.</small>
-                    <small>Please contact guild leader on Discord if you need a help.</small>
-                    <small>You won't be able to use Guild Planner until this is addressed!</small>
+                <article key='membership-mode-selection'
+                         className='membership-mode-selection col-24 d-flex flex-nowrap flex-row'
+                         data-text='Pick your poison:'
+                         data-cy='membership-mode-selection'>
+                    <Link to='/onboarding/members'
+                          key='member-onboarding'
+                          data-heading='Member'
+                          data-text-1='* In-game Guild membership'
+                          data-text-2='* Growing in a focused environment'
+                          data-text-3='* Progression in a Core group'
+                    />
+                    <Link to='/onboarding/soulshriven'
+                          key='soulshriven-onboarding'
+                          data-heading='Soulshriven'
+                          data-text-1='* No guild membership'
+                          data-text-2='* Open events participation'
+                          data-text-3='* PUGs of quality players'
+                    />
                 </article>
             );
         } else if (me.isMember && !me.linkedAccountsParsed.ips) {
@@ -88,9 +91,9 @@ class Home extends PureComponent {
         }
 
         return [
-            <section className="col-md-24 p-0 mb-4" key="dashboard">
-                <h2 className="form-title col-md-24" title="Account Status">
-                    Account Status
+            <section className="col-md-24 p-0" key="dashboard">
+                <h2 className="form-title col-md-24 text-center mt-4 mb-3">
+                    Welcome, Soulless One!
                 </h2>
                 {[...accountStatusOptions]}
             </section>,
@@ -106,7 +109,6 @@ Home.propTypes = {
 
     axiosCancelTokenSource: PropTypes.object,
     me: user,
-    groups: PropTypes.object,
     notifications: PropTypes.array,
 
     putUserAction: PropTypes.func.isRequired,
@@ -115,7 +117,6 @@ Home.propTypes = {
 const mapStateToProps = state => ({
     axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
     me: state.getIn(['me']),
-    groups: state.getIn(['groups']),
     notifications: state.getIn(['notifications']),
 });
 

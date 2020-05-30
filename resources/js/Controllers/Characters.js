@@ -8,14 +8,13 @@ import viewCharacterAction from "../actions/view-character";
 import Character from "../Components/Characters/Item";
 import Loading from "../Components/Loading";
 import Notification from "../Components/Notification";
-import { authorizeAdmin, authorizeUser, deleteMyCharacter, rerankCharacter } from "../helpers";
+import { authorizeUser, deleteMyCharacter, rerankCharacter } from "../helpers";
 import { character, user } from "../vendor/data";
 
 class Characters extends PureComponent {
     constructor(props) {
         super(props);
         this.authorizeUser = authorizeUser.bind(this);
-        this.authorizeAdmin = authorizeAdmin.bind(this);
         this.deleteMyCharacter = deleteMyCharacter.bind(this);
         this.rerankHandler = rerankCharacter.bind(this);
     }
@@ -33,15 +32,13 @@ class Characters extends PureComponent {
     };
 
     render = () => {
-        const { me, groups, character, location, match } = this.props;
+        const { me, character, location, match } = this.props;
         if (!me) {
             return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
         }
 
-        if (me && groups) {
-            if (!this.authorizeUser(true) || !match.params.id) {
-                return <Redirect to="/" />;
-            }
+        if (!this.authorizeUser(true) || !match.params.id) {
+            return <Redirect to="/" />;
         }
 
         if (character !== null && (!Object.keys(character).length || character.id !== parseInt(match.params.id))) {
@@ -53,7 +50,7 @@ class Characters extends PureComponent {
         return [
             <Character
                 character={character}
-                rerankHandler={this.authorizeAdmin() ? this.rerankHandler : null}
+                rerankHandler={me && me.isAdmin ? this.rerankHandler : null}
                 deleteHandler={me.id === character.owner.id ? this.deleteMyCharacter : null}
                 key="character"
             />,
@@ -69,7 +66,6 @@ Characters.propTypes = {
 
     axiosCancelTokenSource: PropTypes.object,
     me: user,
-    groups: PropTypes.object,
     character,
     notifications: PropTypes.array,
 
@@ -81,7 +77,6 @@ Characters.propTypes = {
 const mapStateToProps = state => ({
     axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
     me: state.getIn(["me"]),
-    groups: state.getIn(["groups"]),
     character: state.getIn(["selectedCharacter"]),
     notifications: state.getIn(["notifications"]),
 });

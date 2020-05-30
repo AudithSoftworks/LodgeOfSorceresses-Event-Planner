@@ -1,13 +1,9 @@
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { normalize } from 'normalizr';
 import React from 'react';
 import axios from './axios';
 import * as schema from './schema';
 
-library.add(faDiscord);
-
-export const getUserGroups = cancelToken => axios.get('/api/groups', {
+export const getOnboardingContentByStep = (cancelToken, mode, step) => axios.get('/api/onboarding/' + mode + '/content/by-step/' + step, {
     cancelToken: cancelToken.token,
 }).then(response => {
     if (response.data) {

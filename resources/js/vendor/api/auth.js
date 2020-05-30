@@ -7,6 +7,18 @@ import * as schema from '../schema';
 
 library.add(faDiscord);
 
+export const finalizeOnboarding = (cancelToken, data) => axios.post('/api/onboarding/finalize', data, {
+    cancelToken: cancelToken.token,
+}).then(response => {
+    if (response.data) {
+        return normalize(response.data, schema.user);
+    }
+
+    return null;
+}).catch(error => {
+    throw error;
+});
+
 export const getUser = cancelToken => axios.get('/api/users/@me', {
     cancelToken: cancelToken.token,
 }).then(response => {
@@ -24,8 +36,20 @@ export const putUser = (cancelToken, data) => axios.post('/api/users/@me', data,
     headers: {
         'X-HTTP-Method-Override': 'PUT',
     },
+}).then(response => {
+    if (response.data) {
+        return normalize(response.data, schema.user);
+    }
+
+    return null;
+}).catch(error => {
+    throw error;
+});
+
+export const deleteUser = (cancelToken) => axios.delete('/api/users/@me', {
+    cancelToken: cancelToken.token,
 }).then(
-    response => response
+    response => response.status === 204
 ).catch(error => {
     throw error;
 });

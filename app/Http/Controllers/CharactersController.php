@@ -23,6 +23,7 @@ class CharactersController extends Controller
     public function index(Request $request): JsonResponse
     {
         $this->authorize('user', User::class);
+
         $query = Character::query();
         if ($request->has('tier') && is_numeric($tier = $request->get('tier'))) {
             $query->where('approved_for_tier', '>=', (int)$tier);
@@ -48,6 +49,7 @@ class CharactersController extends Controller
     public function show(int $characterId): JsonResponse
     {
         $this->authorize('limited', User::class);
+
         Cache::has('character-' . $characterId); // Trigger Recache listener.
         $character = Cache::get('character-' . $characterId);
         if (!$character) {

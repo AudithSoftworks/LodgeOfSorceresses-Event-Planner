@@ -10,13 +10,12 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link, NavLink, withRouter } from 'react-router-dom';
-import { authorizeAdmin, authorizeUser } from '../../helpers';
+import { authorizeUser } from '../../helpers';
 import { characters, user } from '../../vendor/data';
 
 class Header extends Component {
     constructor(props) {
         super(props);
-        this.authorizeAdmin = authorizeAdmin.bind(this);
         this.authorizeUser = authorizeUser.bind(this);
     }
 
@@ -90,7 +89,7 @@ class Header extends Component {
             }
         }
 
-        if (this.authorizeAdmin()) {
+        if (me && me.isAdmin) {
             memberBarDropdownLinks.push(
                 <li key='officer_area'>
                     <Link to="/admin" title="Officer Area">
@@ -166,7 +165,6 @@ Header.propTypes = {
 
     axiosCancelTokenSource: PropTypes.object,
     me: user,
-    groups: PropTypes.object,
     navLinks: PropTypes.arrayOf(NavLink),
     myCharacters: characters,
     notifications: PropTypes.array,
@@ -174,7 +172,6 @@ Header.propTypes = {
 
 const mapStateToProps = state => ({
     me: state.getIn(['me']),
-    groups: state.getIn(['groups']),
     myCharacters: state.getIn(['myCharacters']),
     notifications: state.getIn(['notifications']),
 });

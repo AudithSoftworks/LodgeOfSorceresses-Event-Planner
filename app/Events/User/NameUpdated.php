@@ -2,7 +2,7 @@
 
 use App\Models\User;
 
-class Updated implements UserNeedsRecacheInterface
+class NameUpdated implements UserNeedsRecacheInterface
 {
     /**
      * @var \App\Models\User

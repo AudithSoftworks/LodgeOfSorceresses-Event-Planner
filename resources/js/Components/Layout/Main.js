@@ -1,124 +1,65 @@
-import PropTypes from "prop-types";
 import React, { Fragment, PureComponent, Suspense } from 'react';
 import { connect } from "react-redux";
 import { Route, Switch } from 'react-router-dom';
 import NoMatch from '../../Controllers/NoMatch';
-import { authorizeAdmin, authorizeUser } from "../../helpers";
+import { authorizeUser } from "../../helpers";
 import { user } from "../../vendor/data";
 import Loading from '../Loading';
 
-const Init = React.lazy(() =>
-    import(
-        /* webpackPrefetch: true */
-        /* webpackChunkName: "controllers-init" */
-        '../../Controllers/Init'
-    )
+const Init = React.lazy(
+    () => import(/* webpackPreload: true, webpackChunkName: "controllers-init" */ '../../Controllers/Init')
 );
-const Home = React.lazy(() =>
-    import(
-        /* webpackPrefetch: true */
-        /* webpackChunkName: "controllers-home" */
-        '../../Controllers/Home'
-    )
+const Onboarding = React.lazy(
+    () => import(/* webpackPrefetch: 50, webpackChunkName: "controllers-onboarding" */ '../../Controllers/Onboarding')
 );
-const Users = React.lazy(() =>
-    import(
-        /* webpackPrefetch: true */
-        /* webpackChunkName: "controllers-users" */
-        '../../Controllers/Users'
-    )
+const Home = React.lazy(
+    () => import(/* webpackPrefetch: 50, webpackChunkName: "controllers-home" */ '../../Controllers/Home')
 );
-const Characters = React.lazy(() =>
-    import(
-        /* webpackPrefetch: true */
-        /* webpackChunkName: "controllers-characters" */
-        '../../Controllers/Characters'
-    )
+const Users = React.lazy(
+    () => import(/* webpackPrefetch: 40, webpackChunkName: "controllers-users" */ '../../Controllers/Users')
 );
-const MyCharacters = React.lazy(() =>
-    import(
-        /* webpackPrefetch: true */
-        /* webpackChunkName: "controllers-my-characters" */
-        '../../Controllers/Auth/Characters'
-    )
+const Characters = React.lazy(
+    () => import(/* webpackPrefetch: true, webpackChunkName: "controllers-characters" */ '../../Controllers/Characters')
 );
-const CharacterForm = React.lazy(() =>
-    import(
-        /* webpackPrefetch: true */
-        /* webpackChunkName: "controllers-character_form" */
-        '../../Controllers/Forms/CharacterForm'
-    )
+const MyCharacters = React.lazy(
+    () => import(/* webpackPrefetch: 40, webpackChunkName: "controllers-my-characters" */ '../../Controllers/Auth/Characters')
 );
-const DpsParses = React.lazy(() =>
-    import(
-        /* webpackPrefetch: true */
-        /* webpackChunkName: "controllers-dps-parses" */
-        '../../Controllers/DpsParses'
-    )
+const CharacterForm = React.lazy(
+    () => import(/* webpackPrefetch: true, webpackChunkName: "controllers-character_form" */ '../../Controllers/Forms/CharacterForm')
 );
-const DpsParseForm = React.lazy(() =>
-    import(
-        /* webpackPrefetch: true */
-        /* webpackChunkName: "controllers-dps_parse_form" */
-        '../../Controllers/Forms/DpsParseForm'
-    )
+const DpsParses = React.lazy(
+    () => import(/* webpackPrefetch: true, webpackChunkName: "controllers-dps-parses" */ '../../Controllers/DpsParses')
 );
-const Events = React.lazy(() =>
-    import(
-        /* webpackPrefetch: true */
-        /* webpackChunkName: "controllers-events" */
-        '../../Controllers/Events'
-    )
+const DpsParseForm = React.lazy(
+    () => import(/* webpackPrefetch: true, webpackChunkName: "controllers-dps_parse_form" */ '../../Controllers/Forms/DpsParseForm')
 );
-const EventForm = React.lazy(() =>
-    import(
-        /* webpackPrefetch: true */
-        /* webpackChunkName: "controllers-event_form" */
-        '../../Controllers/Forms/EventForm'
-    )
+// const Events = React.lazy(
+//     () => import(/* webpackPrefetch: 40, webpackChunkName: "controllers-events" */ '../../Controllers/Events')
+// );
+// const EventForm = React.lazy(
+//     () => import(/* webpackPrefetch: true, webpackChunkName: "controllers-event_form" */ '../../Controllers/Forms/EventForm')
+// );
+const Teams = React.lazy(
+    () => import(/* webpackPrefetch: 40, webpackChunkName: "controllers-teams" */ '../../Controllers/Teams')
 );
-const Teams = React.lazy(() =>
-    import(
-        /* webpackPrefetch: true */
-        /* webpackChunkName: "controllers-teams" */
-        '../../Controllers/Teams'
-        )
+const TeamForm = React.lazy(
+    () => import(/* webpackPrefetch: true, webpackChunkName: "controllers-team_form" */ '../../Controllers/Forms/TeamForm')
 );
-const TeamForm = React.lazy(() =>
-    import(
-        /* webpackPrefetch: true */
-        /* webpackChunkName: "controllers-team_form" */
-        '../../Controllers/Forms/TeamForm'
-        )
-);
-const TeamMembershipTerms = React.lazy(() =>
-    import(
-        /* webpackPrefetch: true */
-        /* webpackChunkName: "controllers-team_membership_terms" */
-        '../../Controllers/Forms/TeamMembershipTerms'
-        )
+const TeamMembershipTerms = React.lazy(
+    () => import(/* webpackPrefetch: true, webpackChunkName: "controllers-team_membership_terms" */ '../../Controllers/Forms/TeamMembershipTerms')
 );
 
-const AdminHome = React.lazy(() =>
-    import(
-        /* webpackPrefetch: true */
-        /* webpackChunkName: "controllers-admin-home" */
-        '../../Controllers/Admin/Home'
-    )
+const AdminHome = React.lazy(
+    () => import(/* webpackPrefetch: 40, webpackChunkName: "controllers-admin-home" */ '../../Controllers/Admin/Home')
 );
-const AdminDpsParses = React.lazy(() =>
-    import(
-        /* webpackPrefetch: true */
-        /* webpackChunkName: "controllers-admin-dps-parses" */
-        '../../Controllers/Admin/DpsParses'
-    )
+const AdminDpsParses = React.lazy(
+    () => import(/* webpackPrefetch: true, webpackChunkName: "controllers-admin-dps-parses" */ '../../Controllers/Admin/DpsParses')
 );
 
 class Main extends PureComponent {
     constructor(props) {
         super(props);
         this.authorizeUser = authorizeUser.bind(this);
-        this.authorizeAdmin = authorizeAdmin.bind(this);
     }
 
     fetchUserRoutes = () => {
@@ -157,8 +98,8 @@ class Main extends PureComponent {
         ] : [];
     };
 
-    fetchAdminRoutes = () => {
-        return this.authorizeAdmin() ? [
+    fetchAdminRoutes = (me) => {
+        return me && me.isAdmin ? [
             <Route
                 key="/admin"
                 path="/admin"
@@ -173,14 +114,17 @@ class Main extends PureComponent {
     };
 
     render = () => {
+        const { me } = this.props;
+
         return [
             <main key="main" className="container">
                 <Suspense fallback={<Loading />}>
                     <Switch>
                         <Route exact path="/" component={props => <Init {...props} />} />
+                        <Route exact path="/onboarding/:mode(members|soulshriven)" component={props => <Onboarding {...props} />} />
                         <Route exact path="/dashboard" component={props => <Home {...props} />} />
-                        {[...this.fetchUserRoutes()]}
-                        {[...this.fetchAdminRoutes()]}
+                        {[...this.fetchUserRoutes(me)]}
+                        {[...this.fetchAdminRoutes(me)]}
                         <Route component={NoMatch} />
                     </Switch>
                 </Suspense>
@@ -191,12 +135,10 @@ class Main extends PureComponent {
 
 Main.propTypes = {
     me: user,
-    groups: PropTypes.object,
 };
 
 const mapStateToProps = state => ({
     me: state.getIn(['me']),
-    groups: state.getIn(['groups']),
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -9,7 +9,7 @@ import { infosAction } from "../actions/notifications";
 import Notification from "../Components/Notification";
 import Item from "../Components/Teams/Item";
 import List from "../Components/Teams/List";
-import { authorizeAdmin, authorizeTeamManager, deleteTeam, renderActionList } from "../helpers";
+import { authorizeTeamManager, deleteTeam, renderActionList } from "../helpers";
 import { teams, user } from "../vendor/data";
 
 class Teams extends PureComponent {
@@ -19,7 +19,6 @@ class Teams extends PureComponent {
             team: null
         };
         this.handleDeleteTeam = deleteTeam.bind(this);
-        this.authorizeAdmin = authorizeAdmin.bind(this);
     }
 
     componentWillUnmount = () => {
@@ -38,10 +37,10 @@ class Teams extends PureComponent {
         }
     };
 
-    renderNoTeamsCreateOneNotification = authorizedAsAdmin => {
-        const { dispatch, teams, notifications } = this.props;
+    renderNoTeamsCreateOneNotification = () => {
+        const { dispatch, me, teams, notifications } = this.props;
         if (!teams.length && notifications.find(n => n.key === "no-teams-create-one") === undefined) {
-            const messages = authorizedAsAdmin ? [
+            const messages = me && me.isAdmin ? [
                 <Fragment key="f-1">Create a new team, by clicking</Fragment>,
                 <FontAwesomeIcon icon={faUsersMedical} key="icon" />,
                 <Fragment key="f-2">icon on top right corner.</Fragment>,
@@ -65,31 +64,29 @@ class Teams extends PureComponent {
     };
 
     render = () => {
-        const { groups, location, match, me, teams } = this.props;
+        const { location, match, me, teams } = this.props;
         if (!teams) {
             return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
         }
 
         const { team } = this.state;
-        const authorizedAsAdmin = this.authorizeAdmin();
         if (match.params.id && team) {
-            const authorizedTeamManager = authorizeTeamManager({ me, team, authorizedAsAdmin });
+            const authorizedTeamManager = authorizeTeamManager({ me, team });
             return [
                 <Item key='team-item'
                       authorizedTeamManager={authorizedTeamManager}
                       me={me}
                       team={team}
                       teams={teams}
-                      groups={groups}
                       deleteTeamHandler={authorizedTeamManager ? this.handleDeleteTeam : null} />,
                 <Notification key="notifications" />
             ];
 
         }
-        this.renderNoTeamsCreateOneNotification(authorizedAsAdmin);
+        this.renderNoTeamsCreateOneNotification();
 
         const actionList = {
-            create: authorizedAsAdmin ? (
+            create: me && me.isAdmin ? (
                 <Link to="/teams/create" className="ne-corner" title="Create a Team">
                     <FontAwesomeIcon icon={faUsersMedical} />
                 </Link>
@@ -102,8 +99,7 @@ class Teams extends PureComponent {
                     Teams
                 </h2>
                 <ul className="ne-corner">{renderActionList(actionList)}</ul>
-                <List authorizedAsAdmin={authorizedAsAdmin}
-                      deleteTeamHandler={this.handleDeleteTeam}
+                <List deleteTeamHandler={this.handleDeleteTeam}
                       me={me}
                       teams={teams} />
             </section>,
@@ -114,7 +110,6 @@ class Teams extends PureComponent {
 
 Teams.propTypes = {
     axiosCancelTokenSource: PropTypes.object,
-    groups: PropTypes.object,
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
@@ -127,7 +122,6 @@ Teams.propTypes = {
 
 const mapStateToProps = state => ({
     axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
-    groups: state.getIn(["groups"]),
     me: state.getIn(["me"]),
     notifications: state.getIn(["notifications"]),
     teams: state.getIn(["teams"]),

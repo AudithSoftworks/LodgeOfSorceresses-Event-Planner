@@ -27,6 +27,7 @@ class CharactersController extends Controller
     public function index(): JsonResponse
     {
         $this->authorize('user', User::class);
+
         $characterIds = Character::query()
             ->whereUserId(app('auth.driver')->id())
             ->orderBy('name')

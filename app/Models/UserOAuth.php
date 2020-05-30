@@ -49,11 +49,8 @@ class UserOAuth extends Model
 
     protected $fillable = ['*'];
 
-    protected $hidden = ['remote_id', 'name'];
+    protected $hidden = ['remote_id', 'name', 'email'];
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');

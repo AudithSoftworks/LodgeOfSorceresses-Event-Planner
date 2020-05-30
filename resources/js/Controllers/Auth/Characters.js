@@ -21,9 +21,13 @@ class Characters extends PureComponent {
         this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
     }
 
+    componentDidMount = () => {
+        this.renderNoCharactersCreateOneNotification();
+    };
+
     renderNoCharactersCreateOneNotification = () => {
         const { dispatch, myCharacters, notifications } = this.props;
-        if (!myCharacters.length && notifications.find(n => n.key === "no-characters-create-one") === undefined) {
+        if (myCharacters && !myCharacters.length && notifications.find(n => n.key === "no-characters-create-one") === undefined) {
             const message = [
                 <Fragment key="f-1">Create a new character, by clicking</Fragment>,
                 <FontAwesomeIcon icon={faUserPlus} key="icon" />,
@@ -58,11 +62,10 @@ class Characters extends PureComponent {
                 </Link>
             ),
         };
-        this.renderNoCharactersCreateOneNotification();
 
         return [
             <section className="col-md-24 p-0 mb-4 table-responsive" key="characterList">
-                <h2 className="form-title col-md-24" title="My Characters">
+                <h2 className="form-title col-md-24 pr-5" title="My Characters">
                     My Characters
                 </h2>
                 <article className="alert-info">

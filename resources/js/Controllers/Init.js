@@ -10,18 +10,12 @@ import getSkillsAction from '../actions/get-skills';
 import getTeamsAction from "../actions/get-teams";
 import Loading from '../Components/Loading';
 import Notification from '../Components/Notification';
-import { authorizeUser } from '../helpers';
 import { characters, user } from '../vendor/data';
 
 class Init extends PureComponent {
-    constructor(props) {
-        super(props);
-        this.authorizeUser = authorizeUser.bind(this);
-    }
-
     componentDidMount = () => {
-        const { myCharacters, sets, skills, content, teams } = this.props;
-        if (this.authorizeUser()) {
+        const { me, myCharacters, sets, skills, content, teams } = this.props;
+        if (me && (me.isMember || me.isSoulshriven)) {
             if (!myCharacters) {
                 this.props.getMyCharactersAction();
             }
@@ -69,14 +63,16 @@ class Init extends PureComponent {
     render = () => {
         const { me, myCharacters, sets, skills, content, teams } = this.props;
         if (me === null) {
-            return [this.renderLoginForm()];
+            return [this.renderLoginForm(), <Notification key="notifications" />];
         }
 
-        if (this.authorizeUser()) {
-            if (!sets || !skills || !content || !myCharacters || !teams) {
-                this.setRedirectUri(this.props.location);
-                return [<Loading key="loading" message="Loading data..." />, <Notification key="notifications" />];
-            }
+        if (!me.isMember && !me.isSoulshriven) {
+            return <Redirect to='/dashboard' />;
+        }
+
+        if (!sets || !skills || !content || !myCharacters || !teams) {
+            this.setRedirectUri(this.props.location);
+            return [<Loading key="loading" message="Loading data..." />, <Notification key="notifications" />];
         }
 
         let redirectUri = localStorage.getItem('redirectUri');
@@ -96,7 +92,6 @@ Init.propTypes = {
 
     axiosCancelTokenSource: PropTypes.object,
     me: user,
-    groups: PropTypes.object,
     sets: PropTypes.array,
     skills: PropTypes.array,
     myCharacters: characters,
@@ -110,7 +105,6 @@ Init.propTypes = {
 const mapStateToProps = state => ({
     axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
     me: state.getIn(['me']),
-    groups: state.getIn(['groups']),
     sets: state.getIn(['sets']),
     skills: state.getIn(['skills']),
     content: state.getIn(['content']),

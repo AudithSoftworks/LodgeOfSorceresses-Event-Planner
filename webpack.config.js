@@ -25,7 +25,7 @@ let common = {
     output: {
         path: PATHS.build,
         publicPath: '/build/',
-        filename: devMode ? '[name].js' : '[name].[contenthash].js',
+        filename: '[name].[contenthash].js',
         chunkFilename: '[name].[contenthash].js' // This is used for require.ensure. The setup will work without but this is useful to set.
     },
     plugins: [

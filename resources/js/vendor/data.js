@@ -73,6 +73,7 @@ export const user = PropTypes.shape({
     avatar: PropTypes.string,
     isMember: PropTypes.bool,
     isSoulshriven: PropTypes.bool,
+    isAdmin: PropTypes.bool,
     clearanceLevel: PropTypes.shape({
         rank: PropTypes.shape({
             title: PropTypes.string,
@@ -82,7 +83,6 @@ export const user = PropTypes.shape({
     linkedAccountsParsed: PropTypes.shape({
         discord: PropTypes.shape({
             id: PropTypes.number,
-            email: PropTypes.string,
             nickname: PropTypes.string,
             avatar: PropTypes.string,
             remote_primary_group: PropTypes.string,
@@ -93,7 +93,6 @@ export const user = PropTypes.shape({
         }),
         ips: PropTypes.shape({
             id: PropTypes.number,
-            email: PropTypes.string,
             nickname: PropTypes.string,
             avatar: PropTypes.string,
             remote_primary_group: PropTypes.number,

@@ -154,12 +154,11 @@ class TeamsCharactersController extends Controller
     {
         $this->authorize('user', User::class);
 
-        $validatorErrorMessages = [
-            'accepted_terms.accepted' => 'Please make sure you accept the terms of membership.',
-        ];
         $validator = Validator::make($request->all(), [
             'accepted_terms' => 'required|accepted',
-        ], $validatorErrorMessages);
+        ], [
+            'accepted_terms.accepted' => 'Please make sure you accept the terms of membership.',
+        ]);
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }

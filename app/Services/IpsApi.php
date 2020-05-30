@@ -15,25 +15,13 @@ class IpsApi extends AbstractApi
 
     public const CALENDAR_MIDGAME = 5;
 
-    public const MEMBER_GROUPS_SOULSHRIVEN = 3;
+    public const MEMBER_GROUP_SOULSHRIVEN = 3;
 
-    public const MEMBER_GROUPS_INITIATE = 28;
+    public const MEMBER_GROUP_MEMBERS = 30;
 
-    public const MEMBER_GROUPS_NEOPHYTE = 8;
+    public const MEMBER_GROUP_MAGISTER_TEMPLI = 6;
 
-    public const MEMBER_GROUPS_PRACTICUS = 19;
-
-    public const MEMBER_GROUPS_ADEPTUS_MINOR = 20;
-
-    public const MEMBER_GROUPS_ADEPTUS_MAJOR = 21;
-
-    public const MEMBER_GROUPS_DOMINUS_LIMINIS = 22;
-
-    public const MEMBER_GROUPS_ADEPTUS_EXEMPTUS = 25;
-
-    public const MEMBER_GROUPS_MAGISTER_TEMPLI = 6;
-
-    public const MEMBER_GROUPS_IPSISSIMUS = 4;
+    public const MEMBER_GROUP_IPSISSIMUS = 4;
 
     public const USER_ID_FOR_DANDELION = 2533;
 
@@ -107,7 +95,7 @@ class IpsApi extends AbstractApi
      * @return array
      * @throws \Exception
      */
-    public function getCalendarEvents(): array
+    public function getCalendarEvents(): ?array
     {
         $events = [];
         $page = 1;
@@ -167,7 +155,7 @@ class IpsApi extends AbstractApi
         }, $remoteUserId);
     }
 
-    public function editUser(int $remoteUserId, array $params): array
+    public function editUser(int $remoteUserId, array $params): ?array
     {
         return $this->executeCallback(function (int $remoteUserId, array $params) {
             $response = $this->getApiClient()->post('core/members/' . $remoteUserId, [RequestOptions::QUERY => $params]);
@@ -176,7 +164,7 @@ class IpsApi extends AbstractApi
         }, $remoteUserId, $params);
     }
 
-    public function deleteUser(int $remoteUserId): bool
+    public function deleteUser(int $remoteUserId): ?bool
     {
         return $this->executeCallback(function (int $remoteUserId) {
             $this->getApiClient()->delete('core/members/' . $remoteUserId);
@@ -189,7 +177,7 @@ class IpsApi extends AbstractApi
      | /forum/topics
      *-----------------------------------*/
 
-    public function createTopic(int $forum, string $title, string $post): array
+    public function createTopic(int $forum, string $title, string $post): ?array
     {
         return $this->executeCallback(function (int $forum, string $title, string $post) {
             $response = $this->getApiClient()->post('forums/topics/', [
@@ -205,11 +193,33 @@ class IpsApi extends AbstractApi
         }, $forum, $title, $post);
     }
 
+    public function getTopic(int $topic): ?array
+    {
+        return $this->executeCallback(function (int $topic) {
+            $response = $this->getApiClient()->get('forums/topics/' . $topic);
+
+            return json_decode($response->getBody()->getContents(), true);
+        }, $topic);
+    }
+
+    /*------------------------------------
+     | /forum/posts
+     *-----------------------------------*/
+
+    public function getPost(int $post): ?array
+    {
+        return $this->executeCallback(function (int $post) {
+            $response = $this->getApiClient()->get('forums/posts/' . $post);
+
+            return json_decode($response->getBody()->getContents(), true);
+        }, $post);
+    }
+
     /*------------------------------------
      | /gallery/images
      *-----------------------------------*/
 
-    public function postGalleryImage(int $album, int $author, string $caption, string $filename, string $image, CarbonInterface $date): array
+    public function postGalleryImage(int $album, int $author, string $caption, string $filename, string $image, CarbonInterface $date): ?array
     {
         return $this->executeCallback(function (int $album, int $author, string $caption, string $filename, string $image, CarbonInterface $date) {
             $response = $this->getApiClient()->post('gallery/images/', [
@@ -226,5 +236,27 @@ class IpsApi extends AbstractApi
 
             return json_decode($response->getBody()->getContents(), true);
         }, $album, $author, $caption, $filename, $image, $date);
+    }
+
+    /*------------------------------------
+     | /cms/records
+     *-----------------------------------*/
+
+    public function getCmsRecords(int $database): ?array
+    {
+        return $this->executeCallback(function (int $database) {
+            $response = $this->getApiClient()->get('cms/records/' . $database);
+
+            return json_decode($response->getBody()->getContents(), true);
+        }, $database);
+    }
+
+    public function getCmsRecord(int $database, int $record): ?array
+    {
+        return $this->executeCallback(function (int $database, int $record) {
+            $response = $this->getApiClient()->get(sprintf('cms/records/%d/%d', $database, $record));
+
+            return json_decode($response->getBody()->getContents(), true);
+        }, $database, $record);
     }
 }

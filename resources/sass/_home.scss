@@ -1,0 +1,85 @@
+@import "./global/variables";
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins/breakpoints";
+
+//noinspection CssUnknownTarget
+article.membership-mode-selection {
+    position: relative;
+    padding-top: 50px;
+
+    &:before {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 50%;
+        margin-left: -55px;
+    }
+
+    > a {
+        position: relative;
+        display: block;
+        width: 50%;
+        min-height: 720px;
+        float: left;
+        padding-top: 454px;
+        background: url('/images/membership.png') no-repeat local -370px -20px transparent;
+        overflow: hidden;
+        filter: grayscale(1);
+
+        &:hover {
+            filter: grayscale(0);
+        }
+
+        &:before {
+            content: attr(data-heading);
+            background-image: linear-gradient(90deg, rgba(white, 0.5) 0%, transparent 50%);
+            clip-path: circle(290px at 0 -50px);
+            position: absolute;
+            top: 400px;
+            left: 0;
+            width: 100%;
+            padding: 0 $grid-gutter-width;
+            color: white;
+            font-family: "Planewalker", serif;
+            font-size: 1.75em;
+        }
+
+        &:after {
+            content: attr(data-text-1) '\00000A' attr(data-text-2) '\00000A' attr(data-text-3);
+            white-space: pre-wrap;
+            display: block;
+            background-image: linear-gradient(90deg, rgba(black, 0.5) 0%, transparent 50%);
+            position: absolute;
+            left: 0;
+            clip-path: circle(300px at 0 -120px);
+            width: 300px;
+            padding: $grid-gutter-width / 2 $grid-gutter-width * 3 $grid-gutter-width / 2 $grid-gutter-width / 2;
+            color: white;
+            font-family: "Sovngarde", sans-serif;
+            font-size: 1.2em;
+        }
+
+        &:first-of-type {
+            background: url('/images/membership.png') no-repeat local 181px -40px transparent;
+            padding-top: 434px;
+            text-align: right;
+
+            &:before {
+                background-image: linear-gradient(-90deg, rgba(white, 0.5) 0%, transparent 50%);
+                clip-path: circle(330px at 100% -50px);
+                top: 380px;
+                left: unset;
+                right: 0;
+            }
+
+            &:after {
+                background-image: linear-gradient(-90deg, rgba(black, 0.5) 0%, transparent 80%);
+                clip-path: circle(320px at 100% -120px);
+                left: unset;
+                right: 0;
+                padding: $grid-gutter-width / 2 $grid-gutter-width / 2 $grid-gutter-width / 2 $grid-gutter-width * 3;
+            }
+        }
+    }
+}

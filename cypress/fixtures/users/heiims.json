@@ -8,6 +8,7 @@
     "deleted_at": null,
     "isSoulshriven": false,
     "isMember": true,
+    "isAdmin": true,
     "linkedAccountsParsed": {
         "discord": {
             "id": 12,

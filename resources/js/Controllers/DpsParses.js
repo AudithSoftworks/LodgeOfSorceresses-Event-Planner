@@ -12,15 +12,39 @@ import { renderActionList } from '../helpers';
 import { characters } from '../vendor/data';
 
 class DpsParses extends PureComponent {
+    constructor(props) {
+        super(props);
+        this.state = {
+            character: undefined,
+        };
+    }
+
     componentWillUnmount() {
         this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
     }
 
+    componentDidMount = () => {
+        const { history, myCharacters } = this.props;
+        const { character } = this.state;
+        if (myCharacters && character === undefined) {
+            const characterDetected = this.getCharacter();
+            if (characterDetected === null) {
+                return history.push('/@me/characters');
+            }
+            this.setState({ character: characterDetected });
+            this.renderNotificationForNoDpsParses(characterDetected);
+        }
+    };
+
     getCharacter = () => {
         const { match, myCharacters } = this.props;
-        const characterId = match.params.id;
+        if (myCharacters) {
+            const characterId = match.params.id;
 
-        return myCharacters.find(item => item.id === parseInt(characterId));
+            return myCharacters.find(item => item.id === parseInt(characterId)) || null;
+        }
+
+        return null;
     };
 
     handleDelete = event => {
@@ -64,11 +88,11 @@ class DpsParses extends PureComponent {
         if (!myCharacters) {
             return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
-        const character = this.getCharacter();
-        if (!character) {
-            return <Redirect to="/@me/characters" />;
+
+        const { character } = this.state;
+        if (character === undefined) {
+            return null;
         }
-        this.renderNotificationForNoDpsParses(character);
 
         const actionList = {
             return: (
@@ -86,7 +110,7 @@ class DpsParses extends PureComponent {
 
         return [
             <section className="col-md-24 p-0 mb-4" key="dpsParsesList">
-                <h2 className="form-title col-md-24">
+                <h2 className="form-title col-md-24 pr-5">
                     Parses for <i>{character.name}</i> Pending Approval
                 </h2>
                 <ul className="ne-corner">{renderActionList(actionList)}</ul>

@@ -22,6 +22,8 @@ class AuthServiceProvider extends ServiceProvider
 
         Gate::define('is-admin', UserPolicy::class . '@admin');
         Gate::define('has-app-access', UserPolicy::class . '@user');
+        Gate::define('is-member', UserPolicy::class . '@member');
+        Gate::define('is-soulshriven', UserPolicy::class . '@soulshriven');
         Gate::define('is-logged-in', UserPolicy::class . '@limited');
     }
 }

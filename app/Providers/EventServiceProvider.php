@@ -23,17 +23,17 @@ class EventServiceProvider extends ServiceProvider
         Events\Character\CharacterDeleted::class => [
             Listeners\Cache\DeleteUserCache::class,
             Listeners\Cache\DeleteCharacterCache::class,
-            Listeners\RerankPlayerOnIpsAndDiscord::class
+            Listeners\RerankPlayerOnDiscord::class
         ],
         Events\Character\CharacterDemoted::class => [
             Listeners\Cache\DeleteUserCache::class,
             Listeners\Cache\DeleteCharacterCache::class,
-            Listeners\RerankPlayerOnIpsAndDiscord::class
+            Listeners\RerankPlayerOnDiscord::class
         ],
         Events\Character\CharacterPromoted::class => [
             Listeners\Cache\DeleteUserCache::class,
             Listeners\Cache\DeleteCharacterCache::class,
-            Listeners\RerankPlayerOnIpsAndDiscord::class
+            Listeners\RerankPlayerOnDiscord::class
         ],
         Events\Character\CharacterUpdated::class => [
             Listeners\Cache\DeleteUserCache::class,
@@ -42,7 +42,7 @@ class EventServiceProvider extends ServiceProvider
         Events\Character\CharacterReset::class => [
             Listeners\Cache\DeleteUserCache::class,
             Listeners\Cache\DeleteCharacterCache::class,
-            Listeners\RerankPlayerOnIpsAndDiscord::class
+            Listeners\RerankPlayerOnDiscord::class
         ],
 
         Events\DpsParse\DpsParseSubmitted::class => [
@@ -56,7 +56,7 @@ class EventServiceProvider extends ServiceProvider
         Events\DpsParse\DpsParseApproved::class => [
             Listeners\Cache\DeleteCharacterCache::class,
             Listeners\DpsParse\ProcessDpsParse::class,
-            Listeners\RerankPlayerOnIpsAndDiscord::class,
+            Listeners\RerankPlayerOnDiscord::class,
             Listeners\DpsParse\AnnounceDpsApprovalOnDiscord::class,
         ],
         Events\DpsParse\DpsParseDisapproved::class => [
@@ -83,21 +83,21 @@ class EventServiceProvider extends ServiceProvider
         ],
         Events\Team\MemberJoined::class => [
             Listeners\Cache\DeleteCharacterCache::class,
-            Listeners\Team\AssignDiscordTagToMemberJoining::class,
             Listeners\Cache\DeleteUserCache::class,
+            Listeners\RerankPlayerOnDiscord::class,
             Listeners\Team\AnnounceMemberJoiningOnDiscord::class,
         ],
         Events\Team\MemberRemoved::class => [
             Listeners\Cache\DeleteCharacterCache::class,
-            Listeners\Team\RemoveDiscordTagFromMemberLeaving::class,
             Listeners\Cache\DeleteUserCache::class,
+            Listeners\RerankPlayerOnDiscord::class,
             Listeners\Team\AnnounceMemberRemovalOnDiscord::class,
         ],
 
         Events\User\LoggedIn::class => [],
         Events\User\LoggedOut::class => [],
         Events\User\Registered::class => [],
-        Events\User\Updated::class => [
+        Events\User\NameUpdated::class => [
             Listeners\User\UpdateDiscordAndForumNames::class,
             Listeners\Cache\DeleteUserCache::class,
         ],

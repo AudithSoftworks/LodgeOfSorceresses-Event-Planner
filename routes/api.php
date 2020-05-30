@@ -4,11 +4,19 @@ use Illuminate\Routing\Router;
 
 /** @var \Illuminate\Routing\Router $router */
 $router->middleware(['api', 'throttle'])->group(static function (Router $router) {
-    $router->apiResource('groups', 'GroupsController')->only(['index']);
     $router->apiResource('content', 'ContentController')->only(['index']);
 });
 
 $router->middleware(['auth:api', 'throttle'])->group(static function (Router $router) {
+    $router
+        ->get('onboarding/members/content/by-step/{step}', 'OnboardingController@getCmsContentByStepForMemberOnboarding')
+        ->name('onboarding.members.content');
+    $router
+        ->get('onboarding/soulshriven/content/by-step/{step}', 'OnboardingController@getCmsContentByStepForSoulshrivenOnboarding')
+        ->name('onboarding.soulshriven.content');
+    $router
+        ->post('onboarding/finalize', 'OnboardingController@finalizeOnboarding')
+        ->name('onboarding.finalize');
     $router->apiResource('events', 'EventsController')->only(['index']);
     $router->apiResource('files', 'FilesController')->only(['store', 'destroy']);
     $router->apiResource('sets', 'SetsController')->only(['index']);
@@ -28,6 +36,7 @@ $router->middleware(['auth:api', 'throttle'])->group(static function (Router $ro
 
     $router->get('users/@me', 'Auth\UsersController@me')->name('@me.show');
     $router->put('users/@me', 'Auth\UsersController@updateMe')->name('@me.update');
+    $router->delete('users/@me', 'Auth\UsersController@deleteMe')->name('@me.delete');
     $router
         ->apiResource('users/@me/characters', 'Auth\CharactersController')
         ->except(['show'])

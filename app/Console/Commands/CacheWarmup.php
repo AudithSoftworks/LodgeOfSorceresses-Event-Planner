@@ -36,10 +36,10 @@ class CacheWarmup extends Command
         $this->info('Skills successfully cached!');
         $cacheService->has('content');
         $this->info('Content successfully cached!');
-        $this->cacheAllTeams($cacheService);
-        $this->info('Teams successfully cached!');
         $this->cacheAllUsersAndCharacters($cacheService);
         $this->info('Users & Characters successfully cached!');
+        $this->cacheAllTeams($cacheService);
+        $this->info('Teams successfully cached!');
         $this->info('Cache-warmup successfully finished!');
     }
 

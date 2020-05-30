@@ -1,7 +1,8 @@
 import * as api from '../vendor/api/auth';
-import getUserAction from './get-user';
 
 export const TYPE_PUT_USER_SEND = 'PUT_USER_SEND';
+
+export const TYPE_PUT_USER_SUCCESS = 'PUT_USER_SUCCESS';
 
 export const TYPE_PUT_USER_FAILURE = 'PUT_USER_FAILURE';
 
@@ -10,6 +11,12 @@ const RESPONSE_MESSAGE_SUCCESS = 'User updated.';
 const putUserSendAction = data => ({
     type: TYPE_PUT_USER_SEND,
     data,
+});
+
+const putUserSuccessAction = (response, message) => ({
+    type: TYPE_PUT_USER_SUCCESS,
+    response,
+    message,
 });
 
 const putUserFailureAction = error => ({
@@ -24,7 +31,7 @@ const putUserAction = data => (dispatch, getState) => {
     return api
         .putUser(axiosCancelTokenSource, data, dispatch)
         .then(response => {
-            dispatch(getUserAction(RESPONSE_MESSAGE_SUCCESS));
+            dispatch(putUserSuccessAction(response, RESPONSE_MESSAGE_SUCCESS));
         })
         .catch(error => {
             dispatch(putUserFailureAction(error));

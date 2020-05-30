@@ -93,7 +93,7 @@ class IpsProvider extends AbstractProvider implements ProviderInterface
     {
         return (new CustomOauthTwoUser())->setRaw($user)->map([
             'id' => $user['id'],
-            'nickname' => $user['name'],
+            'nickname' => null,
             'name' => $user['name'],
             'email' => $user['email'],
             'remotePrimaryGroup' => $user['primaryGroup']['id'],
