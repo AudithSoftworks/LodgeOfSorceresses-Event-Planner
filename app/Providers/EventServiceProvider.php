@@ -83,14 +83,14 @@ class EventServiceProvider extends ServiceProvider
         ],
         Events\Team\MemberJoined::class => [
             Listeners\Cache\DeleteCharacterCache::class,
-            Listeners\Team\AssignDiscordTagToMemberJoining::class,
             Listeners\Cache\DeleteUserCache::class,
+            Listeners\RerankPlayerOnDiscord::class,
             Listeners\Team\AnnounceMemberJoiningOnDiscord::class,
         ],
         Events\Team\MemberRemoved::class => [
             Listeners\Cache\DeleteCharacterCache::class,
-            Listeners\Team\RemoveDiscordTagFromMemberLeaving::class,
             Listeners\Cache\DeleteUserCache::class,
+            Listeners\RerankPlayerOnDiscord::class,
             Listeners\Team\AnnounceMemberRemovalOnDiscord::class,
         ],
 

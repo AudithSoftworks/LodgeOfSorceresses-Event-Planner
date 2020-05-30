@@ -199,8 +199,10 @@ class GuildRanksAndClearance
      *
      * @param \App\Models\User $user
      * @param string           $membershipModeInTermsOfDiscordRole
+     *
+     * @return int
      */
-    public function refreshGivenUsersDiscordRoles(User $user, string $membershipModeInTermsOfDiscordRole = DiscordApi::ROLE_SOULSHRIVEN): void
+    public function refreshGivenUsersDiscordRoles(User $user, string $membershipModeInTermsOfDiscordRole = DiscordApi::ROLE_SOULSHRIVEN): int
     {
         if (!in_array($membershipModeInTermsOfDiscordRole, [DiscordApi::ROLE_MEMBERS, DiscordApi::ROLE_SOULSHRIVEN], true)) {
             throw new UnexpectedValueException(
@@ -232,7 +234,7 @@ class GuildRanksAndClearance
         $discordRoleIdsOfGivenUsersRoles = $this->determineRolesGivenUserIsClearedFor($user, true);
 
         # Discord-Role-IDs for Teams user is active part of
-        $discordRoleIdsOfGivenUsersTeams = $this->determineTeamsGivenUserIsMemberActiveMemberOf($user, true);
+        $discordRoleIdsOfGivenUsersTeams = $this->determineTeamsGivenUserIsActiveMemberOf($user, true);
 
         # Discord-Role-IDs for user Tier-level
         $clearanceLevel = $this->calculateClearanceLevelOfUser($user);
@@ -252,17 +254,18 @@ class GuildRanksAndClearance
             ->merge($discordRoleIdsOfGivenUsersSpecialRoles)
             ->merge($discordRoleIdsOfGivenUsersRoles)
             ->merge($discordRoleIdsOfGivenUsersTeams)
-            ->unique()
-            ->sort();
+            ->unique();
 
         $result = app('discord.api')->modifyGuildMember($discordAccount->remote_id, ['roles' => $usersNewDiscordRoles->all()]);
-        if ($result) {
+        if ($result !== null) {
             $discordAccount->remote_secondary_groups = $usersNewDiscordRoles->implode(',');
             if ($discordAccount->isDirty()) {
                 $discordAccount->save();
                 Cache::forget('user-' . $user->id);
             }
         }
+
+        return $clearanceLevel;
     }
 
     /**
@@ -289,13 +292,13 @@ class GuildRanksAndClearance
      *
      * @return iterable|\Illuminate\Support\Collection
      */
-    private function determineTeamsGivenUserIsMemberActiveMemberOf(User $user, bool $returnDiscordRoleIdsInstead = false): iterable
+    private function determineTeamsGivenUserIsActiveMemberOf(User $user, bool $returnDiscordRoleIdsInstead = false): iterable
     {
         $teams = collect();
         foreach ($user->characters as $character) {
             foreach ($character->teams as $team) {
                 if ($team->discord_role_id !== null && !$teams->containsStrict('id', $team->id)) {
-                    $teams->add($returnDiscordRoleIdsInstead === false ? $team : $team->discord_role_id);
+                    $team->teamMembership->status && $teams->add($returnDiscordRoleIdsInstead === false ? $team : $team->discord_role_id);
                 }
             }
         }
