@@ -87,7 +87,7 @@ class Onboarding extends PureComponent {
     };
 
     render = () => {
-        const { match, me, location } = this.props;
+        const { history, match, me, location } = this.props;
         if (!me) {
             return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
@@ -132,14 +132,13 @@ class Onboarding extends PureComponent {
             </article>,
             <span className='mt-5 col-24 d-flex flex-row flex-nowrap align-items-center justify-content-center' key='buttons' role='group'>
                 <button type='button'
-                        onClick={() => this.setState({ step: step - 1 })}
-                        disabled={step === 1}
+                        onClick={
+                            step === 1
+                                ? () => history.goBack()
+                                : () => this.setState({ step: step - 1 })
+                        }
                         className='btn btn-primary btn-lg mr-5'>Back</button>
-                {
-                    step !== numberOfSteps + 1
-                        ? <a href={currentData['url']} target='_blank' className='pl-5 pr-5 ml-5 mr-5'>Read & Discuss this on Forums</a>
-                        : <button type='button' onClick={() => this.deleteUserHandler()} className='pl-5 pr-5 ml-5 mr-5 btn btn-danger btn-lg ml-5'>Cancel application & DELETE my account!</button>
-                }
+                <button type='button' onClick={() => this.deleteUserHandler()} className='pl-5 pr-5 ml-5 mr-5 btn btn-danger btn-lg ml-5'>Cancel the application & DELETE my account!</button>
                 <button type='button'
                         onClick={
                             step < numberOfSteps + 1
