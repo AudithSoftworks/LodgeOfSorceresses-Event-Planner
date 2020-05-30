@@ -99,7 +99,7 @@ class DiscordApi extends AbstractApi
         ]);
     }
 
-    public function createMessageInChannel(string $channelId, array $params): array
+    public function createMessageInChannel(string $channelId, array $params): ?array
     {
         return $this->executeCallback(function (string $channelId, array $params) {
             $response = $this->getApiClient()->post('channels/' . $channelId . '/messages', $params);
@@ -108,7 +108,7 @@ class DiscordApi extends AbstractApi
         }, $channelId, $params);
     }
 
-    public function getChannelMessages(string $channelId, array $params = []): array
+    public function getChannelMessages(string $channelId, array $params = []): ?array
     {
         return $this->executeCallback(function (string $channelId, array $params) {
             $response = $this->getApiClient()->get('channels/' . $channelId . '/messages', [
@@ -121,7 +121,7 @@ class DiscordApi extends AbstractApi
         }, $channelId, $params);
     }
 
-    public function deleteMessagesInChannel(string $channelId, array $messageIds): bool
+    public function deleteMessagesInChannel(string $channelId, array $messageIds): ?bool
     {
         $return = $this->executeCallback(function (string $channelId, array $messageIds) {
             if (!count($messageIds)) {
@@ -143,7 +143,7 @@ class DiscordApi extends AbstractApi
         return $return ?? false;
     }
 
-    public function reactToMessageInChannel(string $channelId, string $messageId, string $reaction): bool
+    public function reactToMessageInChannel(string $channelId, string $messageId, string $reaction): ?bool
     {
         return $this->executeCallback(function (string $channelId, string $messageId, string $reaction) {
             $response = $this->getApiClient()->put('channels/' . $channelId . '/messages/' . $messageId . '/reactions/' . $reaction . '/@me');
@@ -161,7 +161,7 @@ class DiscordApi extends AbstractApi
         }, $memberId);
     }
 
-    public function modifyGuildMember(string $memberId, array $params): bool
+    public function modifyGuildMember(string $memberId, array $params): ?bool
     {
         return $this->executeCallback(function (string $memberId, array $params) {
             $response = $this->getApiClient()->patch('guilds/' . $this->discordGuildId . '/members/' . $memberId, [
@@ -172,7 +172,7 @@ class DiscordApi extends AbstractApi
         }, $memberId, $params);
     }
 
-    public function createDmChannel(string $recipientId): array
+    public function createDmChannel(string $recipientId): ?array
     {
         return $this->executeCallback(function (string $recipientId) {
             $response = $this->getApiClient()->post('users/@me/channels', [
@@ -185,7 +185,7 @@ class DiscordApi extends AbstractApi
         }, $recipientId);
     }
 
-    public function getGuildChannels(): array
+    public function getGuildChannels(): ?array
     {
         return $this->executeCallback(function () {
             $response = $this->getApiClient()->get('guilds/' . $this->discordGuildId . '/channels');
@@ -194,7 +194,7 @@ class DiscordApi extends AbstractApi
         });
     }
 
-    public function getGuildRoles(): array
+    public function getGuildRoles(): ?array
     {
         return $this->executeCallback(function () {
             $response = $this->getApiClient()->get('guilds/' . $this->discordGuildId . '/roles');

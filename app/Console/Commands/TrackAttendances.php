@@ -205,7 +205,7 @@ class TrackAttendances extends Command
                 base64_encode($rawContent),
                 $message['timestamp']
             );
-            $gallery_image_ids[] = $response['id'];
+            $response !== null && $gallery_image_ids[] = $response['id'];
         }
         $attendance->gallery_image_ids = implode(',', $gallery_image_ids);
         $attendance->save();

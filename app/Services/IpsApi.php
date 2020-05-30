@@ -95,7 +95,7 @@ class IpsApi extends AbstractApi
      * @return array
      * @throws \Exception
      */
-    public function getCalendarEvents(): array
+    public function getCalendarEvents(): ?array
     {
         $events = [];
         $page = 1;
@@ -164,7 +164,7 @@ class IpsApi extends AbstractApi
         }, $remoteUserId, $params);
     }
 
-    public function deleteUser(int $remoteUserId): bool
+    public function deleteUser(int $remoteUserId): ?bool
     {
         return $this->executeCallback(function (int $remoteUserId) {
             $this->getApiClient()->delete('core/members/' . $remoteUserId);
@@ -177,7 +177,7 @@ class IpsApi extends AbstractApi
      | /forum/topics
      *-----------------------------------*/
 
-    public function createTopic(int $forum, string $title, string $post): array
+    public function createTopic(int $forum, string $title, string $post): ?array
     {
         return $this->executeCallback(function (int $forum, string $title, string $post) {
             $response = $this->getApiClient()->post('forums/topics/', [
@@ -193,7 +193,7 @@ class IpsApi extends AbstractApi
         }, $forum, $title, $post);
     }
 
-    public function getTopic(int $topic): array
+    public function getTopic(int $topic): ?array
     {
         return $this->executeCallback(function (int $topic) {
             $response = $this->getApiClient()->get('forums/topics/' . $topic);
@@ -206,7 +206,7 @@ class IpsApi extends AbstractApi
      | /forum/posts
      *-----------------------------------*/
 
-    public function getPost(int $post): array
+    public function getPost(int $post): ?array
     {
         return $this->executeCallback(function (int $post) {
             $response = $this->getApiClient()->get('forums/posts/' . $post);
@@ -219,7 +219,7 @@ class IpsApi extends AbstractApi
      | /gallery/images
      *-----------------------------------*/
 
-    public function postGalleryImage(int $album, int $author, string $caption, string $filename, string $image, CarbonInterface $date): array
+    public function postGalleryImage(int $album, int $author, string $caption, string $filename, string $image, CarbonInterface $date): ?array
     {
         return $this->executeCallback(function (int $album, int $author, string $caption, string $filename, string $image, CarbonInterface $date) {
             $response = $this->getApiClient()->post('gallery/images/', [
@@ -242,7 +242,7 @@ class IpsApi extends AbstractApi
      | /cms/records
      *-----------------------------------*/
 
-    public function getCmsRecords(int $database): array
+    public function getCmsRecords(int $database): ?array
     {
         return $this->executeCallback(function (int $database) {
             $response = $this->getApiClient()->get('cms/records/' . $database);
@@ -251,7 +251,7 @@ class IpsApi extends AbstractApi
         }, $database);
     }
 
-    public function getCmsRecord(int $database, int $record): array
+    public function getCmsRecord(int $database, int $record): ?array
     {
         return $this->executeCallback(function (int $database, int $record) {
             $response = $this->getApiClient()->get(sprintf('cms/records/%d/%d', $database, $record));
