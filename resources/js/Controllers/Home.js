@@ -39,21 +39,28 @@ class Home extends PureComponent {
             accountStatusOptions.push(
                 <article key='membership-mode-selection'
                          className='membership-mode-selection col-24 d-flex flex-nowrap flex-row'
-                         data-text='Pick your poison:'
+                         data-text={
+                             'As you continue, please browse the material provided carefully and try to understand them!\u000A'
+                             + 'Please choose one of the following membership/participation methods:'
+                         }
                          data-cy='membership-mode-selection'>
                     <Link to='/onboarding/members'
                           key='member-onboarding'
                           data-heading='Member'
-                          data-text-1='* In-game Guild membership'
-                          data-text-2='* Growing in a focused environment'
-                          data-text-3='* Progression in a Core group'
+                          data-text={
+                              '* In-game Guild membership\u000A'
+                              + '* Growing in a focused environment\u000A'
+                              + '* Progression in a Core group'
+                          }
                     />
                     <Link to='/onboarding/soulshriven'
                           key='soulshriven-onboarding'
                           data-heading='Soulshriven'
-                          data-text-1='* No guild membership'
-                          data-text-2='* Open events participation'
-                          data-text-3='* PUGs of quality players'
+                          data-text={
+                              '* No guild membership\u000A'
+                              + '* Open events participation\u000A'
+                              + '* PUGs of quality players'
+                          }
                     />
                 </article>
             );
