@@ -4,13 +4,14 @@ use App\Events\DpsParse\DpsParseDisapproved;
 use App\Models\Set;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
+use Cloudinary;
 use GuzzleHttp\RequestOptions;
 
 class AnnounceDpsDisapprovalOnDiscord
 {
     public function __construct()
     {
-        \Cloudinary::config([
+        Cloudinary::config([
             'cloud_name' => config('filesystems.disks.cloudinary.cloud_name'),
             'api_key' => config('filesystems.disks.cloudinary.key'),
             'api_secret' => config('filesystems.disks.cloudinary.secret'),
@@ -20,6 +21,7 @@ class AnnounceDpsDisapprovalOnDiscord
     /**
      * @param \App\Events\DpsParse\DpsParseDisapproved $event
      *
+     * @throws \JsonException
      * @return bool
      */
     public function handle(DpsParseDisapproved $event): bool
@@ -29,9 +31,10 @@ class AnnounceDpsDisapprovalOnDiscord
          *-----------------------------------*/
 
         $channelId = config('services.discord.channels.dps_parses_logs');
-
         $dpsParse = $event->getDpsParse();
-        $parseAuthor = $event->getOwner();
+        if (($parseAuthor = $event->getOwner()) === null) {
+            return false;
+        }
         $character = $event->getCharacter();
 
         /*--------------------------------------------
@@ -120,7 +123,7 @@ class AnnounceDpsDisapprovalOnDiscord
                             'text' => 'Sent via Lodge of Sorceresses Guild Planner at: https://planner.lodgeofsorceresses.com'
                         ]
                     ],
-                ]),
+                ], JSON_THROW_ON_ERROR),
             ]
         ];
         $responseDecoded = $discordApi->createMessageInChannel($channelId, $message);

@@ -30,7 +30,7 @@ class DpsParseDisapproved implements GetDpsParseInterface, CharacterNeedsRecache
         return $this->dpsParse->character;
     }
 
-    public function getOwner(): User
+    public function getOwner(): ?User
     {
         return $this->dpsParse->character->owner;
     }

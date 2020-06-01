@@ -26,7 +26,7 @@ class CharacterDemoted implements UserNeedsRecacheInterface, CharacterNeedsRecac
         return $this->character;
     }
 
-    public function getOwner(): User
+    public function getOwner(): ?User
     {
         return $this->character->owner;
     }

@@ -27,7 +27,9 @@ class RerankPlayerOnDiscord
      */
     public function handle($event)
     {
-        $parseAuthor = $event->getOwner();
+        if (($parseAuthor = $event->getOwner()) === null) {
+            return false;
+        }
         $parseAuthor->loadMissing(['linkedAccounts', 'characters']);
 
         $guildRankAndClearanceService = app('guild.ranks.clearance');

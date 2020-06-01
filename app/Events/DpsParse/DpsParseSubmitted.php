@@ -30,7 +30,7 @@ class DpsParseSubmitted implements GetDpsParseInterface, CharacterNeedsRecacheIn
         return $this->dpsParse->character;
     }
 
-    public function getOwner(): User
+    public function getOwner(): ?User
     {
         return $this->dpsParse->character->owner;
     }

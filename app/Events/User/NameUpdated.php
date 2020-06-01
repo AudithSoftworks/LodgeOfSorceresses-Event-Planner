@@ -23,7 +23,7 @@ class NameUpdated implements UserNeedsRecacheInterface
         return $this->getOwner();
     }
 
-    public function getOwner(): User
+    public function getOwner(): ?User
     {
         return $this->user;
     }

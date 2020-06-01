@@ -13,7 +13,7 @@ class DeleteUserCache
     public function handle(UserNeedsRecacheInterface $event): bool
     {
         $user = $event->getOwner();
-        Cache::forget('user-' . $user->id);
+        $user !== null && Cache::forget('user-' . $user->id);
 
         return true;
     }

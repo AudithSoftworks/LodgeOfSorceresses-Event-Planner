@@ -42,7 +42,7 @@ class MemberInvited implements GetTeamInterface, CharacterNeedsRecacheInterface,
         return $this->character;
     }
 
-    public function getOwner(): User
+    public function getOwner(): ?User
     {
         return $this->character->owner;
     }

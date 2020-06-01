@@ -4,13 +4,14 @@ use App\Events\DpsParse\DpsParseSubmitted;
 use App\Models\Set;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
+use Cloudinary;
 use GuzzleHttp\RequestOptions;
 
 class PostNewDpsParseToDiscord
 {
     public function __construct()
     {
-        \Cloudinary::config([
+        Cloudinary::config([
             'cloud_name' => config('filesystems.disks.cloudinary.cloud_name'),
             'api_key' => config('filesystems.disks.cloudinary.key'),
             'api_secret' => config('filesystems.disks.cloudinary.secret'),
@@ -27,9 +28,13 @@ class PostNewDpsParseToDiscord
     {
         $dpsParse = $event->getDpsParse();
 
-        $owner = $event->getOwner();
+        if (($owner = $event->getOwner()) === null) {
+            return false;
+        }
+
         $character = $event->getCharacter();
         $gearSets = $this->getGearSets($dpsParse->sets);
+
         $gearSetsParsed = [];
         foreach ($gearSets as $set) {
             $gearSetsParsed[] = '[' . $set->name . '](https://eso-sets.com/set/' . $set->id . ')';
@@ -83,7 +88,7 @@ class PostNewDpsParseToDiscord
                             'text' => 'Submitted via Lodge of Sorceresses Planner at: https://planner.lodgeofsorceresses.com'
                         ]
                     ],
-                ]),
+                ], JSON_THROW_ON_ERROR),
             ]
         ]);
         $idsOfCreatedDiscordMessages[] = $responseDecoded['id'];

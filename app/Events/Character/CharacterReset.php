@@ -26,7 +26,7 @@ class CharacterReset implements UserNeedsRecacheInterface, CharacterNeedsRecache
         return $this->character;
     }
 
-    public function getOwner(): User
+    public function getOwner(): ?User
     {
         return $this->character->owner;
     }

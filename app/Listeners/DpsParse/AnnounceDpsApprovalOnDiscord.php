@@ -7,6 +7,7 @@ use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
 use Cloudinary;
 use GuzzleHttp\RequestOptions;
+use Illuminate\Support\Facades\Auth;
 
 class AnnounceDpsApprovalOnDiscord
 {
@@ -28,6 +29,7 @@ class AnnounceDpsApprovalOnDiscord
     /**
      * @param \App\Events\DpsParse\DpsParseApproved $event
      *
+     * @throws \JsonException
      * @return bool
      */
     public function handle(DpsParseApproved $event): bool
@@ -37,9 +39,10 @@ class AnnounceDpsApprovalOnDiscord
          *------------*/
 
         $dpsParsesChannelId = config('services.discord.channels.dps_parses_logs');
-
         $dpsParse = $event->getDpsParse();
-        $parseAuthor = $event->getOwner();
+        if (($parseAuthor = $event->getOwner()) === null) {
+            return false;
+        }
         $character = $event->getCharacter()->refresh();
         $playerClearance = app('guild.ranks.clearance')->calculateClearanceLevelOfUser($parseAuthor);
         $characterClearance = $character->approved_for_tier;
@@ -49,11 +52,13 @@ class AnnounceDpsApprovalOnDiscord
          *-------------------------------------------*/
 
         /** @var \App\Models\User $me */
-        $me = app('auth.driver')->user();
+        $me = Auth::user();
+        /** @var \App\Models\UserOAuth $myDiscordAccount */
         $myDiscordAccount = $me->linkedAccounts()->where('remote_provider', 'discord')->first();
         $myMentionedName = $myDiscordAccount ? '<@!' . $myDiscordAccount->remote_id . '>' : $me->name;
 
         $parseAuthor->loadMissing('linkedAccounts');
+        /** @var \App\Models\UserOAuth $parseOwnersDiscordAccount */
         $parseOwnersDiscordAccount = $parseAuthor->linkedAccounts()->where('remote_provider', 'discord')->first();
         $mentionedName = $parseAuthor->name;
         if ($parseOwnersDiscordAccount) {
@@ -140,7 +145,7 @@ class AnnounceDpsApprovalOnDiscord
                             'text' => 'Sent via Lodge of Sorceresses Guild Planner at: https://planner.lodgeofsorceresses.com'
                         ]
                     ],
-                ]),
+                ], JSON_THROW_ON_ERROR),
             ]
         ]);
         $dpsParse->discord_notification_message_ids = $responseDecoded['id'];
@@ -202,7 +207,7 @@ class AnnounceDpsApprovalOnDiscord
                                 'text' => 'Sent via Lodge of Sorceresses Guild Planner at: https://planner.lodgeofsorceresses.com'
                             ]
                         ],
-                    ]),
+                    ], JSON_THROW_ON_ERROR),
                 ]
             ]);
         }
