@@ -10,6 +10,7 @@ use Carbon\CarbonImmutable;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
 
 class ResetRanksByInvalidatingDpsParses extends Command
@@ -17,7 +18,7 @@ class ResetRanksByInvalidatingDpsParses extends Command
     /**
      * @var string
      */
-    protected $signature = 'ranks:reset {date : YYYYMMDD-format date up to which the existing DPS Parses will be invalidated}';
+    protected $signature = 'parses:reset {date : YYYYMMDD-format date up to which the existing DPS Parses will be invalidated}';
 
     /**
      * @var string
@@ -45,7 +46,7 @@ class ResetRanksByInvalidatingDpsParses extends Command
         $this->processExistingValidDpsParsesAgainForGivenCharacterIds($idsOfCharactersAffected);
     }
 
-    private function processExistingValidDpsParsesAgainForGivenCharacterIds(iterable $idsOfCharactersAffected): void
+    private function processExistingValidDpsParsesAgainForGivenCharacterIds(Collection $idsOfCharactersAffected): void
     {
         $guildRankService = app('guild.ranks.clearance');
         $nrOfCharactersAffected = $idsOfCharactersAffected->count();
