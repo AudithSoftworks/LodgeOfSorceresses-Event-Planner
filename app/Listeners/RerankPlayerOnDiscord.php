@@ -7,7 +7,6 @@ use App\Services\GuildRanksAndClearance;
 use Cloudinary;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Facades\Gate;
-use UnexpectedValueException;
 
 class RerankPlayerOnDiscord
 {
@@ -23,6 +22,7 @@ class RerankPlayerOnDiscord
     /**
      * @param \App\Events\Character\CharacterNeedsRecacheInterface|\App\Events\User\UserNeedsRecacheInterface $event
      *
+     * @throws \JsonException
      * @return bool|int
      */
     public function handle($event)
@@ -36,7 +36,7 @@ class RerankPlayerOnDiscord
             $membershipMode = Gate::forUser($parseAuthor)->allows('is-soulshriven') ? DiscordApi::ROLE_SOULSHRIVEN : null;
         }
         if ($membershipMode === null) {
-            throw new UnexpectedValueException(sprintf('User (id: %d) is neither a Member nor Soulshriven?!', $parseAuthor->id));
+            return false;
         }
         $clearanceLevel = $guildRankAndClearanceService->refreshGivenUsersDiscordRoles($parseAuthor, $membershipMode);
 
@@ -50,6 +50,13 @@ class RerankPlayerOnDiscord
         return true;
     }
 
+    /**
+     * @param \App\Services\DiscordApi $discordApi
+     * @param \App\Models\UserOAuth    $remoteDiscordUser
+     * @param int                      $clearanceLevel
+     *
+     * @throws \JsonException
+     */
     private function announceRerankInOfficerChannelOnDiscord(DiscordApi $discordApi, UserOAuth $remoteDiscordUser, int $clearanceLevel): void
     {
         $officerChannelId = config('services.discord.channels.officer_logs');
@@ -64,7 +71,7 @@ class RerankPlayerOnDiscord
                 'payload_json' => json_encode([
                     'content' => $mentionedOfficerGroup . ': ' . $mentionedName . ' needs to have in-game guild rank of **' . $rankTitle . '**. Please promote/demote them accordingly!',
                     'tts' => false,
-                ]),
+                ], JSON_THROW_ON_ERROR),
             ],
         ]);
     }
