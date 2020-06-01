@@ -1,4 +1,4 @@
-<?php /** @noinspection NullPointerExceptionInspection */
+<?php
 
 namespace App\Console\Commands;
 
@@ -30,25 +30,16 @@ class TrackAttendances extends Command
      */
     protected $description = 'Tracks posts in #achievements Discord channel for Attendance markers.';
 
-    /**
-     * @var string
-     */
-    private $botId;
+    private string $botId;
 
-    /**
-     * @var string
-     */
-    private $overallLastMessageIdProcessed;
+    private ?string $overallLastMessageIdProcessed;
 
-    /**
-     * @var string
-     */
-    private $currentLastMessageIdProcessed;
+    private ?string $currentLastMessageIdProcessed = null;
 
     /**
      * @var array
      */
-    private $ipsOauthNotFoundList = [];
+    private array $ipsOauthNotFoundList = [];
 
     public function __construct()
     {
@@ -134,25 +125,27 @@ class TrackAttendances extends Command
                 continue;
             }
             $mentionUser = $this->getUserForGivenDiscordRemoteId($mention['id']);
-            /** @var UserOAuth $mentionUserOauth */
-            $mentionUserOauth = $mentionUser->linkedAccounts()->where('remote_provider', 'ips')->first();
-            if ($mentionUserOauth !== null) {
-                $slug = $mentionUserOauth->remote_id . '-member';
-                $formattedMention = sprintf(
-                    self::TEMPLATE_FOR_MENTION_LINKS,
-                    '<___base_url___>/profile/' . $slug . '/?do=hovercard',
-                    $mentionUserOauth->remote_id,
-                    '<___base_url___>/profile/' . $slug . '/',
-                    $mentionUserOauth->nickname
-                );
-                $message['content'] = preg_replace('/<@!' . $mention['id'] . '>/', $formattedMention, $message['content']);
-                $mention = $mentionUser;
-            } else {
-                if (!in_array($mention['id'], $this->ipsOauthNotFoundList, true)) {
-                    $message['content'] = preg_replace('/<@!' . $mention['id'] . '>/', '', $message['content']);
-                    $this->ipsOauthNotFoundList[] = $mention['id'];
+            if ($mentionUser !== null) {
+                /** @var UserOAuth $mentionUserOauth */
+                $mentionUserOauth = $mentionUser->linkedAccounts()->where('remote_provider', 'ips')->first();
+                if ($mentionUserOauth !== null) {
+                    $slug = $mentionUserOauth->remote_id . '-member';
+                    $formattedMention = sprintf(
+                        self::TEMPLATE_FOR_MENTION_LINKS,
+                        '<___base_url___>/profile/' . $slug . '/?do=hovercard',
+                        $mentionUserOauth->remote_id,
+                        '<___base_url___>/profile/' . $slug . '/',
+                        $mentionUserOauth->nickname
+                    );
+                    $message['content'] = preg_replace('/<@!' . $mention['id'] . '>/', $formattedMention, $message['content']);
+                    $mention = $mentionUser;
+                } else {
+                    if (!in_array($mention['id'], $this->ipsOauthNotFoundList, true)) {
+                        $message['content'] = preg_replace('/<@!' . $mention['id'] . '>/', '', $message['content']);
+                        $this->ipsOauthNotFoundList[] = $mention['id'];
+                    }
+                    $this->warn('No IPS account for user: ' . $mention['username']);
                 }
-                $this->warn('No IPS account for user: ' . $mention['username']);
             }
         }
         unset($mention);
@@ -186,6 +179,9 @@ class TrackAttendances extends Command
 
         $collectionOfMentions = collect($message['mentions']);
         $collectionOfMentions->add($message['author']);
+        $collectionOfMentions = $collectionOfMentions->reject(static function ($mention) {
+            return !($mention instanceof User);
+        });
         $attendance->attendees()->sync($collectionOfMentions->pluck('id'));
         $attendance->save();
 
@@ -213,7 +209,7 @@ class TrackAttendances extends Command
         return $message;
     }
 
-    private function getUserForGivenDiscordRemoteId(string $discordRemoteId): User
+    private function getUserForGivenDiscordRemoteId(string $discordRemoteId): ?User
     {
         /** @var UserOAuth $userDiscordOauth */
         $userDiscordOauth = UserOAuth::query()
@@ -223,21 +219,33 @@ class TrackAttendances extends Command
             ->get()
             ->first();
 
-        return $userDiscordOauth->owner;
+        return $userDiscordOauth !== null ? $userDiscordOauth->owner : null;
     }
 
+    /**
+     * @throws \JsonException
+     */
     private function notifyUsersWithoutIpsOauthAccount(): void
     {
         if ($count = count($this->ipsOauthNotFoundList)) {
             $discordApi = app('discord.api');
             foreach ($this->ipsOauthNotFoundList as $discordRemoteId) {
-                $dmChannel = $discordApi->createDmChannel($discordRemoteId);
-                $discordApi->createMessageInChannel($dmChannel['id'], [
+                if (!app()->environment('production')) {
+                    $channel = env('DISCORD_TEST_CHANNEL_ID');
+                } else {
+                    $dmChannel = $discordApi->createDmChannel($discordRemoteId);
+                    $channel = $dmChannel['id'];
+                }
+                $mentionName = sprintf('<@!%s>', $discordRemoteId);
+                $discordApi->createMessageInChannel($channel, [
                     RequestOptions::FORM_PARAMS => [
                         'payload_json' => json_encode([
-                            'content' => '**Regarding Forum Account Not Being Linked**' . PHP_EOL
-                                . 'Hello! During Attendance tracking, we noticed you haven\'t linked your Forum account in Guild Planner. '
-                                . 'Please login to Guild Planner at your earliest convenience and make sure Account Status is green there.',
+                            'content' => sprintf(
+                                '**Regarding Forum Account Not Being Linked**' . PHP_EOL
+                                . 'Hello, %s! During Attendance tracking, we noticed you haven\'t linked your Forum account in our Guild Planner. '
+                                . 'Please login to Guild Planner at your earliest convenience and link Forum account to your Planner account.',
+                                $mentionName
+                            ),
                             'tts' => true,
                             'embed' => [
                                 'color' => 0xaa0000,
@@ -258,7 +266,7 @@ class TrackAttendances extends Command
                                     'text' => 'Sent via Lodge of Sorceresses Guild Planner at: https://planner.lodgeofsorceresses.com'
                                 ]
                             ],
-                        ]),
+                        ], JSON_THROW_ON_ERROR),
                     ]
                 ]);
             }

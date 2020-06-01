@@ -76,6 +76,7 @@ docker-compose exec php bash -c "
     ./artisan pmg:sets;
     ./artisan cache:warmup;
     ./artisan fixture:populate;
+    ./artisan optimize:clear;
 
     ./vendor/bin/phpunit --debug --verbose;
     npx cypress run;
