@@ -40,10 +40,6 @@ docker-compose exec php bash -c "
         cp -r ~/.cache/google-fonts/apache/opensans ./public/fonts/opensans;
         convertFonts.sh --use-font-weight --output=public/fonts/opensans/stylesheet.css public/fonts/opensans/*.ttf;
     fi;
-    if [[ ! -d ./public/fonts/robotocondensed ]]; then
-        cp -r ~/.cache/google-fonts/apache/robotocondensed ./public/fonts/robotocondensed;
-        convertFonts.sh --use-font-weight --output=public/fonts/robotocondensed/stylesheet.css public/fonts/robotocondensed/*.ttf;
-    fi;
     if [[ ! -d ./public/fonts/asapcondensed ]]; then
         cp -r ~/.cache/google-fonts/ofl/asapcondensed ./public/fonts/asapcondensed;
         convertFonts.sh --use-font-weight --output=public/fonts/asapcondensed/stylesheet.css public/fonts/asapcondensed/*.ttf;
