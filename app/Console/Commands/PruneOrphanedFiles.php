@@ -23,10 +23,7 @@ class PruneOrphanedFiles extends Command
      */
     protected $description = 'Prunes orphaned files from Cloudinary.';
 
-    /**
-     * @var \Cloudinary\Api
-     */
-    private $cloudinaryApi;
+    private Cloudinary\Api $cloudinaryApi;
 
     /**
      * Create a new command instance.
