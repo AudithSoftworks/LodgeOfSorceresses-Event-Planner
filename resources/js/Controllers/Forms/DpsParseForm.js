@@ -216,12 +216,12 @@ class DpsParseForm extends PureComponent {
                     <b>Usage tips:</b>
                     <ul>
                         <li>Please use 21-million-HP Trial Dummy for parsing.</li>
-                        <li>Don't submit parses older than 2 weeks!</li>
-                        <li>Make sure you have minimum 5850 Penetration in your parse screenshots. Penetration cannot go lower than this number ever!</li>
-                        <li>Every new parse will renew your clearance level, i.e. sending lower DPS numbers can revoke its clearance and demote your account.</li>
-                        <li>When creating a Parse, include only the sets used for that particular parse, removing everything else.</li>
-                        <li>Each Parse needs to have both Combat Metrics addon Combat and Info screen screenshots.</li>
-                        <li>Every Character needs their parses refreshed at least every 60 days. Failing to do so will revoke your Tier clearance automatically.</li>
+                        <li>Don't submit Parses older than 2 weeks! When a major Update is released, Parses need to be created after the launch date.</li>
+                        <li>Make sure you have around 5850 Penetration in your Parse-screenshots (±1000 is an acceptable margin).</li>
+                        <li>Every new Parse will update your existing Tier-level, i.e. sending lower DPS numbers can cause demotion.</li>
+                        <li>When creating a Parse, include only the Sets used for that particular Parse, removing everything else.</li>
+                        <li>Each Parse needs to have both Combat and Info screen screenshots from Combat Metrics addon.</li>
+                        <li>Every Character needs their Parses refreshed at least every 60 days. Failing to do so will revoke your Tier-level automatically.</li>
                     </ul>
                 </article>
                 <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')} />
