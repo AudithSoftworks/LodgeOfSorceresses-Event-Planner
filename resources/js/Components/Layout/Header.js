@@ -145,7 +145,7 @@ class Header extends Component {
                         </a>
                     </li>
                     <li className='d-none d-lg-block'>
-                        <a href="https://discord.gg/mK8aNVz" title="ESOLogs" target="_blank">
+                        <a href="https://discord.gg/pdDTjW3" title="ESOLogs" target="_blank">
                             <FontAwesomeIcon icon={['fab', 'discord']} size='lg' /> Discord
                         </a>
                     </li>
