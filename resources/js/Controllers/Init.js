@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import getContentAction from '../actions/get-content';
@@ -8,6 +8,7 @@ import getMyCharactersAction from '../actions/get-my-characters';
 import getSetsAction from '../actions/get-sets';
 import getSkillsAction from '../actions/get-skills';
 import getTeamsAction from "../actions/get-teams";
+import { errorsAction } from "../actions/notifications";
 import Loading from '../Components/Loading';
 import Notification from '../Components/Notification';
 import { characters, user } from '../vendor/data';
@@ -31,6 +32,8 @@ class Init extends PureComponent {
             if (!teams) {
                 this.props.getTeamsAction();
             }
+        } else {
+            this.renderFlashMessages();
         }
     };
 
@@ -58,6 +61,27 @@ class Init extends PureComponent {
                 </fieldset>
             </form>
         );
+    };
+
+    renderFlashMessages = () => {
+        const bodyElement = document.querySelector('body');
+        const flashMessages = JSON.parse(bodyElement.getAttribute('data-flash-messages'));
+        const { dispatch, notifications } = this.props;
+        if (flashMessages.length && notifications.find(n => n.key === "flash-messages") === undefined) {
+            dispatch(
+                errorsAction(
+                    flashMessages,
+                    {
+                        container: "bottom-center",
+                        animationIn: ["animated", "bounceInDown"],
+                        animationOut: ["animated", "bounceOutDown"],
+                        dismiss: { duration: 30000 },
+                        width: 320,
+                    },
+                    "flash-messages"
+                )
+            );
+        }
     };
 
     render = () => {
@@ -95,11 +119,13 @@ Init.propTypes = {
     sets: PropTypes.array,
     skills: PropTypes.array,
     myCharacters: characters,
+    dispatch: PropTypes.func.isRequired,
     getSetsAction: PropTypes.func.isRequired,
     getSkillsAction: PropTypes.func.isRequired,
     getContentAction: PropTypes.func.isRequired,
     getMyCharactersAction: PropTypes.func.isRequired,
     getTeamsAction: PropTypes.func.isRequired,
+    notifications: PropTypes.array,
 };
 
 const mapStateToProps = state => ({
@@ -110,6 +136,7 @@ const mapStateToProps = state => ({
     content: state.getIn(['content']),
     myCharacters: state.getIn(['myCharacters']),
     teams: state.getIn(['teams']),
+    notifications: state.getIn(["notifications"]),
 });
 
 const mapDispatchToProps = dispatch => ({

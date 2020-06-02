@@ -100,6 +100,7 @@ Characters.propTypes = {
     myCharacters: characters,
     notifications: PropTypes.array,
 
+    dispatch: PropTypes.func.isRequired,
     deleteMyCharacterAction: PropTypes.func.isRequired,
 };
 

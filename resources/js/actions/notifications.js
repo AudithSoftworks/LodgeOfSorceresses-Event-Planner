@@ -11,7 +11,7 @@ export const TYPE_TRIGGER_INFO = 'TRIGGER_INFO';
 export const errorsAction = (error, options = {}, key = null, persist = false) => {
     return {
         type: TYPE_TRIGGER_ERROR,
-        message: typeof error === 'string' || error instanceof Array ? error : error.message || error.response.data.message || error.response.statusText,
+        message: (typeof error === 'string' || error instanceof Array) ? error : error.message || error.response.data.message || error.response.statusText,
         options,
         key,
         persist,

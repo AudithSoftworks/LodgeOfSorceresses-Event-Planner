@@ -48,7 +48,8 @@ class LoginController extends Controller
             Auth::logout();
             Event::dispatch(new LoggedOut($user));
         }
-        $request->session()->flush();
+        $request->session()->keep(['errors']);
+//        $request->session()->flush();
         $request->session()->regenerate();
 
         if ($request->expectsJson()) {
@@ -123,7 +124,7 @@ class LoginController extends Controller
     {
         if ($provider === 'discord') {
             if (!($discordUser = app('discord.api')->getGuildMember($oauthTwoUser->getId()))) {
-                throw new UserNotMemberInDiscord('You need to join Lodge Discord server to continue! Please do so and come back afterwards.');
+                throw new UserNotMemberInDiscord('You need to join Lodge Discord server to continue! Please do so and come back afterwards. Link to it is at the top.');
             }
             $discordUser['nick'] && $oauthTwoUser->nickname = $discordUser['nick'];
             !empty($discordUser['roles']) && $oauthTwoUser->remoteSecondaryGroups = $discordUser['roles'];

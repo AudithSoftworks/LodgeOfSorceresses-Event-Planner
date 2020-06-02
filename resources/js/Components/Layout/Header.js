@@ -1,8 +1,4 @@
-import(
-    /* webpackPrefetch: true */
-    /* webpackChunkName: "header-scss" */
-    '../../../sass/_header.scss'
-);
+import(/* webpackPrefetch: true, webpackChunkName: "header-scss" */ '../../../sass/_header.scss');
 
 import { faAnalytics, faCampfire, faChess, faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faUsersClass } from '@fortawesome/pro-light-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
