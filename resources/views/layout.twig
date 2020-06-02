@@ -4,5 +4,5 @@
     <head>
         {{ block('document_head') }}
     </head>
-    <body id="root" class="theme-default" data-error-message="{{ session_get('errors') }}" />
+    <body id="root" class="theme-default" data-flash-messages="{{ errors }}" />
 </html>

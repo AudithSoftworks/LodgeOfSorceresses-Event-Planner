@@ -1,12 +1,23 @@
-<?php namespace App\Http\Controllers;
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Support\Facades\Session;
 
 class HomeController extends Controller
 {
     /**
+     * @throws \JsonException
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|\Illuminate\Http\RedirectResponse
      */
     public function index()
     {
-        return view('index');
+        /** @var \Illuminate\Support\ViewErrorBag $errorBag */
+        $errorBag = Session::get('errors');
+        $errors = $errorBag !== null ? $errorBag->all() : [];
+
+        return view('index', [
+            'errors' => json_encode($errors, JSON_THROW_ON_ERROR),
+        ]);
     }
 }

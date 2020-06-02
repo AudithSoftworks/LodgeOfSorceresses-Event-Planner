@@ -66,7 +66,12 @@ class Handler extends ExceptionHandler
         $requestExpectsJson = $request->expectsJson();
         if ($e instanceof ModelNotFoundException || $e instanceof AuthorizationException) {
             return $requestExpectsJson
-                ? response()->json(['message' => $e->getMessage() ?? 'Not found!'], $e instanceof ModelNotFoundException ? JsonResponse::HTTP_NOT_FOUND : JsonResponse::HTTP_FORBIDDEN)
+                ? response()->json(
+                    ['message' => $e->getMessage() ?? 'Not found!'],
+                    $e instanceof ModelNotFoundException
+                        ? JsonResponse::HTTP_NOT_FOUND
+                        : JsonResponse::HTTP_FORBIDDEN
+                )
                 : redirect()->guest('/logout')->withErrors($e->getMessage());
         }
 

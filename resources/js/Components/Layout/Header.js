@@ -1,8 +1,4 @@
-import(
-    /* webpackPrefetch: true */
-    /* webpackChunkName: "header-scss" */
-    '../../../sass/_header.scss'
-);
+import(/* webpackPrefetch: true, webpackChunkName: "header-scss" */ '../../../sass/_header.scss');
 
 import { faAnalytics, faCampfire, faChess, faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faUsersClass } from '@fortawesome/pro-light-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -145,7 +141,7 @@ class Header extends Component {
                         </a>
                     </li>
                     <li className='d-none d-lg-block'>
-                        <a href="https://discord.gg/mK8aNVz" title="ESOLogs" target="_blank">
+                        <a href="https://discord.gg/pdDTjW3" title="ESOLogs" target="_blank">
                             <FontAwesomeIcon icon={['fab', 'discord']} size='lg' /> Discord
                         </a>
                     </li>

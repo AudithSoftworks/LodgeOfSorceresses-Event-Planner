@@ -49,6 +49,7 @@ Application.propTypes = {
     history: PropTypes.object.isRequired,
 
     me: user,
+    dispatch: PropTypes.func.isRequired,
     getUserAction: PropTypes.func.isRequired,
 };
 
