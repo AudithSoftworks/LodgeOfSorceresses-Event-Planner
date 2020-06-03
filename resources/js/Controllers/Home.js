@@ -70,7 +70,7 @@ class Home extends PureComponent {
                     <h3>Your Lodge Forum Account:</h3>
                     <p>Not Linked</p>
                     <small>If you are an actual member of Lodge in-game, you need to register at Lodge Forum as well (by logging in via Discord).</small>
-                    <small>We are temporarily using the Calendar there (until Planner Calendar is operational).</small>
+                    <small>We are using certain features of the forums (Gallery, Calendar etc).</small>
                     <small>If you don't have a Forum account created, <a href='https://lodgeofsorceresses.com' target='_blank'>click here to create one</a> (link opens in a new tab).</small>
                     <small>Once your Forum account is ready, <a href='/oauth/to/ips'>click here</a> to link it to Planner.</small>
                 </article>
