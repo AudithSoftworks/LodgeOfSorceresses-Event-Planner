@@ -219,8 +219,9 @@ class DpsParseForm extends PureComponent {
                         <li>Don't submit Parses older than 2 weeks! When a major Update is released, Parses need to be created after the launch date.</li>
                         <li>Make sure you have around 5850 Penetration in your Parse-screenshots (±1000 is an acceptable margin).</li>
                         <li>Every new Parse will update your existing Tier-level, i.e. sending lower DPS numbers can cause demotion.</li>
-                        <li>When creating a Parse, include only the Sets used for that particular Parse, removing everything else.</li>
-                        <li>Each Parse needs to have both Combat and Info screen screenshots from Combat Metrics addon.</li>
+                        <li>When submitting a Parse, include only the Sets used for that particular Parse, removing everything else.</li>
+                        <li>When submitting a Parse, enter DPS amount as it is, without rounding it, in the form of pure numbers.</li>
+                        <li>Each Parse needs to have both Fight-Log and Info screen screenshots from Combat Metrics addon.</li>
                         <li>Every Character needs their Parses refreshed at least every 60 days. Failing to do so will revoke your Tier-level automatically.</li>
                     </ul>
                 </article>
