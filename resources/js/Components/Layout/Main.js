@@ -15,6 +15,9 @@ const Onboarding = React.lazy(
 const Home = React.lazy(
     () => import(/* webpackPrefetch: 50, webpackChunkName: "controllers-home" */ '../../Controllers/Home')
 );
+const Dashboard = React.lazy(
+    () => import(/* webpackPrefetch: 50, webpackChunkName: "controllers-dashboard" */ '../../Controllers/Auth/Home')
+);
 const Users = React.lazy(
     () => import(/* webpackPrefetch: 40, webpackChunkName: "controllers-users" */ '../../Controllers/Users')
 );
@@ -83,15 +86,16 @@ class Main extends PureComponent {
                 )}
             />,
             <Route
-                key="/@me/characters"
-                path="/@me/characters"
+                key="/@me"
+                path="/@me"
                 render={({ match: { url } }) => (
                     <Fragment>
-                        <Route exact path={url} component={props => <MyCharacters {...props} />} />
-                        <Route path={url + '/create'} component={props => <CharacterForm {...props} />} />
-                        <Route path={url + '/:id(\\d+)/edit'} component={props => <CharacterForm {...props} />} />
-                        <Route path={url + '/:id(\\d+)/parses/create'} component={props => <DpsParseForm {...props} />} />
-                        <Route exact path={url + '/:id(\\d+)/parses'} component={props => <DpsParses {...props} />} />
+                        <Route exact path={url} component={props => <Dashboard {...props} />} />
+                        <Route exact path={url + '/characters'} component={props => <MyCharacters {...props} />} />
+                        <Route path={url + '/characters/create'} component={props => <CharacterForm {...props} />} />
+                        <Route path={url + '/characters/:id(\\d+)/edit'} component={props => <CharacterForm {...props} />} />
+                        <Route path={url + '/characters/:id(\\d+)/parses/create'} component={props => <DpsParseForm {...props} />} />
+                        <Route exact path={url + '/characters/:id(\\d+)/parses'} component={props => <DpsParses {...props} />} />
                     </Fragment>
                 )}
             />

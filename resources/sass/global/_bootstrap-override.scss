@@ -10,6 +10,30 @@ $grid-gutter-width: 20px;
  *-----------------------------------*/
 
 $primary: #a18373;
+$tierOne: rgb(46, 204, 113);
+$tierTwo: rgb(52, 152, 219);
+$tierThree: rgb(155, 89, 182);
+$tierFour: rgb(230, 126, 34);
+$members: rgb(46, 204, 113);
+$soulshriven: rgb(149, 165, 166);
+
+$colors: (
+    "tierOne": $tierOne,
+    "tierTwo": $tierTwo,
+    "tierThree": $tierThree,
+    "tierFour": $tierFour,
+    "members": $members,
+    "soulshriven": $soulshriven,
+);
+
+$theme-colors: (
+    "tierOne": darken($tierOne, 15),
+    "tierTwo": darken($tierTwo, 15),
+    "tierThree": darken($tierThree, 15),
+    "tierFour": darken($tierFour, 15),
+    "members": darken($members, 15),
+    "soulshriven": darken($soulshriven, 15),
+);
 
 $brand-color-twitter: #55acee;
 $brand-color-facebook: #3b5998;

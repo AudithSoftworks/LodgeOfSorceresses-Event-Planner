@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import getContentAction from '../actions/get-content';
@@ -11,9 +11,15 @@ import getTeamsAction from "../actions/get-teams";
 import { errorsAction } from "../actions/notifications";
 import Loading from '../Components/Loading';
 import Notification from '../Components/Notification';
+import { authorizeUser } from "../helpers";
 import { characters, user } from '../vendor/data';
 
 class Init extends PureComponent {
+    constructor(props) {
+        super(props);
+        this.authorizeUser = authorizeUser.bind(this);
+    }
+
     componentDidMount = () => {
         const { me, myCharacters, sets, skills, content, teams } = this.props;
         if (me && (me.isMember || me.isSoulshriven)) {
@@ -90,7 +96,7 @@ class Init extends PureComponent {
             return [this.renderLoginForm(), <Notification key="notifications" />];
         }
 
-        if (!me.isMember && !me.isSoulshriven) {
+        if (!this.authorizeUser(true)) {
             return <Redirect to='/dashboard' />;
         }
 
@@ -102,7 +108,7 @@ class Init extends PureComponent {
         let redirectUri = localStorage.getItem('redirectUri');
         localStorage.removeItem('redirectUri');
         if (!redirectUri || redirectUri === '') {
-            redirectUri = '/dashboard';
+            redirectUri = '/@me';
         }
 
         return <Redirect to={redirectUri} />;
@@ -116,35 +122,36 @@ Init.propTypes = {
 
     axiosCancelTokenSource: PropTypes.object,
     me: user,
+    myCharacters: characters,
+    notifications: PropTypes.array,
     sets: PropTypes.array,
     skills: PropTypes.array,
-    myCharacters: characters,
+
     dispatch: PropTypes.func.isRequired,
-    getSetsAction: PropTypes.func.isRequired,
-    getSkillsAction: PropTypes.func.isRequired,
     getContentAction: PropTypes.func.isRequired,
     getMyCharactersAction: PropTypes.func.isRequired,
+    getSetsAction: PropTypes.func.isRequired,
+    getSkillsAction: PropTypes.func.isRequired,
     getTeamsAction: PropTypes.func.isRequired,
-    notifications: PropTypes.array,
 };
 
 const mapStateToProps = state => ({
     axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
+    content: state.getIn(['content']),
     me: state.getIn(['me']),
+    myCharacters: state.getIn(['myCharacters']),
+    notifications: state.getIn(["notifications"]),
     sets: state.getIn(['sets']),
     skills: state.getIn(['skills']),
-    content: state.getIn(['content']),
-    myCharacters: state.getIn(['myCharacters']),
     teams: state.getIn(['teams']),
-    notifications: state.getIn(["notifications"]),
 });
 
 const mapDispatchToProps = dispatch => ({
     dispatch,
-    getSetsAction: () => dispatch(getSetsAction()),
-    getSkillsAction: () => dispatch(getSkillsAction()),
     getContentAction: () => dispatch(getContentAction()),
     getMyCharactersAction: () => dispatch(getMyCharactersAction()),
+    getSetsAction: () => dispatch(getSetsAction()),
+    getSkillsAction: () => dispatch(getSkillsAction()),
     getTeamsAction: () => dispatch(getTeamsAction()),
 });
 

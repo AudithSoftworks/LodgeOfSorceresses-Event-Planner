@@ -1,10 +1,14 @@
+/*------------------------------------
+ | Bare-minimum mixins
+ *-----------------------------------*/
+@import "mixins";
+
 /*
 |-----------------------------------------
-| Core bootstrap variables and mixins
+| Core bootstrap functions and mixins
 |-----------------------------------------
 */
-@import "colors";
-@import "mixins";
+@import "~bootstrap/scss/functions";
 
 $direction: 'ltr' !default;
 $theme-style: 'square' !default;
@@ -28,3 +32,4 @@ $page-media-path: '/media_assets/other/' !default;
 $jquery-uniform-img-path: "#{$global-img-path}global/vendor/jquery.uniform/themes/default/" !default;
 
 @import "bootstrap-override";
+@import "~bootstrap/scss/variables";

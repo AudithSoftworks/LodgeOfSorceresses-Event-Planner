@@ -31,11 +31,12 @@ class Home extends PureComponent {
 
     render = () => {
         const { me, location } = this.props;
-        if (!me) {
+        if (!me || this.authorizeUser(true)) {
             return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
+
         const accountStatusOptions = [];
-        if (me.linkedAccountsParsed && me.linkedAccountsParsed.discord && !this.authorizeUser()) {
+        if (!this.authorizeUser()) {
             accountStatusOptions.push(
                 <article key='membership-mode-selection'
                          className='membership-mode-selection col-24 d-flex flex-nowrap flex-row'
@@ -110,14 +111,15 @@ class Home extends PureComponent {
 }
 
 Home.propTypes = {
-    match: PropTypes.object.isRequired,
-    location: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    match: PropTypes.object.isRequired,
 
     axiosCancelTokenSource: PropTypes.object,
     me: user,
     notifications: PropTypes.array,
 
+    dispatch: PropTypes.func.isRequired,
     putUserAction: PropTypes.func.isRequired,
 };
 

@@ -1,6 +1,6 @@
 import(/* webpackPrefetch: true, webpackChunkName: "header-scss" */ '../../../sass/_header.scss');
 
-import { faAnalytics, faCampfire, faChess, faChevronDown, faGlobe, faHome, faSignInAlt, faSignOutAlt, faUsers, faUsersClass } from '@fortawesome/pro-light-svg-icons';
+import { faAnalytics, faCampfire, faChess, faChevronDown, faGlobe, faHome, faHomeHeart, faSignInAlt, faSignOutAlt, faUsers, faUsersClass } from '@fortawesome/pro-light-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -36,10 +36,13 @@ class Header extends Component {
         const navLinks = [];
         const memberBarDropdownLinks = [];
         if (me) {
+            let canAccessDashboard = me.isMember || me.isSoulshriven;
             navLinks.push(
-                <NavLink exact to="/dashboard" activeClassName="active" title="Home">
-                    <FontAwesomeIcon icon={faHome} size="lg" />
-                    <span className="d-none d-sm-inline-block">Home</span>
+                <NavLink exact to={canAccessDashboard ? "/@me" : "/dashboard"}
+                         activeClassName="active"
+                         title={canAccessDashboard ? "Dashboard" : "Home"}>
+                    <FontAwesomeIcon icon={canAccessDashboard ? faHomeHeart : faHome} size="lg" />
+                    <span className="d-none d-sm-inline-block">{canAccessDashboard ? "Dashboard" : "Home"}</span>
                 </NavLink>
             );
         } else {
@@ -155,14 +158,14 @@ class Header extends Component {
 }
 
 Header.propTypes = {
-    match: PropTypes.object.isRequired,
-    location: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    match: PropTypes.object.isRequired,
 
     axiosCancelTokenSource: PropTypes.object,
     me: user,
-    navLinks: PropTypes.arrayOf(NavLink),
     myCharacters: characters,
+    navLinks: PropTypes.array,
     notifications: PropTypes.array,
 };
 
