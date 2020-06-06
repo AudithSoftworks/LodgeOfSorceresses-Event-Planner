@@ -79,6 +79,7 @@ export const user = PropTypes.shape({
             title: PropTypes.string,
         }),
         title: PropTypes.string,
+        slug: PropTypes.string,
     }),
     linkedAccountsParsed: PropTypes.shape({
         discord: PropTypes.shape({

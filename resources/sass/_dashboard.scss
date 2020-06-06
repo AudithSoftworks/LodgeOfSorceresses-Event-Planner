@@ -74,13 +74,13 @@ main {
         }
     }
 
-    > a.banner {
+    > .banner {
         position: relative;
         display: block;
         min-height: 720px;
         float: left;
         padding-top: 454px;
-        background: url('/images/membership.png') no-repeat local -370px -20px transparent;
+        background: url('/images/circular-1.png') no-repeat local -370px -20px transparent;
         overflow: hidden;
         filter: grayscale(1);
 

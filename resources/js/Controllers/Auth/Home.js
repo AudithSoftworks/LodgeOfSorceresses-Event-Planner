@@ -51,25 +51,24 @@ class Home extends PureComponent {
                     <dd>{me.characters.length} <small>[<Link to='/@me/characters'>manage</Link>]</small>
                     </dd>
                 </dl>
-                <dl className={me.clearanceLevel ? 'tier-' + me.clearanceLevel : 'danger'}>
+                <dl className={me.clearanceLevel ? me.clearanceLevel.slug : 'danger'}>
                     <dt>Overall Rank</dt>
                     <dd>{
                         me.clearanceLevel
-                            ? 'Tier-' + me.clearanceLevel
+                            ? me.clearanceLevel.rank.title
                             : [<Fragment key='item-1'>None</Fragment>, <small key='item-2'>[<Link to='/@me/characters'>get going</Link>]</small>]
                     }</dd>
                 </dl>
                 <h3 className='col-md-24 mt-5'>My Attendances</h3>
             </section>,
-            <Link to='@me'
-                  key='member-onboarding'
-                  data-heading='Member'
-                  data-text={
-                      '* In-game Guild membership\u000A'
-                      + '* Growing in a focused environment\u000A'
-                      + '* Progression in a Core group'
-                  }
-                  className='banner col-md-11 col-lg-7 d-none d-sm-inline-block'
+            <aside key='member-onboarding'
+                   data-heading='Here you can ...'
+                   data-text={
+                       '* Link forum account to Guild Planner\u000A'
+                       + '* Switch your membership mode\u000A'
+                       + '* Track your Attendance'
+                   }
+                   className='banner col-md-11 col-lg-7 d-none d-sm-inline-block'
             />,
             <Notification key="notifications" />,
         ];
