@@ -83,7 +83,7 @@ class Characters extends PureComponent {
                     </ul>
                 </article>
                 <ul className="ne-corner">{renderActionList(actionList)}</ul>
-                <List characters={myCharacters} me={me} onDeleteHandler={this.handleDelete} />
+                <List characters={myCharacters} me={me} onDeleteHandler={this.handleDelete} className='pl-2 pr-2 col-md-24' />
             </section>,
             <Notification key="notifications" />,
         ];

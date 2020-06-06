@@ -1,8 +1,4 @@
-import(
-    /* webpackPrefetch: true */
-    /* webpackChunkName: "characters-list-table-scss" */
-    '../../../sass/_character-list-table.scss'
-);
+import(/* webpackPrefetch: true,  webpackChunkName: "characters-list-table-scss" */ '../../../sass/_character-list-table.scss');
 
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
@@ -25,9 +21,10 @@ class List extends PureComponent {
                 return 0;
             })
             .map(character => <Item key={character.id} character={character} me={me} onDeleteHandler={onDeleteHandler} />);
+        console.log(this.props)
         if (charactersRendered.length) {
             charactersRendered = [
-                <table key="character-list-table" className={'pl-2 pr-2 col-md-24 character-list-table ' + className}>
+                <table key="character-list-table" className={'character-list-table ' + className}>
                     <thead>
                         <tr>
                             <th scope="col">Name, Class/Role</th>

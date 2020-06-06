@@ -1,8 +1,4 @@
-import(
-    /* webpackPrefetch: true */
-    /* webpackChunkName: "users-scss" */
-    "../../sass/_users.scss"
-);
+import(/* webpackPrefetch: true, webpackChunkName: "users-scss" */ "../../sass/_users.scss");
 
 import { faChevronCircleLeft, faUser, faUserSlash } from "@fortawesome/pro-light-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -100,7 +96,7 @@ class Users extends PureComponent {
                     <dt>Rank</dt>
                     <dd>{rankFormatted}</dd>
                 </dl>
-                <List characters={user.characters} me={me} />
+                <List characters={user.characters} me={me} className='pl-2 pr-2 col-md-24' />
             </section>,
         ];
     };

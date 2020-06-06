@@ -21,14 +21,15 @@ ul.roster {
         }
 
         &.members > a {
-            background-color: #edffed;
+            background-color: darken(color('members'), 20);
             border: #aaffaa 1px solid;
-            color: #006600;
+            color: lighten(color('members'), 50);
         }
 
         &.soulshriven > a {
-            background-color: #ededed;
+            background-color: darken(color('soulshriven'), 20);
             border: #aaaaaa 1px solid;
+            color: lighten(color('soulshriven'), 50);
         }
     }
 }

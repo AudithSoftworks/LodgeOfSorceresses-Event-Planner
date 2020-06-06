@@ -221,7 +221,7 @@ class DpsParseForm extends PureComponent {
                         <li>Every new Parse will update your existing Tier-level, i.e. sending lower DPS numbers can cause demotion.</li>
                         <li>When submitting a Parse, include only the Sets used for that particular Parse, removing everything else.</li>
                         <li>When submitting a Parse, enter DPS amount as it is, without rounding it, in the form of pure numbers.</li>
-                        <li>Each Parse needs to have both Fight-Log and Info screen screenshots from Combat Metrics addon.</li>
+                        <li>Each Parse needs to have screenshots from both Fight-Log and Info screens of Combat Metrics addon.</li>
                         <li>Every Character needs their Parses refreshed at least every 60 days. Failing to do so will revoke your Tier-level automatically.</li>
                     </ul>
                 </article>
