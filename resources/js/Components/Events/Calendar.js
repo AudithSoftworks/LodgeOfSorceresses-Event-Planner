@@ -2,12 +2,14 @@ import(
     /* webpackPrefetch: true */
     /* webpackChunkName: "calendar-scss" */
     '../../../sass/_calendar.scss'
-);
+    );
 
 import moment from 'moment';
+import PropTypes from "prop-types";
 import React, { PureComponent } from 'react';
+import { attendance, user } from "../../vendor/data";
 
-export class Month extends PureComponent {
+class Month extends PureComponent {
     renderHeadings = () => {
         const headings = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
         const headingsRendered = [];
@@ -19,17 +21,17 @@ export class Month extends PureComponent {
     };
 
     render = () => {
-        const date = new moment();
-        date.startOf('month');
-        const daysInMonth = date.daysInMonth();
+        const { start, end } = this.props;
+        const startDate = start && start.length ? moment(start) : moment().startOf('month');
+        const endDate = end && end.length ? moment(end) : moment().endOf('month');
 
         let aWeekRendered = [];
         const aMonthRendered = [];
-        const startingNumberOfGaps = date.isoWeekday() - 1;
+        const startingNumberOfGaps = startDate.isoWeekday() - 1;
         if (startingNumberOfGaps) {
             aWeekRendered.push(<td key="starting-gap" colSpan={startingNumberOfGaps} />);
         }
-        for (let i = 1; i <= daysInMonth; i++) {
+        for (let date = startDate; date.isBefore(endDate); date.add(1, 'days')) {
             if (date.isoWeekday() === 1 && aWeekRendered.length) {
                 aMonthRendered.push(
                     <tr key={'week-row-' + (date.isoWeek() - 1)}>
@@ -42,19 +44,16 @@ export class Month extends PureComponent {
                 aWeekRendered = [];
             }
             aWeekRendered.push(<td key={'date-' + date.format('DD')} className="days" data-date={date.format('DD')} />);
-            if (date.date() !== daysInMonth) {
-                date.add(1, 'days');
-            }
         }
-        const endingNumberOfGaps = 7 - date.isoWeekday();
+        const endingNumberOfGaps = 7 - endDate.isoWeekday();
         if (endingNumberOfGaps) {
             aWeekRendered.push(<td key="ending-gap" colSpan={endingNumberOfGaps} />);
         }
         if (aWeekRendered.length) {
             aMonthRendered.push(
-                <tr key={'week-row-' + date.isoWeek()}>
-                    <td key={'week-label-' + date.isoWeek()} className="week-number">
-                        W{date.isoWeek()}
+                <tr key={'week-row-' + endDate.isoWeek()}>
+                    <td key={'week-label-' + endDate.isoWeek()} className="week-number">
+                        W{endDate.isoWeek()}
                     </td>
                     {aWeekRendered}
                 </tr>
@@ -71,3 +70,11 @@ export class Month extends PureComponent {
         );
     };
 }
+
+Month.propTypes = {
+    start: PropTypes.string,
+    end: PropTypes.string,
+    data: PropTypes.arrayOf(attendance),
+};
+
+export { Month };

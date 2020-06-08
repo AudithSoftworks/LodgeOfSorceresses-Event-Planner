@@ -150,3 +150,15 @@ export const team = PropTypes.shape({
 });
 
 export const teams = PropTypes.arrayOf(team);
+
+export const attendance = PropTypes.shape({
+    id: PropTypes.number,
+    text: PropTypes.string,
+    discord_message_id: PropTypes.string,
+    gallery_image_ids: PropTypes.arrayOf(PropTypes.string),
+    created_at: PropTypes.string,
+    updated_at: PropTypes.string,
+    attendees: PropTypes.arrayOf(user),
+});
+
+export const attendances = PropTypes.arrayOf(attendance);

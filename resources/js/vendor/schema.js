@@ -20,3 +20,6 @@ export const listOfDpsParses = new schema.Array(dpsParse);
 
 export const team = new schema.Entity('teams');
 export const listOfTeams = new schema.Array(team);
+
+export const attendance = new schema.Entity('attendance');
+export const listOfAttendances = new schema.Array(attendance);
