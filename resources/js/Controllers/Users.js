@@ -69,7 +69,7 @@ class Users extends PureComponent {
     renderItem = user => {
         const { me } = this.props;
         if (!user.isMember && !user.isSoulshriven) {
-            return null;
+            return <Redirect to={{ pathname: "/users" }} />;
         }
 
         const actionList = {
@@ -89,7 +89,7 @@ class Users extends PureComponent {
         }
 
         return [
-            <section className="col-md-24 p-0 mb-4 d-flex flex-wrap" key="character">
+            <section className="col-md-24 p-0 mb-4 d-flex flex-wrap" key="user">
                 <h2 className="form-title col-md-24">{"@" + user.name}</h2>
                 <ul className="ne-corner">{renderActionList(actionList)}</ul>
                 <dl className="col-lg-24">
