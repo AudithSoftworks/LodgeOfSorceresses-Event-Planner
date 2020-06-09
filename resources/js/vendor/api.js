@@ -3,6 +3,18 @@ import React from 'react';
 import axios from './axios';
 import * as schema from './schema';
 
+export const getAttendances = (cancelToken, userId) => axios.get('/api/attendances/' + userId, {
+    cancelToken: cancelToken.token,
+}).then(response => {
+    if (response.data) {
+        return normalize(response.data, schema.listOfAttendances);
+    }
+
+    return null;
+}).catch(error => {
+    throw error;
+});
+
 export const getOnboardingContentByStep = (cancelToken, mode, step) => axios.get('/api/onboarding/' + mode + '/content/by-step/' + step, {
     cancelToken: cancelToken.token,
 }).then(response => {

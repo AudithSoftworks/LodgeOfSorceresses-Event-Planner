@@ -1,18 +1,47 @@
 import(/* webpackPrefetch: true, webpackChunkName: "dashboard-scss" */ '../../../sass/_dashboard.scss');
 
+import moment from "moment";
 import PropTypes from "prop-types";
 import React, { Fragment, PureComponent } from "react";
 import { connect } from "react-redux";
 import { Link, Redirect } from "react-router-dom";
+import { errorsAction } from "../../actions/notifications";
+import * as Calendar from "../../Components/Events/Calendar";
 import Notification from "../../Components/Notification";
 import { authorizeUser } from "../../helpers";
+import { getAttendances } from "../../vendor/api";
+import axios from "../../vendor/axios";
 import { characters, user } from "../../vendor/data";
 
 class Home extends PureComponent {
     constructor(props) {
         super(props);
         this.authorizeUser = authorizeUser.bind(this);
+        this.state = {
+            attendances: [],
+        };
     }
+
+    componentDidMount = () => {
+        const { me } = this.props;
+        if (me) {
+            this.cancelTokenSource = axios.CancelToken.source();
+            getAttendances(this.cancelTokenSource, me.id)
+                .then(attendances => {
+                    this.cancelTokenSource = null;
+                    const attendancesArray = Array.from(attendances.result, id => attendances.entities['attendance'][id]);
+                    this.setState({
+                        attendances: attendancesArray
+                    });
+                })
+                .catch(error => {
+                    if (!axios.isCancel(error)) {
+                        const message = error.response.data.message || error.response.statusText || error.message;
+                        this.props.dispatch(errorsAction(message));
+                    }
+                });
+        }
+    };
 
     componentWillUnmount() {
         this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
@@ -23,13 +52,20 @@ class Home extends PureComponent {
         if (!me || !myCharacters || !this.authorizeUser(true)) {
             return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
+        const { attendances } = this.state;
+        const startDate = attendances.length
+            ? moment(attendances[0]['created_at'])
+            : undefined;
+        const endDate = attendances.length
+            ? moment(attendances[attendances.length - 1]['created_at'])
+            : undefined;
 
         return [
             <section className="col-md-13 col-lg-17 p-0 mb-4 dashboard" key="dashboard">
                 <h2 className="form-title col-md-24 pr-5" title="Welcome!">
                     Welcome, {me.name || 'Soulless One'}!
                 </h2>
-                <h3 className='col-md-24 mt-2'>My Account at a Glance</h3>
+                <h3 className='col-md-24 mt-2'>Account Summary</h3>
                 <dl className={me.isMember ? 'members' : 'soulshriven'}>
                     <dt>Account Type</dt>
                     <dd>{
@@ -60,6 +96,7 @@ class Home extends PureComponent {
                     }</dd>
                 </dl>
                 <h3 className='col-md-24 mt-5'>My Attendances</h3>
+                <Calendar.ListView start={startDate} end={endDate} events={attendances} />
             </section>,
             <aside key='member-onboarding'
                    data-heading='Here you can ...'

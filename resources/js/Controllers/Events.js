@@ -34,7 +34,7 @@ class Events extends PureComponent {
                     Calendar
                 </h2>
                 <ul className="ne-corner">{renderActionList(actionList)}</ul>
-                <Calendar.Month />
+                <Calendar.MonthView />
             </section>,
             <Notification key="notifications" />,
         ];

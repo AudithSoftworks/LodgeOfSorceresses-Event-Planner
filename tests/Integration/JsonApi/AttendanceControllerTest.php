@@ -2,12 +2,13 @@
 
 namespace App\Tests\Integration\JsonApi;
 
+use App\Models\Attendance;
 use App\Tests\IlluminateTestCase;
 use App\Tests\Integration\JsonApi\Traits\NeedsUserStubs;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Artisan;
 
-class SkillsControllerTest extends IlluminateTestCase
+class AttendanceControllerTest extends IlluminateTestCase
 {
     use NeedsUserStubs;
 
@@ -18,7 +19,6 @@ class SkillsControllerTest extends IlluminateTestCase
         parent::setUp();
         if (!static::$setupHasRunOnce) {
             Artisan::call('migrate');
-            Artisan::call('pmg:skills');
             static::$setupHasRunOnce = true;
         }
     }
@@ -27,7 +27,7 @@ class SkillsControllerTest extends IlluminateTestCase
     {
         $response = $this
             ->withoutMiddleware()
-            ->getJson('/api/skills');
+            ->getJson('/api/attendances/1');
         $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
         $responseOriginalContent = $response->getOriginalContent();
         $this->assertNotNull($responseOriginalContent);
@@ -38,15 +38,24 @@ class SkillsControllerTest extends IlluminateTestCase
     {
         $this->stubSoulshrivenUser();
 
+        /** @var Attendance $attendance */
+        $attendance = factory(Attendance::class)->create();
+        $attendance->attendees()->sync([static::$soulshriven->id]);
+
         $response = $this
             ->actingAs(static::$soulshriven)
             ->withoutMiddleware()
-            ->getJson('/api/skills');
+            ->getJson('/api/attendances/' . static::$soulshriven->id);
         $response->assertStatus(JsonResponse::HTTP_OK);
+        /** @var \Illuminate\Support\Collection $responseOriginalContent */
         $responseOriginalContent = $response->getOriginalContent();
         $this->assertNotNull($responseOriginalContent);
         $this->assertIsIterable($responseOriginalContent);
-        $firstEntry = array_shift($responseOriginalContent);
-        $this->assertNotEmpty($firstEntry['name']);
+        $this->assertCount(1, $responseOriginalContent);
+        $responseAsArray = $responseOriginalContent->toArray();
+        $firstEntry = $responseAsArray[0];
+        $this->assertNotEmpty($firstEntry['attendees']);
+        $this->assertIsIterable($firstEntry['attendees']);
+        $this->assertCount(1, $firstEntry['attendees']);
     }
 }

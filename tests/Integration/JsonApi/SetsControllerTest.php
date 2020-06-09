@@ -11,10 +11,7 @@ class SetsControllerTest extends IlluminateTestCase
 {
     use NeedsUserStubs;
 
-    /**
-     * @var bool
-     */
-    protected static $setupHasRunOnce = false;
+    protected static bool $setupHasRunOnce = false;
 
     public function setUp(): void
     {
@@ -51,37 +48,5 @@ class SetsControllerTest extends IlluminateTestCase
         $this->assertIsIterable($responseOriginalContent);
         $firstEntry = array_shift($responseOriginalContent);
         $this->assertNotEmpty($firstEntry['name']);
-    }
-
-    public function testShowForFailure(): void
-    {
-        $response = $this
-            ->withoutMiddleware()
-            ->getJson('/api/sets/1');
-        $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
-    }
-
-    public function testStoreForFailure(): void
-    {
-        $response = $this
-            ->withoutMiddleware()
-            ->postJson('/api/sets', []);
-        $response->assertStatus(JsonResponse::HTTP_METHOD_NOT_ALLOWED);
-    }
-
-    public function testUpdateForFailure(): void
-    {
-        $response = $this
-            ->withoutMiddleware()
-            ->putJson('/api/sets/1', []);
-        $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
-    }
-
-    public function testDestroyForFailure(): void
-    {
-        $response = $this
-            ->withoutMiddleware()
-            ->deleteJson('/api/sets/1');
-        $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
     }
 }

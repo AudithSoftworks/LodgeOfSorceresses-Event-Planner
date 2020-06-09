@@ -2,16 +2,18 @@ import(/* webpackPrefetch: true, webpackChunkName: "users-scss" */ "../../sass/_
 
 import { faChevronCircleLeft, faUser, faUserSlash } from "@fortawesome/pro-light-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import moment from "moment";
 import PropTypes from "prop-types";
 import React, { Fragment, PureComponent } from "react";
 import { connect } from "react-redux";
 import { Link, Redirect } from "react-router-dom";
 import { errorsAction, infosAction } from "../actions/notifications";
 import List from "../Components/Characters/List";
+import * as Calendar from "../Components/Events/Calendar";
 import Loading from "../Components/Loading";
 import Notification from "../Components/Notification";
 import { filter, renderActionList } from "../helpers";
-import { getAllUsers, getUser } from "../vendor/api";
+import { getAllUsers, getAttendances, getUser } from "../vendor/api";
 import axios from "../vendor/axios";
 import { user } from "../vendor/data";
 
@@ -24,7 +26,8 @@ class Users extends PureComponent {
                 soulshriven: true,
             },
             allUsers: null,
-            user: null
+            user: null,
+            attendances: [],
         };
         this.filter = filter.bind(this);
     }
@@ -41,8 +44,18 @@ class Users extends PureComponent {
             if (match.params.id) {
                 getUser(this.cancelTokenSource, match.params.id)
                     .then(user => {
-                        this.cancelTokenSource = null;
-                        this.setState({ user: user.entities.user[match.params.id] });
+                        getAttendances(this.cancelTokenSource, match.params.id)
+                            .then(attendances => {
+                                this.cancelTokenSource = null;
+                                const attendancesArray = Array.from(attendances.result, id => attendances.entities['attendance'][id]);
+                                this.setState({
+                                    user: user.entities.user[match.params.id],
+                                    attendances: attendancesArray
+                                });
+                            })
+                            .catch(error => {
+                                throw error;
+                            });
                     })
                     .catch(error => {
                         if (!axios.isCancel(error)) {
@@ -79,24 +92,40 @@ class Users extends PureComponent {
                 </Link>
             ),
         };
-
-        let rankFormatted = user.isSoulshriven ? 'None' : 'Initiate';
-        if (user.clearanceLevel && user.clearanceLevel.rank) {
-            rankFormatted = user.clearanceLevel.rank.title;
-        }
-        if (user.isSoulshriven) {
-            rankFormatted += ' (Soulshriven)';
-        }
+        const { attendances } = this.state;
+        const startDate = attendances.length
+            ? moment(attendances[0]['created_at'])
+            : undefined;
+        const endDate = attendances.length
+            ? moment(attendances[attendances.length - 1]['created_at'])
+            : undefined;
 
         return [
-            <section className="col-md-24 p-0 mb-4 d-flex flex-wrap" key="user">
-                <h2 className="form-title col-md-24">{"@" + user.name}</h2>
+            <section className="col-md-24 p-0 mb-4 user-profile" key="user-profile">
+                <h2 className="form-title col-md-24 pr-5" title="Welcome!">{"@" + user.name}</h2>
                 <ul className="ne-corner">{renderActionList(actionList)}</ul>
-                <dl className="col-lg-24">
-                    <dt>Rank</dt>
-                    <dd>{rankFormatted}</dd>
+                <h3 className='col-md-24 mt-2'>Account Summary</h3>
+                <dl className={user.isMember ? 'members' : 'soulshriven'}>
+                    <dt>Account Type</dt>
+                    <dd>{user.isMember ? 'Member' : 'Soulshriven'}</dd>
                 </dl>
+                <dl className={user.linkedAccountsParsed.ips ? 'info' : 'danger'}>
+                    <dt>Forum Account Linked</dt>
+                    <dd>{user.linkedAccountsParsed.ips ? 'Yes' : 'No'}</dd>
+                </dl>
+                <dl className={user.characters.length > 0 ? 'info' : 'danger'}>
+                    <dt># of characters</dt>
+                    <dd>{user.characters.length}
+                    </dd>
+                </dl>
+                <dl className={user.clearanceLevel ? user.clearanceLevel.slug : 'danger'}>
+                    <dt>Overall Rank</dt>
+                    <dd>{user.clearanceLevel ? user.clearanceLevel.rank.title : 'None'}</dd>
+                </dl>
+                <h3 className='col-md-24 mt-5'>Their Characters</h3>
                 <List characters={user.characters} me={me} className='pl-2 pr-2 col-md-24' />
+                <h3 className='col-md-24 mt-5'>Their Attendances</h3>
+                <Calendar.ListView start={startDate} end={endDate} events={attendances} />
             </section>,
         ];
     };

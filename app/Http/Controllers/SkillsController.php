@@ -14,7 +14,7 @@ class SkillsController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function index(): JsonResponse
+    public function __invoke(): JsonResponse
     {
         $this->authorize('user', User::class);
 
