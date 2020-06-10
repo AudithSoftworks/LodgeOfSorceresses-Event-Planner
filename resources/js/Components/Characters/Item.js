@@ -90,7 +90,7 @@ class Item extends PureComponent {
                     <dd>{character.role}</dd>
 
                     <dt>Content Clearance</dt>
-                    <dd>{character.approved_for_tier ? 'Tier-' + character.approved_for_tier : 'None'}</dd>
+                    <dd>{character.approved_for_tier ? "Tier-" + character.approved_for_tier : "None"}</dd>
                 </dl>
                 <article className="col-sm-12 col-md-10 col-lg-7 mb-5">
                     <h3>Content Cleared</h3>

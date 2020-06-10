@@ -1,13 +1,13 @@
-import(/* webpackPrefetch: true, webpackChunkName: "header-scss" */ '../../../sass/_header.scss');
+import(/* webpackPrefetch: true, webpackChunkName: "header-scss" */ "../../../sass/_header.scss");
 
-import { faAnalytics, faCampfire, faChess, faChevronDown, faGlobe, faHome, faHomeHeart, faSignInAlt, faSignOutAlt, faUsers, faUsersClass } from '@fortawesome/pro-light-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Link, NavLink, withRouter } from 'react-router-dom';
-import { authorizeUser } from '../../helpers';
-import { characters, user } from '../../vendor/data';
+import { faAnalytics, faCampfire, faChess, faChevronDown, faGlobe, faHome, faHomeHeart, faSignInAlt, faSignOutAlt, faUsers, faUsersClass } from "@fortawesome/pro-light-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import PropTypes from "prop-types";
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { Link, NavLink, withRouter } from "react-router-dom";
+import { authorizeUser } from "../../helpers";
+import { characters, user } from "../../vendor/data";
 
 class Header extends Component {
     constructor(props) {
@@ -18,9 +18,9 @@ class Header extends Component {
     renderNavLinks = navLinks => {
         return navLinks.map((item, idx) => {
             const { className } = item.props;
-            let newClassName = 'nav-item';
+            let newClassName = "nav-item";
             if (className) {
-                newClassName += ' ' + className;
+                newClassName += " " + className;
             }
 
             return (
@@ -38,9 +38,7 @@ class Header extends Component {
         if (me) {
             let canAccessDashboard = me.isMember || me.isSoulshriven;
             navLinks.push(
-                <NavLink exact to={canAccessDashboard ? "/@me" : "/dashboard"}
-                         activeClassName="active"
-                         title={canAccessDashboard ? "Dashboard" : "Home"}>
+                <NavLink exact to={canAccessDashboard ? "/@me" : "/dashboard"} activeClassName="active" title={canAccessDashboard ? "Dashboard" : "Home"}>
                     <FontAwesomeIcon icon={canAccessDashboard ? faHomeHeart : faHome} size="lg" />
                     <span className="d-none d-sm-inline-block">{canAccessDashboard ? "Dashboard" : "Home"}</span>
                 </NavLink>
@@ -74,7 +72,11 @@ class Header extends Component {
             );
 
             memberBarDropdownLinks.push(
-                <li key='my_characters'><Link to="/@me/characters" title="My Characters"><FontAwesomeIcon icon={faChess} size="2x" fixedWidth /> My Characters</Link></li>
+                <li key="my_characters">
+                    <Link to="/@me/characters" title="My Characters">
+                        <FontAwesomeIcon icon={faChess} size="2x" fixedWidth /> My Characters
+                    </Link>
+                </li>
             );
         }
 
@@ -82,15 +84,15 @@ class Header extends Component {
 
         let email = me && me.email ? me.email : null;
         if (email) {
-            const posOfAtSignInEmail = email.indexOf('@');
+            const posOfAtSignInEmail = email.indexOf("@");
             if (posOfAtSignInEmail !== -1) {
-                email = email.slice(0, posOfAtSignInEmail + 1) + '...';
+                email = email.slice(0, posOfAtSignInEmail + 1) + "...";
             }
         }
 
         if (me && me.isAdmin) {
             memberBarDropdownLinks.push(
-                <li key='officer_area'>
+                <li key="officer_area">
                     <Link to="/admin" title="Officer Area">
                         <FontAwesomeIcon icon={faCampfire} size="2x" fixedWidth />
                         <span className="d-none d-sm-inline-block">Officer Area</span>
@@ -99,31 +101,35 @@ class Header extends Component {
             );
         }
         memberBarDropdownLinks.push(
-            <li key='sign_out'><a href="/logout"><FontAwesomeIcon icon={faSignOutAlt} size="2x" fixedWidth /> Logout</a></li>
+            <li key="sign_out">
+                <a href="/logout">
+                    <FontAwesomeIcon icon={faSignOutAlt} size="2x" fixedWidth /> Logout
+                </a>
+            </li>
         );
 
         const memberBarFirstSection = me ? (
-            <li className="chevron" aria-haspopup='true'>
+            <li className="chevron" aria-haspopup="true">
                 <figure>
-                    <img alt={(me.name ? '@' + me.name : email) || "The Soulless One"}
-                         src={me && me.avatar ? me.avatar : "/images/touch-icon-ipad.png"}
-                         className={me && me.avatar ? "" : "guest"} />
-                    <figcaption>{(me.name ? '@' + me.name : email) || "The Soulless One"}</figcaption>
+                    <img alt={(me.name ? "@" + me.name : email) || "The Soulless One"} src={me && me.avatar ? me.avatar : "/images/touch-icon-ipad.png"} className={me && me.avatar ? "" : "guest"} />
+                    <figcaption>{(me.name ? "@" + me.name : email) || "The Soulless One"}</figcaption>
                 </figure>
                 <FontAwesomeIcon icon={faChevronDown} className="ml-2" />
-                <ul className="member-bar-dropdown">
-                    {memberBarDropdownLinks}
-                </ul>
+                <ul className="member-bar-dropdown">{memberBarDropdownLinks}</ul>
             </li>
         ) : (
-            <li className="chevron" aria-haspopup='true'>
+            <li className="chevron" aria-haspopup="true">
                 <figure>
-                    <img className='guest' alt='The Soulless One' src='/images/touch-icon-ipad.png' />
+                    <img className="guest" alt="The Soulless One" src="/images/touch-icon-ipad.png" />
                     <figcaption>Welcome, Soulless One!</figcaption>
                 </figure>
                 <FontAwesomeIcon icon={faChevronDown} className="ml-2" />
                 <ul className="member-bar-dropdown">
-                    <li key='sign_in'><a href="/oauth/to/discord"><FontAwesomeIcon icon={faSignInAlt} size="2x" fixedWidth /> Login via Discord</a></li>
+                    <li key="sign_in">
+                        <a href="/oauth/to/discord">
+                            <FontAwesomeIcon icon={faSignInAlt} size="2x" fixedWidth /> Login via Discord
+                        </a>
+                    </li>
                 </ul>
             </li>
         );
@@ -133,19 +139,19 @@ class Header extends Component {
                 <h1 className="col-xs-24 col-md-17 col-lg-12">Lodge of Sorceresses</h1>
                 <ul className="member-bar d-none d-md-flex">
                     {memberBarFirstSection}
-                    <li className='d-none d-lg-block'>
+                    <li className="d-none d-lg-block">
                         <a href="https://lodgeofsorceresses.com" title="Forums" target="_blank">
                             <FontAwesomeIcon icon={faGlobe} size="lg" /> Forums
                         </a>
                     </li>
-                    <li className='d-none d-lg-block'>
+                    <li className="d-none d-lg-block">
                         <a href="https://www.esologs.com/guild/autojoin/521/XTk263af" title="ESOLogs" target="_blank">
                             <FontAwesomeIcon icon={faAnalytics} size="lg" /> ESOLogs
                         </a>
                     </li>
-                    <li className='d-none d-lg-block'>
+                    <li className="d-none d-lg-block">
                         <a href="https://discord.gg/pdDTjW3" title="ESOLogs" target="_blank">
-                            <FontAwesomeIcon icon={['fab', 'discord']} size='lg' /> Discord
+                            <FontAwesomeIcon icon={["fab", "discord"]} size="lg" /> Discord
                         </a>
                     </li>
                 </ul>
@@ -170,9 +176,9 @@ Header.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    me: state.getIn(['me']),
-    myCharacters: state.getIn(['myCharacters']),
-    notifications: state.getIn(['notifications']),
+    me: state.getIn(["me"]),
+    myCharacters: state.getIn(["myCharacters"]),
+    notifications: state.getIn(["notifications"]),
 });
 
 export default withRouter(connect(mapStateToProps)(Header));

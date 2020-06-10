@@ -33,7 +33,7 @@ class Users extends PureComponent {
     }
 
     componentWillUnmount = () => {
-        this.cancelTokenSource && this.cancelTokenSource.cancel('Request cancelled.');
+        this.cancelTokenSource && this.cancelTokenSource.cancel("Request cancelled.");
     };
 
     componentDidMount = () => {
@@ -47,10 +47,10 @@ class Users extends PureComponent {
                         getAttendances(this.cancelTokenSource, match.params.id)
                             .then(attendances => {
                                 this.cancelTokenSource = null;
-                                const attendancesArray = Array.from(attendances.result, id => attendances.entities['attendance'][id]);
+                                const attendancesArray = Array.from(attendances.result, id => attendances.entities["attendance"][id]);
                                 this.setState({
                                     user: user.entities.user[match.params.id],
-                                    attendances: attendancesArray
+                                    attendances: attendancesArray,
                                 });
                             })
                             .catch(error => {
@@ -93,42 +93,36 @@ class Users extends PureComponent {
             ),
         };
         const { attendances } = this.state;
-        const startDate = attendances.length
-            ? moment(attendances[0]['created_at'])
-            : undefined;
-        const endDate = attendances.length
-            ? moment(attendances[attendances.length - 1]['created_at'])
-            : undefined;
+        const startDate = attendances.length ? moment(attendances[0]["created_at"]) : undefined;
+        const endDate = attendances.length ? moment(attendances[attendances.length - 1]["created_at"]) : undefined;
 
-        const characterListRendered = user.characters.length ? [
-            <h3 className='col-md-24 mt-5'>Their Characters</h3>,
-            <List characters={user.characters} me={me} className='pl-2 pr-2 col-md-24' />
-        ] : [];
-        const attendancesRendered = attendances.length ? [
-            <h3 className='col-md-24 mt-5'>Their Attendances</h3>,
-            <Attendance.ListView start={startDate} end={endDate} events={attendances} />
-        ] : [];
+        const characterListRendered = user.characters.length
+            ? [<h3 className="col-md-24 mt-5">Their Characters</h3>, <List characters={user.characters} me={me} className="pl-2 pr-2 col-md-24" />]
+            : [];
+        const attendancesRendered = attendances.length ? [<h3 className="col-md-24 mt-5">Their Attendances</h3>, <Attendance.ListView start={startDate} end={endDate} events={attendances} />] : [];
+
         return [
             <section className="col-md-24 p-0 mb-4 user-profile" key="user-profile">
-                <h2 className="form-title col-md-24 pr-5" title="Welcome!">{"@" + user.name}</h2>
+                <h2 className="form-title col-md-24 pr-5" title="Welcome!">
+                    {"@" + user.name}
+                </h2>
                 <ul className="ne-corner">{renderActionList(actionList)}</ul>
-                <h3 className='col-md-24 mt-2'>Account Summary</h3>
-                <dl className={user.isMember ? 'members' : 'soulshriven'}>
+                <h3 className="col-md-24 mt-2">Account Summary</h3>
+                <dl className={user.isMember ? "members" : "soulshriven"}>
                     <dt>Account Type</dt>
-                    <dd>{user.isMember ? 'Member' : 'Soulshriven'}</dd>
+                    <dd>{user.isMember ? "Member" : "Soulshriven"}</dd>
                 </dl>
-                <dl className={user.linkedAccountsParsed.ips ? 'info' : 'danger'}>
+                <dl className={user.linkedAccountsParsed.ips ? "info" : "danger"}>
                     <dt>Forum Account Linked</dt>
-                    <dd>{user.linkedAccountsParsed.ips ? 'Yes' : 'No'}</dd>
+                    <dd>{user.linkedAccountsParsed.ips ? "Yes" : "No"}</dd>
                 </dl>
-                <dl className={user.characters.length > 0 ? 'info' : 'danger'}>
+                <dl className={user.characters.length > 0 ? "info" : "danger"}>
                     <dt># of characters</dt>
-                    <dd>{user.characters.length}
-                    </dd>
+                    <dd>{user.characters.length}</dd>
                 </dl>
-                <dl className={user.clearanceLevel ? user.clearanceLevel.slug : 'danger'}>
+                <dl className={user.clearanceLevel ? user.clearanceLevel.slug : "danger"}>
                     <dt>Overall Rank</dt>
-                    <dd>{user.clearanceLevel ? user.clearanceLevel.rank.title : 'None'}</dd>
+                    <dd>{user.clearanceLevel ? user.clearanceLevel.rank.title : "None"}</dd>
                 </dl>
                 {[...characterListRendered]}
                 {[...attendancesRendered]}
@@ -252,7 +246,4 @@ const mapDispatchToProps = dispatch => ({
     dispatch,
 });
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Users);
+export default connect(mapStateToProps, mapDispatchToProps)(Users);

@@ -1,12 +1,12 @@
-import * as api from '../vendor/api';
+import * as api from "../vendor/api";
 
-export const TYPE_PUT_TEAM_SEND = 'PUT_TEAM_SEND';
+export const TYPE_PUT_TEAM_SEND = "PUT_TEAM_SEND";
 
-export const TYPE_PUT_TEAM_SUCCESS = 'PUT_TEAM_SUCCESS';
+export const TYPE_PUT_TEAM_SUCCESS = "PUT_TEAM_SUCCESS";
 
-export const TYPE_PUT_TEAM_FAILURE = 'PUT_TEAM_FAILURE';
+export const TYPE_PUT_TEAM_FAILURE = "PUT_TEAM_FAILURE";
 
-const RESPONSE_MESSAGE_SUCCESS = 'Team updated.';
+const RESPONSE_MESSAGE_SUCCESS = "Team updated.";
 
 const putTeamSendAction = (characterId, data) => ({
     type: TYPE_PUT_TEAM_SEND,
@@ -29,7 +29,7 @@ const putTeamFailureAction = error => ({
 
 const putTeamAction = (teamId, data) => (dispatch, getState) => {
     dispatch(putTeamSendAction(teamId, data));
-    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
+    const axiosCancelTokenSource = getState().getIn(["axiosCancelTokenSource"]);
     return api
         .putTeam(axiosCancelTokenSource, teamId, data, dispatch)
         .then(response => {

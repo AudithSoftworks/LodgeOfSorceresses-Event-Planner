@@ -1,10 +1,10 @@
-import * as api from '../vendor/api';
+import * as api from "../vendor/api";
 
-export const TYPE_GET_SKILLS_SEND = 'GET_SKILLS_SEND';
+export const TYPE_GET_SKILLS_SEND = "GET_SKILLS_SEND";
 
-export const TYPE_GET_SKILLS_SUCCESS = 'GET_SKILLS_SUCCESS';
+export const TYPE_GET_SKILLS_SUCCESS = "GET_SKILLS_SUCCESS";
 
-export const TYPE_GET_SKILLS_FAILURE = 'GET_SKILLS_FAILURE';
+export const TYPE_GET_SKILLS_FAILURE = "GET_SKILLS_FAILURE";
 
 const getSkillsSendAction = () => ({
     type: TYPE_GET_SKILLS_SEND,
@@ -24,7 +24,7 @@ const getSkillsFailureAction = error => {
 
 const getSkillsAction = () => (dispatch, getState) => {
     dispatch(getSkillsSendAction());
-    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
+    const axiosCancelTokenSource = getState().getIn(["axiosCancelTokenSource"]);
     return api
         .getSkills(axiosCancelTokenSource, dispatch)
         .then(response => {

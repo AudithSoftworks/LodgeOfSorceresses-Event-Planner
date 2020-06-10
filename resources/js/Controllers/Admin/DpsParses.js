@@ -1,20 +1,16 @@
-import(
-    /* webpackPrefetch: true */
-    /* webpackChunkName: "pending-parses-scss" */
-    '../../../sass/_pending_dps_parses.scss'
-);
+import(/* webpackPrefetch: true, webpackChunkName: "pending-parses-scss" */ "../../../sass/_pending_dps_parses.scss");
 
-import { faUserCheck, faUserTimes } from '@fortawesome/pro-light-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
-import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { errorsAction, infosAction, successAction } from '../../actions/notifications';
-import { deletePendingDpsParse, getPendingDpsParses, updatePendingDpsParse } from '../../vendor/api/admin';
-import axios from '../../vendor/axios';
-import Loading from '../../Components/Loading';
-import Notification from '../../Components/Notification';
+import { faUserCheck, faUserTimes } from "@fortawesome/pro-light-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import PropTypes from "prop-types";
+import React, { PureComponent } from "react";
+import { connect } from "react-redux";
+import { Link } from "react-router-dom";
+import { errorsAction, infosAction, successAction } from "../../actions/notifications";
+import Loading from "../../Components/Loading";
+import Notification from "../../Components/Notification";
+import { deletePendingDpsParse, getPendingDpsParses, updatePendingDpsParse } from "../../vendor/api/admin";
+import axios from "../../vendor/axios";
 
 class DpsParses extends PureComponent {
     constructor(props) {
@@ -25,7 +21,7 @@ class DpsParses extends PureComponent {
     }
 
     componentWillUnmount = () => {
-        this.cancelTokenSource && this.cancelTokenSource.cancel('Request cancelled.');
+        this.cancelTokenSource && this.cancelTokenSource.cancel("Request cancelled.");
     };
 
     componentDidMount = () => {
@@ -45,13 +41,13 @@ class DpsParses extends PureComponent {
 
     handleDisapprove = event => {
         event.preventDefault();
-        if (confirm('Are you sure you want to **disapprove** this parse?')) {
+        if (confirm("Are you sure you want to **disapprove** this parse?")) {
             this.cancelTokenSource = axios.CancelToken.source();
-            const reasonForDisapproval = window.prompt('Please provide a reason for disapproval. This will be posted on Discord.');
+            const reasonForDisapproval = window.prompt("Please provide a reason for disapproval. This will be posted on Discord.");
             if (reasonForDisapproval && reasonForDisapproval.length) {
                 const currentTarget = event.currentTarget;
                 const { dpsParses } = this.state;
-                const parseId = parseInt(currentTarget.getAttribute('data-id'));
+                const parseId = parseInt(currentTarget.getAttribute("data-id"));
                 deletePendingDpsParse(this.cancelTokenSource, parseId, reasonForDisapproval)
                     .then(response => {
                         this.cancelTokenSource = null;
@@ -59,7 +55,7 @@ class DpsParses extends PureComponent {
                             delete dpsParses.entities.dpsParses[parseId];
                             dpsParses.result = dpsParses.result.filter(value => value !== parseId);
                             this.setState({ dpsParses });
-                            const message = 'Parse disapproved.';
+                            const message = "Parse disapproved.";
                             this.props.dispatch(successAction(message));
                         }
                     })
@@ -75,15 +71,15 @@ class DpsParses extends PureComponent {
 
     handleApprove = event => {
         event.preventDefault();
-        if (confirm('Are you sure you want to **approve** this parse?')) {
+        if (confirm("Are you sure you want to **approve** this parse?")) {
             this.cancelTokenSource = axios.CancelToken.source();
             const currentTarget = event.currentTarget;
-            const parseId = parseInt(currentTarget.getAttribute('data-id'));
+            const parseId = parseInt(currentTarget.getAttribute("data-id"));
             const { dpsParses } = this.state;
             updatePendingDpsParse(this.cancelTokenSource, parseId)
                 .then(response => {
                     this.cancelTokenSource = null;
-                    if (response.data) {
+                    if (response["data"]) {
                         delete dpsParses.entities.dpsParses[parseId];
                         dpsParses.result = dpsParses.result.filter(value => value !== parseId);
                         this.setState({ dpsParses });
@@ -102,18 +98,18 @@ class DpsParses extends PureComponent {
 
     renderListItem(dpsParse) {
         const parseSets = dpsParse.sets.map(set => (
-            <a key={set['id']} href={'https://eso-sets.com/set/' + set['id']} className="badge badge-dark">
-                {set['name']}
+            <a key={set["id"]} href={"https://eso-sets.com/set/" + set["id"]} className="badge badge-dark">
+                {set["name"]}
             </a>
         ));
         dpsParse.actionList = {
             approve: (
-                <Link to="" onClick={this.handleApprove} data-id={dpsParse['id']} title="Approve this Parse">
+                <Link to="" onClick={this.handleApprove} data-id={dpsParse["id"]} title="Approve this Parse">
                     <FontAwesomeIcon icon={faUserCheck} />
                 </Link>
             ),
             disapprove: (
-                <Link to="" onClick={this.handleDisapprove} data-id={dpsParse['id']} title="Disapprove this Parse">
+                <Link to="" onClick={this.handleDisapprove} data-id={dpsParse["id"]} title="Disapprove this Parse">
                     <FontAwesomeIcon icon={faUserTimes} />
                 </Link>
             ),
@@ -124,25 +120,25 @@ class DpsParses extends PureComponent {
         }
 
         return (
-            <tr key={'dpsParseRow-' + dpsParse['id']}>
-                <td title={dpsParse['owner']['name']}>{'@' + dpsParse['owner']['name']}</td>
-                <td title={dpsParse['character']['name']}>
-                    {dpsParse['character']['name']}
+            <tr key={"dpsParseRow-" + dpsParse["id"]}>
+                <td title={dpsParse["owner"]["name"]}>{"@" + dpsParse["owner"]["name"]}</td>
+                <td title={dpsParse["character"]["name"]}>
+                    {dpsParse["character"]["name"]}
                     <br />
                     <small>
-                        {dpsParse['character']['class']} / {dpsParse['character']['role']}
+                        {dpsParse["character"]["class"]} / {dpsParse["character"]["role"]}
                     </small>
-                    <p>{dpsParse['dps_amount']} DPS</p>
+                    <p>{dpsParse["dps_amount"]} DPS</p>
                 </td>
-                <td>{parseSets.reduce((prev, curr) => [prev, ' ', curr])}</td>
+                <td>{parseSets.reduce((prev, curr) => [prev, " ", curr])}</td>
                 <td className="text-right">
-                    <a href={dpsParse['parse_file_hash']['large']} target="_blank">
-                        <img src={dpsParse['parse_file_hash']['thumbnail']} alt="Parse screenshot" />
+                    <a href={dpsParse["parse_file_hash"]["large"]} target="_blank">
+                        <img src={dpsParse["parse_file_hash"]["thumbnail"]} alt="Parse screenshot" />
                     </a>
                 </td>
                 <td className="text-right">
-                    <a href={dpsParse['info_file_hash']['large']} target="_blank">
-                        <img src={dpsParse['info_file_hash']['thumbnail']} alt="Info screenshot" />
+                    <a href={dpsParse["info_file_hash"]["large"]} target="_blank">
+                        <img src={dpsParse["info_file_hash"]["thumbnail"]} alt="Info screenshot" />
                     </a>
                 </td>
                 <td>
@@ -165,10 +161,10 @@ class DpsParses extends PureComponent {
                             <th scope="col">User</th>
                             <th scope="col">Character</th>
                             <th scope="col">Sets</th>
-                            <th scope="col" style={{ textAlign: 'right' }}>
+                            <th scope="col" style={{ textAlign: "right" }}>
                                 Parse Screenshot
                             </th>
-                            <th scope="col" style={{ textAlign: 'right' }}>
+                            <th scope="col" style={{ textAlign: "right" }}>
                                 Info Screenshot
                             </th>
                             <th scope="col" />
@@ -184,7 +180,7 @@ class DpsParses extends PureComponent {
                 <h2 className="form-title col-md-24">Parses Pending Approval</h2>
                 <article className="alert-info">
                     <b>DPS Parse Approval Checklist</b>
-                    <ul style={{ listStyleType: 'circle' }}>
+                    <ul style={{ listStyleType: "circle" }}>
                         <li>Do the Characters on both screenshots have the same name as the Character listed?</li>
                         <li>Does Parse screenshot have the same DPS amount as it is listed in this table?</li>
                         <li>Is parse in the screenshot the same Role (Stamina vs Magicka) as the Character listed?</li>
@@ -199,19 +195,19 @@ class DpsParses extends PureComponent {
 
     renderNoPendingDpsParsesNotification = dpsParses => {
         const { dispatch, notifications } = this.props;
-        if (dpsParses && !dpsParses.result.length && notifications.find(n => n.key === 'admin-no-pending-dps-parses') === undefined) {
-            const message = 'No pending Parses found!';
+        if (dpsParses && !dpsParses.result.length && notifications.find(n => n.key === "admin-no-pending-dps-parses") === undefined) {
+            const message = "No pending Parses found!";
             dispatch(
                 infosAction(
                     message,
                     {
-                        container: 'bottom-center',
-                        animationIn: ['animated', 'bounceInDown'],
-                        animationOut: ['animated', 'bounceOutDown'],
+                        container: "bottom-center",
+                        animationIn: ["animated", "bounceInDown"],
+                        animationOut: ["animated", "bounceOutDown"],
                         dismiss: { duration: 30000 },
                         width: 250,
                     },
-                    'admin-no-pending-dps-parses'
+                    "admin-no-pending-dps-parses"
                 )
             );
         }
@@ -234,10 +230,16 @@ DpsParses.propTypes = {
     history: PropTypes.object.isRequired,
 
     notifications: PropTypes.array,
+
+    dispatch: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
-    notifications: state.getIn(['notifications']),
+    notifications: state.getIn(["notifications"]),
 });
 
-export default connect(mapStateToProps)(DpsParses);
+const mapDispatchToProps = dispatch => ({
+    dispatch,
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(DpsParses);

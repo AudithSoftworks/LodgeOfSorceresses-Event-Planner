@@ -1,10 +1,10 @@
-import * as api from '../vendor/api';
+import * as api from "../vendor/api";
 
-export const TYPE_GET_TEAMS_SEND = 'GET_TEAMS_SEND';
+export const TYPE_GET_TEAMS_SEND = "GET_TEAMS_SEND";
 
-export const TYPE_GET_TEAMS_SUCCESS = 'GET_TEAMS_SUCCESS';
+export const TYPE_GET_TEAMS_SUCCESS = "GET_TEAMS_SUCCESS";
 
-export const TYPE_GET_TEAMS_FAILURE = 'GET_TEAMS_FAILURE';
+export const TYPE_GET_TEAMS_FAILURE = "GET_TEAMS_FAILURE";
 
 const getTeamsSendAction = () => ({
     type: TYPE_GET_TEAMS_SEND,
@@ -22,7 +22,7 @@ const getTeamsFailureAction = error => ({
 
 const getTeamsAction = () => (dispatch, getState) => {
     dispatch(getTeamsSendAction());
-    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
+    const axiosCancelTokenSource = getState().getIn(["axiosCancelTokenSource"]);
     return api
         .getTeams(axiosCancelTokenSource, dispatch)
         .then(response => {

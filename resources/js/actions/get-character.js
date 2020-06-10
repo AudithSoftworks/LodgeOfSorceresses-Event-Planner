@@ -1,10 +1,10 @@
-import * as api from '../vendor/api';
+import * as api from "../vendor/api";
 
-export const TYPE_GET_CHARACTER_SEND = 'GET_CHARACTER_SEND';
+export const TYPE_GET_CHARACTER_SEND = "GET_CHARACTER_SEND";
 
-export const TYPE_GET_CHARACTER_SUCCESS = 'GET_CHARACTER_SUCCESS';
+export const TYPE_GET_CHARACTER_SUCCESS = "GET_CHARACTER_SUCCESS";
 
-export const TYPE_GET_CHARACTER_FAILURE = 'GET_CHARACTER_FAILURE';
+export const TYPE_GET_CHARACTER_FAILURE = "GET_CHARACTER_FAILURE";
 
 const getCharacterSendAction = characterId => ({
     type: TYPE_GET_CHARACTER_SEND,
@@ -24,7 +24,7 @@ const getCharacterFailureAction = error => ({
 
 const getCharacterAction = (characterId, customMessage) => (dispatch, getState) => {
     dispatch(getCharacterSendAction(characterId));
-    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
+    const axiosCancelTokenSource = getState().getIn(["axiosCancelTokenSource"]);
     return api
         .getCharacter(axiosCancelTokenSource, characterId, dispatch)
         .then(response => {

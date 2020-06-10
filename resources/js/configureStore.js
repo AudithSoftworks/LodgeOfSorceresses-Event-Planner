@@ -1,16 +1,16 @@
-import { routerMiddleware } from 'connected-react-router/immutable';
-import { createBrowserHistory } from 'history';
-import { applyMiddleware, compose, createStore } from 'redux';
-import { createLogger } from 'redux-logger';
-import thunk from 'redux-thunk';
-import createRootReducer from './reducers';
+import { routerMiddleware } from "connected-react-router/immutable";
+import { createBrowserHistory } from "history";
+import { applyMiddleware, compose, createStore } from "redux";
+import { createLogger } from "redux-logger";
+import thunk from "redux-thunk";
+import createRootReducer from "./reducers";
 
 export const history = createBrowserHistory();
 
 const configureStore = () => {
     const middlewares = [thunk];
     middlewares.push(routerMiddleware(history));
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== "production") {
         middlewares.push(createLogger());
     }
 

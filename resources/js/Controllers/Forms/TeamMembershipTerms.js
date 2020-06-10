@@ -1,11 +1,11 @@
-import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
-import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import PropTypes from "prop-types";
+import React, { PureComponent } from "react";
+import { connect } from "react-redux";
+import { Redirect } from "react-router-dom";
 import deleteTeamsCharactersAction from "../../actions/delete-teams-characters";
 import putTeamsCharactersAction from "../../actions/put-teams-characters";
 import Loading from "../../Components/Loading";
-import Notification from '../../Components/Notification';
+import Notification from "../../Components/Notification";
 import { teams, user } from "../../vendor/data";
 
 class TeamMembershipTerms extends PureComponent {
@@ -21,19 +21,19 @@ class TeamMembershipTerms extends PureComponent {
         const { history, match, teams } = this.props;
         if (teams) {
             const { character, team } = this.state;
-            if (!match.params.id || !match.params['cId']) {
-                history.push('/teams');
+            if (!match.params.id || !match.params["cId"]) {
+                history.push("/teams");
             }
 
             if (!team || !character) {
                 const selectedTeam = teams.find(t => t.id === parseInt(match.params.id));
                 if (!selectedTeam) {
-                    history.push('/teams');
+                    history.push("/teams");
                 }
 
-                const character = selectedTeam.members.find(c => c.id === parseInt(match.params['cId']));
+                const character = selectedTeam.members.find(c => c.id === parseInt(match.params["cId"]));
                 if (!character) {
-                    history.push('/teams');
+                    history.push("/teams");
                 }
                 this.setState({ team: selectedTeam, character });
             }
@@ -41,7 +41,7 @@ class TeamMembershipTerms extends PureComponent {
     };
 
     componentWillUnmount = () => {
-        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel("Request cancelled.");
     };
 
     handlePutTeamsCharacters = event => {
@@ -50,10 +50,9 @@ class TeamMembershipTerms extends PureComponent {
         const { team, character } = this.state;
         const data = new FormData(event.target);
 
-        return putTeamsCharactersAction(team.id, character.id, data)
-            .then(() => {
-                history.push('/teams/' + team.id);
-            });
+        return putTeamsCharactersAction(team.id, character.id, data).then(() => {
+            history.push("/teams/" + team.id);
+        });
     };
 
     handleDeleteTeamsCharacters = event => {
@@ -62,10 +61,9 @@ class TeamMembershipTerms extends PureComponent {
             const { deleteTeamsCharactersAction, history } = this.props;
             const { team, character } = this.state;
 
-            return deleteTeamsCharactersAction(team.id, character.id)
-                .then(() => {
-                    history.push('/teams/' + team.id);
-                });
+            return deleteTeamsCharactersAction(team.id, character.id).then(() => {
+                history.push("/teams/" + team.id);
+            });
         }
     };
 
@@ -79,20 +77,39 @@ class TeamMembershipTerms extends PureComponent {
             return [<Loading message="Fetching team membership records..." key="loading" />, <Notification key="notifications" />];
         }
         if (character.owner.id !== me.id) {
-            history.push('/teams/' + team.id);
+            history.push("/teams/" + team.id);
         }
 
         return [
             <article key="tos" className="col-xs-24 p-0">
                 <form onSubmit={this.handlePutTeamsCharacters} className="col-xs-24 p-0">
-                    <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')} />
+                    <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute("content")} />
                     <fieldset className="form-group col-24 mt-5 pt-5 pb-5 text-center">
                         <input hidden="checkbox" name="accepted_terms" value="1" readOnly={true} />
-                        <p>I have read <a href='https://lodgeofsorceresses.com/topic/4887-pve-raid-core-requirements-to-join/' target='_blank'>Requirements to Join Endgame Guidelines</a>.</p>
-                        <p>I have read & understood <a href='https://lodgeofsorceresses.com/topic/5506-endgame-attendance-guidelines/' target='_blank'>Endgame Attendance Guidelines</a>.</p>
-                        <p><strong>For this character</strong>, I have done what is described in <em>Requirements</em> section of <em>Endgame Attendance Guidelines</em> - installed Addons, configured the game accordingly etc.</p>
-                        <p>By joining, I accept the terms stated in <em>Endgame Attendance Guidelines</em>.</p>
-                        <p className='mt-5'><strong>PLEASE DO NOT ACCEPT THIS INVITATION, UNLESS THE ABOVE-STATED IS TRUE!</strong></p>
+                        <p>
+                            I have read{" "}
+                            <a href="https://lodgeofsorceresses.com/topic/4887-pve-raid-core-requirements-to-join/" target="_blank">
+                                Requirements to Join Endgame Guidelines
+                            </a>
+                            .
+                        </p>
+                        <p>
+                            I have read & understood{" "}
+                            <a href="https://lodgeofsorceresses.com/topic/5506-endgame-attendance-guidelines/" target="_blank">
+                                Endgame Attendance Guidelines
+                            </a>
+                            .
+                        </p>
+                        <p>
+                            <strong>For this character</strong>, I have done what is described in <em>Requirements</em> section of <em>Endgame Attendance Guidelines</em> - installed Addons, configured
+                            the game accordingly etc.
+                        </p>
+                        <p>
+                            By joining, I accept the terms stated in <em>Endgame Attendance Guidelines</em>.
+                        </p>
+                        <p className="mt-5">
+                            <strong>PLEASE DO NOT ACCEPT THIS INVITATION, UNLESS THE ABOVE-STATED IS TRUE!</strong>
+                        </p>
                     </fieldset>
                     <fieldset className="form-group col-24 text-center">
                         <button className="btn btn-success btn-lg mb-4 ml-auto mr-auto d-block" type="submit">
@@ -104,7 +121,7 @@ class TeamMembershipTerms extends PureComponent {
                     </fieldset>
                 </form>
             </article>,
-            <Notification key="notifications" />
+            <Notification key="notifications" />,
         ];
     };
 }
@@ -126,7 +143,7 @@ const mapStateToProps = state => ({
     axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
     me: state.getIn(["me"]),
     teams: state.getIn(["teams"]),
-    notifications: state.getIn(['notifications']),
+    notifications: state.getIn(["notifications"]),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -135,7 +152,4 @@ const mapDispatchToProps = dispatch => ({
     deleteTeamsCharactersAction: (teamId, characterId, data) => dispatch(deleteTeamsCharactersAction(teamId, characterId, data)),
 });
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(TeamMembershipTerms);
+export default connect(mapStateToProps, mapDispatchToProps)(TeamMembershipTerms);
