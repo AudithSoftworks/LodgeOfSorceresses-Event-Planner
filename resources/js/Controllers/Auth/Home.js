@@ -60,6 +60,10 @@ class Home extends PureComponent {
             ? moment(attendances[attendances.length - 1]['created_at'])
             : undefined;
 
+        const attendancesRendered = attendances.length ? [
+            <h3 className='col-md-24 mt-5'>My Attendances</h3>,
+            <Attendance.ListView start={startDate} end={endDate} events={attendances} />
+        ] : [];
         return [
             <section className="col-md-13 col-lg-17 p-0 mb-4 dashboard" key="dashboard">
                 <h2 className="form-title col-md-24 pr-5" title="Welcome!">
@@ -95,8 +99,7 @@ class Home extends PureComponent {
                             : [<Fragment key='item-1'>None</Fragment>, <small key='item-2'>[<Link to='/@me/characters'>get going</Link>]</small>]
                     }</dd>
                 </dl>
-                <h3 className='col-md-24 mt-5'>My Attendances</h3>
-                <Attendance.ListView start={startDate} end={endDate} events={attendances} />
+                {[...attendancesRendered]}
             </section>,
             <aside key='member-onboarding'
                    data-heading='Here you can ...'
