@@ -111,6 +111,9 @@ class User extends Authenticatable
 
     public function attendances(): BelongsToMany
     {
-        return $this->belongsToMany(Attendance::class, 'attendances_users')->as('attendances');
+        return $this
+            ->belongsToMany(Attendance::class, 'attendances_users')
+            ->as('attendances')
+            ->withTimestamps(['is_author']);
     }
 }

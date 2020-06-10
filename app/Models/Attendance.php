@@ -35,6 +35,9 @@ class Attendance extends Model
 
     public function attendees(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'attendances_users')->as('attendees');
+        return $this
+            ->belongsToMany(User::class, 'attendances_users')
+            ->as('attendees')
+            ->withTimestamps(['is_author']);
     }
 }

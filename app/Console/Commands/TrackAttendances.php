@@ -178,12 +178,15 @@ class TrackAttendances extends Command
         $attendance->isDirty() && $attendance->save();
 
         $collectionOfMentions = collect($message['mentions']);
-        $collectionOfMentions->add($message['author']);
         $collectionOfMentions = $collectionOfMentions->reject(static function ($mention) {
             return !($mention instanceof User);
         });
         $attendance->attendees()->sync($collectionOfMentions->pluck('id'));
         $attendance->save();
+
+        if ($message['author'] instanceof User) {
+            $attendance->attendees()->save($message['author'], ['is_author' => true]);
+        }
 
         return $attendance;
     }
@@ -270,7 +273,7 @@ class TrackAttendances extends Command
                     ]
                 ]);
             }
-            $this->error(sprintf('%d users were notified about missing IPS accounts.', $count));
+            $this->warn(sprintf('%d users were notified about missing IPS accounts.', $count));
             $this->ipsOauthNotFoundList = [];
         }
     }

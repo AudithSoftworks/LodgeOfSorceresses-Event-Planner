@@ -100,6 +100,6 @@ class Handler extends ExceptionHandler
     {
         return $request->expectsJson()
             ? response()->json(['message' => 'Please login.'], SymfonyHttpResponse::HTTP_UNAUTHORIZED)
-            : redirect()->guest('/');
+            : redirect()->guest('/logout')->withErrors('Session expired.');
     }
 }
