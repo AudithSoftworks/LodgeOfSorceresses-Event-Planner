@@ -5,11 +5,6 @@ use Illuminate\Support\Facades\Cache;
 
 class DeleteUserCache
 {
-    /**
-     * @param \App\Events\User\UserNeedsRecacheInterface $event
-     *
-     * @return bool
-     */
     public function handle(UserNeedsRecacheInterface $event): bool
     {
         $user = $event->getOwner();

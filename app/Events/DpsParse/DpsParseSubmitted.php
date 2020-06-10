@@ -8,10 +8,7 @@ use App\Events\User\GetUserInterface;
 
 class DpsParseSubmitted implements GetDpsParseInterface, CharacterNeedsRecacheInterface, GetUserInterface
 {
-    /**
-     * @var \App\Models\DpsParse
-     */
-    public $dpsParse;
+    public DpsParse $dpsParse;
 
     public function __construct(DpsParse $dpsParse)
     {

@@ -6,7 +6,7 @@ import React, { Fragment, PureComponent } from "react";
 import { connect } from "react-redux";
 import { Link, Redirect } from "react-router-dom";
 import { errorsAction } from "../../actions/notifications";
-import * as Calendar from "../../Components/Events/Calendar";
+import * as Attendance from "../../Components/Events/Attendance";
 import Notification from "../../Components/Notification";
 import { authorizeUser } from "../../helpers";
 import { getAttendances } from "../../vendor/api";
@@ -96,7 +96,7 @@ class Home extends PureComponent {
                     }</dd>
                 </dl>
                 <h3 className='col-md-24 mt-5'>My Attendances</h3>
-                <Calendar.ListView start={startDate} end={endDate} events={attendances} />
+                <Attendance.ListView start={startDate} end={endDate} events={attendances} />
             </section>,
             <aside key='member-onboarding'
                    data-heading='Here you can ...'

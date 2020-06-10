@@ -6,10 +6,7 @@ use App\Models\User;
 
 class CharacterDeleted implements UserNeedsRecacheInterface, CharacterNeedsRecacheInterface
 {
-    /**
-     * @var \App\Models\Character
-     */
-    public $character;
+    public Character $character;
 
     /**
      * @param \App\Models\Character $character

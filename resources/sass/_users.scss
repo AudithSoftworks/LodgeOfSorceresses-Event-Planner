@@ -58,34 +58,42 @@ main {
 
                 &.info {
                     background-color: theme-color('info');
+                    color: color('info');
                 }
 
                 &.danger {
                     background-color: theme-color('danger');
+                    color: color('danger');
                 }
 
                 &.members {
-                    background-color: theme-color('members');
+                    background-color: theme-color('membersInverted');
+                    color: color('membersInverted');
                 }
 
                 &.soulshriven {
-                    background-color: color('soulshriven');
+                    background-color: theme-color('soulshrivenInverted');
+                    color: color('soulshrivenInverted');
                 }
 
                 &.tier-1 {
-                    background-color: theme-color('tierOne');
+                    background-color: theme-color('tierOneInverted');
+                    color: color('tierOne');
                 }
 
                 &.tier-2 {
-                    background-color: theme-color('tierTwo');
+                    background-color: theme-color('tierTwoInverted');
+                    color: color('tierTwoInverted');
                 }
 
                 &.tier-3 {
-                    background-color: theme-color('tierThree');
+                    background-color: theme-color('tierThreeInverted');
+                    color: color('tierThreeInverted');
                 }
 
                 &.tier-4 {
-                    background-color: darken(color('tierFour'), 15);
+                    background-color: theme-color('tierFourInverted');
+                    color: color('tierFourInverted');
                 }
 
                 > dd {

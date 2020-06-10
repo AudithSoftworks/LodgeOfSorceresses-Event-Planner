@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Events\Character\CharacterDeleted;
 use App\Events\Character\CharacterDeleting;
-use App\Events\Character\CharacterUpdated;
+use App\Events\Character\CharacterSaved;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
@@ -54,9 +54,9 @@ class Character extends Model
      * {@inheritdoc}
      */
     protected $dispatchesEvents = [
+        'saved' => CharacterSaved::class,
         'deleting' => CharacterDeleting::class,
         'deleted' => CharacterDeleted::class,
-        'updated' => CharacterUpdated::class,
     ];
 
     /**

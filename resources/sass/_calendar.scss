@@ -3,37 +3,6 @@
 
 table {
     &.calendar {
-        &.list-view {
-            margin-bottom: $grid-gutter-width;
-
-            > caption {
-                caption-side: top;
-                padding: $grid-gutter-width / 2;
-                margin: 0 $grid-gutter-width / 2 -2px;
-
-                &:after {
-                    content: attr(data-weekday);
-                    float: right;
-                }
-            }
-
-            > tbody {
-                display: block;
-                margin: 0 -2px;
-                border-width: 1px;
-                border-style: solid;
-
-                > tr {
-                    > td {
-                        &:first-of-type {
-                            padding-left: $grid-gutter-width;
-                            padding-right: $grid-gutter-width * 2;
-                        }
-                    }
-                }
-            }
-        }
-
         &.month-view {
             > thead {
                 > tr {

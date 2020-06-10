@@ -9,7 +9,7 @@ import { connect } from "react-redux";
 import { Link, Redirect } from "react-router-dom";
 import { errorsAction, infosAction } from "../actions/notifications";
 import List from "../Components/Characters/List";
-import * as Calendar from "../Components/Events/Calendar";
+import * as Attendance from "../Components/Events/Attendance";
 import Loading from "../Components/Loading";
 import Notification from "../Components/Notification";
 import { filter, renderActionList } from "../helpers";
@@ -100,6 +100,14 @@ class Users extends PureComponent {
             ? moment(attendances[attendances.length - 1]['created_at'])
             : undefined;
 
+        const characterListRendered = user.characters.length ? [
+            <h3 className='col-md-24 mt-5'>Their Characters</h3>,
+            <List characters={user.characters} me={me} className='pl-2 pr-2 col-md-24' />
+        ] : [];
+        const attendancesRendered = attendances.length ? [
+            <h3 className='col-md-24 mt-5'>Their Attendances</h3>,
+            <Attendance.ListView start={startDate} end={endDate} events={attendances} />
+        ] : [];
         return [
             <section className="col-md-24 p-0 mb-4 user-profile" key="user-profile">
                 <h2 className="form-title col-md-24 pr-5" title="Welcome!">{"@" + user.name}</h2>
@@ -122,10 +130,8 @@ class Users extends PureComponent {
                     <dt>Overall Rank</dt>
                     <dd>{user.clearanceLevel ? user.clearanceLevel.rank.title : 'None'}</dd>
                 </dl>
-                <h3 className='col-md-24 mt-5'>Their Characters</h3>
-                <List characters={user.characters} me={me} className='pl-2 pr-2 col-md-24' />
-                <h3 className='col-md-24 mt-5'>Their Attendances</h3>
-                <Calendar.ListView start={startDate} end={endDate} events={attendances} />
+                {[...characterListRendered]}
+                {[...attendancesRendered]}
             </section>,
         ];
     };

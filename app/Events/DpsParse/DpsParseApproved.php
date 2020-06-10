@@ -1,4 +1,6 @@
-<?php namespace App\Events\DpsParse;
+<?php
+
+namespace App\Events\DpsParse;
 
 use App\Events\Character\CharacterNeedsRecacheInterface;
 use App\Models\Character;
@@ -8,10 +10,7 @@ use App\Events\User\GetUserInterface;
 
 class DpsParseApproved implements GetDpsParseInterface, CharacterNeedsRecacheInterface, GetUserInterface
 {
-    /**
-     * @var \App\Models\DpsParse
-     */
-    public $dpsParse;
+    public DpsParse $dpsParse;
 
     public function __construct(DpsParse $dpsParse)
     {

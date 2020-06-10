@@ -1,0 +1,40 @@
+@import "./global/variables";
+@import "~bootstrap/scss/mixins/breakpoints";
+
+table {
+    &.attendances {
+        &.list-view {
+            margin-bottom: $grid-gutter-width;
+            border-color: gray("300");
+
+            > caption {
+                caption-side: top;
+                padding: $grid-gutter-width / 2;
+                margin: 0 $grid-gutter-width / 2 -2px;
+                background-color: gray("300");
+
+                &:after {
+                    content: attr(data-count);
+                    float: right;
+                }
+            }
+
+            > tbody {
+                display: block;
+                margin: 0 -2px;
+                border-width: 1px;
+                border-style: solid;
+
+                > tr {
+                    > td {
+                        &:first-of-type {
+                            padding-left: $grid-gutter-width;
+                            padding-right: $grid-gutter-width * 2;
+                            font-style: italic;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -71,18 +71,22 @@ tr {
     }
 
     &.tier-1 {
-        background-color: rgba(theme-color('tierOne'), 0.2);
+        background-color: theme-color('tierOne');
+        color: color('tierOne');
     }
 
     &.tier-2 {
-        background-color: rgba(theme-color('tierTwo'), 0.2);
+        background-color: theme-color('tierTwo');
+        color: color('tierTwo');
     }
 
     &.tier-3 {
-        background-color: rgba(theme-color('tierThree'), 0.2);
+        background-color: theme-color('tierThree');
+        color: color('tierThree');
     }
 
     &.tier-4 {
-        background-color: rgba(theme-color('tierFour'), 0.2);
+        background-color: theme-color('tierFour');
+        color: color('tierFour');
     }
 }

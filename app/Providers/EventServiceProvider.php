@@ -31,11 +31,9 @@ class EventServiceProvider extends ServiceProvider
             Listeners\RerankPlayerOnDiscord::class
         ],
         Events\Character\CharacterPromoted::class => [
-            Listeners\Cache\DeleteUserCache::class,
-            Listeners\Cache\DeleteCharacterCache::class,
             Listeners\RerankPlayerOnDiscord::class
         ],
-        Events\Character\CharacterUpdated::class => [
+        Events\Character\CharacterSaved::class => [
             Listeners\Cache\DeleteUserCache::class,
             Listeners\Cache\DeleteCharacterCache::class,
         ],

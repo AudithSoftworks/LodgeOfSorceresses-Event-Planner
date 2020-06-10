@@ -4,16 +4,10 @@ use App\Events\User\UserNeedsRecacheInterface;
 use App\Models\Character;
 use App\Models\User;
 
-class CharacterUpdated implements UserNeedsRecacheInterface, CharacterNeedsRecacheInterface
+class CharacterSaved implements UserNeedsRecacheInterface, CharacterNeedsRecacheInterface
 {
-    /**
-     * @var \App\Models\Character
-     */
-    public $character;
+    public Character $character;
 
-    /**
-     * @param \App\Models\Character $character
-     */
     public function __construct(Character $character)
     {
         $character->refresh();

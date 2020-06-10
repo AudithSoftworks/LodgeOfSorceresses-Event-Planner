@@ -10,15 +10,9 @@ use App\Models\User;
 
 class MemberInvited implements GetTeamInterface, CharacterNeedsRecacheInterface, UserNeedsRecacheInterface
 {
-    /**
-     * @var \App\Models\Character
-     */
-    public $character;
+    public Character $character;
 
-    /**
-     * @var \App\Models\Team
-     */
-    public $team;
+    public Team $team;
 
     /**
      * @param \App\Models\Character $character

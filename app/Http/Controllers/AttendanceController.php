@@ -26,7 +26,7 @@ class AttendanceController extends Controller
         ;
         $attendances = $query->whereHas('attendees', static function (Builder $query) use ($userId) {
             $query->where('user_id', $userId);
-        })->with('attendees')->get();
+        })->with('attendees')->orderBy('created_at')->get();
         foreach ($attendances as $attendance) {
             $attendance->gallery_image_ids = !empty($attendance->gallery_image_ids)
                 ? explode(',', $attendance->gallery_image_ids)

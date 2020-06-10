@@ -1,4 +1,6 @@
-<?php namespace App\Events\Character;
+<?php
+
+namespace App\Events\Character;
 
 use App\Events\DpsParse\GetDpsParsesInterface;
 use App\Models\Character;
@@ -10,9 +12,6 @@ class CharacterDeleting implements GetDpsParsesInterface
      */
     public $dpsParses;
 
-    /**
-     * @param \App\Models\Character $character
-     */
     public function __construct(Character $character)
     {
         $character->refresh();
