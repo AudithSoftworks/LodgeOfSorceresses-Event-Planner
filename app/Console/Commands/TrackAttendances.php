@@ -14,7 +14,9 @@ class TrackAttendances extends Command
 {
     private const DLC_DUNGEONS_ALBUM_ID = 1;
 
-    private const TEMPLATE_FOR_MENTION_LINKS = '<a contenteditable="false" data-ipshover="" data-ipshover-target="%s" data-mentionid="%s" href="%s">%s</a>';
+    private const TEMPLATE_FOR_MENTION_LINKS_IN_FORUMS = '<a contenteditable="false" data-ipshover="" data-ipshover-target="%s" data-mentionid="%s" href="%s">%s</a>';
+
+    private const TEMPLATE_FOR_MENTION_LINKS_IN_PLANNER = '<a href="/users/%s">%s</a>';
 
     /**
      * The name and signature of the console command.
@@ -96,7 +98,8 @@ class TrackAttendances extends Command
                 $attendance = $this->persistAttendance($message);
                 if ($attendance !== null) {
                     $this->uploadAttachmentToGallery($message, $userIpsOauth, $attendance);
-                    $this->info(sprintf('Parsed and Saved: "%s"...', $message['content']));
+                    $this->info(sprintf('Parsed and Saved text for forums: "%s"...', $message['content_for_forums']));
+                    $this->info(sprintf('Parsed and Saved text for Planner: "%s"...', $message['content_for_planner']));
                 } else {
                     $this->warn('Already processed, skipping...');
                 }
@@ -119,29 +122,40 @@ class TrackAttendances extends Command
     {
         # Fetch mentioned IPS OAuth accounts
         $botMentionIndex = null;
+        $message['content_for_forums'] = $message['content_for_planner'] = $message['content'];
         foreach ($message['mentions'] as $key => &$mention) {
             if ($mention['id'] === $this->botId) {
                 $botMentionIndex = $key;
+                # Replace bot mention from the message content
+                $message['content_for_forums'] = preg_replace('/<@!' . $this->botId . '>/', '', $message['content_for_forums']);
+                $message['content_for_planner'] = preg_replace('/<@!' . $this->botId . '>/', '', $message['content_for_planner']);
                 continue;
             }
-            $mentionUser = $this->getUserForGivenDiscordRemoteId($mention['id']);
-            if ($mentionUser !== null) {
-                /** @var UserOAuth $mentionUserOauth */
-                $mentionUserOauth = $mentionUser->linkedAccounts()->where('remote_provider', 'ips')->first();
-                if ($mentionUserOauth !== null) {
-                    $slug = $mentionUserOauth->remote_id . '-member';
-                    $formattedMention = sprintf(
-                        self::TEMPLATE_FOR_MENTION_LINKS,
+            $mentionedUser = $this->getUserForGivenDiscordRemoteId($mention['id']);
+            if ($mentionedUser !== null) {
+                /** @var UserOAuth $ipsAccountOfMentionedUser */
+                $ipsAccountOfMentionedUser = $mentionedUser->linkedAccounts()->where('remote_provider', 'ips')->first();
+                if ($ipsAccountOfMentionedUser !== null) {
+                    $slug = $ipsAccountOfMentionedUser->remote_id . '-member';
+                    $formattedMentionForForumsContent = sprintf(
+                        self::TEMPLATE_FOR_MENTION_LINKS_IN_FORUMS,
                         '<___base_url___>/profile/' . $slug . '/?do=hovercard',
-                        $mentionUserOauth->remote_id,
+                        $ipsAccountOfMentionedUser->remote_id,
                         '<___base_url___>/profile/' . $slug . '/',
-                        $mentionUserOauth->nickname
+                        $ipsAccountOfMentionedUser->name
                     );
-                    $message['content'] = preg_replace('/<@!' . $mention['id'] . '>/', $formattedMention, $message['content']);
-                    $mention = $mentionUser;
+                    $formattedMentionForPlannerContent = sprintf(
+                        self::TEMPLATE_FOR_MENTION_LINKS_IN_PLANNER,
+                        $mentionedUser->id,
+                        $mentionedUser->name
+                    );
+                    $message['content_for_forums'] = preg_replace('/<@!' . $mention['id'] . '>/', $formattedMentionForForumsContent, $message['content_for_forums']);
+                    $message['content_for_planner'] = preg_replace('/<@!' . $mention['id'] . '>/', $formattedMentionForPlannerContent, $message['content_for_planner']);
+                    $mention = $mentionedUser;
                 } else {
                     if (!in_array($mention['id'], $this->ipsOauthNotFoundList, true)) {
-                        $message['content'] = preg_replace('/<@!' . $mention['id'] . '>/', '', $message['content']);
+                        $message['content_for_forums'] = preg_replace('/<@!' . $mention['id'] . '>/', '', $message['content_for_forums']);
+                        $message['content_for_planner'] = preg_replace('/<@!' . $mention['id'] . '>/', '', $message['content_for_planner']);
                         $this->ipsOauthNotFoundList[] = $mention['id'];
                     }
                     $this->warn('No IPS account for user: ' . $mention['username']);
@@ -151,13 +165,11 @@ class TrackAttendances extends Command
         unset($mention);
         if ($botMentionIndex !== null) {
             unset($message['mentions'][$botMentionIndex]);
-
-            # Replace bot mention from the message content
-            $message['content'] = preg_replace('/<@!' . $this->botId . '>/', '', $message['content']);
         }
 
         # Remove mentions not allowed by Discord
-        $message['content'] = preg_replace('/<?@[\S]+/', ' ', $message['content']);
+        $message['content_for_forums'] = preg_replace('/<?@[\S]+/', ' ', $message['content_for_forums']);
+        $message['content_for_planner'] = preg_replace('/<?@[\S]+/', ' ', $message['content_for_planner']);
 
         $message['timestamp'] = new CarbonImmutable($message['timestamp']);
 
@@ -173,6 +185,8 @@ class TrackAttendances extends Command
 
         $attendance = new Attendance();
         $attendance->text = $message['content'];
+        $attendance->text_for_forums = $message['content_for_forums'];
+        $attendance->text_for_planner = $message['content_for_planner'];
         $attendance->discord_message_id = $message['id'];
         $attendance->created_at = $message['timestamp'];
         $attendance->isDirty() && $attendance->save();
@@ -199,7 +213,7 @@ class TrackAttendances extends Command
             $response = app('ips.api')->postGalleryImage(
                 self::DLC_DUNGEONS_ALBUM_ID,
                 $userIpsOauth->remote_id,
-                $message['content'] = trim($message['content']),
+                $message['content_for_forums'] = trim($message['content_for_forums']),
                 $attachment['filename'],
                 base64_encode($rawContent),
                 $message['timestamp']

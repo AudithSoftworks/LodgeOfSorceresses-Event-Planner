@@ -11,6 +11,8 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property string $text
+ * @property string $text_for_forums
+ * @property string $text_for_planner
  * @property string $discord_message_id
  * @property null|string $gallery_image_ids
  * @property Carbon|null $created_at
@@ -27,6 +29,8 @@ use Illuminate\Support\Carbon;
  * @method static EloquentBuilder|$this whereGalleryImageIds($value)
  * @method static EloquentBuilder|$this whereId($value)
  * @method static EloquentBuilder|$this whereText($value)
+ * @method static EloquentBuilder|$this whereTextForForums($value)
+ * @method static EloquentBuilder|$this whereTextForPlanner($value)
  * @method static EloquentBuilder|$this whereUpdatedAt($value)
  */
 class Attendance extends Model
