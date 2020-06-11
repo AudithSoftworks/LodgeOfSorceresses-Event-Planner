@@ -55,15 +55,11 @@ class ListView extends BaseView {
                 daysRendered.push(
                     <table
                         key={"week-table-" + date.format("WW")}
-                        // style={{borderColor: "hsla(" + colorHue + ", 50%, 80%, 0.5)"}}
                         className="attendances list-view col-md-24">
                         <caption
                             title="Each week colored differently"
-                            // style={{
-                            // backgroundColor: "hsla(" + colorHue + ", 50%, 80%, 0.5)",
-                            // color: "hsla(" + colorHue + ", 70%, 30%, 1)",
-                            // }}
-                            data-count={eventsRendered.length + " attendance(s)"}>
+                            data-count={eventsRendered.length + " attendance(s)"}
+                            data-current-week={date.isSame(moment(), 'week') ? 'true' : 'false'}>
                             {date.format("[Week #]WW[]")}
                         </caption>
                         <tbody>{eventsRendered.length ? eventsRendered : this.noEvent()}</tbody>

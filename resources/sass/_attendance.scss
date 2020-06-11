@@ -16,6 +16,13 @@ table {
                 &:after {
                     content: attr(data-count);
                     float: right;
+                    font-style: normal;
+                    font-weight: 400;
+                }
+
+                &[data-current-week="true"] {
+                    font-weight: 700;
+                    font-style: italic;
                 }
             }
 
