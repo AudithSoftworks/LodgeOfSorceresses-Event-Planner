@@ -23,16 +23,29 @@ main {
                     text-decoration: none;
                 }
 
-                &.members > a {
-                    background-color: darken(color('members'), 20);
-                    border: #aaffaa 1px solid;
-                    color: lighten(color('members'), 50);
+                &.no-clearance > a {
+                    background-color: theme-color('soulshrivenInverted');
+                    color: color('soulshrivenInverted');
                 }
 
-                &.soulshriven > a {
-                    background-color: darken(color('soulshriven'), 20);
-                    border: #aaaaaa 1px solid;
-                    color: lighten(color('soulshriven'), 50);
+                &.tier-1 > a {
+                    background-color: theme-color('tierOneInverted');
+                    color: color('tierOneInverted');
+                }
+
+                &.tier-2 > a {
+                    background-color: theme-color('tierTwoInverted');
+                    color: color('tierTwoInverted');
+                }
+
+                &.tier-3 > a {
+                    background-color: theme-color('tierThreeInverted');
+                    color: color('tierThreeInverted');
+                }
+
+                &.tier-4 > a {
+                    background-color: theme-color('tierFourInverted');
+                    color: color('tierFourInverted');
                 }
             }
         }

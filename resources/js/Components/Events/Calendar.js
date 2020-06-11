@@ -52,7 +52,6 @@ class MonthView extends BaseView {
         const endingNumberOfGaps = 7 - endDate.isoWeekday();
         if (endingNumberOfGaps) {
             let test = moment("2020-06-10");
-            console.log(endDate, endDate.isoWeekday(), test, test.isoWeekday());
             aWeekRendered.push(<td key="ending-gap" data-ending-gap={endingNumberOfGaps} colSpan={endingNumberOfGaps} />);
         }
         if (aWeekRendered.length) {

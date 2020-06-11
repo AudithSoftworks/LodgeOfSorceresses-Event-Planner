@@ -1,6 +1,6 @@
 import(/* webpackPrefetch: true, webpackChunkName: "users-scss" */ "../../sass/_users.scss");
 
-import { faChevronCircleLeft, faUser, faUserSlash } from "@fortawesome/pro-light-svg-icons";
+import { faChevronCircleLeft } from "@fortawesome/pro-light-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
 import PropTypes from "prop-types";
@@ -21,10 +21,6 @@ class Users extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            filters: {
-                members: true,
-                soulshriven: true,
-            },
             allUsers: null,
             user: null,
             attendances: [],
@@ -151,9 +147,7 @@ class Users extends PureComponent {
         if (!user.isMember && !user.isSoulshriven) {
             return null;
         }
-        if (user.isMember && !this.state.filters.members) return null;
-        if (user.isSoulshriven && !this.state.filters.soulshriven) return null;
-        let rowBgColor = user.isMember ? "members" : "soulshriven";
+        let rowBgColor = user.clearanceLevel ? user.clearanceLevel.slug : "no-clearance";
 
         return (
             <li className={rowBgColor + " mb-1 mr-1"} key={"user-" + user.id} data-id={user.id}>
@@ -164,13 +158,19 @@ class Users extends PureComponent {
         );
     };
 
-    renderList = allUsers => {
-        let charactersRendered = allUsers.result.map(userId => {
-            const user = allUsers.entities["user"][userId];
+    renderList = (allUsers, mode = 'isMember') => {
+        let charactersRendered = allUsers.result
+            .map(userId => {
+                const user = allUsers.entities["user"][userId];
+                if (user[mode] === false) {
+                    return null;
+                }
 
-            return this.renderListItem(user);
-        });
-        if (charactersRendered.length) {
+                return this.renderListItem(user);
+            })
+            .filter(item => item !== null);
+        const numberOfCharacters = charactersRendered.length;
+        if (numberOfCharacters) {
             charactersRendered = [
                 <ul key="roster" className="roster d-flex flex-row flex-wrap pl-2 pr-2 col-md-24">
                     {charactersRendered}
@@ -178,28 +178,9 @@ class Users extends PureComponent {
             ];
         }
 
-        const { filters } = this.state;
-        const filterList = {
-            members: (
-                <button type="button" onClick={event => this.filter(event, "members")} className={"ne-corner " + (filters.members || "inactive")} title="Filter Actual Members">
-                    <FontAwesomeIcon icon={faUser} />
-                </button>
-            ),
-            soulshriven: (
-                <button type="button" onClick={event => this.filter(event, "soulshriven")} className={"ne-corner " + (filters.soulshriven || "inactive")} title="Filter Soulshriven">
-                    <FontAwesomeIcon icon={faUserSlash} />
-                </button>
-            ),
-        };
-        const actionListRendered = [];
-        for (const [filterType, link] of Object.entries(filterList)) {
-            actionListRendered.push(<li key={filterType}>{link}</li>);
-        }
-
         return [
-            <section className="col-md-24 p-0 mb-4" key="user-list">
-                <h2 className="form-title col-md-24">Roster</h2>
-                <ul className="ne-corner">{actionListRendered}</ul>
+            <section className="col-md-24 p-0 mb-4" key={'user-list-' + mode}>
+                <h3 className="form-title col-md-24">{mode === 'isMember' ? 'Members' : 'Soulshriven'} ({numberOfCharacters})</h3>
                 {charactersRendered}
             </section>,
         ];
@@ -240,7 +221,12 @@ class Users extends PureComponent {
         }
         this.renderNoUsersFoundNotification(allUsers);
 
-        return [...this.renderList(allUsers), <Notification key="notifications" />];
+        return [
+            <h2 className="form-title col-md-24" key='heading'>Roster</h2>,
+            ...this.renderList(allUsers, 'isMember'),
+            ...this.renderList(allUsers, 'isSoulshriven'),
+            <Notification key="notifications" />
+        ];
     };
 }
 
