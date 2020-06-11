@@ -26,6 +26,7 @@ class Teams extends PureComponent {
     };
 
     componentDidMount = () => {
+        this.renderNoTeamsCreateOneNotification();
         const { me, history, match, teams } = this.props;
         const { team } = this.state;
         if (me && match.params.id && teams && !team) {
@@ -39,10 +40,13 @@ class Teams extends PureComponent {
 
     renderNoTeamsCreateOneNotification = () => {
         const { dispatch, me, teams, notifications } = this.props;
-        if (!teams.length && notifications.find(n => n.key === "no-teams-create-one") === undefined) {
+        if (teams && !teams.length && notifications.find(n => n.key === "no-teams-create-one") === undefined) {
             const messages =
                 me && me.isAdmin
-                    ? [<Fragment key="f-1">Create a new team, by clicking</Fragment>, <FontAwesomeIcon icon={faUsersMedical} key="icon" />, <Fragment key="f-2">icon on top right corner.</Fragment>]
+                    ? [
+                        <Fragment key="f-1">Create a new team, by clicking</Fragment>,
+                        <FontAwesomeIcon icon={faUsersMedical} key="icon" />, <Fragment key="f-2">icon on top right corner.</Fragment>
+                    ]
                     : [<Fragment key="f-1">No teams found.</Fragment>];
             dispatch(
                 infosAction(
@@ -70,11 +74,15 @@ class Teams extends PureComponent {
         if (match.params.id && team) {
             const authorizedTeamManager = authorizeTeamManager({ me, team });
             return [
-                <Item key="team-item" authorizedTeamManager={authorizedTeamManager} me={me} team={team} teams={teams} deleteTeamHandler={authorizedTeamManager ? this.handleDeleteTeam : null} />,
+                <Item key="team-item"
+                      authorizedTeamManager={authorizedTeamManager}
+                      me={me}
+                      team={team}
+                      teams={teams}
+                      deleteTeamHandler={authorizedTeamManager ? this.handleDeleteTeam : null} />,
                 <Notification key="notifications" />,
             ];
         }
-        this.renderNoTeamsCreateOneNotification();
 
         const actionList = {
             create:

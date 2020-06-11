@@ -97,9 +97,15 @@ class Users extends PureComponent {
         const endDate = attendances.length ? moment(attendances[attendances.length - 1]["created_at"]) : undefined;
 
         const characterListRendered = user.characters.length
-            ? [<h3 className="col-md-24 mt-5">Their Characters</h3>, <List characters={user.characters} me={me} className="pl-2 pr-2 col-md-24" />]
-            : [];
-        const attendancesRendered = attendances.length ? [<h3 className="col-md-24 mt-5">Their Attendances</h3>, <Attendance.ListView start={startDate} end={endDate} events={attendances} />] : [];
+            ? [
+                <h3 className="col-md-24 mt-5" key="heading">Their Characters</h3>,
+                <List characters={user.characters} me={me} className="pl-2 pr-2 col-md-24" key="character-list" />
+            ] : [];
+        const attendancesRendered = attendances.length
+            ? [
+                <h3 className="col-md-24 mt-5" key="heading">Their Attendances</h3>,
+                <Attendance.ListView start={startDate} end={endDate} events={attendances} key="attendances" />
+            ] : [];
 
         return [
             <section className="col-md-24 p-0 mb-4 user-profile" key="user-profile">

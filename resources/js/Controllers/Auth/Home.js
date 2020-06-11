@@ -55,7 +55,10 @@ class Home extends PureComponent {
         const { attendances } = this.state;
         const startDate = attendances.length ? moment(attendances[0]["created_at"]) : undefined;
         const endDate = attendances.length ? moment(attendances[attendances.length - 1]["created_at"]) : undefined;
-        const attendancesRendered = attendances.length ? [<h3 className="col-md-24 mt-5">My Attendances</h3>, <Attendance.ListView start={startDate} end={endDate} events={attendances} />] : [];
+        const attendancesRendered = attendances.length ? [
+            <h3 className="col-md-24 mt-5" key="heading">My Attendances</h3>,
+            <Attendance.ListView start={startDate} end={endDate} events={attendances} key="attendances" />
+        ] : [];
 
         return [
             <section className="col-md-13 col-lg-17 p-0 mb-4 dashboard" key="dashboard">
@@ -68,17 +71,17 @@ class Home extends PureComponent {
                     <dd>
                         {me.isMember
                             ? [
-                                  <Fragment key="item-1">Member</Fragment>,
-                                  <small key="item-2">
-                                      [<Link to="/onboarding/soulshriven">switch</Link>]
-                                  </small>,
-                              ]
+                                <Fragment key="item-1">Member</Fragment>,
+                                <small key="item-2">
+                                    [<Link to="/onboarding/soulshriven">switch</Link>]
+                                </small>,
+                            ]
                             : [
-                                  <Fragment key="item-1">Soulshriven</Fragment>,
-                                  <small key="item-2">
-                                      [<Link to="/onboarding/members">switch</Link>]
-                                  </small>,
-                              ]}
+                                <Fragment key="item-1">Soulshriven</Fragment>,
+                                <small key="item-2">
+                                    [<Link to="/onboarding/members">switch</Link>]
+                                </small>,
+                            ]}
                     </dd>
                 </dl>
                 <dl className={me.linkedAccountsParsed.ips ? "info" : "danger"}>
@@ -86,17 +89,17 @@ class Home extends PureComponent {
                     <dd>
                         {me.linkedAccountsParsed.ips
                             ? [
-                                  <Fragment key="item-1">Yes</Fragment>,
-                                  <small key="item-2">
-                                      [<a href="/oauth/to/ips">refresh it</a>]
-                                  </small>,
-                              ]
+                                <Fragment key="item-1">Yes</Fragment>,
+                                <small key="item-2">
+                                    [<a href="/oauth/to/ips">refresh it</a>]
+                                </small>,
+                            ]
                             : [
-                                  <Fragment key="item-1">No</Fragment>,
-                                  <small key="item-2">
-                                      [<a href="/oauth/to/ips">link now</a>]
-                                  </small>,
-                              ]}
+                                <Fragment key="item-1">No</Fragment>,
+                                <small key="item-2">
+                                    [<a href="/oauth/to/ips">link now</a>]
+                                </small>,
+                            ]}
                     </dd>
                 </dl>
                 <dl className={me.characters.length > 0 ? "info" : "danger"}>
@@ -114,11 +117,11 @@ class Home extends PureComponent {
                         {me.clearanceLevel
                             ? me.clearanceLevel.rank.title
                             : [
-                                  <Fragment key="item-1">None</Fragment>,
-                                  <small key="item-2">
-                                      [<Link to="/@me/characters">get going</Link>]
-                                  </small>,
-                              ]}
+                                <Fragment key="item-1">None</Fragment>,
+                                <small key="item-2">
+                                    [<Link to="/@me/characters">get going</Link>]
+                                </small>,
+                            ]}
                     </dd>
                 </dl>
                 {[...attendancesRendered]}
