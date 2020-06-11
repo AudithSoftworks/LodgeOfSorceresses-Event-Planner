@@ -13,19 +13,11 @@ import { characters } from "../../vendor/data";
 
 const Gallery = Loadable({
     loader: () =>
-        import(
-            /* webpackPrefetch: true */
-            /* webpackChunkName: "react-fine-uploader" */
-            "react-fine-uploader"
-        ),
+        import(/* webpackPrefetch: true, webpackChunkName: "react-fine-uploader" */ "react-fine-uploader"),
     loading: () => <Loading />,
 });
 
-import(
-    /* webpackPrefetch: true */
-    /* webpackChunkName: "react-fine-uploader_gallery-css" */
-    "../../../sass/vendor/_fine-uploader-gallery.scss"
-);
+import(/* webpackPrefetch: true, webpackChunkName: "react-fine-uploader_gallery-css" */ "../../../sass/vendor/_fine-uploader-gallery.scss");
 
 class DpsParseForm extends PureComponent {
     classOptions = [

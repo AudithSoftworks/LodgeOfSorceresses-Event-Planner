@@ -46,7 +46,7 @@ class ListView extends BaseView {
                     <tr key={"event-" + event["id"]}>
                         <td>{moment(event["created_at"]).format("MMM Do, HH:mm")}</td>
                         <td>
-                            <Markup content={event["text"]} noWrap={true} transform={transformAnchors} key="content" />
+                            <Markup content={event["text_for_planner"]} noWrap={true} transform={transformAnchors} key="content" />
                         </td>
                     </tr>
                 );

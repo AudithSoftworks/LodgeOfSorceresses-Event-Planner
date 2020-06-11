@@ -153,7 +153,7 @@ export const teams = PropTypes.arrayOf(team);
 
 export const attendance = PropTypes.shape({
     id: PropTypes.number,
-    text: PropTypes.string,
+    text_for_planner: PropTypes.string,
     discord_message_id: PropTypes.string,
     gallery_image_ids: PropTypes.arrayOf(PropTypes.string),
     created_at: PropTypes.string,

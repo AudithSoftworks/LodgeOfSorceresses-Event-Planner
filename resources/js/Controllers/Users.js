@@ -37,6 +37,17 @@ class Users extends PureComponent {
     };
 
     componentDidMount = () => {
+        this.fetchData();
+    };
+
+    componentDidUpdate = (prevProps) => {
+        const { match } = this.props;
+        if (match.params.id && match.params.id !== prevProps.match.params.id) {
+            this.fetchData();
+        }
+    };
+
+    fetchData = () => {
         const { me, match } = this.props;
         if (me) {
             const { allUsers } = this.state;
@@ -80,7 +91,7 @@ class Users extends PureComponent {
     };
 
     renderItem = user => {
-        const { me } = this.props;
+        const { me, history } = this.props;
         if (!user.isMember && !user.isSoulshriven) {
             return <Redirect to={{ pathname: "/users" }} />;
         }

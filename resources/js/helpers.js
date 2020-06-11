@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export const authorizeUser = function (withAdditionalPrechecks = false) {
     const { me } = this.props;
@@ -79,7 +80,7 @@ export const filter = function (event, typeUpdating) {
     });
 };
 
-export const transformAnchors = (node, children) => {
+export const transformAnchors = function (node, children) {
     if (node.tagName.toLowerCase() === "a") {
         const styleStr = node.getAttribute("style");
         const styleObj = {};
@@ -96,8 +97,13 @@ export const transformAnchors = (node, children) => {
             }
         }
 
+        const target = node.getAttribute("href").match(/^https?:/) ? '_blank' : null;
+        if (!target) {
+            return <Link to={node.getAttribute("href")} className={node.className} style={styleObj}>{children}</Link>
+        }
+
         return (
-            <a href={node.getAttribute("href")} className={node.className} style={styleObj} target="_blank">
+            <a href={node.getAttribute("href")} className={node.className} style={styleObj} target={target} rel="noreferrer noopener">
                 {children}
             </a>
         );
