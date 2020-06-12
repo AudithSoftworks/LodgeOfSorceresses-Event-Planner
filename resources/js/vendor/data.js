@@ -155,7 +155,14 @@ export const attendance = PropTypes.shape({
     id: PropTypes.number,
     text_for_planner: PropTypes.string,
     discord_message_id: PropTypes.string,
-    gallery_image_ids: PropTypes.arrayOf(PropTypes.string),
+    gallery_images: PropTypes.arrayOf(
+        PropTypes.shape({
+            large: PropTypes.string,
+            original: PropTypes.string,
+            small: PropTypes.string,
+        }),
+    ),
+    created_by: user,
     created_at: PropTypes.string,
     updated_at: PropTypes.string,
     attendees: PropTypes.arrayOf(user),

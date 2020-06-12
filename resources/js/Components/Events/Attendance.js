@@ -42,11 +42,17 @@ class ListView extends BaseView {
 
             const eventsRendered = [];
             this.getEventsForGivenWeek(date).forEach(event => {
+                const galleryImagesRendered = event.gallery_images.map(image => (<li><a href={image.large} target='_blank'><img alt='' src={image.small} /></a></li>));
                 eventsRendered.push(
                     <tr key={"event-" + event["id"]}>
                         <td>{moment(event["created_at"]).format("MMM Do, HH:mm")}</td>
                         <td>
-                            <Markup content={event["text_for_planner"]} noWrap={true} transform={transformAnchors} key="content" />
+                            <Markup content={event["text_for_planner"]} noWrap={true} transform={transformAnchors} key="content" /> -- <i>{event.created_by.name}</i>
+                        </td>
+                        <td>
+                            <ul className='gallery-images'>
+                                {galleryImagesRendered}
+                            </ul>
                         </td>
                     </tr>
                 );

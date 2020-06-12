@@ -87,7 +87,7 @@ class Users extends PureComponent {
     };
 
     renderItem = user => {
-        const { me, history } = this.props;
+        const { me } = this.props;
         if (!user.isMember && !user.isSoulshriven) {
             return <Redirect to={{ pathname: "/users" }} />;
         }
