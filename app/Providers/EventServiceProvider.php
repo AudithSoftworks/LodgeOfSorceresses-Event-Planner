@@ -23,15 +23,15 @@ class EventServiceProvider extends ServiceProvider
         Events\Character\CharacterDeleted::class => [
             Listeners\Cache\DeleteUserCache::class,
             Listeners\Cache\DeleteCharacterCache::class,
-            Listeners\RerankPlayerOnDiscord::class
+            Listeners\User\RerankPlayerOnDiscord::class
         ],
         Events\Character\CharacterDemoted::class => [
             Listeners\Cache\DeleteUserCache::class,
             Listeners\Cache\DeleteCharacterCache::class,
-            Listeners\RerankPlayerOnDiscord::class
+            Listeners\User\RerankPlayerOnDiscord::class
         ],
         Events\Character\CharacterPromoted::class => [
-            Listeners\RerankPlayerOnDiscord::class
+            Listeners\User\RerankPlayerOnDiscord::class
         ],
         Events\Character\CharacterSaved::class => [
             Listeners\Cache\DeleteUserCache::class,
@@ -40,7 +40,7 @@ class EventServiceProvider extends ServiceProvider
         Events\Character\CharacterReset::class => [
             Listeners\Cache\DeleteUserCache::class,
             Listeners\Cache\DeleteCharacterCache::class,
-            Listeners\RerankPlayerOnDiscord::class
+            Listeners\User\RerankPlayerOnDiscord::class
         ],
 
         Events\DpsParse\DpsParseSubmitted::class => [
@@ -54,7 +54,7 @@ class EventServiceProvider extends ServiceProvider
         Events\DpsParse\DpsParseApproved::class => [
             Listeners\Cache\DeleteCharacterCache::class,
             Listeners\DpsParse\ProcessDpsParse::class,
-            Listeners\RerankPlayerOnDiscord::class,
+            Listeners\User\RerankPlayerOnDiscord::class,
             Listeners\DpsParse\AnnounceDpsApprovalOnDiscord::class,
         ],
         Events\DpsParse\DpsParseDisapproved::class => [
@@ -82,13 +82,13 @@ class EventServiceProvider extends ServiceProvider
         Events\Team\MemberJoined::class => [
             Listeners\Cache\DeleteCharacterCache::class,
             Listeners\Cache\DeleteUserCache::class,
-            Listeners\RerankPlayerOnDiscord::class,
+            Listeners\User\RerankPlayerOnDiscord::class,
             Listeners\Team\AnnounceMemberJoiningOnDiscord::class,
         ],
         Events\Team\MemberRemoved::class => [
             Listeners\Cache\DeleteCharacterCache::class,
             Listeners\Cache\DeleteUserCache::class,
-            Listeners\RerankPlayerOnDiscord::class,
+            Listeners\User\RerankPlayerOnDiscord::class,
             Listeners\Team\AnnounceMemberRemovalOnDiscord::class,
         ],
 
@@ -99,12 +99,13 @@ class EventServiceProvider extends ServiceProvider
             Listeners\User\UpdateDiscordAndForumNames::class,
             Listeners\Cache\DeleteUserCache::class,
         ],
+        Events\User\OnboardingCompleted::class => [
+            Listeners\User\AnnounceOnboardingCompletionOnDiscord::class,
+        ],
     ];
 
     /**
      * Register any other events for your application.
-     *
-     * @return void
      */
     public function boot(): void
     {
