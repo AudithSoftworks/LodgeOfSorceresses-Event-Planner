@@ -1,4 +1,6 @@
-<?php namespace App\Listeners;
+<?php
+
+namespace App\Listeners\User;
 
 use App\Events\Team\GetTeamInterface;
 use App\Models\UserOAuth;
