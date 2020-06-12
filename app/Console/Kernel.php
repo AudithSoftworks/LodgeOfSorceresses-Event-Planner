@@ -20,7 +20,7 @@ class Kernel extends ConsoleKernel
         $schedule->command(Commands\RequestDpsParseRenewal::class)->monthlyOn(15, '07:00')->timezone('Europe/Berlin')->sendOutputTo(self::LOG_FILE, true);
         $schedule->command(Commands\SyncOauthAccounts::class)->dailyAt('05:00')->timezone('Europe/Berlin')->sendOutputTo(self::LOG_FILE, true);
         $schedule->command(Commands\SyncYoutubeRssFeeds::class)->dailyAt('05:15')->timezone('Europe/Berlin')->sendOutputTo(self::LOG_FILE, true);
-        $schedule->command(Commands\TrackAttendances::class)->cron('0 */3 * * *')->timezone('Europe/Berlin')->sendOutputTo(self::LOG_FILE, true);
+        $schedule->command(Commands\TrackAttendances::class)->cron('0 */6 * * *')->timezone('Europe/Berlin')->sendOutputTo(self::LOG_FILE, true);
     }
 
     /**
