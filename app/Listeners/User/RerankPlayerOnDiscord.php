@@ -47,7 +47,11 @@ class RerankPlayerOnDiscord
         $discordApi = app('discord.api');
         /** @var null|\App\Models\UserOAuth $parseOwnersDiscordAccount */
         $parseOwnersDiscordAccount = $parseAuthor->linkedAccounts()->where('remote_provider', 'discord')->first();
-        if ($parseOwnersDiscordAccount && !($event instanceof GetTeamInterface)) { // Don't ping officers when someone joins/leaves a Team.
+        if (
+            $parseOwnersDiscordAccount
+            && !($event instanceof GetTeamInterface) // Don't ping officers when someone joins/leaves a Team.
+            && $membershipMode !== DiscordApi::ROLE_SOULSHRIVEN
+        ) {
             $this->announceRerankInOfficerChannelOnDiscord($discordApi, $parseOwnersDiscordAccount, $clearanceLevel);
         }
 
