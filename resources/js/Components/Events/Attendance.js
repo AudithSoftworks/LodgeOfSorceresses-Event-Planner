@@ -66,7 +66,6 @@ class ListView extends BaseView {
                         key={"week-table-" + date.format("WW")}
                         className="attendances list-view col-md-24">
                         <caption
-                            title="Each week colored differently"
                             data-count={eventsRendered.length + " attendance(s)"}
                             data-current-week={date.isSame(moment(), 'week') ? 'true' : 'false'}>
                             {date.format("[Week #]WW[]")}
