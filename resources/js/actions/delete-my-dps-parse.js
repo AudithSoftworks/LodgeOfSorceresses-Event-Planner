@@ -1,12 +1,12 @@
-import * as api from '../vendor/api/auth';
+import * as api from "../vendor/api/auth";
 
-export const TYPE_DELETE_MY_DPS_PARSE_SEND = 'DELETE_MY_DPS_PARSE_SEND';
+export const TYPE_DELETE_MY_DPS_PARSE_SEND = "DELETE_MY_DPS_PARSE_SEND";
 
-export const TYPE_DELETE_MY_DPS_PARSE_SUCCESS = 'DELETE_MY_DPS_PARSE_SUCCESS';
+export const TYPE_DELETE_MY_DPS_PARSE_SUCCESS = "DELETE_MY_DPS_PARSE_SUCCESS";
 
-export const TYPE_DELETE_MY_DPS_PARSE_FAILURE = 'DELETE_MY_DPS_PARSE_FAILURE';
+export const TYPE_DELETE_MY_DPS_PARSE_FAILURE = "DELETE_MY_DPS_PARSE_FAILURE";
 
-const RESPONSE_MESSAGE_SUCCESS = 'Parse deleted.';
+const RESPONSE_MESSAGE_SUCCESS = "Parse deleted.";
 
 export const deleteMyDpsParseSendAction = (characterId, parseId) => ({
     type: TYPE_DELETE_MY_DPS_PARSE_SEND,
@@ -29,7 +29,7 @@ export const deleteMyDpsParseFailureAction = error => ({
 
 const deleteMyDpsParseAction = (characterId, parseId) => (dispatch, getState) => {
     dispatch(deleteMyDpsParseSendAction(characterId, parseId));
-    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
+    const axiosCancelTokenSource = getState().getIn(["axiosCancelTokenSource"]);
     return api
         .deleteMyDpsParse(axiosCancelTokenSource, characterId, parseId, dispatch)
         .then(response => {

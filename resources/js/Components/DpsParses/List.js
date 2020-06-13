@@ -1,13 +1,9 @@
-import(
-    /* webpackPrefetch: true */
-    /* webpackChunkName: "dps-parses-scss" */
-    '../../../sass/_my_dps_parses.scss'
-);
+import(/* webpackPrefetch: true, webpackChunkName: "dps-parses-scss" */ "../../../sass/_my_dps_parses.scss");
 
-import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
-import { dpsParses } from '../../vendor/data';
-import Item from './Item';
+import PropTypes from "prop-types";
+import React, { PureComponent } from "react";
+import { dpsParses } from "../../vendor/data";
+import Item from "./Item";
 
 class List extends PureComponent {
     render = () => {

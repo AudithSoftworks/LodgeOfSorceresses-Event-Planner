@@ -8,6 +8,7 @@ $router->middleware(['api', 'throttle'])->group(static function (Router $router)
 });
 
 $router->middleware(['auth:api', 'throttle'])->group(static function (Router $router) {
+    $router->get('attendances/{user}', 'AttendanceController')->name('attendances');
     $router
         ->get('onboarding/members/content/by-step/{step}', 'OnboardingController@getCmsContentByStepForMemberOnboarding')
         ->name('onboarding.members.content');
@@ -19,8 +20,8 @@ $router->middleware(['auth:api', 'throttle'])->group(static function (Router $ro
         ->name('onboarding.finalize');
     $router->apiResource('events', 'EventsController')->only(['index']);
     $router->apiResource('files', 'FilesController')->only(['store', 'destroy']);
-    $router->apiResource('sets', 'SetsController')->only(['index']);
-    $router->apiResource('skills', 'SkillsController')->only(['index']);
+    $router->get('sets', 'SetsController')->name('sets');
+    $router->get('skills', 'SkillsController')->name('skills');
     $router->apiResource('users', 'UsersController')->only(['index', 'show']);
     $router->apiResource('characters', 'CharactersController')->only(['index', 'show']);
     $router->apiResource('teams', 'TeamsController')->only(['index', 'store', 'show', 'update', 'destroy']);

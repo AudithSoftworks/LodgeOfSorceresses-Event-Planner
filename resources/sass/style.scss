@@ -42,6 +42,7 @@ body {
     }
 
     > main.container {
+        overflow: auto;
         background-color: rgba(white, 0.95);
         border-radius: 0 6px 6px 6px;
         padding-top: $grid-gutter-width;

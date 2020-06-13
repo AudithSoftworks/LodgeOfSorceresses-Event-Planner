@@ -1,12 +1,12 @@
-import * as api from '../vendor/api';
+import * as api from "../vendor/api";
 
-export const TYPE_DELETE_TEAMS_CHARACTERS_SEND = 'DELETE_TEAMS_CHARACTERS_SEND';
+export const TYPE_DELETE_TEAMS_CHARACTERS_SEND = "DELETE_TEAMS_CHARACTERS_SEND";
 
-export const TYPE_DELETE_TEAMS_CHARACTERS_SUCCESS = 'DELETE_TEAMS_CHARACTERS_SUCCESS';
+export const TYPE_DELETE_TEAMS_CHARACTERS_SUCCESS = "DELETE_TEAMS_CHARACTERS_SUCCESS";
 
-export const TYPE_DELETE_TEAMS_CHARACTERS_FAILURE = 'DELETE_TEAMS_CHARACTERS_FAILURE';
+export const TYPE_DELETE_TEAMS_CHARACTERS_FAILURE = "DELETE_TEAMS_CHARACTERS_FAILURE";
 
-const RESPONSE_MESSAGE_SUCCESS = 'Member(s) removed.';
+const RESPONSE_MESSAGE_SUCCESS = "Member(s) removed.";
 
 const deleteTeamsCharactersSendAction = data => ({
     type: TYPE_DELETE_TEAMS_CHARACTERS_SEND,
@@ -29,7 +29,7 @@ const deleteTeamsCharactersFailureAction = error => ({
 
 const deleteTeamsCharactersAction = (teamId, characterId) => (dispatch, getState) => {
     dispatch(deleteTeamsCharactersSendAction(teamId, characterId));
-    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
+    const axiosCancelTokenSource = getState().getIn(["axiosCancelTokenSource"]);
     return api
         .deleteTeamsCharacters(axiosCancelTokenSource, teamId, characterId, dispatch)
         .then(response => {

@@ -10,6 +10,44 @@ $grid-gutter-width: 20px;
  *-----------------------------------*/
 
 $primary: #a18373;
+$tierOne: hsla(145, 63%, 49%, 1);
+$tierTwo: hsla(204, 70%, 53%, 1);
+$tierThree: hsla(283, 39%, 53%, 1);
+$tierFour: hsla(28, 80%, 52%, 1);
+$members: hsla(145, 63%, 49%, 1);
+$soulshriven: hsla(184, 9%, 62%, 1);
+
+$colors: (
+    "tierOne": saturate(darken($tierOne, 10), 10),
+    "tierTwo": saturate(darken($tierTwo, 10), 10),
+    "tierThree": saturate(darken($tierThree, 10), 10),
+    "tierFour": saturate(darken($tierFour, 10), 10),
+    "members": saturate(darken($members, 10), 10),
+    "soulshriven": saturate(darken($soulshriven, 10), 10),
+
+    "tierOneInverted": desaturate(lighten($tierOne, 35), 20),
+    "tierTwoInverted": desaturate(lighten($tierTwo, 35), 20),
+    "tierThreeInverted": desaturate(lighten($tierThree, 35), 20),
+    "tierFourInverted": desaturate(lighten($tierFour, 35), 20),
+    "membersInverted": desaturate(lighten($members, 35), 20),
+    "soulshrivenInverted": desaturate(lighten($soulshriven, 35), 20),
+);
+
+$theme-colors: (
+    "tierOne": lighten(transparentize($tierOne, 0.8), 10),
+    "tierTwo": lighten(transparentize($tierTwo, 0.8), 10),
+    "tierThree": lighten(transparentize($tierThree, 0.8), 10),
+    "tierFour": lighten(transparentize($tierFour, 0.8), 10),
+    "members": lighten(transparentize($members, 0.8), 10),
+    "soulshriven": lighten(transparentize($soulshriven, 0.8), 10),
+
+    "tierOneInverted": darken($tierOne, 10),
+    "tierTwoInverted": darken($tierTwo, 10),
+    "tierThreeInverted": darken($tierThree, 10),
+    "tierFourInverted": darken($tierFour, 10),
+    "membersInverted": darken($members, 10),
+    "soulshrivenInverted": darken($soulshriven, 10),
+);
 
 $brand-color-twitter: #55acee;
 $brand-color-facebook: #3b5998;

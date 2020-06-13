@@ -10,20 +10,10 @@ use App\Models\User;
 
 class MemberRemoved implements GetTeamInterface, CharacterNeedsRecacheInterface, UserNeedsRecacheInterface
 {
-    /**
-     * @var \App\Models\Character
-     */
-    public $character;
+    public Character $character;
 
-    /**
-     * @var \App\Models\Team
-     */
-    public $team;
+    public Team $team;
 
-    /**
-     * @param \App\Models\Character $character
-     * @param \App\Models\Team      $team
-     */
     public function __construct(Character $character, Team $team)
     {
         $character->refresh();

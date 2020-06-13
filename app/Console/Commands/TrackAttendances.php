@@ -205,8 +205,12 @@ class TrackAttendances extends Command
         return $attendance;
     }
 
-    private function uploadAttachmentToGallery(array $message, UserOAuth $userIpsOauth, Attendance $attendance): array
+    private function uploadAttachmentToGallery(array $message, UserOAuth $userIpsOauth, Attendance $attendance): void
     {
+        if (!app()->environment('production')) {
+            return;
+        }
+
         $gallery_image_ids = [];
         foreach ($message['attachments'] as $attachment) {
             $rawContent = file_get_contents($attachment['url']) ?? file_get_contents($attachment['proxy_url']);
@@ -222,8 +226,6 @@ class TrackAttendances extends Command
         }
         $attendance->gallery_image_ids = implode(',', $gallery_image_ids);
         $attendance->save();
-
-        return $message;
     }
 
     private function getUserForGivenDiscordRemoteId(string $discordRemoteId): ?User
@@ -244,6 +246,9 @@ class TrackAttendances extends Command
      */
     private function notifyUsersWithoutIpsOauthAccount(): void
     {
+        if (!app()->environment('production')) {
+            return;
+        }
         if ($count = count($this->ipsOauthNotFoundList)) {
             $discordApi = app('discord.api');
             foreach ($this->ipsOauthNotFoundList as $discordRemoteId) {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\User\OnboardingCompleted;
 use App\Models\User;
 use App\Services\DiscordApi;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -10,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -121,6 +123,7 @@ class OnboardingController extends Controller
             $modeParam === 'members' ? DiscordApi::ROLE_MEMBERS : DiscordApi::ROLE_SOULSHRIVEN
         );
         $me->refresh();
+        Event::dispatch(new OnboardingCompleted($me));
         Cache::has('user-' . $me->id); // Recache trigger
 
         return response()->json(Cache::get('user-' . $me->id));

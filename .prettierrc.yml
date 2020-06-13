@@ -1,4 +1,7 @@
+arrowParens: avoid
 trailingComma: es5
 tabWidth: 4
 singleQuote: false
 printWidth: 200
+quoteProps: consistent
+jsxBracketSameLine: true

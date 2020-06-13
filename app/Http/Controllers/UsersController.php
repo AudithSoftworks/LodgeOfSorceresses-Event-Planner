@@ -17,9 +17,12 @@ class UsersController extends Controller
     {
         $this->authorize('user', User::class);
 
-        $users = User::query()->whereNotNull('name')->orderBy('name')->get(['id', 'name']);
-        foreach ($users as $user) {
-            $this->parseLinkedAccounts($user);
+        $userIds = User::query()->whereNotNull('name')->orderBy('name')->get(['id'])->pluck('id');
+        $users = collect();
+        foreach ($userIds as $userId) {
+            Cache::has('user-' . $userId); // Trigger Recache listener.
+            $character = Cache::get('user-' . $userId);
+            $character !== null && $users->add($character);
         }
 
         return response()->json($users);

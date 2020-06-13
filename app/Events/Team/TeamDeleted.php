@@ -4,14 +4,8 @@ use App\Models\Team;
 
 class TeamDeleted implements TeamNeedsRecacheInterface
 {
-    /**
-     * @var \App\Models\Team
-     */
-    public $team;
+    public Team $team;
 
-    /**
-     * @param \App\Models\Team $team
-     */
     public function __construct(Team $team)
     {
         $this->team = $team;

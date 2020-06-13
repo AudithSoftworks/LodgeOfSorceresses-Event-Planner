@@ -8,10 +8,7 @@ use App\Models\DpsParse;
 
 class DpsParseDeleted implements GetDpsParseInterface, CharacterNeedsRecacheInterface
 {
-    /**
-     * @var DpsParse
-     */
-    public $dpsParse;
+    public DpsParse $dpsParse;
 
     public function __construct(DpsParse $dpsParse)
     {

@@ -112,18 +112,22 @@ class GuildRanksAndClearance
     public const CLEARANCE_LEVELS = [
         self::CLEARANCE_TIER_1 => [
             'title' => 'Tier-1 Content',
+            'slug' => 'tier-1',
             'rank' => self::RANK_NEOPHYTE,
         ],
         self::CLEARANCE_TIER_2 => [
             'title' => 'Tier-2 Content',
+            'slug' => 'tier-2',
             'rank' => self::RANK_PRACTICUS,
         ],
         self::CLEARANCE_TIER_3 => [
             'title' => 'Tier-3 Content',
+            'slug' => 'tier-3',
             'rank' => self::RANK_ADEPTUS_MINOR,
         ],
         self::CLEARANCE_TIER_4 => [
             'title' => 'Tier-4 Content',
+            'slug' => 'tier-4',
             'rank' => self::RANK_ADEPTUS_MAJOR,
         ],
     ];

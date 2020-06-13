@@ -1,11 +1,11 @@
-import { ConnectedRouter } from 'connected-react-router/immutable';
-import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import { ConnectedRouter } from "connected-react-router/immutable";
+import PropTypes from "prop-types";
+import React, { PureComponent } from "react";
 import { connect } from "react-redux";
 import getUserAction from "../actions/get-user";
-import Footer from '../Components/Layout/Footer';
-import Header from '../Components/Layout/Header';
-import Main from '../Components/Layout/Main';
+import Footer from "../Components/Layout/Footer";
+import Header from "../Components/Layout/Header";
+import Main from "../Components/Layout/Main";
 import Loading from "../Components/Loading";
 import { user } from "../vendor/data";
 
@@ -15,14 +15,13 @@ class Application extends PureComponent {
         this.state = {
             precheckDone: false,
         };
-    };
+    }
 
     componentDidMount = () => {
         if (!this.props.me) {
-            this.props.getUserAction()
-                .then(() => {
-                    this.setState({ precheckDone: true });
-                });
+            this.props.getUserAction().then(() => {
+                this.setState({ precheckDone: true });
+            });
         }
     };
 
@@ -33,7 +32,7 @@ class Application extends PureComponent {
         }
 
         const { history } = this.props;
-        document.querySelector('body').setAttribute('data-initialized', 'true');
+        document.querySelector("body").setAttribute("data-initialized", "true");
 
         return (
             <ConnectedRouter history={history}>
@@ -54,7 +53,7 @@ Application.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    me: state.getIn(['me']),
+    me: state.getIn(["me"]),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -62,7 +61,4 @@ const mapDispatchToProps = dispatch => ({
     getUserAction: () => dispatch(getUserAction()),
 });
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Application);
+export default connect(mapStateToProps, mapDispatchToProps)(Application);

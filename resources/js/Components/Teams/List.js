@@ -1,14 +1,14 @@
 import(
     /* webpackPrefetch: true */
     /* webpackChunkName: "team-list-table-scss" */
-    '../../../sass/_team-list-table.scss'
+    "../../../sass/_team-list-table.scss"
 );
 
-import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import PropTypes from "prop-types";
+import React, { PureComponent } from "react";
 import { authorizeTeamManager } from "../../helpers";
-import { teams, user } from '../../vendor/data';
-import Item from '../Teams/List/Item';
+import { teams, user } from "../../vendor/data";
+import Item from "../Teams/List/Item";
 
 class List extends PureComponent {
     render = () => {
@@ -27,14 +27,11 @@ class List extends PureComponent {
             })
             .map(team => {
                 const authorizedTeamManager = authorizeTeamManager({ me, team });
-                return <Item key={team.id}
-                             authorizedTeamManager={authorizedTeamManager}
-                             team={team}
-                             deleteTeamHandler={deleteTeamHandler} />
+                return <Item key={team.id} authorizedTeamManager={authorizedTeamManager} team={team} deleteTeamHandler={deleteTeamHandler} />;
             });
         if (teamsRendered.length) {
             teamsRendered = [
-                <table key="team-list-table" className={'pl-2 pr-2 col-md-24 team-list-table ' + className}>
+                <table key="team-list-table" className={"pl-2 pr-2 col-md-24 team-list-table " + className}>
                     <thead>
                         <tr>
                             <th scope="col">Name</th>

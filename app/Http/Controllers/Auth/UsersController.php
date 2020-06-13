@@ -23,14 +23,12 @@ class UsersController extends Controller
      */
     public function me(): JsonResponse
     {
-        $guard = app('auth.driver');
-
-        if (!$guard->check()) {
+        if (!Auth::check()) {
             return response()->json([], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
         /** @var \App\Models\User $me */
-        $me = $guard->user();
+        $me = Auth::user();
         Cache::has('user-' . $me->id); // Recache trigger
 
         return response()->json(Cache::get('user-' . $me->id));

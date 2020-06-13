@@ -5,11 +5,6 @@ use Illuminate\Support\Facades\Cache;
 
 class DeleteCharacterCache
 {
-    /**
-     * @param \App\Events\Character\CharacterNeedsRecacheInterface $event
-     *
-     * @return bool
-     */
     public function handle(CharacterNeedsRecacheInterface $event): bool
     {
         $character = $event->getCharacter();

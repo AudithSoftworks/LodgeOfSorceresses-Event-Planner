@@ -6,14 +6,8 @@ use App\Models\User;
 
 class CharacterPromoted implements UserNeedsRecacheInterface, CharacterNeedsRecacheInterface
 {
-    /**
-     * @var \App\Models\Character
-     */
-    public $character;
+    public Character $character;
 
-    /**
-     * @param \App\Models\Character $character
-     */
     public function __construct(Character $character)
     {
         $character->refresh();

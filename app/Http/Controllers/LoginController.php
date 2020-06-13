@@ -24,7 +24,7 @@ class LoginController extends Controller
 {
     use AuthenticatesUsers;
 
-    protected $redirectTo = '/';
+    protected string $redirectTo = '/';
 
     /**
      * Create a new authentication controller instance.
@@ -49,7 +49,6 @@ class LoginController extends Controller
             Event::dispatch(new LoggedOut($user));
         }
         $request->session()->keep(['errors']);
-//        $request->session()->flush();
         $request->session()->regenerate();
 
         if ($request->expectsJson()) {
@@ -99,14 +98,16 @@ class LoginController extends Controller
 
         /** @var CustomOauthTwoUser $oauthTwoUser */
         $oauthTwoUser = $socialite->driver($provider)->user();
-        if ($this->loginViaOAuth($oauthTwoUser, $provider)) {
+        if (($user = $this->loginViaOAuth($oauthTwoUser, $provider)) !== null) {
             !empty($oauthTwoUser->token) && $request->session()->put('token', $oauthTwoUser->token);
             !empty($oauthTwoUser->refreshToken) && $request->session()->put('refreshToken', $oauthTwoUser->refreshToken);
 
             return redirect()->intended($this->redirectPath());
         }
 
-        $this->registerViaOAuth($oauthTwoUser, $provider);
+        $user = $this->registerViaOAuth($oauthTwoUser, $provider);
+
+        Cache::forget('user-' . $user->id);
 
         return redirect('/');
     }
@@ -115,12 +116,13 @@ class LoginController extends Controller
      * @param CustomOauthTwoUser $oauthTwoUser
      * @param string             $provider
      *
-     * @return bool
      * @throws \App\Exceptions\Users\UserNotActivatedException
      * @throws \App\Exceptions\Users\UserNotMemberInDiscord
      * @throws \Exception
+     *
+     * @return null|\App\Models\User
      */
-    protected function loginViaOAuth(CustomOauthTwoUser $oauthTwoUser, string $provider): bool
+    protected function loginViaOAuth(CustomOauthTwoUser $oauthTwoUser, string $provider): ?User
     {
         if ($provider === 'discord') {
             if (!($discordUser = app('discord.api')->getGuildMember($oauthTwoUser->getId()))) {
@@ -141,7 +143,7 @@ class LoginController extends Controller
         if ($owningOAuthAccount = UserOAuth::whereRemoteProvider($provider)->whereRemoteId($oauthTwoUser->id)->first()) {
             $ownerAccount = $owningOAuthAccount->owner;
             Auth::login($ownerAccount);
-            event(new LoggedIn($ownerAccount));
+            Event::dispatch(new LoggedIn($ownerAccount));
 
             if ($owningOAuthAccount->remote_secondary_groups !== $oauthTwoUser->remoteSecondaryGroups) {
                 $owningOAuthAccount->remote_secondary_groups = implode(',', $oauthTwoUser->remoteSecondaryGroups ?? []);
@@ -151,20 +153,21 @@ class LoginController extends Controller
             $owningOAuthAccount->refresh_token = $oauthTwoUser->refreshToken;
             $owningOAuthAccount->isDirty() && $owningOAuthAccount->save() && Cache::forget('user-' . $ownerAccount->id);
 
-            return true;
+            return $ownerAccount;
         }
 
-        return false;
+        return null;
     }
 
     /**
      * @param \App\Extensions\Socialite\CustomOauthTwoUser $oauthTwoUser
      * @param string                                       $provider
      *
-     * @return bool
      * @throws \Exception
+     *
+     * @return \App\Models\User
      */
-    private function registerViaOAuth(CustomOauthTwoUser $oauthTwoUser, string $provider): bool
+    private function registerViaOAuth(CustomOauthTwoUser $oauthTwoUser, string $provider): User
     {
         if (Auth::check()) {
             $ownerAccount = Auth::user();
@@ -204,8 +207,8 @@ class LoginController extends Controller
 
         # Login
         Auth::login($ownerAccount, true);
-        event(new LoggedIn($ownerAccount));
+        Event::dispatch(new LoggedIn($ownerAccount));
 
-        return true;
+        return $ownerAccount;
     }
 }

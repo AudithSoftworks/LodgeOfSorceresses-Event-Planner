@@ -16,37 +16,38 @@ class Teams extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            team: null
+            team: null,
         };
         this.handleDeleteTeam = deleteTeam.bind(this);
     }
 
     componentWillUnmount = () => {
-        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel("Request cancelled.");
     };
 
     componentDidMount = () => {
+        this.renderNoTeamsCreateOneNotification();
         const { me, history, match, teams } = this.props;
         const { team } = this.state;
         if (me && match.params.id && teams && !team) {
             const selectedTeam = teams.find(item => item.id === parseInt(match.params.id));
             if (!selectedTeam) {
-                history.push('/teams');
+                history.push("/teams");
             }
-            this.setState({ team: selectedTeam })
+            this.setState({ team: selectedTeam });
         }
     };
 
     renderNoTeamsCreateOneNotification = () => {
         const { dispatch, me, teams, notifications } = this.props;
-        if (!teams.length && notifications.find(n => n.key === "no-teams-create-one") === undefined) {
-            const messages = me && me.isAdmin ? [
-                <Fragment key="f-1">Create a new team, by clicking</Fragment>,
-                <FontAwesomeIcon icon={faUsersMedical} key="icon" />,
-                <Fragment key="f-2">icon on top right corner.</Fragment>,
-            ] : [
-                <Fragment key="f-1">No teams found.</Fragment>,
-            ];
+        if (teams && !teams.length && notifications.find(n => n.key === "no-teams-create-one") === undefined) {
+            const messages =
+                me && me.isAdmin
+                    ? [
+                        <Fragment key="f-1">Create a new team, by clicking</Fragment>,
+                        <FontAwesomeIcon icon={faUsersMedical} key="icon" />, <Fragment key="f-2">icon on top right corner.</Fragment>
+                    ]
+                    : [<Fragment key="f-1">No teams found.</Fragment>];
             dispatch(
                 infosAction(
                     messages.reduce((acc, curr) => [acc, " ", curr]),
@@ -73,24 +74,23 @@ class Teams extends PureComponent {
         if (match.params.id && team) {
             const authorizedTeamManager = authorizeTeamManager({ me, team });
             return [
-                <Item key='team-item'
+                <Item key="team-item"
                       authorizedTeamManager={authorizedTeamManager}
                       me={me}
                       team={team}
                       teams={teams}
                       deleteTeamHandler={authorizedTeamManager ? this.handleDeleteTeam : null} />,
-                <Notification key="notifications" />
+                <Notification key="notifications" />,
             ];
-
         }
-        this.renderNoTeamsCreateOneNotification();
 
         const actionList = {
-            create: me && me.isAdmin ? (
-                <Link to="/teams/create" className="ne-corner" title="Create a Team">
-                    <FontAwesomeIcon icon={faUsersMedical} />
-                </Link>
-            ) : null,
+            create:
+                me && me.isAdmin ? (
+                    <Link to="/teams/create" className="ne-corner" title="Create a Team">
+                        <FontAwesomeIcon icon={faUsersMedical} />
+                    </Link>
+                ) : null,
         };
 
         return [
@@ -99,9 +99,7 @@ class Teams extends PureComponent {
                     Teams
                 </h2>
                 <ul className="ne-corner">{renderActionList(actionList)}</ul>
-                <List deleteTeamHandler={this.handleDeleteTeam}
-                      me={me}
-                      teams={teams} />
+                <List deleteTeamHandler={this.handleDeleteTeam} me={me} teams={teams} />
             </section>,
             <Notification key="notifications" />,
         ];
@@ -132,7 +130,4 @@ const mapDispatchToProps = dispatch => ({
     deleteTeamAction: teamId => dispatch(deleteTeamAction(teamId)),
 });
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Teams);
+export default connect(mapStateToProps, mapDispatchToProps)(Teams);

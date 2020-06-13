@@ -8,20 +8,11 @@ use App\Models\UserOAuth;
 
 trait NeedsUserStubs
 {
-    /**
-     * @var \App\Models\User
-     */
-    protected static $adminUser;
+    protected static ?User $adminUser = null;
 
-    /**
-     * @var \App\Models\User
-     */
-    protected static $tierFourMemberUser;
+    protected static ?User $tierFourMemberUser = null;
 
-    /**
-     * @var \App\Models\User
-     */
-    protected static $soulshriven;
+    protected static ?User $soulshriven = null;
 
     private function stubTierOneAdminUser(): User
     {
@@ -94,7 +85,9 @@ trait NeedsUserStubs
             $soulshrivenOauth = factory(UserOAuth::class)->states('soulshriven')->create([
                 'user_id' => factory(User::class)->states('soulshriven')->create()
             ]);
-            static::$soulshriven = $soulshrivenOauth->owner()->first();
+            /** @var User $soulshrivenUser */
+            $soulshrivenUser = $soulshrivenOauth->owner()->first();
+            static::$soulshriven = $soulshrivenUser;
         }
     }
 }

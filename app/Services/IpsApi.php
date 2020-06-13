@@ -80,7 +80,7 @@ class IpsApi extends AbstractApi
                 'refresh_token' => $oauthAccount->refresh_token,
             ],
         ]);
-        $responseBody = json_decode($response->getBody(), true);
+        $responseBody = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         $oauthAccount->token = $responseBody['access_token'];
         $oauthAccount->token_expires_at = new Carbon(sprintf('+%d seconds', $responseBody['expires_in']));
@@ -100,7 +100,7 @@ class IpsApi extends AbstractApi
         $events = [];
         $page = 1;
         while ($response = $this->getApiClient()->get('calendar/events', [RequestOptions::QUERY => ['sortBy' => 'date', 'sortDir' => 'desc', 'page' => $page, 'perPage' => 100]])) {
-            $responseDecoded = json_decode($response->getBody()->getContents(), true);
+            $responseDecoded = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
             foreach ($responseDecoded['results'] as $event) {
                 $events[(new Carbon($event['start']))->getTimestamp()] = $event;
             }
@@ -115,6 +115,16 @@ class IpsApi extends AbstractApi
         return $events;
     }
 
+    /**
+     * @param string         $title
+     * @param string         $description
+     * @param \Carbon\Carbon $start
+     * @param bool           $rsvp
+     * @param int            $rsvpLimit
+     *
+     * @throws \JsonException
+     * @return null|array
+     */
     public function createCalendarEvent(string $title, string $description, Carbon $start, bool $rsvp = true, int $rsvpLimit = 99): ?array
     {
         $response = $this->getApiClient()->post('calendar/events', [
@@ -131,7 +141,7 @@ class IpsApi extends AbstractApi
             ]
         ]);
         if ($response->getStatusCode() === Response::HTTP_CREATED) {
-            return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         }
 
         return null;
@@ -151,7 +161,7 @@ class IpsApi extends AbstractApi
         return $this->executeCallback(function (int $remoteUserId) {
             $response = $this->getApiClient()->get('core/members/' . $remoteUserId);
 
-            return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         }, $remoteUserId);
     }
 
@@ -160,7 +170,7 @@ class IpsApi extends AbstractApi
         return $this->executeCallback(function (int $remoteUserId, array $params) {
             $response = $this->getApiClient()->post('core/members/' . $remoteUserId, [RequestOptions::QUERY => $params]);
 
-            return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         }, $remoteUserId, $params);
     }
 
@@ -189,7 +199,7 @@ class IpsApi extends AbstractApi
                 ]
             ]);
 
-            return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         }, $forum, $title, $post);
     }
 
@@ -198,7 +208,7 @@ class IpsApi extends AbstractApi
         return $this->executeCallback(function (int $topic) {
             $response = $this->getApiClient()->get('forums/topics/' . $topic);
 
-            return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         }, $topic);
     }
 
@@ -211,13 +221,22 @@ class IpsApi extends AbstractApi
         return $this->executeCallback(function (int $post) {
             $response = $this->getApiClient()->get('forums/posts/' . $post);
 
-            return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         }, $post);
     }
 
     /*------------------------------------
      | /gallery/images
      *-----------------------------------*/
+
+    public function getGalleryImage(int $image): ?array
+    {
+        return $this->executeCallback(function (int $image) {
+            $response = $this->getApiClient()->get('gallery/images/' . $image);
+
+            return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+        }, $image);
+    }
 
     public function postGalleryImage(int $album, int $author, string $caption, string $filename, string $image, CarbonInterface $date): ?array
     {
@@ -234,7 +253,7 @@ class IpsApi extends AbstractApi
                 ]
             ]);
 
-            return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         }, $album, $author, $caption, $filename, $image, $date);
     }
 
@@ -247,7 +266,7 @@ class IpsApi extends AbstractApi
         return $this->executeCallback(function (int $database) {
             $response = $this->getApiClient()->get('cms/records/' . $database);
 
-            return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         }, $database);
     }
 
@@ -256,7 +275,7 @@ class IpsApi extends AbstractApi
         return $this->executeCallback(function (int $database, int $record) {
             $response = $this->getApiClient()->get(sprintf('cms/records/%d/%d', $database, $record));
 
-            return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         }, $database, $record);
     }
 }

@@ -1,19 +1,25 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropTypes from 'prop-types';
-import React, { Fragment, PureComponent } from 'react';
-import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
-import getContentAction from '../actions/get-content';
-import getMyCharactersAction from '../actions/get-my-characters';
-import getSetsAction from '../actions/get-sets';
-import getSkillsAction from '../actions/get-skills';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import PropTypes from "prop-types";
+import React, { PureComponent } from "react";
+import { connect } from "react-redux";
+import { Redirect } from "react-router-dom";
+import getContentAction from "../actions/get-content";
+import getMyCharactersAction from "../actions/get-my-characters";
+import getSetsAction from "../actions/get-sets";
+import getSkillsAction from "../actions/get-skills";
 import getTeamsAction from "../actions/get-teams";
 import { errorsAction } from "../actions/notifications";
-import Loading from '../Components/Loading';
-import Notification from '../Components/Notification';
-import { characters, user } from '../vendor/data';
+import Loading from "../Components/Loading";
+import Notification from "../Components/Notification";
+import { authorizeUser } from "../helpers";
+import { characters, user } from "../vendor/data";
 
 class Init extends PureComponent {
+    constructor(props) {
+        super(props);
+        this.authorizeUser = authorizeUser.bind(this);
+    }
+
     componentDidMount = () => {
         const { me, myCharacters, sets, skills, content, teams } = this.props;
         if (me && (me.isMember || me.isSoulshriven)) {
@@ -38,12 +44,12 @@ class Init extends PureComponent {
     };
 
     componentWillUnmount = () => {
-        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel("Request cancelled.");
     };
 
     setRedirectUri = location => {
-        if (!localStorage.getItem('redirectUri') && location.state && location.state.prevPath) {
-            localStorage.setItem('redirectUri', location.state.prevPath);
+        if (!localStorage.getItem("redirectUri") && location.state && location.state.prevPath) {
+            localStorage.setItem("redirectUri", location.state.prevPath);
         }
     };
 
@@ -52,11 +58,13 @@ class Init extends PureComponent {
 
         return (
             <form className="col-md-24 d-flex flex-row flex-wrap p-0" onSubmit={this.handleSubmit} key="characterCreationForm">
-                <h2 className="form-title col-md-24 text-center pr-0 mt-md-5 mb-md-5" title="Login">Login</h2>
-                <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')} />
+                <h2 className="form-title col-md-24 text-center pr-0 mt-md-5 mb-md-5" title="Login">
+                    Login
+                </h2>
+                <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute("content")} />
                 <fieldset className="form-group col-md-24 text-center">
-                    <a href="/oauth/to/discord" style={{ backgroundColor: '#8ea1e1', borderColor: 'transparent' }} className="btn btn-info btn-sm mr-2">
-                        <FontAwesomeIcon icon={['fab', 'discord']} /> Login via Discord
+                    <a href="/oauth/to/discord" style={{ backgroundColor: "#8ea1e1", borderColor: "transparent" }} className="btn btn-info btn-sm mr-2">
+                        <FontAwesomeIcon icon={["fab", "discord"]} /> Login via Discord
                     </a>
                 </fieldset>
             </form>
@@ -64,8 +72,8 @@ class Init extends PureComponent {
     };
 
     renderFlashMessages = () => {
-        const bodyElement = document.querySelector('body');
-        const flashMessages = JSON.parse(bodyElement.getAttribute('data-flash-messages'));
+        const bodyElement = document.querySelector("body");
+        const flashMessages = JSON.parse(bodyElement.getAttribute("data-flash-messages"));
         const { dispatch, notifications } = this.props;
         if (flashMessages.length && notifications.find(n => n.key === "flash-messages") === undefined) {
             dispatch(
@@ -90,8 +98,8 @@ class Init extends PureComponent {
             return [this.renderLoginForm(), <Notification key="notifications" />];
         }
 
-        if (!me.isMember && !me.isSoulshriven) {
-            return <Redirect to='/dashboard' />;
+        if (!this.authorizeUser(true)) {
+            return <Redirect to="/dashboard" />;
         }
 
         if (!sets || !skills || !content || !myCharacters || !teams) {
@@ -99,10 +107,10 @@ class Init extends PureComponent {
             return [<Loading key="loading" message="Loading data..." />, <Notification key="notifications" />];
         }
 
-        let redirectUri = localStorage.getItem('redirectUri');
-        localStorage.removeItem('redirectUri');
-        if (!redirectUri || redirectUri === '') {
-            redirectUri = '/dashboard';
+        let redirectUri = localStorage.getItem("redirectUri");
+        localStorage.removeItem("redirectUri");
+        if (!redirectUri || redirectUri === "") {
+            redirectUri = "/@me";
         }
 
         return <Redirect to={redirectUri} />;
@@ -116,39 +124,37 @@ Init.propTypes = {
 
     axiosCancelTokenSource: PropTypes.object,
     me: user,
+    myCharacters: characters,
+    notifications: PropTypes.array,
     sets: PropTypes.array,
     skills: PropTypes.array,
-    myCharacters: characters,
+
     dispatch: PropTypes.func.isRequired,
-    getSetsAction: PropTypes.func.isRequired,
-    getSkillsAction: PropTypes.func.isRequired,
     getContentAction: PropTypes.func.isRequired,
     getMyCharactersAction: PropTypes.func.isRequired,
+    getSetsAction: PropTypes.func.isRequired,
+    getSkillsAction: PropTypes.func.isRequired,
     getTeamsAction: PropTypes.func.isRequired,
-    notifications: PropTypes.array,
 };
 
 const mapStateToProps = state => ({
     axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
-    me: state.getIn(['me']),
-    sets: state.getIn(['sets']),
-    skills: state.getIn(['skills']),
-    content: state.getIn(['content']),
-    myCharacters: state.getIn(['myCharacters']),
-    teams: state.getIn(['teams']),
+    content: state.getIn(["content"]),
+    me: state.getIn(["me"]),
+    myCharacters: state.getIn(["myCharacters"]),
     notifications: state.getIn(["notifications"]),
+    sets: state.getIn(["sets"]),
+    skills: state.getIn(["skills"]),
+    teams: state.getIn(["teams"]),
 });
 
 const mapDispatchToProps = dispatch => ({
     dispatch,
-    getSetsAction: () => dispatch(getSetsAction()),
-    getSkillsAction: () => dispatch(getSkillsAction()),
     getContentAction: () => dispatch(getContentAction()),
     getMyCharactersAction: () => dispatch(getMyCharactersAction()),
+    getSetsAction: () => dispatch(getSetsAction()),
+    getSkillsAction: () => dispatch(getSkillsAction()),
     getTeamsAction: () => dispatch(getTeamsAction()),
 });
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Init);
+export default connect(mapStateToProps, mapDispatchToProps)(Init);

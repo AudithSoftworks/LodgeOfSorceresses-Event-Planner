@@ -30,30 +30,27 @@ class Item extends Component {
     getAllCharacters = tier => {
         this.cancelTokenSource = axios.CancelToken.source();
 
-        return getAllCharacters(this.cancelTokenSource, tier)
-            .catch(error => {
-                if (!axios.isCancel(error)) {
-                    const message = error.response.data.message || error.response.statusText || error.message;
-                    this.props.dispatch(errorsAction(message));
-                }
-            });
+        return getAllCharacters(this.cancelTokenSource, tier).catch(error => {
+            if (!axios.isCancel(error)) {
+                const message = error.response.data.message || error.response.statusText || error.message;
+                this.props.dispatch(errorsAction(message));
+            }
+        });
     };
 
     componentDidMount = () => {
         const { authorizedTeamManager } = this.props;
         const { characters, team } = this.state;
         if (authorizedTeamManager && !characters) {
-            this.getAllCharacters(team.tier)
-                .then(characters => {
-                    this.cancelTokenSource = null;
-                    this.setState({ characters });
-                });
+            this.getAllCharacters(team.tier).then(characters => {
+                this.cancelTokenSource = null;
+                this.setState({ characters });
+            });
         }
-
     };
 
     componentWillUnmount = () => {
-        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel("Request cancelled.");
     };
 
     handleTeamsCharactersPost = event => {
@@ -61,18 +58,16 @@ class Item extends Component {
         const data = new FormData(event.target);
         const { team } = this.state;
 
-        return this.props.postTeamsCharactersAction(team.id, data)
-            .then(() => {
-                this.getAllCharacters(team.tier)
-                    .then(characters => {
-                        this.cancelTokenSource = null;
-                        this.setState({
-                            characters,
-                            selectedCharacters: null,
-                            team: this.props.teams.find(t => t.id === team.id),
-                        });
-                    });
+        return this.props.postTeamsCharactersAction(team.id, data).then(() => {
+            this.getAllCharacters(team.tier).then(characters => {
+                this.cancelTokenSource = null;
+                this.setState({
+                    characters,
+                    selectedCharacters: null,
+                    team: this.props.teams.find(t => t.id === team.id),
+                });
             });
+        });
     };
 
     handleTeamsCharactersDelete = event => {
@@ -82,43 +77,41 @@ class Item extends Component {
             const characterId = parseInt(currentTarget.getAttribute("data-id"));
             const { team } = this.state;
 
-            return this.props.deleteTeamsCharactersAction(team.id, characterId)
-                .then(() => {
-                    this.getAllCharacters(team.tier)
-                        .then(characters => {
-                            this.cancelTokenSource = null;
-                            this.setState({
-                                characters,
-                                team: this.props.teams.find(t => t.id === team.id),
-                            });
-                        });
+            return this.props.deleteTeamsCharactersAction(team.id, characterId).then(() => {
+                this.getAllCharacters(team.tier).then(characters => {
+                    this.cancelTokenSource = null;
+                    this.setState({
+                        characters,
+                        team: this.props.teams.find(t => t.id === team.id),
+                    });
                 });
+            });
         }
     };
 
     handleSelectChange = event => {
         this.setState({
-            selectedCharacters: event
+            selectedCharacters: event,
         });
     };
 
-    renderAddMemberForm = (characters) => {
+    renderAddMemberForm = characters => {
         const { team, selectedCharacters } = this.state;
         const teamMembersIds = team.members.reduce((acc, item) => {
             acc.push(item.id);
 
             return acc;
         }, []);
-        const characterOptions = Object.values(characters.entities['characters'])
+        const characterOptions = Object.values(characters.entities["characters"])
             .filter(c => teamMembersIds.indexOf(c.id) === -1 && c.owner !== null)
             .map(c => ({
                 value: c.id,
-                label: '@' + c.owner.name + ': ' + c.name + ' (' + c.class + '/' + c.role + ') [Tier-' + c.approved_for_tier + ']'
+                label: "@" + c.owner.name + ": " + c.name + " (" + c.class + "/" + c.role + ") [Tier-" + c.approved_for_tier + "]",
             }));
 
         return (
             <form className="col-md-24 d-flex flex-row flex-wrap p-0" onSubmit={this.handleTeamsCharactersPost} key="teams-characters-store-form">
-                <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')} />
+                <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute("content")} />
                 <fieldset className="form-group col-md-24">
                     <label>Eligible Characters</label>
                     <Select
@@ -145,7 +138,6 @@ class Item extends Component {
         const { characters } = this.state;
         if (authorizedTeamManager && !characters) {
             return [<Loading message="Fetching eligible character list..." key="loading" />, <Notification key="notifications" />];
-
         }
 
         const { team } = this.state;
@@ -184,16 +176,14 @@ class Item extends Component {
                     <dd>{team.tier}</dd>
 
                     <dt>Leader</dt>
-                    <dd>{'@' + team.led_by.name}</dd>
+                    <dd>{"@" + team.led_by.name}</dd>
 
                     <dt># of Members</dt>
                     <dd>{team.members.length}</dd>
                 </dl>
-                <article className="col-lg-20">
-                    {authorizedTeamManager ? this.renderAddMemberForm(characters) : null}
-                </article>
+                <article className="col-lg-20">{authorizedTeamManager ? this.renderAddMemberForm(characters) : null}</article>
                 <List authorizedTeamManager={authorizedTeamManager} deleteTeamMembershipHandler={this.handleTeamsCharactersDelete} me={me} team={team} />
-            </section>
+            </section>,
         ];
     };
 }
@@ -220,7 +210,4 @@ const mapDispatchToProps = dispatch => ({
     deleteTeamsCharactersAction: (teamId, characterId) => dispatch(deleteTeamsCharactersAction(teamId, characterId)),
 });
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Item);
+export default connect(mapStateToProps, mapDispatchToProps)(Item);

@@ -1,12 +1,12 @@
-import * as api from '../vendor/api';
+import * as api from "../vendor/api";
 
-export const TYPE_POST_TEAMS_CHARACTERS_SEND = 'POST_TEAMS_CHARACTERS_SEND';
+export const TYPE_POST_TEAMS_CHARACTERS_SEND = "POST_TEAMS_CHARACTERS_SEND";
 
-export const TYPE_POST_TEAMS_CHARACTERS_SUCCESS = 'POST_TEAMS_CHARACTERS_SUCCESS';
+export const TYPE_POST_TEAMS_CHARACTERS_SUCCESS = "POST_TEAMS_CHARACTERS_SUCCESS";
 
-export const TYPE_POST_TEAMS_CHARACTERS_FAILURE = 'POST_TEAMS_CHARACTERS_FAILURE';
+export const TYPE_POST_TEAMS_CHARACTERS_FAILURE = "POST_TEAMS_CHARACTERS_FAILURE";
 
-const RESPONSE_MESSAGE_SUCCESS = 'Character(s) invited.';
+const RESPONSE_MESSAGE_SUCCESS = "Character(s) invited.";
 
 const postTeamsCharactersSendAction = data => ({
     type: TYPE_POST_TEAMS_CHARACTERS_SEND,
@@ -27,7 +27,7 @@ const postTeamsCharactersFailureAction = error => ({
 
 const postTeamsCharactersAction = (teamId, data) => (dispatch, getState) => {
     dispatch(postTeamsCharactersSendAction(teamId, data));
-    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
+    const axiosCancelTokenSource = getState().getIn(["axiosCancelTokenSource"]);
     return api
         .postTeamsCharacters(axiosCancelTokenSource, teamId, data, dispatch)
         .then(response => {

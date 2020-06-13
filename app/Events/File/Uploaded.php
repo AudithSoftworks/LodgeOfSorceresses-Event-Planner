@@ -4,21 +4,11 @@ use Illuminate\Http\Request;
 
 class Uploaded
 {
-    /**
-     * @var string
-     */
-    public $uploadUuid;
+    public ?string $uploadUuid;
 
-    /**
-     * @var \Illuminate\Http\Request
-     */
-    public $request;
+    public Request $request;
 
-    /**
-     * @param string                   $uploadUuid
-     * @param \Illuminate\Http\Request $request
-     */
-    public function __construct($uploadUuid, Request $request)
+    public function __construct(?string $uploadUuid, Request $request)
     {
         $this->uploadUuid = $uploadUuid;
         $this->request = $request;

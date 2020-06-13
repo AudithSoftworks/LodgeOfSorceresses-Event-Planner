@@ -19,12 +19,10 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read EloquentCollection|User[] $attendees
  * @property-read int|null $attendees_count
- * @property-read User $createdBy
  * @method static EloquentBuilder|$this newModelQuery()
  * @method static EloquentBuilder|$this newQuery()
  * @method static EloquentBuilder|$this query()
  * @method static EloquentBuilder|$this whereCreatedAt($value)
- * @method static EloquentBuilder|$this whereCreatedBy($value)
  * @method static EloquentBuilder|$this whereDiscordMessageId($value)
  * @method static EloquentBuilder|$this whereGalleryImageIds($value)
  * @method static EloquentBuilder|$this whereId($value)

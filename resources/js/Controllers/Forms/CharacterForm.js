@@ -1,39 +1,44 @@
-import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
-import { connect } from 'react-redux';
-import { Link, Redirect } from 'react-router-dom';
-import Select from 'react-select';
-import makeAnimated from 'react-select/animated';
-import postMyCharacterAction from '../../actions/post-my-character';
-import putMyCharacterAction from '../../actions/put-my-character';
-import Notification from '../../Components/Notification';
-import { characters, content, sets, skills } from '../../vendor/data';
+import PropTypes from "prop-types";
+import React, { PureComponent } from "react";
+import { connect } from "react-redux";
+import { Link, Redirect } from "react-router-dom";
+import Select from "react-select";
+import makeAnimated from "react-select/animated";
+import postMyCharacterAction from "../../actions/post-my-character";
+import putMyCharacterAction from "../../actions/put-my-character";
+import Notification from "../../Components/Notification";
+import { characters, content, sets, skills } from "../../vendor/data";
 
 class CharacterForm extends PureComponent {
     classOptions = [
-        { value: 1, label: 'Dragonknight' },
-        { value: 2, label: 'Nightblade' },
-        { value: 3, label: 'Sorcerer' },
-        { value: 4, label: 'Templar' },
-        { value: 5, label: 'Warden' },
-        { value: 6, label: 'Necromancer' },
+        { value: 1, label: "Dragonknight" },
+        { value: 2, label: "Nightblade" },
+        { value: 3, label: "Sorcerer" },
+        { value: 4, label: "Templar" },
+        { value: 5, label: "Warden" },
+        { value: 6, label: "Necromancer" },
     ];
 
-    roleOptions = [{ value: 1, label: 'Tank' }, { value: 2, label: 'Healer' }, { value: 3, label: 'Magicka DD' }, { value: 4, label: 'Stamina DD' }];
+    roleOptions = [
+        { value: 1, label: "Tank" },
+        { value: 2, label: "Healer" },
+        { value: 3, label: "Magicka DD" },
+        { value: 4, label: "Stamina DD" },
+    ];
 
     componentWillUnmount = () => {
-        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel("Request cancelled.");
     };
 
     UNSAFE_componentWillUpdate = nextProps => {
         // We had a change in Characters data: Redirect!
         if (nextProps.myCharacters.length !== this.props.myCharacters.length) {
-            return this.props.history.push('/@me/characters');
+            return this.props.history.push("/@me/characters");
         }
         const { match } = this.props;
         if (match.params && match.params.id) {
             if (this.props.myCharacters !== nextProps.myCharacters) {
-                return this.props.history.push('/@me/characters');
+                return this.props.history.push("/@me/characters");
             }
         }
     };
@@ -121,11 +126,11 @@ class CharacterForm extends PureComponent {
             668, // Alliance War, Support, Purge > Cleanse
         ];
         const skillsOptions = this.parseSkillOptions(supportSkillIds);
-        const contentOptions = Object.values(content).map(item => ({ value: item.id, label: item.version ? item.short_name + ' ' + item.version : item.short_name }));
+        const contentOptions = Object.values(content).map(item => ({ value: item.id, label: item.version ? item.short_name + " " + item.version : item.short_name }));
         const charactersSetsIds = character ? Object.values(character.sets).map(item => item.id) : [];
         const charactersSkillsIds = character ? Object.values(character.skills).map(item => item.id) : [];
         const charactersContentIds = character ? Object.values(character.content).map(item => item.id) : [];
-        const heading = (match.params.id ? 'Edit' : 'Create') + ' Character';
+        const heading = (match.params.id ? "Edit" : "Create") + " Character";
         const animated = makeAnimated();
 
         return (
@@ -133,7 +138,7 @@ class CharacterForm extends PureComponent {
                 <h2 className="form-title col-md-24" title={heading}>
                     {heading}
                 </h2>
-                <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')} />
+                <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute("content")} />
                 <fieldset className="form-group col-md-8 col-xl-4">
                     <label htmlFor="characterName">Character Name:</label>
                     <input
@@ -142,7 +147,7 @@ class CharacterForm extends PureComponent {
                         id="characterName"
                         className="form-control form-control-sm"
                         placeholder="Enter..."
-                        defaultValue={character ? character.name : ''}
+                        defaultValue={character ? character.name : ""}
                         autoComplete="off"
                         disabled={!!(character && character.last_submitted_dps_amount)}
                         required
@@ -216,7 +221,7 @@ class CharacterForm extends PureComponent {
     render = () => {
         const { myCharacters } = this.props;
         if (!myCharacters) {
-            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
+            return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
         }
         const character = this.getCharacter();
 
@@ -242,11 +247,11 @@ CharacterForm.propTypes = {
 
 const mapStateToProps = state => ({
     axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
-    sets: state.getIn(['sets']),
-    skills: state.getIn(['skills']),
-    content: state.getIn(['content']),
-    myCharacters: state.getIn(['myCharacters']),
-    notifications: state.getIn(['notifications']),
+    sets: state.getIn(["sets"]),
+    skills: state.getIn(["skills"]),
+    content: state.getIn(["content"]),
+    myCharacters: state.getIn(["myCharacters"]),
+    notifications: state.getIn(["notifications"]),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -255,7 +260,4 @@ const mapDispatchToProps = dispatch => ({
     putMyCharacterAction: (characterId, data) => dispatch(putMyCharacterAction(characterId, data)),
 });
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(CharacterForm);
+export default connect(mapStateToProps, mapDispatchToProps)(CharacterForm);

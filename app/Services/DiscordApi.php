@@ -50,12 +50,6 @@ class DiscordApi extends AbstractApi
 
     public const ROLE_DAMAGE_DEALER = '452549771283005440';
 
-    public const ROLE_CORE_ONE = '491244517589254146';
-
-    public const ROLE_CORE_TWO = '491244828680519680';
-
-    public const ROLE_CORE_THREE = '531557176586797067';
-
     /**
      * @var string
      */
@@ -104,7 +98,7 @@ class DiscordApi extends AbstractApi
         return $this->executeCallback(function (string $channelId, array $params) {
             $response = $this->getApiClient()->post('channels/' . $channelId . '/messages', $params);
 
-            return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         }, $channelId, $params);
     }
 
@@ -117,7 +111,7 @@ class DiscordApi extends AbstractApi
                 ] + $params
             ]);
 
-            return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         }, $channelId, $params);
     }
 
@@ -157,7 +151,7 @@ class DiscordApi extends AbstractApi
         return $this->executeCallback(function (string $memberId) {
             $response = $this->getApiClient()->get('guilds/' . $this->discordGuildId . '/members/' . $memberId);
 
-            return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         }, $memberId);
     }
 
@@ -181,7 +175,7 @@ class DiscordApi extends AbstractApi
                 ]
             ]);
 
-            return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         }, $recipientId);
     }
 
@@ -190,7 +184,7 @@ class DiscordApi extends AbstractApi
         return $this->executeCallback(function () {
             $response = $this->getApiClient()->get('guilds/' . $this->discordGuildId . '/channels');
 
-            return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         });
     }
 
@@ -199,7 +193,7 @@ class DiscordApi extends AbstractApi
         return $this->executeCallback(function () {
             $response = $this->getApiClient()->get('guilds/' . $this->discordGuildId . '/roles');
 
-            return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         });
     }
 
@@ -224,7 +218,7 @@ class DiscordApi extends AbstractApi
                 'scope' => 'identify email',
             ],
         ]);
-        $responseBody = json_decode($response->getBody(), true);
+        $responseBody = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         $oauthAccount->token = $responseBody['token'];
         $oauthAccount->token_expires_at = new Carbon(sprintf('+%d seconds', $responseBody['token']));

@@ -1,4 +1,4 @@
-import * as getActions from '../actions/get-skills';
+import * as getActions from "../actions/get-skills";
 
 const skillsReducer = (state = null, action) => {
     if (action.type === getActions.TYPE_GET_SKILLS_SUCCESS) {

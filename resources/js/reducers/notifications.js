@@ -1,25 +1,25 @@
-import React from 'react';
-import v4 from 'react-uuid';
-import * as actions from '../actions/notifications';
+import React from "react";
+import v4 from "react-uuid";
+import * as actions from "../actions/notifications";
 
 const notificationsReducer = (state = [], action) => {
     let listOfNotifications = [...state];
     const { type, key, message, errors, options, uuidToRemove } = action;
     listOfNotifications = listOfNotifications.filter(n => n.persist === true);
-    if (type === actions.TYPE_TRIGGER_ERROR || type.indexOf('_FAILURE') !== -1) {
-        if (errors && typeof errors === 'object' && Object.keys(errors).length) {
+    if (type === actions.TYPE_TRIGGER_ERROR || type.indexOf("_FAILURE") !== -1) {
+        if (errors && typeof errors === "object" && Object.keys(errors).length) {
             Object.values(errors).forEach(error => {
                 const notificationProps = { persist: true };
                 notificationProps.message = error;
                 notificationProps.key = key || v4();
-                notificationProps.type = 'danger';
+                notificationProps.type = "danger";
                 listOfNotifications.push({ ...notificationProps, options });
             });
         } else if (message) {
             const notificationProps = { persist: true };
             notificationProps.message = message;
             notificationProps.key = key || v4();
-            notificationProps.type = 'danger';
+            notificationProps.type = "danger";
             listOfNotifications.push({ ...notificationProps, options });
         }
     } else if (type === actions.TYPE_TRIGGER_WARNING) {
@@ -27,7 +27,7 @@ const notificationsReducer = (state = [], action) => {
             const notificationProps = { persist: true };
             notificationProps.message = message;
             notificationProps.key = key || v4();
-            notificationProps.type = 'warning';
+            notificationProps.type = "warning";
             listOfNotifications.push({ ...notificationProps, options });
         }
     } else if (type === actions.TYPE_TRIGGER_INFO) {
@@ -35,15 +35,15 @@ const notificationsReducer = (state = [], action) => {
             const notificationProps = { persist: true };
             notificationProps.message = message;
             notificationProps.key = key || v4();
-            notificationProps.type = 'info';
+            notificationProps.type = "info";
             listOfNotifications.push({ ...notificationProps, options });
         }
-    } else if (type === actions.TYPE_TRIGGER_SUCCESS || type.indexOf('_SUCCESS') !== -1) {
+    } else if (type === actions.TYPE_TRIGGER_SUCCESS || type.indexOf("_SUCCESS") !== -1) {
         if (message && message.length) {
             const notificationProps = { persist: true };
             notificationProps.message = message;
             notificationProps.key = key || v4();
-            notificationProps.type = 'success';
+            notificationProps.type = "success";
             listOfNotifications.push({ ...notificationProps, options });
         }
     } else if (type === actions.TYPE_DEQUEUE_NOTIFICATION) {

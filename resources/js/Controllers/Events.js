@@ -1,23 +1,23 @@
-import { faCalendarPlus } from '@fortawesome/pro-light-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
-import { connect } from 'react-redux';
-import { Link, Redirect } from 'react-router-dom';
-import * as Calendar from '../Components/Events/Calendar';
-import Notification from '../Components/Notification';
-import { renderActionList } from '../helpers';
-import { user } from '../vendor/data';
+import { faCalendarPlus } from "@fortawesome/pro-light-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import PropTypes from "prop-types";
+import React, { PureComponent } from "react";
+import { connect } from "react-redux";
+import { Link, Redirect } from "react-router-dom";
+import * as Calendar from "../Components/Events/Calendar";
+import Notification from "../Components/Notification";
+import { renderActionList } from "../helpers";
+import { user } from "../vendor/data";
 
 class Events extends PureComponent {
     componentWillUnmount = () => {
-        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel("Request cancelled.");
     };
 
     render = () => {
         const { me, location } = this.props;
         if (!me) {
-            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
+            return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
         }
 
         const actionList = {
@@ -34,7 +34,7 @@ class Events extends PureComponent {
                     Calendar
                 </h2>
                 <ul className="ne-corner">{renderActionList(actionList)}</ul>
-                <Calendar.Month />
+                <Calendar.MonthView />
             </section>,
             <Notification key="notifications" />,
         ];
@@ -53,8 +53,8 @@ Events.propTypes = {
 
 const mapStateToProps = state => ({
     axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
-    me: state.getIn(['me']),
-    notifications: state.getIn(['notifications']),
+    me: state.getIn(["me"]),
+    notifications: state.getIn(["notifications"]),
 });
 
 export default connect(mapStateToProps)(Events);

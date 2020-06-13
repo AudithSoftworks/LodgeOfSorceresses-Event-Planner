@@ -1,10 +1,10 @@
-import * as api from '../vendor/api/auth';
+import * as api from "../vendor/api/auth";
 
-export const TYPE_GET_USER_SEND = 'GET_USER_SEND';
+export const TYPE_GET_USER_SEND = "GET_USER_SEND";
 
-export const TYPE_GET_USER_SUCCESS = 'GET_USER_SUCCESS';
+export const TYPE_GET_USER_SUCCESS = "GET_USER_SUCCESS";
 
-export const TYPE_GET_USER_FAILURE = 'GET_USER_FAILURE';
+export const TYPE_GET_USER_FAILURE = "GET_USER_FAILURE";
 
 const getUserSendAction = () => ({
     type: TYPE_GET_USER_SEND,
@@ -23,7 +23,7 @@ const getUserFailureAction = error => ({
 
 const getUserAction = customMessage => (dispatch, getState) => {
     dispatch(getUserSendAction());
-    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
+    const axiosCancelTokenSource = getState().getIn(["axiosCancelTokenSource"]);
     return api
         .getUser(axiosCancelTokenSource, dispatch)
         .then(response => {

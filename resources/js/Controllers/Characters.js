@@ -20,7 +20,7 @@ class Characters extends PureComponent {
     }
 
     componentWillUnmount = () => {
-        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel("Request cancelled.");
     };
 
     componentDidMount = () => {
@@ -44,7 +44,7 @@ class Characters extends PureComponent {
         if (character !== null && (!Object.keys(character).length || character.id !== parseInt(match.params.id))) {
             return [<Loading message="Fetching Character information..." key="loading" />, <Notification key="notifications" />];
         } else if (character === null) {
-            return <Redirect to='/@me/characters' />;
+            return <Redirect to="/@me/characters" />;
         }
 
         return [
@@ -69,6 +69,7 @@ Characters.propTypes = {
     character,
     notifications: PropTypes.array,
 
+    dispatch: PropTypes.func.isRequired,
     viewCharacterAction: PropTypes.func.isRequired,
     putCharacterAction: PropTypes.func.isRequired,
     deleteMyCharacterAction: PropTypes.func.isRequired,
@@ -88,7 +89,4 @@ const mapDispatchToProps = dispatch => ({
     deleteMyCharacterAction: characterId => dispatch(deleteMyCharacterAction(characterId)),
 });
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Characters);
+export default connect(mapStateToProps, mapDispatchToProps)(Characters);

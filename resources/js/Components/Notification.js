@@ -1,11 +1,11 @@
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCheckCircle, faExclamationCircle, faInfoCircle } from '@fortawesome/pro-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import ReactNotification from 'react-notifications-component';
-import { connect } from 'react-redux';
-import { dequeueAction } from '../actions/notifications';
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faCheckCircle, faExclamationCircle, faInfoCircle } from "@fortawesome/pro-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import PropTypes from "prop-types";
+import React, { Component } from "react";
+import ReactNotification from "react-notifications-component";
+import { connect } from "react-redux";
+import { dequeueAction } from "../actions/notifications";
 
 library.add(faCheckCircle, faInfoCircle, faExclamationCircle);
 
@@ -19,19 +19,19 @@ class Notification extends Component {
         if (!this.notificationDOMRef.current) {
             return;
         }
-        let icon = 'info-circle';
-        if (type === 'success') {
-            icon = 'check-circle';
-        } else if (type === 'danger') {
-            icon = 'exclamation-circle';
+        let icon = "info-circle";
+        if (type === "success") {
+            icon = "check-circle";
+        } else if (type === "danger") {
+            icon = "exclamation-circle";
         }
         const { title, insert, container, animationIn, animationOut, dismiss, dismissable, width } = options || {};
         this.notificationDOMRef.current.addNotification({
-            title: title || '',
+            title: title || "",
             message,
             type,
             content: (
-                <div className={'notification-custom notification-' + type}>
+                <div className={"notification-custom notification-" + type}>
                     <div className="notification-icon">
                         <FontAwesomeIcon icon={icon} />
                     </div>
@@ -40,10 +40,10 @@ class Notification extends Component {
                     </div>
                 </div>
             ),
-            insert: insert || 'top',
-            container: container || 'top-right',
-            animationIn: animationIn || ['animated', 'flash'],
-            animationOut: animationOut || ['animated', 'fadeOut'],
+            insert: insert || "top",
+            container: container || "top-right",
+            animationIn: animationIn || ["animated", "flash"],
+            animationOut: animationOut || ["animated", "fadeOut"],
             dismiss: dismiss || { duration: 10000 },
             dismissable: dismissable || { click: true },
             width,
@@ -80,8 +80,8 @@ class Notification extends Component {
                 ref={this.notificationDOMRef}
                 types={[
                     {
-                        htmlClasses: ['notification-awesome'],
-                        name: 'awesome',
+                        htmlClasses: ["notification-awesome"],
+                        name: "awesome",
                     },
                 ]}
                 isMobile={true}
@@ -97,7 +97,7 @@ Notification.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    notifications: state.getIn(['notifications']),
+    notifications: state.getIn(["notifications"]),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -105,7 +105,4 @@ const mapDispatchToProps = dispatch => ({
     dequeueAction: uuidToRemove => dispatch(dequeueAction(uuidToRemove)),
 });
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Notification);
+export default connect(mapStateToProps, mapDispatchToProps)(Notification);

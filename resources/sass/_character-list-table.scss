@@ -1,6 +1,4 @@
 @import "./global/variables";
-@import "~bootstrap/scss/functions";
-@import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/mixins/breakpoints";
 
 table.character-list-table {
@@ -73,18 +71,22 @@ tr {
     }
 
     &.tier-1 {
-        background-color: rgba(46, 204, 113, 0.2);
+        background-color: theme-color('tierOne');
+        color: color('tierOne');
     }
 
     &.tier-2 {
-        background-color: rgba(52, 152, 219, 0.2);
+        background-color: theme-color('tierTwo');
+        color: color('tierTwo');
     }
 
     &.tier-3 {
-        background-color: rgba(155, 89, 182, 0.2);
+        background-color: theme-color('tierThree');
+        color: color('tierThree');
     }
 
     &.tier-4 {
-        background-color: rgba(230, 126, 34, 0.2);
+        background-color: theme-color('tierFour');
+        color: color('tierFour');
     }
 }
