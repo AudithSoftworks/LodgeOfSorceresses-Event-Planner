@@ -4,6 +4,8 @@ import { Markup } from "interweave";
 import moment from "moment";
 import PropTypes from "prop-types";
 import React, { PureComponent } from "react";
+import { Link } from "react-router-dom";
+import v4 from "react-uuid";
 import { transformAnchors } from "../../helpers";
 import { attendance } from "../../vendor/data";
 
@@ -42,12 +44,13 @@ class ListView extends BaseView {
 
             const eventsRendered = [];
             this.getEventsForGivenWeek(date).forEach(event => {
-                const galleryImagesRendered = event.gallery_images.map(image => (<li><a href={image.large} target='_blank'><img alt='' src={image.small} /></a></li>));
+                const galleryImagesRendered = event.gallery_images.map(image => (<li key={v4()}><a href={image.large} target='_blank'><img alt='' src={image.small} /></a></li>));
                 eventsRendered.push(
                     <tr key={"event-" + event["id"]}>
                         <td>{moment(event["created_at"]).format("MMM Do, HH:mm")}</td>
                         <td>
-                            <Markup content={event["text_for_planner"]} noWrap={true} transform={transformAnchors} key="content" /> -- <i>{event.created_by.name}</i>
+                            <Markup content={event["text_for_planner"]} noWrap={true} transform={transformAnchors} key="content" />
+                            -- <i><Link to={'/users/' + event.created_by.id}>{event.created_by.name}</Link></i>
                         </td>
                         <td>
                             <ul className='gallery-images'>
