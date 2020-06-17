@@ -21,7 +21,7 @@ class OnboardingController extends Controller
     private const CMS_CONTENT_MAP_BY_STEPS = [
         'members' => [
             1 => [1912],
-            2 => [12293],
+            2 => [7858],
             3 => [10722],
             4 => [10399],
         ],
