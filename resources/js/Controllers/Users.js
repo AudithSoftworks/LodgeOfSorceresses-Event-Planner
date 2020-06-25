@@ -4,7 +4,7 @@ import { faChevronCircleLeft } from "@fortawesome/pro-light-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
 import PropTypes from "prop-types";
-import React, { Fragment, PureComponent } from "react";
+import React, { PureComponent } from "react";
 import { connect } from "react-redux";
 import { Link, Redirect } from "react-router-dom";
 import { errorsAction, infosAction } from "../actions/notifications";
@@ -44,13 +44,18 @@ class Users extends PureComponent {
     };
 
     fetchData = () => {
-        const { me, match } = this.props;
+        const { dispatch, history, me, match } = this.props;
         if (me) {
             const { allUsers } = this.state;
             this.cancelTokenSource = axios.CancelToken.source();
             if (match.params.id) {
                 getUser(this.cancelTokenSource, match.params.id)
                     .then(user => {
+                        if (!user.result) {
+                            dispatch(errorsAction('User not found.'));
+
+                            return history.goBack();
+                        }
                         getAttendances(this.cancelTokenSource, match.params.id)
                             .then(attendances => {
                                 this.cancelTokenSource = null;
@@ -67,29 +72,37 @@ class Users extends PureComponent {
                     .catch(error => {
                         if (!axios.isCancel(error)) {
                             const message = error.response.data.message || error.response.statusText || error.message;
-                            this.props.dispatch(errorsAction(message));
+                            dispatch(errorsAction(message));
                         }
                     });
             } else if (!allUsers) {
                 getAllUsers(this.cancelTokenSource)
                     .then(allUsers => {
+                        if (!allUsers.result.length) {
+                            dispatch(
+                                infosAction(
+                                    'No Users Found!',
+                                    {
+                                        container: "bottom-center",
+                                        animationIn: ["animated", "bounceInDown"],
+                                        animationOut: ["animated", "bounceOutDown"],
+                                        dismiss: { duration: 30000 },
+                                    },
+                                    "no-users-found"
+                                )
+                            );
+                        }
                         this.cancelTokenSource = null;
                         this.setState({ allUsers, user: null });
-                    })
-                    .catch(error => {
-                        if (!axios.isCancel(error)) {
-                            const message = error.response.data.message || error.response.statusText || error.message;
-                            this.props.dispatch(errorsAction(message));
-                        }
                     });
             }
         }
     };
 
     renderItem = user => {
-        const { me } = this.props;
+        const { history, me } = this.props;
         if (!user.isMember && !user.isSoulshriven) {
-            return <Redirect to={{ pathname: "/users" }} />;
+            return history.push('/users');
         }
 
         const actionList = {
@@ -159,6 +172,9 @@ class Users extends PureComponent {
     };
 
     renderList = (allUsers, mode = 'isMember') => {
+        if (allUsers === null) {
+            return null;
+        }
         let charactersRendered = allUsers.result
             .map(userId => {
                 const user = allUsers.entities["user"][userId];
@@ -186,25 +202,6 @@ class Users extends PureComponent {
         ];
     };
 
-    renderNoUsersFoundNotification = allUsers => {
-        const { dispatch, notifications } = this.props;
-        if (allUsers && !allUsers.result.length && notifications.find(n => n.key === "no-users-found") === undefined) {
-            const message = [<Fragment key="f-1">No Users Found!</Fragment>].reduce((acc, curr) => [acc, " ", curr]);
-            dispatch(
-                infosAction(
-                    message,
-                    {
-                        container: "bottom-center",
-                        animationIn: ["animated", "bounceInDown"],
-                        animationOut: ["animated", "bounceOutDown"],
-                        dismiss: { duration: 30000 },
-                    },
-                    "no-users-found"
-                )
-            );
-        }
-    };
-
     render = () => {
         const { me, location, match } = this.props;
         if (!me) {
@@ -217,14 +214,18 @@ class Users extends PureComponent {
         }
 
         if (match.params.id && user) {
-            return [...this.renderItem(user), <Notification key="notifications" />];
+            const userRendered = this.renderItem(user) || [];
+
+            return [...userRendered, <Notification key="notifications" />];
         }
-        this.renderNoUsersFoundNotification(allUsers);
+
+        const memberListRendered = this.renderList(allUsers, 'isMember');
+        const soulshrivenListRendered = this.renderList(allUsers, 'isSoulshriven');
 
         return [
             <h2 className="form-title col-md-24" key='heading'>Roster</h2>,
-            ...this.renderList(allUsers, 'isMember'),
-            ...this.renderList(allUsers, 'isSoulshriven'),
+            ...memberListRendered,
+            ...soulshrivenListRendered,
             <Notification key="notifications" />
         ];
     };

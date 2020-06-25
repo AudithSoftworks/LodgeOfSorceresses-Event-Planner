@@ -93,6 +93,7 @@ class Notification extends Component {
 Notification.propTypes = {
     notifications: PropTypes.array,
 
+    dispatch: PropTypes.func.isRequired,
     dequeueAction: PropTypes.func.isRequired,
 };
 
