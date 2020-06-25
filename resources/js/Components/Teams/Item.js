@@ -196,6 +196,7 @@ Item.propTypes = {
     team,
     teams,
 
+    dispatch: PropTypes.func.isRequired,
     postTeamsCharactersAction: PropTypes.func.isRequired,
     deleteTeamsCharactersAction: PropTypes.func.isRequired,
 };

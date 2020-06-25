@@ -84,10 +84,12 @@ class Recache
     {
         /** @var User $user */
         $user = User::with(['linkedAccounts', 'characters'])->find($userId);
-        $user->makeHidden('email');
-        $this->parseLinkedAccounts($user);
-        $this->parseCharacters($user);
-        $this->calculateUserRank($user);
+        if ($user !== null) {
+            $user->makeHidden('email');
+            $this->parseLinkedAccounts($user);
+            $this->parseCharacters($user);
+            $this->calculateUserRank($user);
+        }
 
         return $user;
     }

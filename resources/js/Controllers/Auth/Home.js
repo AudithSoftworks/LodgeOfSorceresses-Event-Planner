@@ -23,7 +23,7 @@ class Home extends PureComponent {
     }
 
     componentDidMount = () => {
-        const { me } = this.props;
+        const { dispatch, me } = this.props;
         if (me) {
             this.cancelTokenSource = axios.CancelToken.source();
             getAttendances(this.cancelTokenSource, me.id)
@@ -37,7 +37,7 @@ class Home extends PureComponent {
                 .catch(error => {
                     if (!axios.isCancel(error)) {
                         const message = error.response.data.message || error.response.statusText || error.message;
-                        this.props.dispatch(errorsAction(message));
+                        dispatch(errorsAction(message));
                     }
                 });
         }

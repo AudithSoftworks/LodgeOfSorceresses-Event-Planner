@@ -29,7 +29,7 @@ class TeamForm extends PureComponent {
     }
 
     componentDidMount = () => {
-        const { teams } = this.props;
+        const { dispatch, teams } = this.props;
         if (teams) {
             const { users } = this.state;
             if (!users) {
@@ -42,7 +42,7 @@ class TeamForm extends PureComponent {
                     .catch(error => {
                         if (!axios.isCancel(error)) {
                             const message = error.response.data.message || error.response.statusText || error.message;
-                            this.props.dispatch(errorsAction(message));
+                            dispatch(errorsAction(message));
                         }
                     });
             }
@@ -194,6 +194,7 @@ TeamForm.propTypes = {
     teams,
     notifications: PropTypes.array,
 
+    dispatch: PropTypes.func.isRequired,
     postTeamAction: PropTypes.func.isRequired,
     putTeamAction: PropTypes.func.isRequired,
 };
