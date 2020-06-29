@@ -214,7 +214,7 @@ class DpsParseForm extends PureComponent {
                     <ul>
                         <li>Please use 21-million-HP Trial Dummy for parsing.</li>
                         <li>Don't submit Parses older than 2 weeks! When a major Update is released, Parses need to be created after the launch date.</li>
-                        <li>Make sure you have around 5850 Penetration in your Parse-screenshots (±1000 is an acceptable margin).</li>
+                        <li>Make sure you have around 5850 Penetration in your Parse-screenshots (±100 is an acceptable margin).</li>
                         <li>Every new Parse will update your existing Tier-level, i.e. sending lower DPS numbers can cause demotion.</li>
                         <li>When submitting a Parse, include only the Sets used for that particular Parse, removing everything else.</li>
                         <li>When submitting a Parse, enter DPS amount as it is, without rounding it, in the form of pure numbers.</li>
