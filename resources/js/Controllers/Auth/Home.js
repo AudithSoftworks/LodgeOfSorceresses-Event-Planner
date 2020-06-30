@@ -125,6 +125,17 @@ class Home extends PureComponent {
                     </dd>
                 </dl>
                 {[...attendancesRendered]}
+                <article className='col-md-24 mt-5'>
+                    <h3>Important Readings</h3>
+                    <ul>
+                        <li><a href='https://lodgeofsorceresses.com/topic/423-guild-introduction-lodge-of-sorceresses/'>Guild Introduction</a></li>
+                        <li><a href='https://lodgeofsorceresses.com/topic/423-guild-introduction-lodge-of-sorceresses/?do=findComment&comment=12160'>Guild Requirements (for Members)</a></li>
+                        <li><a href='https://lodgeofsorceresses.com/topic/5741-pve-content-clearance-guide/'>Tier-based Content Clearance Model</a></li>
+                        <li><a href='https://lodgeofsorceresses.com/topic/5506-endgame-progression-guidelines-for-cores-upd-2020-02-18/'>Endgame Attendance Guidelines for Raid Cores</a></li>
+                        <li><a href='https://lodgeofsorceresses.com/topic/423-guild-introduction-lodge-of-sorceresses/?do=findComment&comment=10741'>What is Open Initiative (aka Soulshriven project)?</a></li>
+                        <li><a href='https://lodgeofsorceresses.com/topic/5751-open-events-organization-guidelines/'>Open Events Organization Guidelines</a></li>
+                    </ul>
+                </article>
             </section>,
             <aside
                 key="member-onboarding"
