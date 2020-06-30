@@ -210,16 +210,17 @@ class DpsParseForm extends PureComponent {
             <form className="col-md-24 d-flex flex-row flex-wrap p-0" onSubmit={this.handleSubmit} key="dpsParseForm">
                 <h2 className="form-title col-md-24">Submit Parse for Character</h2>
                 <article className="alert-info">
-                    <b>Usage tips:</b>
+                    <b>Parse submission rules:</b>
                     <ul>
-                        <li>Please use 21-million-HP Trial Dummy for parsing.</li>
-                        <li>Don't submit Parses older than 2 weeks! When a major Update is released, Parses need to be created after the launch date.</li>
-                        <li>Make sure you have around 5850 Penetration in your Parse-screenshots (±100 is an acceptable margin).</li>
+                        <li>Please use <strong>21-million-HP Trial Dummy</strong> for parsing and kill the dummy for 100% of its HP.</li>
+                        <li><strong>Parses can't be older than 2 weeks!</strong> When a major Update is released, Parses need to be created after the launch date.</li>
+                        <li>Make sure you have around <strong>5850 Penetration</strong> in your Parse-screenshots (±100 is an acceptable margin).</li>
                         <li>Every new Parse will update your existing Tier-level, i.e. sending lower DPS numbers can cause demotion.</li>
-                        <li>When submitting a Parse, include only the Sets used for that particular Parse, removing everything else.</li>
-                        <li>When submitting a Parse, enter DPS amount as it is, without rounding it, in the form of pure numbers.</li>
-                        <li>Each Parse needs to have screenshots from both Fight-Log and Info screens of Combat Metrics addon.</li>
-                        <li>Every Character needs their Parses refreshed at least every 60 days. Failing to do so will revoke your Tier-level automatically.</li>
+                        <li>When submitting a Parse, <strong>include only the Sets</strong> used for that particular Parse, removing everything else.</li>
+                        <li>When submitting a Parse, <strong>enter DPS amount as it is, without rounding it</strong>, in the form of pure numbers.</li>
+                        <li>Each Parse needs to have <strong>screenshots from both Fight-Log and Info screens of Combat Metrics addon</strong>.</li>
+                        <li>After submitting a Parse, please check screenshots to see if they are readable; if not, delete your Parse, resubmit with <strong>cropped screenshots</strong> for better readability.</li>
+                        <li>Every Character needs their Parses <strong>refreshed at least every 60 days</strong>. Failing to do so will revoke your Tier-level automatically.</li>
                     </ul>
                 </article>
                 <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute("content")} />
