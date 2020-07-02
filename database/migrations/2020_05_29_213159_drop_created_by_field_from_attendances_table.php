@@ -27,7 +27,7 @@ class DropCreatedByFieldFromAttendancesTable extends Migration
     public function down(): void
     {
         Schema::table('attendances', static function (Blueprint $table) {
-            $table->unsignedInteger('created_by');
+            $table->unsignedInteger('created_by')->nullable();
             $table->foreign('created_by')->references('id')->on('users')->onUpdate('cascade')->onDelete('restrict');
         });
     }
