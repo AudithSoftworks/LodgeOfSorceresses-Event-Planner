@@ -57,4 +57,7 @@ return [
     'pmg' => [
         'api_token' => env('PMG_API_TOKEN'),
     ],
+    'google' => [
+        'youtube_data_api_key' => env('GOOGLE_API_YOUTUBE_DATA_API_KEY'),
+    ],
 ];
