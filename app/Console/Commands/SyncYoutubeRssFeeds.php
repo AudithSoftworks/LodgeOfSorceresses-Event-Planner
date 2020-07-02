@@ -39,6 +39,15 @@ class SyncYoutubeRssFeeds extends Command
      */
     public function handle(): void
     {
+        $options = [
+            'http' => [
+                'method' => 'GET',
+                'timeout' => '120'
+            ]
+        ];
+        $context = stream_context_create($options);
+        libxml_set_streams_context($context);
+
         $channelId = $this->argument('channelId');
         $channelIds = $channelId ? [$channelId] : array_column(YoutubeFeedsChannel::get(['id'])->toArray(), 'id');
         foreach ($channelIds as $channelId) {
