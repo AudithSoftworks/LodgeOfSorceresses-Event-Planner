@@ -52,6 +52,7 @@ return [
             'pve_open_events' => env('DISCORD_PVE_OPEN_EVENTS_CHANNEL_ID', '551378145500987392'),
             'officer_hq' => env('DISCORD_OFFICER_HQ_CHANNEL_ID', '551378145500987392'),
             'officer_logs' => env('DISCORD_OFFICER_LOGS_CHANNEL_ID', '551378145500987392'),
+            'testing' => env('DISCORD_TEST_CHANNEL_ID', '551378145500987392'),
         ],
     ],
     'pmg' => [
