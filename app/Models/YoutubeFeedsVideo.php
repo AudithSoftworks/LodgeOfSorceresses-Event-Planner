@@ -8,15 +8,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * @property int                      $id
- * @property string                   $channel_id
- * @property string                   $title
- * @property string                   $description
- * @property string                   $url
- * @property string                   $thumbnail
- * @property string|null              $discord_message_id
- * @property Carbon|null              $created_at
- * @property Carbon|null              $updated_at
+ * @property string $id
+ * @property string $channel_id
+ * @property string $title
+ * @property string $description
+ * @property string $url
+ * @property string $thumbnail
+ * @property string|null $discord_message_id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read YoutubeFeedsChannel $channel
  * @method static EloquentBuilder|$this newModelQuery()
  * @method static EloquentBuilder|$this newQuery()
@@ -35,9 +35,6 @@ class YoutubeFeedsVideo extends Model
 {
     public $incrementing = false;
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
     public function channel(): BelongsTo
     {
         return $this->belongsTo(YoutubeFeedsChannel::class, 'channel_id', 'id');

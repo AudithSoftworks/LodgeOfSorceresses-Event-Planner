@@ -61,6 +61,7 @@ class SyncYoutubeRssFeeds extends Command
             $items = $response->getItems();
             if (count($items) > 0) {
                 $channel = YoutubeFeedsChannel::query()->find($channelId);
+                $channelUpdatedAt = $channel->updated_at ? clone $channel->updated_at : new CarbonImmutable('1 weeks ago');
                 foreach ($items as $item) {
                     $id = $item->getId();
                     $snippet = $item->getSnippet();
@@ -79,17 +80,17 @@ class SyncYoutubeRssFeeds extends Command
                         'updated_at' => new CarbonImmutable(),
                     ]);
                     YoutubeFeedsVideo::unguard(false);
-                    if ($video->wasRecentlyCreated && $video->created_at->isAfter($channel->updated_at)) {
+                    if ($video->wasRecentlyCreated && $video->created_at->isAfter($channelUpdatedAt)) {
                         $this->info(sprintf('Processing video (video id: %s)', $video->id));
                         $this->postOnDiscord($video);
                         $this->postOnIps($video);
                     } else {
-                        $this->warn(sprintf('Skipping video (video id: %s)', $video->id));
+                        $this->warn(sprintf('Video already in records or older than last fetch date (video id: %s)', $video->id));
                         continue;
                     }
                     $video->isDirty() && $video->save();
 
-                    $channel->updated_at = $video->updated_at;
+                    $video->created_at->isAfter($channel->updated_at) && $channel->updated_at = $video->created_at;
                 }
                 $channel->isDirty() && $channel->save();
                 $this->info(sprintf('Synced channel %s (%s).', $channel->title, $channel->id));

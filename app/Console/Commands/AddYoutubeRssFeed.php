@@ -4,7 +4,11 @@ namespace App\Console\Commands;
 
 use App\Models\YoutubeFeedsChannel;
 use Carbon\CarbonImmutable;
+use Google_Client;
+use Google_Service_Exception;
+use Google_Service_YouTube;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 
 class AddYoutubeRssFeed extends Command
 {
@@ -22,41 +26,67 @@ class AddYoutubeRssFeed extends Command
      */
     protected $description = 'Adds a new Youtube RSS feed to our RSS-sync list.';
 
+    private Google_Service_YouTube $service;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $client = (new Google_Client());
+        $client->setApplicationName('Lodge of Sorceresses');
+        $apiKey = config('services.google.youtube_data_api_key');
+        $client->setDeveloperKey($apiKey);
+        $this->service = new Google_Service_YouTube($client);
+    }
+
     /**
      * @throws \Exception
      */
     public function handle(): void
     {
         $channelId = $this->argument('channelId');
-        $feedUrl = 'https://www.youtube.com/feeds/videos.xml?channel_id=' . $channelId;
-        if (!($xml = file_get_contents($feedUrl))) {
-            $this->error('Channel (ID: ' . $channelId . ') is not a valid Youtube channel!');
+        $queryParams = [
+            'id' => $channelId,
+        ];
+        try {
+            $response = $this->service->channels->listChannels(['snippet', 'contentDetails', 'status'], $queryParams);
+        } catch (Google_Service_Exception $e) {
+            $message = json_decode($e->getMessage(), true, 512, JSON_THROW_ON_ERROR);
+            $this->error(sprintf('GoogleApi Error (code %d): %s', $e->getCode(), strip_tags($message['error']['message'])));
+
+            return;
+        }
+        /** @var \Google_Service_YouTube_Channel[] $items */
+        $items = $response->getItems();
+        if (!count($items)) {
+            $this->error('Channel not found!');
+
+            return;
+        }
+        $channelData = $items[0];
+        $id = $channelData->getId();
+        $snippet = $channelData->getSnippet();
+        $thumbnails = $snippet->getThumbnails();
+        YoutubeFeedsChannel::unguard(true);
+        $channel = YoutubeFeedsChannel::query()->updateOrCreate([
+            'id' => $channelData->getId(),
+        ], [
+            'title' => htmlspecialchars_decode($snippet->getTitle(), ENT_QUOTES),
+            'url' => sprintf('https://youtube.com/channel/%s', $id),
+            'thumbnail' => $thumbnails->getHigh()->getUrl(),
+            'created_at' => new CarbonImmutable($snippet->getPublishedAt()),
+            'updated_at' => new CarbonImmutable('1 week ago'),
+        ]);
+        YoutubeFeedsChannel::unguard(false);
+        if ($channel->wasRecentlyCreated) {
+            $this->info(sprintf('Successfully added channel (channel id: %s)', $channel->id));
+        } else {
+            $this->warn(sprintf('Channel already in records (channel id: %s)', $channel->id));
 
             return;
         }
 
-        $doc = new \DOMDocument();
-        $doc->loadXML($xml);
-
-        $xpath = new \DOMXPath($doc);
-        $xpath->registerNamespace('atom', 'http://www.w3.org/2005/Atom');
-        $xpath->registerNamespace('yt', 'http://www.youtube.com/xml/schemas/2015');
-        $xpath->registerNamespace('media', 'http://search.yahoo.com/mrss/');
-
-        $channel = new YoutubeFeedsChannel();
-        $channel->id = $xpath->query('/atom:feed/yt:channelId')->item(0)->nodeValue;
-        $channel->url = $xpath->query('/atom:feed/atom:link[attribute::rel="alternate"]')->item(0)->attributes->getNamedItem('href')->nodeValue;
-        $channel->title = $xpath->query('/atom:feed/atom:title')->item(0)->nodeValue;
-        $channel->created_at = new CarbonImmutable($xpath->query('/atom:feed/atom:published')->item(0)->nodeValue);
-        $channel->updated_at = null;
-        $channel->save();
-
-        $this->info('Channel (ID: ' . $channelId . ') added.');
-
-        \Artisan::call('discord:rss', [
+        Artisan::call('discord:rss', [
             'channelId' => $channelId
-        ]);
-
-        $this->info('Channel (ID: ' . $channelId . ') synced.');
+        ], $this->getOutput());
     }
 }
