@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Models\YoutubeFeedsChannel;
 use App\Models\YoutubeFeedsVideo;
 use Carbon\CarbonImmutable;
-use Cloudinary;
 use Google_Client;
 use Google_Service_Exception;
 use Google_Service_YouTube;
@@ -15,15 +14,11 @@ use Illuminate\Console\Command;
 class SyncYoutubeRssFeeds extends Command
 {
     /**
-     * The name and signature of the console command.
-     *
      * @var string
      */
     protected $signature = 'discord:rss {channelId? : 24-letter channel ID, e.g. UCuLGCNYH1t5DyQQ5tfU4Hdw}';
 
     /**
-     * The console command description.
-     *
      * @var string
      */
     protected $description = 'Syncs Youtube RSS feeds into a Discord channel.';
@@ -33,11 +28,6 @@ class SyncYoutubeRssFeeds extends Command
     public function __construct()
     {
         parent::__construct();
-        Cloudinary::config([
-            'cloud_name' => config('filesystems.disks.cloudinary.cloud_name'),
-            'api_key' => config('filesystems.disks.cloudinary.key'),
-            'api_secret' => config('filesystems.disks.cloudinary.secret'),
-        ]);
         $client = (new Google_Client());
         $client->setApplicationName('Lodge of Sorceresses');
         $apiKey = config('services.google.youtube_data_api_key');
@@ -50,15 +40,6 @@ class SyncYoutubeRssFeeds extends Command
      */
     public function handle(): void
     {
-        $options = [
-            'http' => [
-                'method' => 'GET',
-                'timeout' => '120',
-            ],
-        ];
-        $context = stream_context_create($options);
-        libxml_set_streams_context($context);
-
         $channelId = $this->argument('channelId');
         $channelIds = $channelId ? [$channelId] : array_column(YoutubeFeedsChannel::query()->get(['id'])->toArray(), 'id');
         foreach ($channelIds as $channelId) {
@@ -142,6 +123,9 @@ class SyncYoutubeRssFeeds extends Command
 
     private function postOnIps(YoutubeFeedsVideo $video): void
     {
+        if (!app()->environment('production')) {
+            return;
+        }
         $forumId = config('services.ips.forums.herald');
         $title = '[' . $video->channel->title . '] ' . $video->title;
         $post = '
