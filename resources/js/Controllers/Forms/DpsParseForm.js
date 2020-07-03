@@ -217,7 +217,7 @@ class DpsParseForm extends PureComponent {
                         <li>Make sure you have around <strong>5850 Penetration</strong> in your Parse-screenshots (±100 is an acceptable margin).</li>
                         <li>Every new Parse will update your existing Tier-level, i.e. sending lower DPS numbers can cause demotion.</li>
                         <li>When submitting a Parse, <strong>include only the Sets</strong> used for that particular Parse, removing everything else.</li>
-                        <li>Usage of <strong>Mythic item sets in Parses is not allowed</strong>!</li>
+                        <li><strong>Usage of Mythic set items in Parses is not allowed</strong>!</li>
                         <li>When submitting a Parse, <strong>enter DPS amount as it is, without rounding it</strong>, in the form of pure numbers.</li>
                         <li>Each Parse needs to have <strong>screenshots from both Fight-Log and Info screens of Combat Metrics addon</strong>.</li>
                         <li>After submitting a Parse, please check screenshots to see if they are readable; if not, delete your Parse, resubmit with <strong>cropped screenshots</strong> for better readability.</li>
