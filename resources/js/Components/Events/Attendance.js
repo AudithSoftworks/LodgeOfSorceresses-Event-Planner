@@ -32,11 +32,15 @@ BaseView.propTypes = {
 class ListView extends BaseView {
     render = () => {
         const { start, end } = this.props;
-        const startDate = start && start instanceof moment ? moment(start).startOf("week") : moment().startOf("month");
-        const endDate = end && end instanceof moment ? moment(end).endOf("week") : moment().endOf("month");
+        const startDate = start && start instanceof moment ? moment(start).startOf("isoWeek") : moment().startOf("month");
+        const endDate = end && end instanceof moment ? moment(end).endOf("isoWeek") : moment().endOf("month");
 
         const daysRendered = [];
-        for (let date = startDate.clone(), weekOfYear = date.isoWeek(), colorHue = 360 * Math.random(); date.isSameOrBefore(endDate, "second"); date = date.clone().add(1, "weeks")) {
+        for (
+            let date = moment(startDate), weekOfYear = date.isoWeek(), colorHue = 360 * Math.random();
+            date.isSameOrBefore(endDate, "second");
+            date = moment(date).add(1, "weeks")
+        ) {
             if (!date.isSame(startDate, "second") && date.isoWeek() !== weekOfYear) {
                 colorHue = 360 * Math.random();
                 weekOfYear = date.isoWeek();
@@ -70,8 +74,8 @@ class ListView extends BaseView {
                         className="attendances list-view col-md-24">
                         <caption
                             data-count={eventsRendered.length + " attendance(s)"}
-                            data-current-week={date.isSame(moment(), 'week') ? 'true' : 'false'}>
-                            {date.format("[Week #]WW[]")}
+                            data-current-week={date.isSame(moment(), 'isoWeek') ? 'true' : 'false'}>
+                            {date.format("[Week #]ww[]")}
                         </caption>
                         <tbody>{eventsRendered.length ? eventsRendered : this.noEvent()}</tbody>
                     </table>
