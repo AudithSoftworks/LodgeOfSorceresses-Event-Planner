@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use PathfinderMediaGroup\ApiLibrary\Api\SetApi;
 use PathfinderMediaGroup\ApiLibrary\Auth\TokenAuth;
 
@@ -21,7 +23,6 @@ class FetchSetsViaPmgApi extends Command
 
     /**
      * @throws \PathfinderMediaGroup\ApiLibrary\Exception\FailedPmgRequestException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function handle(): void
     {
@@ -31,7 +32,7 @@ class FetchSetsViaPmgApi extends Command
         $sets = $setApi->getAll();
         $this->syncSets($sets);
 
-        app('cache.store')->delete('sets');
+        Cache::forget('sets');
 
         $this->info('Sets succesfully synced and Cache cleared!');
     }
@@ -41,8 +42,8 @@ class FetchSetsViaPmgApi extends Command
      */
     private function syncSets(array $data): void
     {
-        app('db.connection')->table('sets')->truncate();
-        app('db.connection')->table('sets')->insert($data);
-        app('db.connection')->table('sets')->update(['created_at' => Carbon::now()]);
+        DB::table('sets')->truncate();
+        DB::table('sets')->insert($data);
+        DB::table('sets')->update(['created_at' => Carbon::now()]);
     }
 }

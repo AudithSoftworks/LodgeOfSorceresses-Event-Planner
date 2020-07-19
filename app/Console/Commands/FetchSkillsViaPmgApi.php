@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use PathfinderMediaGroup\ApiLibrary\Api\SkillApi;
 use PathfinderMediaGroup\ApiLibrary\Auth\TokenAuth;
 
@@ -21,7 +23,6 @@ class FetchSkillsViaPmgApi extends Command
 
     /**
      * @throws \PathfinderMediaGroup\ApiLibrary\Exception\FailedPmgRequestException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function handle(): void
     {
@@ -36,7 +37,7 @@ class FetchSkillsViaPmgApi extends Command
         unset($skill);
         $this->syncSkills($skills);
 
-        app('cache.store')->delete('skills');
+        Cache::forget('skills');
 
         $this->info('Skills succesfully synced and Cache cleared!');
     }
@@ -46,8 +47,8 @@ class FetchSkillsViaPmgApi extends Command
      */
     private function syncSkills(array $data): void
     {
-        app('db.connection')->table('skills')->truncate();
-        app('db.connection')->table('skills')->insert($data);
-        app('db.connection')->table('skills')->update(['created_at' => Carbon::now()]);
+        DB::table('skills')->truncate();
+        DB::table('skills')->insert($data);
+        DB::table('skills')->update(['created_at' => Carbon::now()]);
     }
 }
