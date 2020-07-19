@@ -58,7 +58,7 @@ class Init extends PureComponent {
 
         return (
             <form className="col-md-24 d-flex flex-row flex-wrap p-0" onSubmit={this.handleSubmit} key="characterCreationForm">
-                <h2 className="form-title col-md-24 text-center pr-0 mt-md-5 mb-md-5" title="Login">
+                <h2 className="form-title col-md-24 text-center pl-0 pr-0 mt-md-5 mb-md-5" title="Login">
                     Login
                 </h2>
                 <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute("content")} />
