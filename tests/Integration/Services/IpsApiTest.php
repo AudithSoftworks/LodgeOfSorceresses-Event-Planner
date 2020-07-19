@@ -7,10 +7,7 @@ use App\Tests\IlluminateTestCase;
 
 class IpsApiTest extends IlluminateTestCase
 {
-    /**
-     * @var \App\Services\IpsApi
-     */
-    private $ipsApi;
+    private IpsApi $ipsApi;
 
     public function setUp(): void
     {
@@ -24,7 +21,7 @@ class IpsApiTest extends IlluminateTestCase
     public function testGetCalendarEvents(): void
     {
         $result = $this->ipsApi->getCalendarEvents();
-        $this->assertIsArray($result);
-        $this->assertNotEmpty($result);
+        static::assertIsArray($result);
+        static::assertNotEmpty($result);
     }
 }

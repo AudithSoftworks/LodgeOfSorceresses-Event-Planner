@@ -41,7 +41,7 @@ return [
         'redirect' => env('DISCORD_REDIRECT_URI'),
         'bot_id' => env('DISCORD_BOT_ID', '343344270066843649'),
         'bot_token' => env('DISCORD_BOT_TOKEN'),
-        'url' => 'https://discordapp.com/api',
+        'url' => 'https://discord.com',
         'guild_id' => env('DISCORD_GUILD_ID', '229980402574557184'),
         'channels' => [
             'announcements' => env('DISCORD_ANNOUNCEMENTS_CHANNEL_ID', '551378145500987392'),

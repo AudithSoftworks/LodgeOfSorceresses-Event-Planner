@@ -8,10 +8,7 @@ use GuzzleHttp\RequestOptions;
 
 class DiscordApiTest extends IlluminateTestCase
 {
-    /**
-     * @var \App\Services\DiscordApi
-     */
-    private $discordApi;
+    private DiscordApi $discordApi;
 
     public function setUp(): void
     {
@@ -20,6 +17,8 @@ class DiscordApiTest extends IlluminateTestCase
     }
 
     /**
+     * @throws \JsonException
+     *
      * @return int[]
      */
     public function testCreateMessageInChannel(): array
@@ -27,25 +26,25 @@ class DiscordApiTest extends IlluminateTestCase
         $channelId = config('services.discord.channels.officer_hq');
         $resultOne = $this->discordApi->createMessageInChannel($channelId, [
             RequestOptions::FORM_PARAMS => [
-                'payload_json' => json_encode(['content' => 'Test 1'])
+                'payload_json' => json_encode(['content' => 'Test 1'], JSON_THROW_ON_ERROR)
             ]
         ]);
         $resultTwo = $this->discordApi->createMessageInChannel($channelId, [
             RequestOptions::FORM_PARAMS => [
-                'payload_json' => json_encode(['content' => 'Test 2'])
+                'payload_json' => json_encode(['content' => 'Test 2'], JSON_THROW_ON_ERROR)
             ]
         ]);
         $resultThree = $this->discordApi->createMessageInChannel($channelId, [
             RequestOptions::FORM_PARAMS => [
-                'payload_json' => json_encode(['content' => 'Test 3'])
+                'payload_json' => json_encode(['content' => 'Test 3'], JSON_THROW_ON_ERROR)
             ]
         ]);
-        $this->assertIsArray($resultOne);
-        $this->assertArrayHasKey('id', $resultOne);
-        $this->assertArrayHasKey('content', $resultOne);
-        $this->assertEquals('Test 1', $resultOne['content']);
-        $this->assertEquals('Test 2', $resultTwo['content']);
-        $this->assertArrayHasKey('channel_id', $resultOne);
+        static::assertIsArray($resultOne);
+        static::assertArrayHasKey('id', $resultOne);
+        static::assertArrayHasKey('content', $resultOne);
+        static::assertEquals('Test 1', $resultOne['content']);
+        static::assertEquals('Test 2', $resultTwo['content']);
+        static::assertArrayHasKey('channel_id', $resultOne);
 
         return [$resultOne['id'], $resultTwo['id'], $resultThree['id']];
     }
@@ -61,8 +60,8 @@ class DiscordApiTest extends IlluminateTestCase
     {
         $channelId = config('services.discord.channels.officer_hq');
         $result = $this->discordApi->reactToMessageInChannel($channelId, $messageIds[0], '✅');
-        $this->assertIsBool($result);
-        $this->assertTrue($result);
+        static::assertIsBool($result);
+        static::assertTrue($result);
 
         return $messageIds;
     }
@@ -76,20 +75,20 @@ class DiscordApiTest extends IlluminateTestCase
     {
         $channelId = config('services.discord.channels.officer_hq');
         $result = $this->discordApi->deleteMessagesInChannel($channelId, [array_shift($messageIds)]);
-        $this->assertIsBool($result);
-        $this->assertTrue($result);
+        static::assertIsBool($result);
+        static::assertTrue($result);
 
         $result = $this->discordApi->deleteMessagesInChannel($channelId, $messageIds);
-        $this->assertIsBool($result);
-        $this->assertTrue($result);
+        static::assertIsBool($result);
+        static::assertTrue($result);
 
         $result = $this->discordApi->deleteMessagesInChannel($channelId, ['2121212']); // some bogus id
-        $this->assertIsBool($result);
-        $this->assertFalse($result);
+        static::assertIsBool($result);
+        static::assertFalse($result);
 
         $result = $this->discordApi->deleteMessagesInChannel($channelId, []);
-        $this->assertIsBool($result);
-        $this->assertFalse($result);
+        static::assertIsBool($result);
+        static::assertFalse($result);
     }
 
     public function testGetGuildMember(): array
@@ -97,11 +96,11 @@ class DiscordApiTest extends IlluminateTestCase
         $memberId = '568032622404567060';
         $result = $this->discordApi->getGuildMember($memberId);
 
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('user', $result);
-        $this->assertIsArray($result['user']);
-        $this->assertArrayHasKey('roles', $result);
-        $this->assertIsArray($result['roles']);
+        static::assertIsArray($result);
+        static::assertArrayHasKey('user', $result);
+        static::assertIsArray($result['user']);
+        static::assertArrayHasKey('roles', $result);
+        static::assertIsArray($result['roles']);
 
         return $result;
     }
@@ -116,7 +115,7 @@ class DiscordApiTest extends IlluminateTestCase
         $result = $this->discordApi->modifyGuildMember($member['user']['id'], [
             'roles' => [DiscordApi::ROLE_MEMBERS, DiscordApi::ROLE_INITIATE]
         ]);
-        $this->assertTrue(true, $result);
+        static::assertTrue(true, $result);
     }
 
     /**
@@ -128,20 +127,20 @@ class DiscordApiTest extends IlluminateTestCase
     {
         $result = $this->discordApi->createDmChannel($member['user']['id']);
 
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('id', $result);
-        $this->assertArrayHasKey('type', $result);
-        $this->assertEquals($result['type'], '1');
+        static::assertIsArray($result);
+        static::assertArrayHasKey('id', $result);
+        static::assertArrayHasKey('type', $result);
+        static::assertEquals('1', $result['type']);
     }
 
     public function testGetGuildRoles(): void
     {
         $result = $this->discordApi->getGuildRoles();
 
-        $this->assertIsArray($result);
-        $this->assertNotEmpty($result);
-        $this->assertArrayHasKey('id', $result[0]);
-        $this->assertArrayHasKey('hoist', $result[0]);
-        $this->assertArrayHasKey('mentionable', $result[0]);
+        static::assertIsArray($result);
+        static::assertNotEmpty($result);
+        static::assertArrayHasKey('id', $result[0]);
+        static::assertArrayHasKey('hoist', $result[0]);
+        static::assertArrayHasKey('mentionable', $result[0]);
     }
 }

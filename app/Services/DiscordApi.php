@@ -58,7 +58,7 @@ class DiscordApi extends AbstractApi
     public function __construct()
     {
         parent::__construct('discord');
-        $this->apiUrl = 'https://discordapp.com/api/';
+        $this->apiUrl = config('services.discord.url');
         $this->discordGuildId = config('services.discord.guild_id');
     }
 
@@ -96,7 +96,7 @@ class DiscordApi extends AbstractApi
     public function createMessageInChannel(string $channelId, array $params): ?array
     {
         return $this->executeCallback(function (string $channelId, array $params) {
-            $response = $this->getApiClient()->post('channels/' . $channelId . '/messages', $params);
+            $response = $this->getApiClient()->post('/api/channels/' . $channelId . '/messages', $params);
 
             return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         }, $channelId, $params);
@@ -105,7 +105,7 @@ class DiscordApi extends AbstractApi
     public function getChannelMessages(string $channelId, array $params = []): ?array
     {
         return $this->executeCallback(function (string $channelId, array $params) {
-            $response = $this->getApiClient()->get('channels/' . $channelId . '/messages', [
+            $response = $this->getApiClient()->get('/api/channels/' . $channelId . '/messages', [
                 RequestOptions::QUERY => [
                     'limit' => 100,
                 ] + $params
@@ -122,13 +122,13 @@ class DiscordApi extends AbstractApi
                 return false;
             }
             if (count($messageIds) > 1) {
-                $response = $this->getApiClient()->post('channels/' . $channelId . '/messages/bulk-delete', [
+                $response = $this->getApiClient()->post('/api/channels/' . $channelId . '/messages/bulk-delete', [
                     RequestOptions::JSON => [
                         'messages' => $messageIds,
                     ]
                 ]);
             } else {
-                $response = $this->getApiClient()->delete('channels/' . $channelId . '/messages/' . $messageIds[0]);
+                $response = $this->getApiClient()->delete('/api/channels/' . $channelId . '/messages/' . $messageIds[0]);
             }
 
             return $response->getStatusCode() === Response::HTTP_NO_CONTENT;
@@ -140,7 +140,7 @@ class DiscordApi extends AbstractApi
     public function reactToMessageInChannel(string $channelId, string $messageId, string $reaction): ?bool
     {
         return $this->executeCallback(function (string $channelId, string $messageId, string $reaction) {
-            $response = $this->getApiClient()->put('channels/' . $channelId . '/messages/' . $messageId . '/reactions/' . $reaction . '/@me');
+            $response = $this->getApiClient()->put('/api/channels/' . $channelId . '/messages/' . $messageId . '/reactions/' . $reaction . '/@me');
 
             return $response->getStatusCode() === Response::HTTP_NO_CONTENT;
         }, $channelId, $messageId, $reaction);
@@ -149,7 +149,7 @@ class DiscordApi extends AbstractApi
     public function getGuildMember(string $memberId): ?array
     {
         return $this->executeCallback(function (string $memberId) {
-            $response = $this->getApiClient()->get('guilds/' . $this->discordGuildId . '/members/' . $memberId);
+            $response = $this->getApiClient()->get('/api/guilds/' . $this->discordGuildId . '/members/' . $memberId);
 
             return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         }, $memberId);
@@ -158,7 +158,7 @@ class DiscordApi extends AbstractApi
     public function modifyGuildMember(string $memberId, array $params): ?bool
     {
         return $this->executeCallback(function (string $memberId, array $params) {
-            $response = $this->getApiClient()->patch('guilds/' . $this->discordGuildId . '/members/' . $memberId, [
+            $response = $this->getApiClient()->patch('/api/guilds/' . $this->discordGuildId . '/members/' . $memberId, [
                 RequestOptions::JSON => $params
             ]);
 
@@ -169,7 +169,7 @@ class DiscordApi extends AbstractApi
     public function createDmChannel(string $recipientId): ?array
     {
         return $this->executeCallback(function (string $recipientId) {
-            $response = $this->getApiClient()->post('users/@me/channels', [
+            $response = $this->getApiClient()->post('/api/users/@me/channels', [
                 RequestOptions::JSON => [
                     'recipient_id' => $recipientId,
                 ]
@@ -182,7 +182,7 @@ class DiscordApi extends AbstractApi
     public function getGuildChannels(): ?array
     {
         return $this->executeCallback(function () {
-            $response = $this->getApiClient()->get('guilds/' . $this->discordGuildId . '/channels');
+            $response = $this->getApiClient()->get('/api/guilds/' . $this->discordGuildId . '/channels');
 
             return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         });
@@ -191,7 +191,7 @@ class DiscordApi extends AbstractApi
     public function getGuildRoles(): ?array
     {
         return $this->executeCallback(function () {
-            $response = $this->getApiClient()->get('guilds/' . $this->discordGuildId . '/roles');
+            $response = $this->getApiClient()->get('/api/guilds/' . $this->discordGuildId . '/roles');
 
             return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         });
@@ -208,7 +208,7 @@ class DiscordApi extends AbstractApi
         $clientSecret = config('services.discord.client_secret');
         $redirectUri = config('services.discord.redirect');
         $httpClient = $this->createHttpClient();
-        $response = $httpClient->post('oauth2/token', [
+        $response = $httpClient->post('/api/oauth2/token', [
             RequestOptions::FORM_PARAMS => [
                 'client_id' => $clientId,
                 'client_secret' => $clientSecret,

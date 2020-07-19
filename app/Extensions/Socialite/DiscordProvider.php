@@ -27,7 +27,7 @@ class DiscordProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getAuthUrl($state): string
     {
-        return $this->buildAuthUrlFromBase('https://discordapp.com/api/oauth2/authorize', $state);
+        return $this->buildAuthUrlFromBase('https://discord.com/api/oauth2/authorize', $state);
     }
 
     /**
@@ -43,13 +43,13 @@ class DiscordProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getTokenUrl(): string
     {
-        return 'https://discordapp.com/api/oauth2/token';
+        return 'https://discord.com/api/oauth2/token';
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function getTokenFields($code)
+    protected function getTokenFields($code): array
     {
         return Arr::add(
             parent::getTokenFields($code), 'grant_type', 'authorization_code'
@@ -58,17 +58,19 @@ class DiscordProvider extends AbstractProvider implements ProviderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \JsonException
      */
     protected function getUserByToken($token): array
     {
-        $response = $this->getHttpClient()->get('https://discordapp.com/api/users/@me', [
+        $response = $this->getHttpClient()->get('https://discord.com/api/users/@me', [
             'headers' => [
                 'Accept' => 'application/json',
                 'Authorization' => 'Bearer ' . $token,
             ],
         ]);
 
-        return json_decode($response->getBody(), true);
+        return json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**
