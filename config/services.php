@@ -45,6 +45,7 @@ return [
         'guild_id' => env('DISCORD_GUILD_ID', '229980402574557184'),
         'channels' => [
             'announcements' => env('DISCORD_ANNOUNCEMENTS_CHANNEL_ID', '551378145500987392'),
+            'looking_for' => env('DISCORD_LOOKING_FOR_CHANNEL_ID', '551378145500987392'),
             'achievements' => env('DISCORD_ACHIEVEMENTS_CHANNEL_ID', '551378145500987392'),
             'subscriptions' => env('DISCORD_SUBSCRIPTIONS_CHANNEL_ID', '551378145500987392'),
             'dps_parses_logs' => env('DISCORD_DPS_PARSES_CHANNEL_ID', '551378145500987392'),
