@@ -126,7 +126,9 @@ class CharacterForm extends PureComponent {
             668, // Alliance War, Support, Purge > Cleanse
         ];
         const skillsOptions = this.parseSkillOptions(supportSkillIds);
-        const contentOptions = Object.values(content).map(item => ({ value: item.id, label: item.version ? item.short_name + " " + item.version : item.short_name }));
+        const contentOptions = Object.values(content)
+            .filter(item => item.type !== 'midgame')
+            .map(item => ({ value: item.id, label: item.version ? item.short_name + " " + item.version : item.short_name }));
         const charactersSetsIds = character ? Object.values(character.sets).map(item => item.id) : [];
         const charactersSkillsIds = character ? Object.values(character.skills).map(item => item.id) : [];
         const charactersContentIds = character ? Object.values(character.content).map(item => item.id) : [];
