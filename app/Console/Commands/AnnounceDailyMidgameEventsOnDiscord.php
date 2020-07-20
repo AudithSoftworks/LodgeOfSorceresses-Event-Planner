@@ -6,6 +6,7 @@ use App\Models\Content;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\App;
 use PathfinderMediaGroup\ApiLibrary\Api\PledgesApi;
 use PathfinderMediaGroup\ApiLibrary\Auth\TokenAuth;
@@ -45,7 +46,7 @@ class AnnounceDailyMidgameEventsOnDiscord extends Command
 
         /** @var Content[] $contents */
         $contents = Content::query()->where('name', 'LIKE', '%' . $pledges[3])->get();
-        if ($contents === null) {
+        if ($contents === null || ($contents instanceof Collection && $contents->count() === 0)) {
             $this->error('No content match found!');
 
             return;
@@ -81,7 +82,7 @@ class AnnounceDailyMidgameEventsOnDiscord extends Command
 
         $discordApi = app('discord.api');
         $lfmChannelId = config('services.discord.channels.looking_for');
-        $discordApi->createMessageInChannel($lfmChannelId, [
+        $message = [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
                     'content' => 'Guten morgen, @everyone! :wink:'
@@ -120,7 +121,8 @@ class AnnounceDailyMidgameEventsOnDiscord extends Command
                     ],
                 ], JSON_THROW_ON_ERROR),
             ],
-        ]);
+        ];
+        $discordApi->createMessageInChannel($lfmChannelId, $message);
     }
 
     /**

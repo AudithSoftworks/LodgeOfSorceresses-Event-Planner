@@ -76,6 +76,8 @@ class ContentTableSeeder extends Seeder
             ['id' => 56, 'name' => 'Veteran Lair of Maarselok', 'short_name' => 'vLOM', 'version' => 'HM', 'type' => 'midgame', 'tier' => GuildRanksAndClearance::CLEARANCE_TIER_3],
             ['id' => 57, 'name' => 'Veteran Icereach', 'short_name' => 'vIR', 'version' => null, 'type' => 'midgame', 'tier' => GuildRanksAndClearance::CLEARANCE_TIER_2],
             ['id' => 58, 'name' => 'Veteran Icereach', 'short_name' => 'vIR', 'version' => 'HM', 'type' => 'midgame', 'tier' => GuildRanksAndClearance::CLEARANCE_TIER_3],
+            ['id' => 59, 'name' => 'Veteran Unhallowed Grave', 'short_name' => 'vUG', 'version' => null, 'type' => 'midgame', 'tier' => GuildRanksAndClearance::CLEARANCE_TIER_2],
+            ['id' => 62, 'name' => 'Veteran Unhallowed Grave', 'short_name' => 'vUG', 'version' => 'HM', 'type' => 'midgame', 'tier' => GuildRanksAndClearance::CLEARANCE_TIER_3],
 
             ['id' => 60, 'name' => 'Veteran Dragonstar Arena', 'short_name' => 'vDSA', 'version' => null, 'type' => 'midgame', 'tier' => GuildRanksAndClearance::CLEARANCE_TIER_2],
             ['id' => 61, 'name' => 'Veteran Blackrose Prison Arena', 'short_name' => 'vBRP', 'version' => null, 'type' => 'midgame', 'tier' => GuildRanksAndClearance::CLEARANCE_TIER_3],
