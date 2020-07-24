@@ -21,7 +21,7 @@ class Init extends PureComponent {
     }
 
     componentDidMount = () => {
-        const { me, myCharacters, sets, skills, content, teams } = this.props;
+        const { myCharacters, sets, skills, content, teams } = this.props;
         if (this.authorizeUser(true)) {
             if (!myCharacters) {
                 this.props.getMyCharactersAction();

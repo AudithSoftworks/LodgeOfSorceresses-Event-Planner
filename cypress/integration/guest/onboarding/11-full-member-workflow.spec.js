@@ -112,6 +112,15 @@ describe('New User - Onboarding - Full Member Workflow', function () {
         noCharacters(cy);
         noAttendances(cy);
         cy.get('[data-cy="account-status-element"].danger > input[type="submit"]').click();
+        cy.get('.react-notification-root ' +
+            '> .notification-container-top-right ' +
+            '> .notification-item-root ' +
+            '> .notification-item ' +
+            '> .notification-custom.notification-success ' +
+            '> .notification-content ' +
+            '> .notification-message')
+            .should('exist')
+            .should('have.text', 'User updated.');
         let userUpdatedNotificationMessage = cy.get('.react-notification-root ' +
             '> .notification-container-top-right ' +
             '> .notification-item-root ' +
@@ -119,10 +128,10 @@ describe('New User - Onboarding - Full Member Workflow', function () {
             '> .notification-custom.notification-success ' +
             '> .notification-content ' +
             '> .notification-message');
-        userUpdatedNotificationMessage
-            .should('exist')
-            .should('have.text', 'User updated.');
-        userUpdatedNotificationMessage.click();
-        userUpdatedNotificationMessage.should('not.exist');
+        if (userUpdatedNotificationMessage.length > 0) {
+            userUpdatedNotificationMessage.click();
+        } else {
+            userUpdatedNotificationMessage.should('not.exist');
+        }
     });
 });
