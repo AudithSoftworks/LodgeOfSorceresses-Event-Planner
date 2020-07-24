@@ -95,7 +95,7 @@ class Main extends PureComponent {
                     <Switch>
                         <Route exact path="/" component={props => <Init {...props} />} />
                         <Route exact path="/onboarding/:mode(members|soulshriven)" component={props => <Onboarding {...props} />} />
-                        <Route exact path="/dashboard" component={props => <Home {...props} />} />
+                        <Route exact path="/home" component={props => <Home {...props} />} />
                         {[...this.fetchUserRoutes(me)]}
                         {[...this.fetchAdminRoutes(me)]}
                         <Route component={NoMatch} />

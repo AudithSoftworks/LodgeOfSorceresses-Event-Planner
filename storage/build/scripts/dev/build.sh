@@ -71,7 +71,7 @@ docker-compose exec php bash -c "
     ./artisan pmg:skills;
     ./artisan pmg:sets;
     ./artisan cache:warmup;
-    ./artisan fixture:populate;
+    ./artisan cypress:fixture:populate;
     ./artisan optimize:clear;
 
     ./vendor/bin/phpunit --debug --verbose;

@@ -87,7 +87,7 @@ class Onboarding extends PureComponent {
             return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
         }
         if (this.authorizeUser() && ((me.isMember && mode === "members") || (me.isSoulshriven && mode === "soulshriven"))) {
-            return <Redirect to={{ pathname: "/dashboard", state: { prevPath: location.pathname } }} />;
+            return <Redirect to={{ pathname: "/home", state: { prevPath: location.pathname } }} />;
         }
 
         const contentHeadings = this.getHeadingsOfSteps(mode);
@@ -101,7 +101,7 @@ class Onboarding extends PureComponent {
         const currentData = data.shift();
 
         return [
-            <h2 className={"form-title col-md-24" + (step === numberOfSteps + 1 ? " mt-5 mb-5 text-center" : "")} key="title">
+            <h2 className={"col-md-24" + (step === numberOfSteps + 1 ? " mt-5 mb-5 text-center" : "")} key="title">
                 {step < numberOfSteps + 1 ? "Step " + step + "/" + numberOfSteps + ": " + contentHeadings[step - 1] : "Joining the Guild as a " + (mode === "members" ? "Member" : "Soulshriven")}
             </h2>,
             <article className="col-24 cms-content" key="article">

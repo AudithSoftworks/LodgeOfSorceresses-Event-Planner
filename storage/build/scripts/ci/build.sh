@@ -84,8 +84,8 @@ docker-compose exec php bash -c "
     ./artisan db:seed;
     ./artisan pmg:skills;
     ./artisan pmg:sets;
-    ./artisan fixture:populate;
+    ./artisan cypress:fixture:populate;
 
     ./vendor/bin/phpunit --no-coverage --debug --verbose || exit 1;
-    npx cypress run --record --key ${CYPRESS_KEY} || exit 0;
+    npx cypress run --record --parallel --key ${CYPRESS_KEY} || exit 1;
 ";
