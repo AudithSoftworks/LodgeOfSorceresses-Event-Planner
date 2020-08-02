@@ -35,13 +35,17 @@ describe('New User - Onboarding - Full Member Workflow', function () {
     it('user goes through 4 Onboarding steps and completes Onboarding as a Member', function () {
         cy.server();
         stubGuest(cy);
-        stubFetchingCmsContentForOnboardingSteps(cy);
 
         cy.visit('/onboarding/members');
         cy.get('h2[data-cy="loading"]').contains('Checking session...');
         cy.wait('@loadGuestUser')
 
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/onboarding/members');
+        cy.get('h2[data-cy="loading"]').contains('Loading...'); // Suspense lazy loading of components
+
+        stubFetchingCmsContentForOnboardingSteps(cy);
+        cy.request('GET', '/api/onboarding/members/content/by-step/1');
+        cy.get('h2[data-cy="loading"]').contains('Fetching content...');
         cy.wait('@loadOnboardingMembersStep1');
         cy.get('h2').contains('Step 1/4:');
         cy.get('article.cms-content + span').find('button').should('have.length', 3);

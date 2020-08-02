@@ -35,13 +35,17 @@ describe('New User - Onboarding - Full Soulshriven Workflow', function () {
     it('user goes through 3 Onboarding steps and completes Onboarding as a Soulshriven', function () {
         cy.server();
         stubGuest(cy);
-        stubFetchingCmsContentForOnboardingSteps(cy);
 
         cy.visit('/onboarding/soulshriven');
         cy.get('h2[data-cy="loading"]').contains('Checking session...');
         cy.wait('@loadGuestUser')
 
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/onboarding/soulshriven');
+        cy.get('h2[data-cy="loading"]').contains('Loading...'); // Suspense lazy loading of components
+
+        stubFetchingCmsContentForOnboardingSteps(cy);
+        cy.request('GET', '/api/onboarding/soulshriven/content/by-step/1');
+        cy.get('h2[data-cy="loading"]').contains('Fetching content...');
         cy.wait('@loadOnboardingSoulshrivenStep1');
         cy.get('h2').contains('Step 1/3:');
         cy.get('article.cms-content + span').find('button').should('have.length', 3);
