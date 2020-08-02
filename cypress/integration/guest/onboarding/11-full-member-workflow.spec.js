@@ -21,6 +21,7 @@ describe('New User - Onboarding - Full Member Workflow', function () {
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/home');
 
         cy.get('article.membership-mode-selection > a[data-heading="Member"]').click();
+        cy.request('GET', '/api/onboarding/members/content/by-step/1');
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/onboarding/members');
         cy.get('h2[data-cy="loading"]').contains('Fetching content...');
         cy.wait('@loadOnboardingMembersStep1');

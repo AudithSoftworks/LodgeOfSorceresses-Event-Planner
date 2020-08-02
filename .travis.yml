@@ -101,7 +101,7 @@ jobs:
         - DB_HOST=postgres
         - DB_USERNAME=postgres
     - stage: test
-      name: 'Frontend Tests with Firefox'
+      name: 'Frontend Tests with Firefox - Machine #1'
       cache: false
       before_script:
         - *ssh_agent
@@ -112,7 +112,29 @@ jobs:
       env:
         - BROWSER=firefox
     - stage: test
-      name: 'Frontend Tests with Chrome'
+      name: 'Frontend Tests with Firefox - Machine #2'
+      cache: false
+      before_script:
+        - *ssh_agent
+        - *download_cypress_binaries_cache
+        - *download_artifact
+        - *setup_env
+      script: ./storage/build/scripts/ci/test_frontend.sh
+      env:
+        - BROWSER=firefox
+    - stage: test
+      name: 'Frontend Tests with Chrome - Machine #1'
+      cache: false
+      before_script:
+        - *ssh_agent
+        - *download_cypress_binaries_cache
+        - *download_artifact
+        - *setup_env
+      script: ./storage/build/scripts/ci/test_frontend.sh
+      env:
+        - BROWSER=chrome
+    - stage: test
+      name: 'Frontend Tests with Chrome - Machine #2'
       cache: false
       before_script:
         - *ssh_agent

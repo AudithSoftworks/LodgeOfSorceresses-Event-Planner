@@ -21,6 +21,7 @@ describe('New User - Onboarding - Full Soulshriven Workflow', function () {
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/home');
 
         cy.get('article.membership-mode-selection > a[data-heading="Soulshriven"]').click();
+        cy.request('GET', '/api/onboarding/soulshriven/content/by-step/1');
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/onboarding/soulshriven');
         cy.get('h2[data-cy="loading"]').contains('Fetching content...');
         cy.wait('@loadOnboardingSoulshrivenStep1');
