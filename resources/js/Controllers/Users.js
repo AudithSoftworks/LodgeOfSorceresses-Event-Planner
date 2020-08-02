@@ -209,14 +209,15 @@ class Users extends PureComponent {
         }
 
         const { allUsers, user } = this.state;
-        if (!allUsers && !user) {
-            return [<Loading message="Fetching Roster information..." key="loading" />, <Notification key="notifications" />];
-        }
-
-        if (match.params.id && user) {
+        if (match.params.id) {
+            if (!user) {
+                return [<Loading message="Fetching user information..." key="loading" />, <Notification key="notifications" />];
+            }
             const userRendered = this.renderItem(user) || [];
 
             return [...userRendered, <Notification key="notifications" />];
+        } else if (!allUsers) {
+            return [<Loading message="Fetching roster information..." key="loading" />, <Notification key="notifications" />];
         }
 
         const memberListRendered = this.renderList(allUsers, 'isMember');

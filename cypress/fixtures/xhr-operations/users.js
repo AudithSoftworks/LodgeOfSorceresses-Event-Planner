@@ -3,6 +3,7 @@ export const users = cy => {
     cy.route({
         method: 'GET',
         url: '/api/users',
-        response: '@users'
+        response: '@users',
+        delay: 1000,
     }).as('loadUsers');
 };

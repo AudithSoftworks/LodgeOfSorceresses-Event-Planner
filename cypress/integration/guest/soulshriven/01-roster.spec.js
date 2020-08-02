@@ -17,18 +17,20 @@ describe('Roster Screen for Soulshriven user', function () {
         content(cy);
         teams(cy);
         noCharacters(cy);
+        noAttendances(cy);
 
         cy.visit('/');
         cy.get('h2[data-cy="loading"]').contains('Checking session...');
         cy.wait('@loadSoulshrivenWithNoForumOauth')
-        cy.wait(['@loadCharacters', '@loadSets', '@loadSkills', '@loadContent', '@loadTeams']);
+        cy.wait(['@loadCharacters', '@loadAttendances', '@loadSets', '@loadSkills', '@loadContent', '@loadTeams']);
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/@me');
+        cy.get('h2').should('have.text', 'Welcome, SoulshrivenEsoId!');
 
         users(cy);
         cy.contains('Roster').click();
-        cy.get('h2[data-cy="loading"]').should('have.text', 'Fetching Roster information...');
-        cy.request('GET', '/api/users');
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/users');
+        cy.request('GET', '/api/users');
+        cy.get('h2[data-cy="loading"]').should('have.text', 'Fetching roster information...');
         cy.wait('@loadUsers');
         cy.get('h2').should('have.text', 'Roster');
         cy.get('ul.roster > li').should('have.length', 34);
@@ -40,10 +42,10 @@ describe('Roster Screen for Soulshriven user', function () {
         cy.get('section:nth-of-type(2) > ul.roster > li').should('have.length', 9);
 
         stubFetchingUserHeiims(cy);
-        noAttendances(cy);
         cy.contains('@HEIIMS').click();
         cy.request('/api/users/6');
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/users/6');
+        cy.get('h2[data-cy="loading"]').should('have.text', 'Fetching user information...');
         cy.wait('@loadHeiims');
         cy.get('h2').should('have.text', '@HEIIMS');
         cy.get('dl:nth-of-type(1)').should('have.class', 'members');
