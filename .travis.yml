@@ -176,7 +176,7 @@ jobs:
       script: ./storage/build/scripts/ci/deploy.sh
       after_failure:
         - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@artifacts.lodgeofsorceresses.com "rm -rf ~/artifacts/$TRAVIS_BUILD_NUMBER/"
-        - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@lodgeofsorceresses.com "rm -rf ~/subdomains/planner/${TRAVIS_JOB_ID}/"
+        - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@lodgeofsorceresses.com "rm -rf ~/subdomains/planner/${$TRAVIS_BUILD_NUMBER}/"
 
 
 #deploy:
