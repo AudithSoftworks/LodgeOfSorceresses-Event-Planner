@@ -1,27 +1,35 @@
 import { noAttendances } from "../../../fixtures/xhr-operations/attendances/no-attendances";
-import { groups } from "../../../fixtures/xhr-operations/groups";
+import { content } from "../../../fixtures/xhr-operations/content";
 import { sets } from "../../../fixtures/xhr-operations/sets";
 import { skills } from "../../../fixtures/xhr-operations/skills";
 import { teams } from "../../../fixtures/xhr-operations/teams";
 import { users } from "../../../fixtures/xhr-operations/users";
 import { stubFetchingUserHeiims } from "../../../fixtures/xhr-operations/users/6/member";
+import { noCharacters } from "../../../fixtures/xhr-operations/users/@me/characters/no-characters";
 import { stubSoulshrivenWithNoForumOauth } from "../../../fixtures/xhr-operations/users/@me/soulshriven";
 
 describe('Roster Screen for Soulshriven user', function () {
     it('visits Roster page', function () {
         cy.server();
         stubSoulshrivenWithNoForumOauth(cy);
-        groups(cy);
         sets(cy);
         skills(cy);
+        content(cy);
         teams(cy);
-        users(cy);
-        cy.route('GET', '/api/users/@me/characters', []);
+        noCharacters(cy);
 
         cy.visit('/');
+        cy.get('h2[data-cy="loading"]').contains('Checking session...');
+        cy.wait('@loadSoulshrivenWithNoForumOauth')
+        cy.wait(['@loadCharacters', '@loadSets', '@loadSkills', '@loadContent', '@loadTeams']);
+        cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/@me');
+
+        users(cy);
         cy.contains('Roster').click();
+        cy.get('h2[data-cy="loading"]').should('have.text', 'Fetching Roster information...');
+        cy.request('GET', '/api/users');
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/users');
-        cy.get('h2').should('have.text', 'Fetching Roster information...');
+        cy.wait('@loadUsers');
         cy.get('h2').should('have.text', 'Roster');
         cy.get('ul.roster > li').should('have.length', 34);
 
@@ -34,7 +42,9 @@ describe('Roster Screen for Soulshriven user', function () {
         stubFetchingUserHeiims(cy);
         noAttendances(cy);
         cy.contains('@HEIIMS').click();
+        cy.request('/api/users/6');
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/users/6');
+        cy.wait('@loadHeiims');
         cy.get('h2').should('have.text', '@HEIIMS');
         cy.get('dl:nth-of-type(1)').should('have.class', 'members');
         cy.get('dl:nth-of-type(2)').should('have.class', 'danger');

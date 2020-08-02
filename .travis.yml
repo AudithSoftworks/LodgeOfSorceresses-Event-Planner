@@ -77,30 +77,6 @@ jobs:
         - *upload_artifact
         - *upload_cypress_binaries_cache
     - stage: test
-      name: 'Backend Tests for MariaDb'
-      cache: false
-      before_script:
-        - *ssh_agent
-        - *download_artifact
-        - *setup_env
-      script: ./storage/build/scripts/ci/test_backend.sh
-      env:
-        - DB_CONNECTION=mysql
-        - DB_HOST=mariadb
-        - DB_USERNAME=root
-    - stage: test
-      name: 'Backend Tests for PgSQL'
-      cache: false
-      before_script:
-        - *ssh_agent
-        - *download_artifact
-        - *setup_env
-      script: ./storage/build/scripts/ci/test_backend.sh
-      env:
-        - DB_CONNECTION=pgsql
-        - DB_HOST=postgres
-        - DB_USERNAME=postgres
-    - stage: test
       name: 'Frontend Tests with Firefox - Machine #1'
       cache: false
       before_script:
@@ -113,6 +89,17 @@ jobs:
         - BROWSER=firefox
     - stage: test
       name: 'Frontend Tests with Firefox - Machine #2'
+      cache: false
+      before_script:
+        - *ssh_agent
+        - *download_cypress_binaries_cache
+        - *download_artifact
+        - *setup_env
+      script: ./storage/build/scripts/ci/test_frontend.sh
+      env:
+        - BROWSER=firefox
+    - stage: test
+      name: 'Frontend Tests with Firefox - Machine #3'
       cache: false
       before_script:
         - *ssh_agent
@@ -144,6 +131,41 @@ jobs:
       script: ./storage/build/scripts/ci/test_frontend.sh
       env:
         - BROWSER=chrome
+    - stage: test
+      name: 'Frontend Tests with Chrome - Machine #3'
+      cache: false
+      before_script:
+        - *ssh_agent
+        - *download_cypress_binaries_cache
+        - *download_artifact
+        - *setup_env
+      script: ./storage/build/scripts/ci/test_frontend.sh
+      env:
+        - BROWSER=chrome
+    - stage: test
+      name: 'Backend Tests for MariaDb'
+      cache: false
+      before_script:
+        - *ssh_agent
+        - *download_artifact
+        - *setup_env
+      script: ./storage/build/scripts/ci/test_backend.sh
+      env:
+        - DB_CONNECTION=mysql
+        - DB_HOST=mariadb
+        - DB_USERNAME=root
+    - stage: test
+      name: 'Backend Tests for PgSQL'
+      cache: false
+      before_script:
+        - *ssh_agent
+        - *download_artifact
+        - *setup_env
+      script: ./storage/build/scripts/ci/test_backend.sh
+      env:
+        - DB_CONNECTION=pgsql
+        - DB_HOST=postgres
+        - DB_USERNAME=postgres
 
 #deploy:
 #  - provider: script
