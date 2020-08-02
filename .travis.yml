@@ -188,4 +188,4 @@ jobs:
 #      condition: $DB_CONNECTION == 'mysql' && $BRANCH == 'master'
 #
 #after_deploy:
-#  - if [[ $DB_CONNECTION == 'mysql' && $BRANCH == 'master' ]]; then ssh lodgeofsorceresses@lodgeofsorceresses.com 'bash -s' < ./storage/build/scripts/ci/install.sh ${TRAVIS_JOB_ID}; fi
+#  - if [[ $DB_CONNECTION == 'mysql' && $BRANCH == 'master' ]]; then ssh lodgeofsorceresses@lodgeofsorceresses.com 'bash -s' < ./storage/build/scripts/ci/install.sh ${TRAVIS_BUILD_NUMBER}; fi
