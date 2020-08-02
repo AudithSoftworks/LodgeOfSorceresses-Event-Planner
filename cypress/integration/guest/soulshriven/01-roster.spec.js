@@ -17,13 +17,16 @@ describe('Roster Screen for Soulshriven user', function () {
         content(cy);
         teams(cy);
         noCharacters(cy);
-        noAttendances(cy);
-
         cy.visit('/');
+
         cy.get('h2[data-cy="loading"]').contains('Checking session...');
         cy.wait('@loadSoulshrivenWithNoForumOauth')
-        cy.wait(['@loadCharacters', '@loadAttendances', '@loadSets', '@loadSkills', '@loadContent', '@loadTeams']);
+        cy.wait(['@loadCharacters', '@loadSets', '@loadSkills', '@loadContent', '@loadTeams']);
+
+        noAttendances(cy);
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/@me');
+        cy.request('/api/attendances/347');
+        cy.wait('@loadAttendancesForUser347');
         cy.get('h2').should('have.text', 'Welcome, SoulshrivenEsoId!');
 
         users(cy);

@@ -139,7 +139,7 @@ describe('New User - Onboarding - Full Soulshriven Workflow', function () {
 
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/');
         cy.get('h2[data-cy="loading"]').contains('Loading data...');
-        cy.wait(['@loadAttendances', '@loadCharacters', '@loadSets', '@loadSkills', '@loadContent', '@loadTeams']);
+        cy.wait(['@loadAttendancesForUser347', '@loadCharacters', '@loadSets', '@loadSkills', '@loadContent', '@loadTeams']);
 
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/@me');
     });

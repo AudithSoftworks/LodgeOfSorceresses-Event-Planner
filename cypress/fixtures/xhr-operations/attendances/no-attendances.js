@@ -4,10 +4,10 @@ export const noAttendances = cy => {
         method: 'GET',
         url: '/api/attendances/6',
         response: '@noAttendances'
-    }).as('loadAttendances');
+    }).as('loadAttendancesForUser6');
     cy.route({
         method: 'GET',
         url: '/api/attendances/347',
         response: '@noAttendances'
-    }).as('loadAttendances');
+    }).as('loadAttendancesForUser347');
 };
