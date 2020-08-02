@@ -3,7 +3,7 @@ export const soulshriven = cy => {
     cy.route({
         method: 'GET',
         url: '/api/onboarding/soulshriven/content/by-step/1',
-        delay: 1000,
+        delay: 1500,
         response: '@onboardingSoulshrivenStep1'
     }).as('loadOnboardingSoulshrivenStep1');
 

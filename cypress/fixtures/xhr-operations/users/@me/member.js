@@ -23,6 +23,7 @@ export const stubUpdateName = cy => {
     cy.route({
         method: 'POST',
         url: '/api/users/@me',
-        response: '@member'
-    }).as('updateMePostRequest');
+        response: '@member',
+        delay: 1000,
+    }).as('updateMemberName');
 };

@@ -37,7 +37,7 @@ describe('New User - Onboarding - Full Soulshriven Workflow', function () {
         stubGuest(cy);
         stubFetchingCmsContentForOnboardingSteps(cy);
 
-        cy.visit('http://planner.lodgeofsorceresses.test/onboarding/soulshriven');
+        cy.visit('/onboarding/soulshriven');
         cy.get('h2[data-cy="loading"]').contains('Checking session...');
         cy.wait('@loadGuestUser')
 
@@ -100,7 +100,7 @@ describe('New User - Onboarding - Full Soulshriven Workflow', function () {
         cy.server();
         stubSoulshrivenWithNoNameAndNoForumOauth(cy);
 
-        cy.visit('http://planner.lodgeofsorceresses.test/');
+        cy.visit('/');
         cy.get('h2[data-cy="loading"]').contains('Checking session...');
         cy.wait('@loadSoulshrivenWithNoNameAndNoForumOauth')
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/home');
@@ -129,7 +129,7 @@ describe('New User - Onboarding - Full Soulshriven Workflow', function () {
         userUpdatedNotificationMessage
             .should('exist')
             .should('have.text', 'User updated.')
-        userUpdatedNotificationMessage.click()
+        userUpdatedNotificationMessage.click();
         userUpdatedNotificationMessage.should('not.exist');
 
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/');

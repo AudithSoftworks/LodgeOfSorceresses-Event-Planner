@@ -11,14 +11,20 @@ import { stubMemberWithNoName, stubUpdateName } from "../../../fixtures/xhr-oper
 describe('New User - Onboarding - Full Member Workflow', function () {
     it('user clicks "Member" link, initiates Onboarding Wizard', function () {
         cy.server();
+
         stubGuest(cy);
         stubFetchingCmsContentForOnboardingSteps(cy);
 
         cy.visit('/');
+        cy.get('h2[data-cy="loading"]').contains('Checking session...');
+        cy.wait('@loadGuestUser')
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/home');
+
         cy.get('article.membership-mode-selection > a[data-heading="Member"]').click();
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/onboarding/members');
-        cy.wait(100);
+        cy.get('h2[data-cy="loading"]').contains('Fetching content...');
+        cy.wait('@loadOnboardingMembersStep1');
+
         cy.get('h2').contains('Step 1/4:');
         cy.get('article.cms-content + span').find('button').should('have.length', 3);
         cy.get('article.cms-content + span > button:nth-of-type(1)').contains('Back');
@@ -31,9 +37,12 @@ describe('New User - Onboarding - Full Member Workflow', function () {
         stubGuest(cy);
         stubFetchingCmsContentForOnboardingSteps(cy);
 
-        cy.visit('http://planner.lodgeofsorceresses.test/onboarding/members');
+        cy.visit('/onboarding/members');
+        cy.get('h2[data-cy="loading"]').contains('Checking session...');
+        cy.wait('@loadGuestUser')
+
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/onboarding/members');
-        cy.wait(100);
+        cy.wait('@loadOnboardingMembersStep1');
         cy.get('h2').contains('Step 1/4:');
         cy.get('article.cms-content + span').find('button').should('have.length', 3);
         cy.get('article.cms-content + span > button:nth-of-type(1)').contains('Back');
@@ -42,7 +51,8 @@ describe('New User - Onboarding - Full Member Workflow', function () {
 
         cy.get('article.cms-content + span > button:nth-of-type(3)').click();
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/onboarding/members');
-        cy.wait(100);
+        cy.get('h2[data-cy="loading"]').contains('Fetching content...');
+        cy.wait('@loadOnboardingMembersStep2');
         cy.get('h2').contains('Step 2/4:');
         cy.get('article.cms-content + span').find('button').should('have.length', 3);
         cy.get('article.cms-content + span > button:nth-of-type(1)').contains('Back');
@@ -51,7 +61,8 @@ describe('New User - Onboarding - Full Member Workflow', function () {
 
         cy.get('article.cms-content + span > button:nth-of-type(3)').click();
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/onboarding/members');
-        cy.wait(100);
+        cy.get('h2[data-cy="loading"]').contains('Fetching content...');
+        cy.wait('@loadOnboardingMembersStep3');
         cy.get('h2').contains('Step 3/4:');
         cy.get('article.cms-content + span').find('button').should('have.length', 3);
         cy.get('article.cms-content + span > button:nth-of-type(1)').contains('Back');
@@ -60,7 +71,8 @@ describe('New User - Onboarding - Full Member Workflow', function () {
 
         cy.get('article.cms-content + span > button:nth-of-type(3)').click();
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/onboarding/members');
-        cy.wait(100);
+        cy.get('h2[data-cy="loading"]').contains('Fetching content...');
+        cy.wait('@loadOnboardingMembersStep4');
         cy.get('h2').contains('Step 4/4:');
         cy.get('article.cms-content + span').find('button').should('have.length', 3);
         cy.get('article.cms-content + span > button:nth-of-type(1)').contains('Back');
@@ -69,7 +81,6 @@ describe('New User - Onboarding - Full Member Workflow', function () {
 
         cy.get('article.cms-content + span > button:nth-of-type(3)').click();
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/onboarding/members');
-        cy.wait(100);
         cy.get('h2').should('have.text', 'Joining the Guild as a Member');
         cy.get('article.cms-content + span').find('button').should('have.length', 3);
         cy.get('article.cms-content + span > button:nth-of-type(1)').contains('Back');
@@ -78,6 +89,7 @@ describe('New User - Onboarding - Full Member Workflow', function () {
 
         cy.get('article.cms-content + span > button:nth-of-type(3)').click();
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/home');
+        cy.wait('@loadOnboardingMembersFinalize');
         cy.get('h2').should('have.text', 'Welcome, Soulless One!');
         cy.get('main > section > article.jumbotron').should('exist');
         cy.get('main > section > article.jumbotron > h3').should('have.text', 'Your Lodge Forum Account:');
@@ -99,7 +111,10 @@ describe('New User - Onboarding - Full Member Workflow', function () {
         stubMemberWithNoName(cy);
 
         cy.visit('/');
+        cy.get('h2[data-cy="loading"]').contains('Checking session...');
+        cy.wait('@loadMemberWithNoName')
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/home');
+
         cy.get('[data-cy="account-status-element"].danger > input[type="text"]')
             .type('MemberEsoId')
             .should('have.value', 'MemberEsoId');
@@ -111,16 +126,9 @@ describe('New User - Onboarding - Full Member Workflow', function () {
         teams(cy);
         noCharacters(cy);
         noAttendances(cy);
+
         cy.get('[data-cy="account-status-element"].danger > input[type="submit"]').click();
-        cy.get('.react-notification-root ' +
-            '> .notification-container-top-right ' +
-            '> .notification-item-root ' +
-            '> .notification-item ' +
-            '> .notification-custom.notification-success ' +
-            '> .notification-content ' +
-            '> .notification-message')
-            .should('exist')
-            .should('have.text', 'User updated.');
+        cy.wait('@updateMemberName');
         let userUpdatedNotificationMessage = cy.get('.react-notification-root ' +
             '> .notification-container-top-right ' +
             '> .notification-item-root ' +
@@ -128,10 +136,16 @@ describe('New User - Onboarding - Full Member Workflow', function () {
             '> .notification-custom.notification-success ' +
             '> .notification-content ' +
             '> .notification-message');
-        if (userUpdatedNotificationMessage.length > 0) {
-            userUpdatedNotificationMessage.click();
-        } else {
-            userUpdatedNotificationMessage.should('not.exist');
-        }
+        userUpdatedNotificationMessage
+            .should('exist')
+            .should('have.text', 'User updated.')
+        userUpdatedNotificationMessage.click();
+        userUpdatedNotificationMessage.should('not.exist');
+
+        cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/');
+        cy.get('h2[data-cy="loading"]').contains('Loading data...');
+        cy.wait(['@loadSets', '@loadSkills', '@loadContent', '@loadTeams']);
+
+        cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/@me');
     });
 });
