@@ -19,7 +19,7 @@ ssh_agent: &ssh_agent
   - chmod 600 /tmp/deploy_rsa
   - ssh-add /tmp/deploy_rsa
 
-download_cypress_binaries_cache: &download_cypress_binaries_cache
+download_and_extract_cypress_binaries_cache: &download_and_extract_cypress_binaries_cache
   - scp -po StrictHostKeyChecking=no lodgeofsorceresses@artifacts.lodgeofsorceresses.com:/home/lodgeofsorceresses/artifacts/$TRAVIS_BUILD_NUMBER/cypress_binaries.tar.gz ../cypress_binaries.tar.gz
   - test -d ~/.cache/Cypress || mkdir -p ~/.cache/Cypress
   - ls -l ../cypress_binaries.tar.gz && tar -xzf ../cypress_binaries.tar.gz -C ~/.cache/Cypress
@@ -29,9 +29,10 @@ upload_cypress_binaries_cache: &upload_cypress_binaries_cache
   - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@artifacts.lodgeofsorceresses.com "mkdir -p ~/artifacts/$TRAVIS_BUILD_NUMBER/"
   - scp -po StrictHostKeyChecking=no ~/.cache/cypress_binaries.tar.gz lodgeofsorceresses@artifacts.lodgeofsorceresses.com:/home/lodgeofsorceresses/artifacts/$TRAVIS_BUILD_NUMBER/cypress_binaries.tar.gz
 
-download_artifact: &download_artifact
+download_and_extract_artifact: &download_and_extract_artifact
   - scp -po StrictHostKeyChecking=no lodgeofsorceresses@artifacts.lodgeofsorceresses.com:/home/lodgeofsorceresses/artifacts/$TRAVIS_BUILD_NUMBER/artifact.tar.gz ../artifact.tar.gz
-  - ls -l ../artifact.tar.gz && tar -xzf ../artifact.tar.gz .
+  - ls -l ../artifact.tar.gz
+  - tar -xzf ../artifact.tar.gz .
 
 upload_artifact: &upload_artifact
   - cd .. && tar -cazf artifact.tar.gz -C $OLDPWD . && ls -l artifact.tar.gz && cd $OLDPWD
@@ -61,7 +62,7 @@ jobs:
   fast_finish: true
   include:
     - stage: build
-      name: 'Building back- and front-end artifacts'
+      name: 'Building back- & front-end artifacts'
       cache:
         npm: true
         directories:
@@ -77,77 +78,77 @@ jobs:
         - *upload_artifact
         - *upload_cypress_binaries_cache
     - stage: test
-      name: 'Frontend Tests with Firefox - Machine #1'
+      name: 'Frontend Tests - Firefox - Machine #1'
       cache: false
       before_script:
         - *ssh_agent
-        - *download_cypress_binaries_cache
-        - *download_artifact
+        - *download_and_extract_cypress_binaries_cache
+        - *download_and_extract_artifact
         - *setup_env
       script: ./storage/build/scripts/ci/test_frontend.sh
       env:
         - BROWSER=firefox
     - stage: test
-      name: 'Frontend Tests with Firefox - Machine #2'
+      name: 'Frontend Tests - Firefox - Machine #2'
       cache: false
       before_script:
         - *ssh_agent
-        - *download_cypress_binaries_cache
-        - *download_artifact
+        - *download_and_extract_cypress_binaries_cache
+        - *download_and_extract_artifact
         - *setup_env
       script: ./storage/build/scripts/ci/test_frontend.sh
       env:
         - BROWSER=firefox
     - stage: test
-      name: 'Frontend Tests with Firefox - Machine #3'
+      name: 'Frontend Tests - Firefox - Machine #3'
       cache: false
       before_script:
         - *ssh_agent
-        - *download_cypress_binaries_cache
-        - *download_artifact
+        - *download_and_extract_cypress_binaries_cache
+        - *download_and_extract_artifact
         - *setup_env
       script: ./storage/build/scripts/ci/test_frontend.sh
       env:
         - BROWSER=firefox
     - stage: test
-      name: 'Frontend Tests with Chrome - Machine #1'
+      name: 'Frontend Tests - Chrome - Machine #1'
       cache: false
       before_script:
         - *ssh_agent
-        - *download_cypress_binaries_cache
-        - *download_artifact
+        - *download_and_extract_cypress_binaries_cache
+        - *download_and_extract_artifact
         - *setup_env
       script: ./storage/build/scripts/ci/test_frontend.sh
       env:
         - BROWSER=chrome
     - stage: test
-      name: 'Frontend Tests with Chrome - Machine #2'
+      name: 'Frontend Tests - Chrome - Machine #2'
       cache: false
       before_script:
         - *ssh_agent
-        - *download_cypress_binaries_cache
-        - *download_artifact
+        - *download_and_extract_cypress_binaries_cache
+        - *download_and_extract_artifact
         - *setup_env
       script: ./storage/build/scripts/ci/test_frontend.sh
       env:
         - BROWSER=chrome
     - stage: test
-      name: 'Frontend Tests with Chrome - Machine #3'
+      name: 'Frontend Tests - Chrome - Machine #3'
       cache: false
       before_script:
         - *ssh_agent
-        - *download_cypress_binaries_cache
-        - *download_artifact
+        - *download_and_extract_cypress_binaries_cache
+        - *download_and_extract_artifact
         - *setup_env
       script: ./storage/build/scripts/ci/test_frontend.sh
       env:
         - BROWSER=chrome
     - stage: test
-      name: 'Backend Tests for MariaDb'
+      name: 'Backend Tests - MariaDb'
       cache: false
       before_script:
         - *ssh_agent
-        - *download_artifact
+        - *download_and_extract_artifact
         - *setup_env
       script: ./storage/build/scripts/ci/test_backend.sh
       env:
@@ -155,17 +156,24 @@ jobs:
         - DB_HOST=mariadb
         - DB_USERNAME=root
     - stage: test
-      name: 'Backend Tests for PgSQL'
+      name: 'Backend Tests - PgSQL'
       cache: false
       before_script:
         - *ssh_agent
-        - *download_artifact
+        - *download_and_extract_artifact
         - *setup_env
       script: ./storage/build/scripts/ci/test_backend.sh
       env:
         - DB_CONNECTION=pgsql
         - DB_HOST=postgres
         - DB_USERNAME=postgres
+    - stage: test
+      name: 'Deploy - Phase 1'
+      cache: false
+      before_script:
+        - *ssh_agent
+        - *download_and_extract_artifact
+      script: ./storage/build/scripts/ci/deploy.sh
 
 #deploy:
 #  - provider: script
