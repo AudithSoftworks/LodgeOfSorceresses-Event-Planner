@@ -1,4 +1,8 @@
 export const content = cy => {
     cy.fixture('.content.json').as('content');
-    cy.route('GET', '/api/content', '@content');
+    cy.route({
+        method: 'GET',
+        url: '/api/content',
+        response: '@content'
+    }).as('loadContent');
 };

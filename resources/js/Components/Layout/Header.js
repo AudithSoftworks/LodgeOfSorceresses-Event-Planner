@@ -51,7 +51,7 @@ class Header extends Component {
                 </NavLink>
             );
         }
-        if (this.authorizeUser(true)) {
+        if (this.authorizeUser(true) && (me.isMember ? me.linkedAccountsParsed.ips : true)) {
             // navLinks.push(
             //     <NavLink to="/events" activeClassName="active" title="Calendar">
             //         <FontAwesomeIcon icon={faCalendarAlt} size="lg" />

@@ -1,4 +1,8 @@
 export const groups = cy => {
     cy.fixture('groups.json').as('groups');
-    cy.route('GET', '/api/groups', '@groups');
+    cy.route({
+        method: 'GET',
+        url: '/api/groups',
+        response: '@groups'
+    }).as('loadGroups');
 };

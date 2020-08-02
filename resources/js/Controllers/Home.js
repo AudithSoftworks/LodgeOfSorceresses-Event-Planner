@@ -31,7 +31,7 @@ class Home extends PureComponent {
 
     render = () => {
         const { me, location } = this.props;
-        if (!me || this.authorizeUser(true)) {
+        if (!me) {
             return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
         }
 
@@ -91,13 +91,7 @@ class Home extends PureComponent {
         }
 
         if (!accountStatusOptions.length) {
-            accountStatusOptions.push(
-                <article key="eso-id" className="jumbotron success ml-2 mr-2" data-cy="account-status-element">
-                    <h3>Your ESO ID:</h3>
-                    <p>{"@" + me.name}</p>
-                    <small className="half-transparent">To update your ESO ID, please contact the guild leader on Discord.</small>
-                </article>
-            );
+            return <Redirect to='/@me' />;
         }
 
         return [
