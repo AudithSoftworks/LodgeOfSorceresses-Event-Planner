@@ -10,8 +10,8 @@ services:
 
 stages:
   - build
-  - test
-  - deploy
+  - test_and_deploy
+  - finalize_deploy
 
 ssh_agent: &ssh_agent
   - openssl aes-256-cbc -K $encrypted_7ee790fc7c4a_key -iv $encrypted_7ee790fc7c4a_iv -in deploy_rsa.enc -out /tmp/deploy_rsa -d
@@ -77,7 +77,7 @@ jobs:
         - *ssh_agent
         - *upload_artifact
         - *upload_cypress_binaries_cache
-    - stage: test
+    - stage: test_and_deploy
       name: 'Frontend Tests - Firefox - Machine #1'
       cache: false
       before_script:
@@ -88,7 +88,7 @@ jobs:
       script: ./storage/build/scripts/ci/test_frontend.sh
       env:
         - BROWSER=firefox
-    - stage: test
+    - stage: test_and_deploy
       name: 'Frontend Tests - Firefox - Machine #2'
       cache: false
       before_script:
@@ -99,7 +99,7 @@ jobs:
       script: ./storage/build/scripts/ci/test_frontend.sh
       env:
         - BROWSER=firefox
-    - stage: test
+    - stage: test_and_deploy
       name: 'Frontend Tests - Firefox - Machine #3'
       cache: false
       before_script:
@@ -110,7 +110,7 @@ jobs:
       script: ./storage/build/scripts/ci/test_frontend.sh
       env:
         - BROWSER=firefox
-    - stage: test
+    - stage: test_and_deploy
       name: 'Frontend Tests - Chrome - Machine #1'
       cache: false
       before_script:
@@ -121,7 +121,7 @@ jobs:
       script: ./storage/build/scripts/ci/test_frontend.sh
       env:
         - BROWSER=chrome
-    - stage: test
+    - stage: test_and_deploy
       name: 'Frontend Tests - Chrome - Machine #2'
       cache: false
       before_script:
@@ -132,7 +132,7 @@ jobs:
       script: ./storage/build/scripts/ci/test_frontend.sh
       env:
         - BROWSER=chrome
-    - stage: test
+    - stage: test_and_deploy
       name: 'Frontend Tests - Chrome - Machine #3'
       cache: false
       before_script:
@@ -143,7 +143,7 @@ jobs:
       script: ./storage/build/scripts/ci/test_frontend.sh
       env:
         - BROWSER=chrome
-    - stage: test
+    - stage: test_and_deploy
       name: 'Backend Tests - MariaDb'
       cache: false
       before_script:
@@ -155,7 +155,7 @@ jobs:
         - DB_CONNECTION=mysql
         - DB_HOST=mariadb
         - DB_USERNAME=root
-    - stage: test
+    - stage: test_and_deploy
       name: 'Backend Tests - PgSQL'
       cache: false
       before_script:
@@ -167,7 +167,7 @@ jobs:
         - DB_CONNECTION=pgsql
         - DB_HOST=postgres
         - DB_USERNAME=postgres
-    - stage: test
+    - stage: test_and_deploy
       name: 'Deploy - Phase 1'
       cache: false
       before_script:
@@ -177,15 +177,12 @@ jobs:
       after_failure:
         - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@artifacts.lodgeofsorceresses.com "rm -rf ~/artifacts/$TRAVIS_BUILD_NUMBER/"
         - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@lodgeofsorceresses.com "rm -rf ~/subdomains/planner/${$TRAVIS_BUILD_NUMBER}/"
-
-
-#deploy:
-#  - provider: script
-#    skip_cleanup: true
-#    script: ./storage/build/scripts/ci/deploy.sh
-#    on:
-#      branch: master
-#      condition: $DB_CONNECTION == 'mysql' && $BRANCH == 'master'
-#
-#after_deploy:
-#  - if [[ $DB_CONNECTION == 'mysql' && $BRANCH == 'master' ]]; then ssh lodgeofsorceresses@lodgeofsorceresses.com 'bash -s' < ./storage/build/scripts/ci/install.sh ${TRAVIS_BUILD_NUMBER}; fi
+    - stage: finalize_deploy
+      name: 'Finalize Deployment'
+      cache: false
+      condition:
+        if: false
+      before_script:
+        - *ssh_agent
+      script:
+        - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@lodgeofsorceresses.com 'bash -s' < ./storage/build/scripts/ci/install.sh ${TRAVIS_BUILD_NUMBER};
