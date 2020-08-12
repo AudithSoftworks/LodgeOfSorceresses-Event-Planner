@@ -17,29 +17,20 @@ sed \
     -e "s/PMG_API_TOKEN=.*/PMG_API_TOKEN=${PMG_API_TOKEN}/g" \
     .env.example | tee .env > /dev/null 2>&1;
 
-if [ "${DB_CONNECTION}" = "mysql" ]; then
-  echo ">>> CHECKING if MariaDb is ready:";
-  until docker-compose exec mariadb mysql -D basis -e "SELECT 1" > /dev/null 2>&1; do
-      echo "waiting...";
-      sleep 1;
-  done;
-fi;
-if [ "${DB_CONNECTION}" = "pgsql" ]; then
-  echo ">>> CHECKING if PgSQL is ready:";
-  until docker-compose exec postgres psql -U "${DB_USERNAME}" -d basis -c "SELECT 1" > /dev/null 2>&1; do
-    echo "waiting...";
-    sleep 1;
-  done;
-fi;
-
 docker-compose exec php bash -c "
+    if [ \"${DB_CONNECTION}\" = \"pgsql\" ]; then
+        dockerize -wait tcp://postgres:5432 -timeout 30s echo \"Postgres ready for connections...\";
+    else
+        dockerize -wait tcp://mariadb:3306 -timeout 30s echo \"MariaDb ready for connections...\";
+    fi;
+
     ./artisan key:generate;
     ./artisan passport:keys;
     ./artisan migrate;
     ./artisan db:seed;
     ./artisan pmg:skills;
     ./artisan pmg:sets;
-    ./artisan cypress:fixture:populate;
+    ./artisan optimize:clear;
 
     ./vendor/bin/phpunit --no-coverage --debug --verbose || exit 1;
 ";

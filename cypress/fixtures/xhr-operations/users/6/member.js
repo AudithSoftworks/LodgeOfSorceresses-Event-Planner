@@ -3,7 +3,7 @@ export const stubFetchingUserHeiims = cy => {
     cy.route({
         method: 'GET',
         url: '/api/users/6',
-        delay: 2000,
+        delay: 3000,
         response: '@heiims'
     }).as('loadHeiims');
 };

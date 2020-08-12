@@ -45,7 +45,6 @@ setup_env: &setup_env
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo `curl -s $PR | jq -r .head.ref`; fi)
   - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH"
   - export MYUID=$(id -u) MYGID=$(id -g)
-  - cp docker-compose.ci.yml docker-compose.override.yml
   - docker-compose pull && docker-compose up -d && docker-compose logs php && docker-compose ps
   - echo $(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx) planner.lodgeofsorceresses.test | sudo tee -a /etc/hosts
   - docker-compose exec php bash -c "
@@ -56,7 +55,8 @@ setup_env: &setup_env
     "
 
 after_failure:
-  - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@artifacts.lodgeofsorceresses.com "rm -rf ~/artifacts/$TRAVIS_BUILD_NUMBER/"
+  - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@artifacts.lodgeofsorceresses.com "test -d ~/artifacts/${TRAVIS_BUILD_NUMBER} && rm -rf ~/artifacts/${TRAVIS_BUILD_NUMBER}"
+  - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@lodgeofsorceresses.com "test -d ~/subdomains/planner/${TRAVIS_BUILD_NUMBER} && rm -rf ~/subdomains/planner/${TRAVIS_BUILD_NUMBER}"
 
 jobs:
   fast_finish: true
@@ -71,74 +71,33 @@ jobs:
           - public/fonts
           - vendor
       before_script:
+        - cp docker-compose.ci.yml docker-compose.override.yml
         - *setup_env
-      script: ./storage/build/scripts/ci/build_backend.sh
+      script: ./storage/build/scripts/ci/build.sh
       after_script:
         - *ssh_agent
         - *upload_artifact
         - *upload_cypress_binaries_cache
     - stage: test_and_deploy
-      name: 'Frontend Tests - Firefox - Machine #1'
+      name: 'Frontend Tests - Firefox'
       cache: false
       before_script:
         - *ssh_agent
         - *download_and_extract_cypress_binaries_cache
         - *download_and_extract_artifact
+        - cp docker-compose.cypress.firefox.yml docker-compose.override.yml
         - *setup_env
       script: ./storage/build/scripts/ci/test_frontend.sh
       env:
         - BROWSER=firefox
     - stage: test_and_deploy
-      name: 'Frontend Tests - Firefox - Machine #2'
+      name: 'Frontend Tests - Chrome'
       cache: false
       before_script:
         - *ssh_agent
         - *download_and_extract_cypress_binaries_cache
         - *download_and_extract_artifact
-        - *setup_env
-      script: ./storage/build/scripts/ci/test_frontend.sh
-      env:
-        - BROWSER=firefox
-    - stage: test_and_deploy
-      name: 'Frontend Tests - Firefox - Machine #3'
-      cache: false
-      before_script:
-        - *ssh_agent
-        - *download_and_extract_cypress_binaries_cache
-        - *download_and_extract_artifact
-        - *setup_env
-      script: ./storage/build/scripts/ci/test_frontend.sh
-      env:
-        - BROWSER=firefox
-    - stage: test_and_deploy
-      name: 'Frontend Tests - Chrome - Machine #1'
-      cache: false
-      before_script:
-        - *ssh_agent
-        - *download_and_extract_cypress_binaries_cache
-        - *download_and_extract_artifact
-        - *setup_env
-      script: ./storage/build/scripts/ci/test_frontend.sh
-      env:
-        - BROWSER=chrome
-    - stage: test_and_deploy
-      name: 'Frontend Tests - Chrome - Machine #2'
-      cache: false
-      before_script:
-        - *ssh_agent
-        - *download_and_extract_cypress_binaries_cache
-        - *download_and_extract_artifact
-        - *setup_env
-      script: ./storage/build/scripts/ci/test_frontend.sh
-      env:
-        - BROWSER=chrome
-    - stage: test_and_deploy
-      name: 'Frontend Tests - Chrome - Machine #3'
-      cache: false
-      before_script:
-        - *ssh_agent
-        - *download_and_extract_cypress_binaries_cache
-        - *download_and_extract_artifact
+        - cp docker-compose.cypress.chrome.yml docker-compose.override.yml
         - *setup_env
       script: ./storage/build/scripts/ci/test_frontend.sh
       env:
@@ -149,6 +108,7 @@ jobs:
       before_script:
         - *ssh_agent
         - *download_and_extract_artifact
+        - cp docker-compose.ci.yml docker-compose.override.yml
         - *setup_env
       script: ./storage/build/scripts/ci/test_backend.sh
       env:
@@ -161,6 +121,7 @@ jobs:
       before_script:
         - *ssh_agent
         - *download_and_extract_artifact
+        - cp docker-compose.ci.yml docker-compose.override.yml
         - *setup_env
       script: ./storage/build/scripts/ci/test_backend.sh
       env:
@@ -174,9 +135,6 @@ jobs:
         - *ssh_agent
         - *download_and_extract_artifact
       script: ./storage/build/scripts/ci/deploy.sh
-      after_failure:
-        - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@artifacts.lodgeofsorceresses.com "rm -rf ~/artifacts/$TRAVIS_BUILD_NUMBER/"
-        - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@lodgeofsorceresses.com "rm -rf ~/subdomains/planner/${$TRAVIS_BUILD_NUMBER}/"
     - stage: finalize_deploy
       name: 'Finalize Deployment'
       cache: false

@@ -46,8 +46,8 @@ describe('Roster Screen for Soulshriven user', function () {
 
         stubFetchingUserHeiims(cy);
         cy.contains('@HEIIMS').click();
-        cy.request('/api/users/6');
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/users/6');
+        cy.request('/api/users/6');
         cy.get('h2[data-cy="loading"]').should('have.text', 'Fetching user information...');
         cy.wait('@loadHeiims');
         cy.get('h2').should('have.text', '@HEIIMS');

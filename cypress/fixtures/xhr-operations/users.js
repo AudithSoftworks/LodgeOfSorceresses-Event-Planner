@@ -4,6 +4,6 @@ export const users = cy => {
         method: 'GET',
         url: '/api/users',
         response: '@users',
-        delay: 2000,
+        delay: 3000,
     }).as('loadUsers');
 };

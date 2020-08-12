@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+  php:
+    image: audithsoftworks/docker:php-ci
+  cypress-ff-1:
+    container_name: cypress-ff-1
+    image: audithsoftworks/docker:cypress
+    depends_on:
+      - nginx
+    ipc: host
+    volumes:
+      - .:/var/www
+      - ./cypress:/cypress
+      - ./cypress.json:/cypress.json
+    command: "--ci-build-id=${TRAVIS_BUILD_NUMBER} --browser=firefox --group=firefox --record --parallel --key ${CYPRESS_KEY}"
+  cypress-ff-2:
+    container_name: cypress-ff-2
+    image: audithsoftworks/docker:cypress
+    depends_on:
+      - nginx
+    ipc: host
+    volumes:
+      - .:/var/www
+      - ./cypress:/cypress
+      - ./cypress.json:/cypress.json
+    command: "--ci-build-id=${TRAVIS_BUILD_NUMBER} --browser=firefox --group=firefox --record --parallel --key ${CYPRESS_KEY}"

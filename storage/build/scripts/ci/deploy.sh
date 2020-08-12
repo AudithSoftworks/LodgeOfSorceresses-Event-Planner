@@ -33,4 +33,4 @@ sed -e "s/APP_ENV=.*/APP_ENV=production/g" \
 
 rm -rf ./.git* ./node_modules ./storage/build/tools ./storage/coverage ./tests ./deploy_rsa.enc ./.scrutinizer.yml ./.travis.yml ./_ide_helper.php old;
 
-rsync -r --delete-after -e "ssh -o StrictHostKeyChecking=no" ${TRAVIS_BUILD_NUMBER}/ lodgeofsorceresses@lodgeofsorceresses.com:/opt/lodgeofsorceresses/subdomains/planner/${TRAVIS_BUILD_NUMBER}/
+rsync -r --delete-after -e "ssh -o StrictHostKeyChecking=no" ${TRAVIS_BUILD_DIR}/ lodgeofsorceresses@lodgeofsorceresses.com:/opt/lodgeofsorceresses/subdomains/planner/${TRAVIS_BUILD_NUMBER}/

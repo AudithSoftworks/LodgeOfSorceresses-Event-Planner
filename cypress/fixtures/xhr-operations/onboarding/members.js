@@ -3,7 +3,7 @@ export const members = cy => {
     cy.route({
         method: 'GET',
         url: '/api/onboarding/members/content/by-step/1',
-        delay: 1500,
+        delay: 2000,
         response: '@onboardingMembersStep1'
     }).as('loadOnboardingMembersStep1');
 
@@ -11,7 +11,7 @@ export const members = cy => {
     cy.route({
         method: 'GET',
         url: '/api/onboarding/members/content/by-step/2',
-        delay: 1500,
+        delay: 2000,
         response: '@onboardingMembersStep2',
     }).as('loadOnboardingMembersStep2');
 
@@ -19,7 +19,7 @@ export const members = cy => {
     cy.route({
         method: 'GET',
         url: '/api/onboarding/members/content/by-step/3',
-        delay: 1500,
+        delay: 2000,
         response: '@onboardingMembersStep3'
     }).as('loadOnboardingMembersStep3');
 
@@ -27,7 +27,7 @@ export const members = cy => {
     cy.route({
         method: 'GET',
         url: '/api/onboarding/members/content/by-step/4',
-        delay: 1500,
+        delay: 2000,
         response: '@onboardingMembersStep4'
     }).as('loadOnboardingMembersStep4');
 

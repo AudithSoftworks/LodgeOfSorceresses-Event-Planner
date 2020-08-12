@@ -3,7 +3,7 @@ export const soulshriven = cy => {
     cy.route({
         method: 'GET',
         url: '/api/onboarding/soulshriven/content/by-step/1',
-        delay: 1500,
+        delay: 2000,
         response: '@onboardingSoulshrivenStep1'
     }).as('loadOnboardingSoulshrivenStep1');
 
@@ -11,7 +11,7 @@ export const soulshriven = cy => {
     cy.route({
         method: 'GET',
         url: '/api/onboarding/soulshriven/content/by-step/2',
-        delay: 1000,
+        delay: 2000,
         response: '@onboardingSoulshrivenStep2'
     }).as('loadOnboardingSoulshrivenStep2');
 
@@ -20,7 +20,7 @@ export const soulshriven = cy => {
     cy.route({
         method: 'GET',
         url: '/api/onboarding/soulshriven/content/by-step/3',
-        delay: 1000,
+        delay: 2000,
         response: '@onboardingSoulshrivenStep3'
     }).as('loadOnboardingSoulshrivenStep3');
 
@@ -28,7 +28,7 @@ export const soulshriven = cy => {
     cy.route({
         method: 'POST',
         url: '/api/onboarding/finalize',
-        delay: 1000,
+        delay: 2000,
         response: '@soulshrivenWithNoNameAndNoForumOauth'
     }).as('loadOnboardingSoulshrivenFinalize');
 };

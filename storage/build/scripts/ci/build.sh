@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 
-test -f .env || sed \
+sed \
     -e "s/APP_ENV=.*/APP_ENV=testing/g" \
-    -e "s/DB_CONNECTION=.*/DB_CONNECTION=${DB_CONNECTION}/g" \
-    -e "s/DB_HOST=.*/DB_HOST=${DB_HOST}/g" \
-    -e "s/DB_USERNAME=.*/DB_USERNAME=${DB_USERNAME}/g" \
     -e "s/IPS_CLIENT_ID=.*/IPS_CLIENT_ID=${IPS_CLIENT_ID}/g" \
     -e "s/IPS_CLIENT_SECRET=.*/IPS_CLIENT_SECRET=${IPS_CLIENT_SECRET}/g" \
     -e "s/IPS_API_KEY=.*/IPS_API_KEY=${IPS_API_KEY}/g" \
@@ -19,10 +16,6 @@ test -f .env || sed \
 
 docker-compose exec php bash -c "
     export NPM_CONFIG_LOGLEVEL=warn;
-
-    crontab -l;
-    sudo chown -R audith:audith ./;
-
     npm config set "@fortawesome:registry" https://npm.fontawesome.com/ && \
     npm config set "//npm.fontawesome.com/:_authToken" ${FONTAWESOME_AUTH_TOKEN}
     npm ci;
@@ -65,27 +58,11 @@ docker-compose exec php bash -c "
         convertFonts.sh --use-font-weight --output=public/fonts/sovngarde/stylesheet.css public/fonts/sovngarde/*.ttf;
     fi;
 
-    mkdir -p ~/.ssh && touch ~/.ssh/known_hosts && chmod 0600 ~/.ssh/known_hosts;
-    ssh-keyscan -H github.com >> ~/.ssh/known_hosts;
-    NODE_ENV=production npm run build;
+    NODE_ENV=development npm run build;
 ";
 
-echo ">>> WAITING for DB to get ready...";
-until docker-compose exec mariadb mysql -D basis -e "SHOW TABLES;" > /dev/null 2>&1; do
-    sleep 1;
-done;
-
 docker-compose exec php bash -c "
+    dockerize -wait tcp://mariadb:3306 echo \"MariaDb ready for connections...\";
+
     composer install --prefer-source --no-interaction;
-
-    ./artisan key:generate;
-    ./artisan passport:keys;
-    ./artisan migrate;
-    ./artisan db:seed;
-    ./artisan pmg:skills;
-    ./artisan pmg:sets;
-    ./artisan cypress:fixture:populate;
-
-    ./vendor/bin/phpunit --no-coverage --debug --verbose || exit 1;
-    npx cypress run --record --parallel --key ${CYPRESS_KEY} || exit 1;
 ";
