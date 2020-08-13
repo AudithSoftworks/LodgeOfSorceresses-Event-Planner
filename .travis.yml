@@ -40,37 +40,6 @@ jobs:
   fast_finish: true
   include:
     - stage: build
-      name: 'Build > Backend Tests'
-      cache:
-        npm: true
-        directories:
-          - vendor
-      before_script:
-        - cp docker-compose.ci.yml docker-compose.override.yml
-        - *ssh_agent
-        - *setup_env
-      script:
-        - ./storage/build/scripts/ci/build_for_backend.sh
-        - ./storage/build/scripts/ci/test_backend.sh
-
-    - stage: build
-      name: 'Build > Preliminary Deployment'
-      cache:
-        npm: true
-        directories:
-          - ~/.cache/google-fonts
-          - public/fonts
-          - vendor
-      before_script:
-        - cp docker-compose.ci.yml docker-compose.override.yml
-        - *ssh_agent
-        - *setup_env
-      script:
-        - ./storage/build/scripts/ci/build_for_backend.sh
-        - ./storage/build/scripts/ci/build_for_frontend.sh
-        - ./storage/build/scripts/ci/deploy.sh
-
-    - stage: build
       name: 'Build > Frontend Tests - Firefox #1'
       cache:
         npm: true
@@ -145,6 +114,37 @@ jobs:
         - ./storage/build/scripts/ci/test_frontend.sh
       env:
         - BROWSER=chrome
+
+    - stage: build
+      name: 'Build > Preliminary Deployment'
+      cache:
+        npm: true
+        directories:
+          - ~/.cache/google-fonts
+          - public/fonts
+          - vendor
+      before_script:
+        - cp docker-compose.ci.yml docker-compose.override.yml
+        - *ssh_agent
+        - *setup_env
+      script:
+        - ./storage/build/scripts/ci/build_for_backend.sh
+        - ./storage/build/scripts/ci/build_for_frontend.sh
+        - ./storage/build/scripts/ci/deploy.sh
+
+    - stage: build
+      name: 'Build > Backend Tests'
+      cache:
+        npm: true
+        directories:
+          - vendor
+      before_script:
+        - cp docker-compose.ci.yml docker-compose.override.yml
+        - *ssh_agent
+        - *setup_env
+      script:
+        - ./storage/build/scripts/ci/build_for_backend.sh
+        - ./storage/build/scripts/ci/test_backend.sh
 
     - stage: deploy
       name: 'Finalize Deployment'
