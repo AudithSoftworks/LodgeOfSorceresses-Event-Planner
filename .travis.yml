@@ -9,7 +9,7 @@ services:
   - docker
 
 stages:
-  - build_test_deploy
+  - build
   - deploy
 
 ssh_agent: &ssh_agent
@@ -39,7 +39,7 @@ after_failure:
 jobs:
   fast_finish: true
   include:
-    - stage: build_test_deploy
+    - stage: build
       name: 'Build > Backend Tests'
       cache:
         npm: true
@@ -53,7 +53,7 @@ jobs:
         - ./storage/build/scripts/ci/build_for_backend.sh
         - ./storage/build/scripts/ci/test_backend.sh
 
-    - stage: build_test_deploy
+    - stage: build
       name: 'Build > Preliminary Deployment'
       cache:
         npm: true
@@ -70,7 +70,7 @@ jobs:
         - ./storage/build/scripts/ci/build_for_frontend.sh
         - ./storage/build/scripts/ci/deploy.sh
 
-    - stage: build_test_deploy
+    - stage: build
       name: 'Build > Frontend Tests - Firefox #1'
       cache:
         npm: true
@@ -89,7 +89,7 @@ jobs:
       env:
         - BROWSER=firefox
 
-    - stage: build_test_deploy
+    - stage: build
       name: 'Build > Frontend Tests - Firefox #2'
       cache:
         npm: true
@@ -108,7 +108,7 @@ jobs:
       env:
         - BROWSER=firefox
 
-    - stage: build_test_deploy
+    - stage: build
       name: 'Build > Frontend Tests - Chrome #1'
       cache:
         npm: true
@@ -127,7 +127,7 @@ jobs:
       env:
         - BROWSER=chrome
 
-    - stage: build_test_deploy
+    - stage: build
       name: 'Build > Frontend Tests - Chrome #2'
       cache:
         npm: true
