@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+  php:
+    image: audithsoftworks/docker:php-ci
+  cypress:
+    container_name: cypress
+    image: audithsoftworks/docker:cypress
+    depends_on:
+      - nginx
+    ipc: host
+    tty: true
+    stdin_open: true
+    volumes:
+      - .:/var/www
+      - ./cypress:/cypress
+      - ./cypress.json:/cypress.json

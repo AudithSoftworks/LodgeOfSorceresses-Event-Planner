@@ -76,5 +76,8 @@ docker-compose exec php bash -c "
     ./artisan optimize:clear;
 
     ./vendor/bin/phpunit --debug --verbose;
-    npx cypress run;
+";
+
+docker-compose exec cypress bash -c "
+    cypress run;
 ";

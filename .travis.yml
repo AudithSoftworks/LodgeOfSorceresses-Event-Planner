@@ -79,29 +79,12 @@ jobs:
         - *upload_artifact
         - *upload_cypress_binaries_cache
     - stage: test_and_deploy
-      name: 'Frontend Tests - Firefox'
+      name: 'Deploy - Phase 1'
       cache: false
       before_script:
         - *ssh_agent
-        - *download_and_extract_cypress_binaries_cache
         - *download_and_extract_artifact
-        - cp docker-compose.cypress.firefox.yml docker-compose.override.yml
-        - *setup_env
-      script: ./storage/build/scripts/ci/test_frontend.sh
-      env:
-        - BROWSER=firefox
-    - stage: test_and_deploy
-      name: 'Frontend Tests - Chrome'
-      cache: false
-      before_script:
-        - *ssh_agent
-        - *download_and_extract_cypress_binaries_cache
-        - *download_and_extract_artifact
-        - cp docker-compose.cypress.chrome.yml docker-compose.override.yml
-        - *setup_env
-      script: ./storage/build/scripts/ci/test_frontend.sh
-      env:
-        - BROWSER=chrome
+      script: ./storage/build/scripts/ci/deploy.sh
     - stage: test_and_deploy
       name: 'Backend Tests - MariaDb'
       cache: false
@@ -129,12 +112,41 @@ jobs:
         - DB_HOST=postgres
         - DB_USERNAME=postgres
     - stage: test_and_deploy
-      name: 'Deploy - Phase 1'
+      name: 'Frontend Tests - Firefox #1'
       cache: false
       before_script:
         - *ssh_agent
+        - *download_and_extract_cypress_binaries_cache
         - *download_and_extract_artifact
-      script: ./storage/build/scripts/ci/deploy.sh
+        - cp docker-compose.cypress.yml docker-compose.override.yml
+        - *setup_env
+      script: ./storage/build/scripts/ci/test_frontend.sh
+      env:
+        - BROWSER=firefox
+    - stage: test_and_deploy
+      name: 'Frontend Tests - Firefox #2'
+      cache: false
+      before_script:
+        - *ssh_agent
+        - *download_and_extract_cypress_binaries_cache
+        - *download_and_extract_artifact
+        - cp docker-compose.cypress.yml docker-compose.override.yml
+        - *setup_env
+      script: ./storage/build/scripts/ci/test_frontend.sh
+      env:
+        - BROWSER=firefox
+    - stage: test_and_deploy
+      name: 'Frontend Tests - Chrome'
+      cache: false
+      before_script:
+        - *ssh_agent
+        - *download_and_extract_cypress_binaries_cache
+        - *download_and_extract_artifact
+        - cp docker-compose.cypress.yml docker-compose.override.yml
+        - *setup_env
+      script: ./storage/build/scripts/ci/test_frontend.sh
+      env:
+        - BROWSER=chrome
     - stage: finalize_deploy
       name: 'Finalize Deployment'
       cache: false
@@ -144,3 +156,7 @@ jobs:
         - *ssh_agent
       script:
         - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@lodgeofsorceresses.com 'bash -s' < ./storage/build/scripts/ci/install.sh ${TRAVIS_BUILD_NUMBER};
+      after_script:
+        - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@artifacts.lodgeofsorceresses.com "test -d ~/artifacts/${TRAVIS_BUILD_NUMBER} && rm -rf ~/artifacts/${TRAVIS_BUILD_NUMBER}"
+        - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@lodgeofsorceresses.com "test -d ~/subdomains/planner/${TRAVIS_BUILD_NUMBER} && rm -rf ~/subdomains/planner/${TRAVIS_BUILD_NUMBER}"
+
