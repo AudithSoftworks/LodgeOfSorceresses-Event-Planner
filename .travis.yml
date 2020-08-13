@@ -158,10 +158,10 @@ jobs:
         - *ssh_agent
         - *git_variables
       script:
-        - if [ "$TRAVIS_PULL_REQUEST" == "true" ]; then
+        - env | grep TRAVIS_
+        - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
             echo "Skipping finalize-deploy step, as this is a Pull Request. Also deleting artifact uploaded to the Live server.";
             ssh -o StrictHostKeyChecking=no lodgeofsorceresses@lodgeofsorceresses.com "test -d ~/subdomains/planner/${TRAVIS_BUILD_NUMBER} && rm -rf ~/subdomains/planner/${TRAVIS_BUILD_NUMBER}";
-            exit 0;
           else
             ssh -o StrictHostKeyChecking=no lodgeofsorceresses@lodgeofsorceresses.com 'bash -s' < ./storage/build/scripts/ci/install.sh ${TRAVIS_BUILD_NUMBER};
-          fi;
+          fi
