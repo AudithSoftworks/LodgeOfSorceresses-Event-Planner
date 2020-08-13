@@ -9,35 +9,14 @@ services:
   - docker
 
 stages:
-  - build
-  - test_and_deploy
-  - finalize_deploy
+  - build_test_deploy
+  - deploy
 
 ssh_agent: &ssh_agent
   - openssl aes-256-cbc -K $encrypted_7ee790fc7c4a_key -iv $encrypted_7ee790fc7c4a_iv -in deploy_rsa.enc -out /tmp/deploy_rsa -d
   - eval "$(ssh-agent -s)"
   - chmod 600 /tmp/deploy_rsa
   - ssh-add /tmp/deploy_rsa
-
-download_and_extract_cypress_binaries_cache: &download_and_extract_cypress_binaries_cache
-  - scp -po StrictHostKeyChecking=no lodgeofsorceresses@artifacts.lodgeofsorceresses.com:/home/lodgeofsorceresses/artifacts/$TRAVIS_BUILD_NUMBER/cypress_binaries.tar.gz ../cypress_binaries.tar.gz
-  - test -d ~/.cache/Cypress || mkdir -p ~/.cache/Cypress
-  - ls -l ../cypress_binaries.tar.gz && tar -xzf ../cypress_binaries.tar.gz -C ~/.cache/Cypress
-
-upload_cypress_binaries_cache: &upload_cypress_binaries_cache
-  - cd ~/.cache && tar -cazf cypress_binaries.tar.gz -C ~/.cache/Cypress . && ls -l cypress_binaries.tar.gz && cd $OLDPWD
-  - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@artifacts.lodgeofsorceresses.com "mkdir -p ~/artifacts/$TRAVIS_BUILD_NUMBER/"
-  - scp -po StrictHostKeyChecking=no ~/.cache/cypress_binaries.tar.gz lodgeofsorceresses@artifacts.lodgeofsorceresses.com:/home/lodgeofsorceresses/artifacts/$TRAVIS_BUILD_NUMBER/cypress_binaries.tar.gz
-
-download_and_extract_artifact: &download_and_extract_artifact
-  - scp -po StrictHostKeyChecking=no lodgeofsorceresses@artifacts.lodgeofsorceresses.com:/home/lodgeofsorceresses/artifacts/$TRAVIS_BUILD_NUMBER/artifact.tar.gz ../artifact.tar.gz
-  - ls -l ../artifact.tar.gz
-  - tar -xzf ../artifact.tar.gz .
-
-upload_artifact: &upload_artifact
-  - cd .. && tar -cazf artifact.tar.gz -C $OLDPWD . && ls -l artifact.tar.gz && cd $OLDPWD
-  - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@artifacts.lodgeofsorceresses.com "mkdir -p ~/artifacts/$TRAVIS_BUILD_NUMBER/"
-  - scp -po StrictHostKeyChecking=no ../artifact.tar.gz lodgeofsorceresses@artifacts.lodgeofsorceresses.com:/home/lodgeofsorceresses/artifacts/$TRAVIS_BUILD_NUMBER/artifact.tar.gz
 
 setup_env: &setup_env
   - chmod -R 0777 ./storage/logs ./storage/framework/views
@@ -55,99 +34,119 @@ setup_env: &setup_env
     "
 
 after_failure:
-  - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@artifacts.lodgeofsorceresses.com "test -d ~/artifacts/${TRAVIS_BUILD_NUMBER} && rm -rf ~/artifacts/${TRAVIS_BUILD_NUMBER}"
   - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@lodgeofsorceresses.com "test -d ~/subdomains/planner/${TRAVIS_BUILD_NUMBER} && rm -rf ~/subdomains/planner/${TRAVIS_BUILD_NUMBER}"
 
 jobs:
   fast_finish: true
   include:
-    - stage: build
-      name: 'Building back- & front-end artifacts'
+    - stage: build_test_deploy
+      name: 'Build > Backend Tests'
       cache:
         npm: true
         directories:
-          - ~/.cache/Cypress
+          - vendor
+      before_script:
+        - cp docker-compose.ci.yml docker-compose.override.yml
+        - *ssh_agent
+        - *setup_env
+      script:
+        - ./storage/build/scripts/ci/build_for_backend.sh
+        - ./storage/build/scripts/ci/test_backend.sh
+
+    - stage: build_test_deploy
+      name: 'Build > Preliminary Deployment'
+      cache:
+        npm: true
+        directories:
           - ~/.cache/google-fonts
           - public/fonts
           - vendor
       before_script:
         - cp docker-compose.ci.yml docker-compose.override.yml
+        - *ssh_agent
         - *setup_env
-      script: ./storage/build/scripts/ci/build.sh
-      after_script:
-        - *ssh_agent
-        - *upload_artifact
-        - *upload_cypress_binaries_cache
-    - stage: test_and_deploy
-      name: 'Deploy - Phase 1'
-      cache: false
+      script:
+        - ./storage/build/scripts/ci/build_for_backend.sh
+        - ./storage/build/scripts/ci/build_for_frontend.sh
+        - ./storage/build/scripts/ci/deploy.sh
+
+    - stage: build_test_deploy
+      name: 'Build > Frontend Tests - Firefox #1'
+      cache:
+        npm: true
+        directories:
+          - ~/.cache/google-fonts
+          - public/fonts
+          - vendor
       before_script:
-        - *ssh_agent
-        - *download_and_extract_artifact
-      script: ./storage/build/scripts/ci/deploy.sh
-    - stage: test_and_deploy
-      name: 'Backend Tests - MariaDb'
-      cache: false
-      before_script:
-        - *ssh_agent
-        - *download_and_extract_artifact
-        - cp docker-compose.ci.yml docker-compose.override.yml
-        - *setup_env
-      script: ./storage/build/scripts/ci/test_backend.sh
-      env:
-        - DB_CONNECTION=mysql
-        - DB_HOST=mariadb
-        - DB_USERNAME=root
-    - stage: test_and_deploy
-      name: 'Backend Tests - PgSQL'
-      cache: false
-      before_script:
-        - *ssh_agent
-        - *download_and_extract_artifact
-        - cp docker-compose.ci.yml docker-compose.override.yml
-        - *setup_env
-      script: ./storage/build/scripts/ci/test_backend.sh
-      env:
-        - DB_CONNECTION=pgsql
-        - DB_HOST=postgres
-        - DB_USERNAME=postgres
-    - stage: test_and_deploy
-      name: 'Frontend Tests - Firefox #1'
-      cache: false
-      before_script:
-        - *ssh_agent
-        - *download_and_extract_cypress_binaries_cache
-        - *download_and_extract_artifact
         - cp docker-compose.cypress.yml docker-compose.override.yml
+        - *ssh_agent
         - *setup_env
-      script: ./storage/build/scripts/ci/test_frontend.sh
+      script:
+        - ./storage/build/scripts/ci/build_for_backend.sh
+        - ./storage/build/scripts/ci/build_for_frontend.sh
+        - ./storage/build/scripts/ci/test_frontend.sh
       env:
         - BROWSER=firefox
-    - stage: test_and_deploy
-      name: 'Frontend Tests - Firefox #2'
-      cache: false
+
+    - stage: build_test_deploy
+      name: 'Build > Frontend Tests - Firefox #2'
+      cache:
+        npm: true
+        directories:
+          - ~/.cache/google-fonts
+          - public/fonts
+          - vendor
       before_script:
-        - *ssh_agent
-        - *download_and_extract_cypress_binaries_cache
-        - *download_and_extract_artifact
         - cp docker-compose.cypress.yml docker-compose.override.yml
+        - *ssh_agent
         - *setup_env
-      script: ./storage/build/scripts/ci/test_frontend.sh
+      script:
+        - ./storage/build/scripts/ci/build_for_backend.sh
+        - ./storage/build/scripts/ci/build_for_frontend.sh
+        - ./storage/build/scripts/ci/test_frontend.sh
       env:
         - BROWSER=firefox
-    - stage: test_and_deploy
-      name: 'Frontend Tests - Chrome'
-      cache: false
+
+    - stage: build_test_deploy
+      name: 'Build > Frontend Tests - Chrome #1'
+      cache:
+        npm: true
+        directories:
+          - ~/.cache/google-fonts
+          - public/fonts
+          - vendor
       before_script:
-        - *ssh_agent
-        - *download_and_extract_cypress_binaries_cache
-        - *download_and_extract_artifact
         - cp docker-compose.cypress.yml docker-compose.override.yml
+        - *ssh_agent
         - *setup_env
-      script: ./storage/build/scripts/ci/test_frontend.sh
+      script:
+        - ./storage/build/scripts/ci/build_for_backend.sh
+        - ./storage/build/scripts/ci/build_for_frontend.sh
+        - ./storage/build/scripts/ci/test_frontend.sh
       env:
         - BROWSER=chrome
-    - stage: finalize_deploy
+
+    - stage: build_test_deploy
+      name: 'Build > Frontend Tests - Chrome #2'
+      cache:
+        npm: true
+        directories:
+          - ~/.cache/google-fonts
+          - public/fonts
+          - vendor
+      before_script:
+        - cp docker-compose.cypress.yml docker-compose.override.yml
+        - *ssh_agent
+        - *setup_env
+      script:
+        - ./storage/build/scripts/ci/build_for_backend.sh
+        - ./storage/build/scripts/ci/build_for_frontend.sh
+        - ./storage/build/scripts/ci/test_frontend.sh
+      env:
+        - BROWSER=chrome
+
+    - stage: deploy
       name: 'Finalize Deployment'
       cache: false
       condition:
@@ -156,7 +155,3 @@ jobs:
         - *ssh_agent
       script:
         - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@lodgeofsorceresses.com 'bash -s' < ./storage/build/scripts/ci/install.sh ${TRAVIS_BUILD_NUMBER};
-      after_script:
-        - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@artifacts.lodgeofsorceresses.com "test -d ~/artifacts/${TRAVIS_BUILD_NUMBER} && rm -rf ~/artifacts/${TRAVIS_BUILD_NUMBER}"
-        - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@lodgeofsorceresses.com "test -d ~/subdomains/planner/${TRAVIS_BUILD_NUMBER} && rm -rf ~/subdomains/planner/${TRAVIS_BUILD_NUMBER}"
-

@@ -2,7 +2,6 @@
 
 docker-compose exec php bash -c "
     dockerize -timeout 30s \
-      -wait tcp://postgres:5432 \
       -wait tcp://mariadb:3306 \
       -wait tcp://redis:6379 \
       -wait http://planner.lodgeofsorceresses.test:80 \
