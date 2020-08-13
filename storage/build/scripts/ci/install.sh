@@ -11,6 +11,7 @@ echo "Renewing Sets-list from PMG..." && ./artisan pmg:sets;
 echo "Caching Configuration..." && ./artisan config:cache;
 echo "Caching Routes..." && ./artisan route:cache;
 echo "Linking Storage..." && ./artisan storage:link;
+echo "Generating Passport keys..." && ./artisan passport:keys;
 echo "Cache warm-up..." && ./artisan cache:warmup;
 
 composer install --prefer-source --no-interaction --no-dev;
