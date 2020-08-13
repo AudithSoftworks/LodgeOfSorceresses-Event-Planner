@@ -2,6 +2,8 @@
 /cypress/fixtures/.*.json
 /cypress/screenshots/*
 /cypress/videos/*
+/database/seeds/SetsTableSeeder.php
+/database/seeds/SkillsTableSeeder.php
 /node_modules
 /public/build
 /public/fonts/*
@@ -16,7 +18,6 @@
 !*.yml
 .gitsecret/keys/random_seed
 _ide_helper.php
+docker-compose.override.yml
 source-map-explorer-tree.html
-database/seeds/SetsTableSeeder.php
-database/seeds/SkillsTableSeeder.php
 old

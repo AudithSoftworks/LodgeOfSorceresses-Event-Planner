@@ -19,4 +19,4 @@ touch ./public/$1.php;
 echo "<?php opcache_reset(); unlink(__FILE__);" | tee ./public/$1.php;
 rm /opt/lodgeofsorceresses/subdomains/planner/current;
 ln -s /opt/lodgeofsorceresses/subdomains/planner/$1 /opt/lodgeofsorceresses/subdomains/planner/current;
-wget -q http://planner.lodgeofsorceresses.com/$1.php
+wget -q https://planner.lodgeofsorceresses.com/$1.php;

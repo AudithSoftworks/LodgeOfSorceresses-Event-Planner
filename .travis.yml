@@ -2,61 +2,166 @@ branches:
   only:
     - master
 
-language: node_js
-node_js:
-  - 12
 dist: bionic
+language: php
+php: 7.4
 services:
   - docker
 
-matrix:
-  fast_finish: true
-  include:
-    - env:
-        - DB_CONNECTION=mysql
-        - DB_HOST=mariadb
-        - DB_USERNAME=root
-    - env:
-        - DB_CONNECTION=pgsql
-        - DB_HOST=postgres
-        - DB_USERNAME=postgres
+stages:
+  - build
+  - deploy
 
-cache:
-  npm: true
-  directories:
-    - ~/.cache/Cypress
-#    - ~/.cache/google-fonts
-    - public/fonts
-    - vendor
-
-install:
-  - chmod -R 0777 ./storage/logs ./storage/framework/views
-  - export PR=https://api.github.com/repos/$TRAVIS_REPO_SLUG/pulls/$TRAVIS_PULL_REQUEST
-  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo `curl -s $PR | jq -r .head.ref`; fi)
-  - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH"
-  - export MYUID=$(id -u) MYGID=$(id -g);
-  - docker-compose pull && docker-compose up -d && docker-compose logs php && docker-compose ps;
-  - echo $(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx) planner.lodgeofsorceresses.test | sudo tee -a /etc/hosts;
-
-before_script:
-  - chmod +x ./storage/build/scripts/ci/build.sh;
-
-script:
-  - ./storage/build/scripts/ci/build.sh;
-
-before_deploy:
+ssh_agent: &ssh_agent
   - openssl aes-256-cbc -K $encrypted_7ee790fc7c4a_key -iv $encrypted_7ee790fc7c4a_iv -in deploy_rsa.enc -out /tmp/deploy_rsa -d
   - eval "$(ssh-agent -s)"
   - chmod 600 /tmp/deploy_rsa
   - ssh-add /tmp/deploy_rsa
 
-deploy:
-  - provider: script
-    skip_cleanup: true
-    script: ./storage/build/scripts/ci/deploy.sh
-    on:
-      branch: master
-      condition: $DB_CONNECTION == 'mysql' && $BRANCH == 'master'
+git_variables: &git_variables
+  - export PR=https://api.github.com/repos/$TRAVIS_REPO_SLUG/pulls/$TRAVIS_PULL_REQUEST
+  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo `curl -s $PR | jq -r .head.ref`; fi)
+  - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH"
 
-after_deploy:
-  - if [[ $DB_CONNECTION == 'mysql' && $BRANCH == 'master' ]]; then ssh lodgeofsorceresses@lodgeofsorceresses.com 'bash -s' < ./storage/build/scripts/ci/install.sh ${TRAVIS_JOB_ID}; fi
+setup_env: &setup_env
+  - chmod -R 0777 ./storage/logs ./storage/framework/views
+  - *git_variables
+  - export MYUID=$(id -u) MYGID=$(id -g)
+  - docker-compose pull && docker-compose up -d && docker-compose logs php && docker-compose ps
+  - echo $(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx) planner.lodgeofsorceresses.test | sudo tee -a /etc/hosts
+  - docker-compose exec php bash -c "
+      crontab -l;
+      sudo chown -R audith:audith ./;
+      mkdir -p ~/.ssh && touch ~/.ssh/known_hosts && chmod 0600 ~/.ssh/known_hosts;
+      ssh-keyscan -H github.com >> ~/.ssh/known_hosts;
+    "
+
+after_failure:
+  - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@lodgeofsorceresses.com "test -d ~/subdomains/planner/${TRAVIS_BUILD_NUMBER} && rm -rf ~/subdomains/planner/${TRAVIS_BUILD_NUMBER}"
+
+jobs:
+  fast_finish: true
+  include:
+#    - stage: build
+#      name: 'Build > Frontend Tests - Firefox #1'
+#      cache:
+#        npm: true
+#        directories:
+#          - ~/.cache/google-fonts
+#          - public/fonts
+#          - vendor
+#      before_script:
+#        - cp docker-compose.cypress.yml docker-compose.override.yml
+#        - *ssh_agent
+#        - *setup_env
+#      script:
+#        - ./storage/build/scripts/ci/build_for_backend.sh
+#        - ./storage/build/scripts/ci/build_for_frontend.sh production
+#        - ./storage/build/scripts/ci/test_frontend.sh
+#      env:
+#        - BROWSER=firefox
+
+    - stage: build
+      name: 'Build > Frontend Tests - Chrome #1'
+      cache:
+        npm: true
+        directories:
+          - ~/.cache/google-fonts
+          - public/fonts
+          - vendor
+      before_script:
+        - cp docker-compose.cypress.yml docker-compose.override.yml
+        - *ssh_agent
+        - *setup_env
+      script:
+        - ./storage/build/scripts/ci/build_for_backend.sh
+        - ./storage/build/scripts/ci/build_for_frontend.sh production
+        - ./storage/build/scripts/ci/test_frontend.sh
+      env:
+        - BROWSER=chrome
+
+    - stage: build
+      name: 'Build > Frontend Tests - Chrome #2'
+      cache:
+        npm: true
+        directories:
+          - ~/.cache/google-fonts
+          - public/fonts
+          - vendor
+      before_script:
+        - cp docker-compose.cypress.yml docker-compose.override.yml
+        - *ssh_agent
+        - *setup_env
+      script:
+        - ./storage/build/scripts/ci/build_for_backend.sh
+        - ./storage/build/scripts/ci/build_for_frontend.sh production
+        - ./storage/build/scripts/ci/test_frontend.sh
+      env:
+        - BROWSER=chrome
+
+    - stage: build
+      name: 'Build > Frontend Tests - Chrome #3'
+      cache:
+        npm: true
+        directories:
+          - ~/.cache/google-fonts
+          - public/fonts
+          - vendor
+      before_script:
+        - cp docker-compose.cypress.yml docker-compose.override.yml
+        - *ssh_agent
+        - *setup_env
+      script:
+        - ./storage/build/scripts/ci/build_for_backend.sh
+        - ./storage/build/scripts/ci/build_for_frontend.sh production
+        - ./storage/build/scripts/ci/test_frontend.sh
+      env:
+        - BROWSER=chrome
+
+    - stage: build
+      name: 'Build > Preliminary Deployment'
+      cache:
+        npm: true
+        directories:
+          - ~/.cache/google-fonts
+          - public/fonts
+          - vendor
+      before_script:
+        - cp docker-compose.ci.yml docker-compose.override.yml
+        - *ssh_agent
+        - *setup_env
+      script:
+        - ./storage/build/scripts/ci/build_for_backend.sh
+        - ./storage/build/scripts/ci/build_for_frontend.sh production
+        - ./storage/build/scripts/ci/deploy.sh
+
+    - stage: build
+      name: 'Build > Backend Tests'
+      cache:
+        npm: true
+        directories:
+          - vendor
+      before_script:
+        - cp docker-compose.ci.yml docker-compose.override.yml
+        - *ssh_agent
+        - *setup_env
+      script:
+        - ./storage/build/scripts/ci/build_for_backend.sh
+        - ./storage/build/scripts/ci/test_backend.sh
+
+    - stage: deploy
+      name: 'Finalize Deployment'
+      cache: false
+      condition:
+        if: false
+      before_script:
+        - *ssh_agent
+        - *git_variables
+      script:
+        - env | grep TRAVIS_
+        - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
+            echo "Skipping finalize-deploy step, as this is a Pull Request. Also deleting artifact uploaded to the Live server.";
+            ssh -o StrictHostKeyChecking=no lodgeofsorceresses@lodgeofsorceresses.com "test -d ~/subdomains/planner/${TRAVIS_BUILD_NUMBER} && rm -rf ~/subdomains/planner/${TRAVIS_BUILD_NUMBER}";
+          else
+            ssh -o StrictHostKeyChecking=no lodgeofsorceresses@lodgeofsorceresses.com 'bash -s' < ./storage/build/scripts/ci/install.sh ${TRAVIS_BUILD_NUMBER};
+          fi

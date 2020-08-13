@@ -38,7 +38,7 @@ class Header extends Component {
         if (me) {
             let canAccessDashboard = me.isMember || me.isSoulshriven;
             navLinks.push(
-                <NavLink exact to={canAccessDashboard ? "/@me" : "/dashboard"} activeClassName="active" title={canAccessDashboard ? "Dashboard" : "Home"}>
+                <NavLink exact to={canAccessDashboard ? "/@me" : "/home"} activeClassName="active" title={canAccessDashboard ? "Dashboard" : "Home"}>
                     <FontAwesomeIcon icon={canAccessDashboard ? faHomeHeart : faHome} size="lg" />
                     <span className="d-none d-sm-inline-block">{canAccessDashboard ? "Dashboard" : "Home"}</span>
                 </NavLink>
@@ -51,7 +51,7 @@ class Header extends Component {
                 </NavLink>
             );
         }
-        if (this.authorizeUser(true)) {
+        if (this.authorizeUser(true) && (me.isMember ? me.linkedAccountsParsed.ips : true)) {
             // navLinks.push(
             //     <NavLink to="/events" activeClassName="active" title="Calendar">
             //         <FontAwesomeIcon icon={faCalendarAlt} size="lg" />

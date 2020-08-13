@@ -49,7 +49,7 @@ class UserOAuth extends Model
 
     protected $fillable = ['*'];
 
-    protected $hidden = ['remote_id', 'name', 'email'];
+    protected $hidden = ['remote_id', 'name', 'email', 'token', 'token_expires_at', 'refresh_token'];
 
     public function owner(): BelongsTo
     {

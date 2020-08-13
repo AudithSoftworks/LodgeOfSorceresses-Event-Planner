@@ -65,6 +65,11 @@ class SyncYoutubeRssFeeds extends Command
                 foreach ($items as $item) {
                     $id = $item->getId();
                     $snippet = $item->getSnippet();
+                    // Skip 'live' streams or 'upcoming' videos
+                    // @see https://developers.google.com/youtube/v3/docs/videos
+                    if ($snippet->getLiveBroadcastContent() !== 'none') {
+                        continue;
+                    }
 
                     $thumbnails = $snippet->getThumbnails();
                     YoutubeFeedsVideo::unguard(true);

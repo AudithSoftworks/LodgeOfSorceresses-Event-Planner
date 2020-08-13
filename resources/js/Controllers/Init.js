@@ -21,8 +21,8 @@ class Init extends PureComponent {
     }
 
     componentDidMount = () => {
-        const { me, myCharacters, sets, skills, content, teams } = this.props;
-        if (me && (me.isMember || me.isSoulshriven)) {
+        const { myCharacters, sets, skills, content, teams } = this.props;
+        if (this.authorizeUser(true)) {
             if (!myCharacters) {
                 this.props.getMyCharactersAction();
             }
@@ -99,7 +99,7 @@ class Init extends PureComponent {
         }
 
         if (!this.authorizeUser(true)) {
-            return <Redirect to="/dashboard" />;
+            return <Redirect to="/home" />;
         }
 
         if (!sets || !skills || !content || !myCharacters || !teams) {

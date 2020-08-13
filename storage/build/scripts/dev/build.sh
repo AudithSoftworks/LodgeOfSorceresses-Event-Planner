@@ -9,7 +9,10 @@ docker-compose ps;
 test -f .env || cat .env.example | tee .env > /dev/null 2>&1;
 
 docker-compose exec php bash -c "
+    export NPM_CONFIG_LOGLEVEL=warn;
+
     crontab -l;
+
     npm config set "@fortawesome:registry" https://npm.fontawesome.com/ && \
     npm config set "//npm.fontawesome.com/:_authToken" ${FONTAWESOME_AUTH_TOKEN}
     npm ci;
@@ -56,12 +59,10 @@ docker-compose exec php bash -c "
     npm run build;
 ";
 
-echo ">>> WAITING for DB to get ready...";
-until docker-compose exec mariadb mysql -D basis -e "SHOW TABLES;" > /dev/null 2>&1; do
-    sleep 1;
-done;
-
 docker-compose exec php bash -c "
+    dockerize -wait tcp://postgres:5432 -timeout 30s echo \"Postgres ready for connections...\";
+    dockerize -wait tcp://mariadb:3306 -timeout 30s echo \"MariaDb ready for connections...\";
+
     composer install --prefer-source --no-interaction;
 
     ./artisan key:generate;
@@ -71,9 +72,12 @@ docker-compose exec php bash -c "
     ./artisan pmg:skills;
     ./artisan pmg:sets;
     ./artisan cache:warmup;
-    ./artisan fixture:populate;
+    ./artisan cypress:fixture:populate;
     ./artisan optimize:clear;
 
     ./vendor/bin/phpunit --debug --verbose;
-    npx cypress run;
+";
+
+docker-compose exec cypress bash -c "
+    cypress run;
 ";
