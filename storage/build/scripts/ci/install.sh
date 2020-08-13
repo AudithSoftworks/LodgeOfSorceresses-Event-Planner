@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if [ "$TRAVIS_PULL_REQUEST" == "true" ]; then
+    exit 0;
+fi;
+
 cd /opt/lodgeofsorceresses/subdomains/planner/$1;
 chmod u+rwx ./storage/logs;
 

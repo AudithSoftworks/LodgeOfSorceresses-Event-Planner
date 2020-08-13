@@ -18,11 +18,14 @@ ssh_agent: &ssh_agent
   - chmod 600 /tmp/deploy_rsa
   - ssh-add /tmp/deploy_rsa
 
-setup_env: &setup_env
-  - chmod -R 0777 ./storage/logs ./storage/framework/views
+git_variables: &git_variables
   - export PR=https://api.github.com/repos/$TRAVIS_REPO_SLUG/pulls/$TRAVIS_PULL_REQUEST
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo `curl -s $PR | jq -r .head.ref`; fi)
   - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH"
+
+setup_env: &setup_env
+  - chmod -R 0777 ./storage/logs ./storage/framework/views
+  - *git_variables
   - export MYUID=$(id -u) MYGID=$(id -g)
   - docker-compose pull && docker-compose up -d && docker-compose logs php && docker-compose ps
   - echo $(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx) planner.lodgeofsorceresses.test | sudo tee -a /etc/hosts
@@ -39,43 +42,43 @@ after_failure:
 jobs:
   fast_finish: true
   include:
-    - stage: build
-      name: 'Build > Frontend Tests - Firefox #1'
-      cache:
-        npm: true
-        directories:
-          - ~/.cache/google-fonts
-          - public/fonts
-          - vendor
-      before_script:
-        - cp docker-compose.cypress.yml docker-compose.override.yml
-        - *ssh_agent
-        - *setup_env
-      script:
-        - ./storage/build/scripts/ci/build_for_backend.sh
-        - ./storage/build/scripts/ci/build_for_frontend.sh
-        - ./storage/build/scripts/ci/test_frontend.sh
-      env:
-        - BROWSER=firefox
-
-    - stage: build
-      name: 'Build > Frontend Tests - Firefox #2'
-      cache:
-        npm: true
-        directories:
-          - ~/.cache/google-fonts
-          - public/fonts
-          - vendor
-      before_script:
-        - cp docker-compose.cypress.yml docker-compose.override.yml
-        - *ssh_agent
-        - *setup_env
-      script:
-        - ./storage/build/scripts/ci/build_for_backend.sh
-        - ./storage/build/scripts/ci/build_for_frontend.sh
-        - ./storage/build/scripts/ci/test_frontend.sh
-      env:
-        - BROWSER=firefox
+#    - stage: build
+#      name: 'Build > Frontend Tests - Firefox #1'
+#      cache:
+#        npm: true
+#        directories:
+#          - ~/.cache/google-fonts
+#          - public/fonts
+#          - vendor
+#      before_script:
+#        - cp docker-compose.cypress.yml docker-compose.override.yml
+#        - *ssh_agent
+#        - *setup_env
+#      script:
+#        - ./storage/build/scripts/ci/build_for_backend.sh
+#        - ./storage/build/scripts/ci/build_for_frontend.sh
+#        - ./storage/build/scripts/ci/test_frontend.sh
+#      env:
+#        - BROWSER=firefox
+#
+#    - stage: build
+#      name: 'Build > Frontend Tests - Firefox #2'
+#      cache:
+#        npm: true
+#        directories:
+#          - ~/.cache/google-fonts
+#          - public/fonts
+#          - vendor
+#      before_script:
+#        - cp docker-compose.cypress.yml docker-compose.override.yml
+#        - *ssh_agent
+#        - *setup_env
+#      script:
+#        - ./storage/build/scripts/ci/build_for_backend.sh
+#        - ./storage/build/scripts/ci/build_for_frontend.sh
+#        - ./storage/build/scripts/ci/test_frontend.sh
+#      env:
+#        - BROWSER=firefox
 
     - stage: build
       name: 'Build > Frontend Tests - Chrome #1'
@@ -153,5 +156,6 @@ jobs:
         if: false
       before_script:
         - *ssh_agent
+        - *git_variables
       script:
         - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@lodgeofsorceresses.com 'bash -s' < ./storage/build/scripts/ci/install.sh ${TRAVIS_BUILD_NUMBER};
