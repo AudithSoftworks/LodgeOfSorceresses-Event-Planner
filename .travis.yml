@@ -132,7 +132,7 @@ jobs:
         - *setup_env
       script:
         - ./storage/build/scripts/ci/build_for_backend.sh
-        - ./storage/build/scripts/ci/build_for_frontend.sh
+        - ./storage/build/scripts/ci/build_for_frontend.sh production
         - ./storage/build/scripts/ci/deploy.sh
 
     - stage: build

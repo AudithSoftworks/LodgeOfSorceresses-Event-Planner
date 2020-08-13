@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+export NODE_ENV='development';
+if [ "$1" == 'production' ]; then
+    export NODE_ENV='production';
+fi;
+
 docker-compose exec php bash -c "
     export NPM_CONFIG_LOGLEVEL=warn;
     npm config set "@fortawesome:registry" https://npm.fontawesome.com/ && \
@@ -44,5 +49,5 @@ docker-compose exec php bash -c "
         convertFonts.sh --use-font-weight --output=public/fonts/sovngarde/stylesheet.css public/fonts/sovngarde/*.ttf;
     fi;
 
-    NODE_ENV=development npm run build;
+    NODE_ENV=${NODE_ENV} npm run build;
 ";

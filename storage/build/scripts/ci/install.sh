@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
+env | grep TRAVIS_;
 if [ "$TRAVIS_PULL_REQUEST" == "true" ]; then
+    echo "Skipping finalize-deploy step, as this is a Pull Request.";
     exit 0;
 fi;
 
