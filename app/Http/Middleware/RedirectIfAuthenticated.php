@@ -1,27 +1,31 @@
 <?php namespace App\Http\Middleware;
 
 use App\Exceptions\Users\UserAlreadyLoggedInException;
-use Illuminate\Http\Request;
+use App\Providers\RouteServiceProvider;
+use Closure;
+use Illuminate\Support\Facades\Auth;
 
 class RedirectIfAuthenticated
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  \Closure                 $next
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure $next
+     * @param string|null $guard
      *
-     * @return \Closure|\Illuminate\Http\RedirectResponse
      * @throws \App\Exceptions\Users\UserAlreadyLoggedInException
+     *
+     * @return mixed
      */
-    public function handle(Request $request, \Closure $next)
+    public function handle($request, Closure $next, $guard = null)
     {
-        if (app('auth.driver')->check()) {
+        if (Auth::guard($guard)->check()) {
             if ($request->expectsJson()) {
                 throw new UserAlreadyLoggedInException;
             }
 
-            return redirect('/');
+            return redirect(RouteServiceProvider::HOME);
         }
 
         return $next($request);

@@ -2,12 +2,18 @@
 
 namespace App\Providers;
 
-use App\Models\Team;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
+    /**
+     * The path to the "home" route for your application.
+     *
+     * @var string
+     */
+    public const HOME = '/';
+
     /**
      * This namespace is applied to the controller routes in your routes file.
      * In addition, it is set as the URL generator's root namespace.
@@ -52,8 +58,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapWebRoutes(): void
     {
-        app('router')
-            ->middleware('web')
+        Route::middleware('web')
             ->namespace($this->namespace)
             ->group(base_path('routes/web.php'));
     }
@@ -66,10 +71,9 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapApiRoutes(): void
     {
-        app('router')
+        Route::prefix('api')
             ->middleware('api')
             ->namespace($this->namespace)
-            ->prefix('api')
             ->group(base_path('routes/api.php'));
     }
 }
