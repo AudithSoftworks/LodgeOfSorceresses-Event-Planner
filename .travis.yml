@@ -18,14 +18,15 @@ ssh_agent: &ssh_agent
   - chmod 600 /tmp/deploy_rsa
   - ssh-add /tmp/deploy_rsa
 
-git_variables: &git_variables
+env_vars: &env_vars
   - export PR=https://api.github.com/repos/$TRAVIS_REPO_SLUG/pulls/$TRAVIS_PULL_REQUEST
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo `curl -s $PR | jq -r .head.ref`; fi)
   - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH"
+  - ./storage/build/scripts/ci/create_travis_env_file.sh
 
 setup_env: &setup_env
   - chmod -R 0777 ./storage/logs ./storage/framework/views
-  - *git_variables
+  - *env_vars
   - export MYUID=$(id -u) MYGID=$(id -g)
   - docker-compose pull && docker-compose up -d && docker-compose logs php && docker-compose ps
   - echo $(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx) planner.lodgeofsorceresses.test | sudo tee -a /etc/hosts
@@ -156,9 +157,8 @@ jobs:
         if: false
       before_script:
         - *ssh_agent
-        - *git_variables
+        - *env_vars
       script:
-        - env | grep TRAVIS_
         - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
             echo "Skipping finalize-deploy step, as this is a Pull Request. Also deleting artifact uploaded to the Live server.";
             ssh -o StrictHostKeyChecking=no lodgeofsorceresses@lodgeofsorceresses.com "test -d ~/subdomains/planner/${TRAVIS_BUILD_NUMBER} && rm -rf ~/subdomains/planner/${TRAVIS_BUILD_NUMBER}";
