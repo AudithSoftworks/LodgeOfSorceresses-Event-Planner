@@ -15,3 +15,5 @@ services:
       - .:/var/www
       - ./cypress:/cypress
       - ./cypress.json:/cypress.json
+    env_file:
+      - .travis_env

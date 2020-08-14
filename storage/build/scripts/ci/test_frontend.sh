@@ -18,5 +18,5 @@ docker-compose exec php bash -c "
 ";
 
 docker-compose exec cypress bash -c "
-    cypress run --ci-build-id=${TRAVIS_BUILD_NUMBER} --browser=${BROWSER} --group=${BROWSER} --record --parallel --key ${CYPRESS_KEY};
+    cypress run --browser=${BROWSER} --group=${BROWSER} --record --parallel --key ${CYPRESS_KEY};
 ";
