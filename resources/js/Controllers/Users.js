@@ -48,8 +48,9 @@ class Users extends PureComponent {
         if (me) {
             const { allUsers } = this.state;
             this.cancelTokenSource = axios.CancelToken.source();
+            let promiseRet = undefined;
             if (match.params.id) {
-                getUser(this.cancelTokenSource, match.params.id)
+                promiseRet = getUser(this.cancelTokenSource, match.params.id)
                     .then(user => {
                         if (!user.result) {
                             dispatch(errorsAction('User not found.'));
@@ -68,15 +69,9 @@ class Users extends PureComponent {
                             .catch(error => {
                                 throw error;
                             });
-                    })
-                    .catch(error => {
-                        if (!axios.isCancel(error)) {
-                            const message = error.response.data.message || error.response.statusText || error.message;
-                            dispatch(errorsAction(message));
-                        }
                     });
             } else if (!allUsers) {
-                getAllUsers(this.cancelTokenSource)
+                promiseRet = getAllUsers(this.cancelTokenSource)
                     .then(allUsers => {
                         if (!allUsers.result.length) {
                             dispatch(
@@ -95,6 +90,14 @@ class Users extends PureComponent {
                         this.cancelTokenSource = null;
                         this.setState({ allUsers, user: null });
                     });
+            }
+            if (promiseRet !== undefined && promiseRet instanceof Promise) {
+                promiseRet.catch(error => {
+                    if (!axios.isCancel(error)) {
+                        const message = error.response.data.message || error.response.statusText || error.message;
+                        dispatch(errorsAction(message));
+                    }
+                });
             }
         }
     };

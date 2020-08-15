@@ -4,6 +4,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Foundation\Http\Exceptions\MaintenanceModeException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Validation\ValidationException as IlluminateValidationException;
@@ -26,6 +27,7 @@ class Handler extends ExceptionHandler
         TokenMismatchException::class,
         IlluminateValidationException::class,
         ModelNotFoundException::class,
+        MaintenanceModeException::class,
     ];
 
     /**
@@ -44,8 +46,9 @@ class Handler extends ExceptionHandler
      *
      * @param \Throwable $e
      *
-     * @return void
      * @throws \Exception
+     *
+     * @return void
      */
     public function report(Throwable $e): void
     {
@@ -56,12 +59,12 @@ class Handler extends ExceptionHandler
      * Render an exception into an HTTP response.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Throwable               $e
+     * @param \Throwable $e
      *
-     * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Throwable
+     * @return \Symfony\Component\HttpFoundation\Response|void
      */
-    public function render($request, Throwable $e): SymfonyHttpResponse
+    public function render($request, Throwable $e)
     {
         $requestExpectsJson = $request->expectsJson();
         if ($e instanceof ModelNotFoundException || $e instanceof AuthorizationException) {
@@ -73,6 +76,14 @@ class Handler extends ExceptionHandler
                         : JsonResponse::HTTP_FORBIDDEN
                 )
                 : redirect()->guest('/logout')->withErrors($e->getMessage());
+        }
+
+        if ($e instanceof MaintenanceModeException) {
+            return $requestExpectsJson
+                ? response()->json(['message' => 'Service Unavailable due to Maintenance.'], JsonResponse::HTTP_SERVICE_UNAVAILABLE)
+                : abort(JsonResponse::HTTP_SERVICE_UNAVAILABLE, !empty($message = $e->getMessage())
+                    ? 'Service Unavailable due to Maintenance: ' . $message
+                    : 'Service Unavailable due to Maintenance');
         }
 
         if ($e instanceof InvalidStateException) {
@@ -91,7 +102,7 @@ class Handler extends ExceptionHandler
     /**
      * Convert an authentication exception into an unauthenticated response.
      *
-     * @param \Illuminate\Http\Request                 $request
+     * @param \Illuminate\Http\Request $request
      * @param \Illuminate\Auth\AuthenticationException $exception
      *
      * @return SymfonyHttpResponse
