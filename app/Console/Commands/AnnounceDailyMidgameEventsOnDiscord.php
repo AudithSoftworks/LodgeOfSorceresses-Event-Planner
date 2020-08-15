@@ -85,9 +85,9 @@ class AnnounceDailyMidgameEventsOnDiscord extends Command
         $message = [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
-                    'content' => 'Guten morgen, @everyone! :wink:'
+                    'content' => 'Good morning, @everyone! :wink:'
                         . PHP_EOL . 'For today\'s Midgame (DLC Dungeon) event, please emote here with :shield: , :ambulance: , :crossed_swords: or :bow_and_arrow: indicating your all available roles.'
-                        . PHP_EOL . '**Please make sure you are online 5 minutes before event time! Don\'t signup if not sure.**',
+                        . PHP_EOL . '**Please respect your guildies and try not to be late. Being online 5 minutes before event time helps a lot!**',
                     'tts' => true,
                     'embed' => [
                         'color' => 0x00aa00,
