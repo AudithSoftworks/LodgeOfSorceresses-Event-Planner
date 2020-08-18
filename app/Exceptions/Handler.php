@@ -89,7 +89,7 @@ class Handler extends ExceptionHandler
         if ($e instanceof InvalidStateException) {
             return $requestExpectsJson
                 ? response()->json(['message' => 'Session Expired. Please refresh the page!'], JsonResponse::HTTP_UNAUTHORIZED)
-                : redirect()->guest('/logout')->withErrors('Access Denied!');
+                : redirect()->guest('/logout')->withErrors('Session Expired. Please refresh the page!');
         }
 
         if ($request->method() !== 'GET' && $request->header('content-type') === 'application/x-www-form-urlencoded') {
