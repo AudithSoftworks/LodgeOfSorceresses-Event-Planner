@@ -8,6 +8,8 @@ import { Link } from "react-router-dom";
 import v4 from "react-uuid";
 import { transformAnchors } from "../../helpers";
 import { attendance } from "../../vendor/data";
+import Loading from "../Loading";
+import Notification from "../Notification";
 
 class BaseView extends PureComponent {
     noEvent = () => [
@@ -24,22 +26,29 @@ class BaseView extends PureComponent {
 }
 
 BaseView.propTypes = {
-    start: PropTypes.object,
-    end: PropTypes.object,
+    start: PropTypes.object, // [null = no attendances found; undefined = attendances to be loaded]
+    end: PropTypes.object, // [null = no attendances found; undefined = attendances to be loaded]
     events: PropTypes.arrayOf(attendance),
 };
 
 class ListView extends BaseView {
     render = () => {
         const { start, end } = this.props;
-        const startDate = start && start instanceof moment ? moment(start).startOf("isoWeek") : moment().startOf("month");
-        const endDate = end && end instanceof moment ? moment(end).endOf("isoWeek") : moment().endOf("month");
+
+        if (start === undefined || end === undefined) {
+            return [<Loading message="Fetching attendance data..." key="loading" />, <Notification key="notifications" />];
+        }
+
+        const startDate = start !== null && start instanceof moment ? moment(start) : moment();
+        startDate.startOf("isoWeek");
+        const endDate = end !== null && end instanceof moment ? moment(end) : moment();
+        endDate.endOf("isoWeek");
 
         const daysRendered = [];
         for (
-            let date = moment(startDate), weekOfYear = date.isoWeek();
-            date.isSameOrBefore(endDate, "second");
-            date = moment(date).add(1, "weeks")
+            let date = moment(endDate), weekOfYear = date.isoWeek();
+            date.isSameOrAfter(startDate, "second");
+            date = moment(date).subtract(1, "weeks")
         ) {
             if (!date.isSame(startDate, "second") && date.isoWeek() !== weekOfYear) {
                 weekOfYear = date.isoWeek();
@@ -66,6 +75,7 @@ class ListView extends BaseView {
                     </tr>
                 );
             });
+
             if (eventsRendered.length) {
                 daysRendered.push(
                     <table
@@ -74,15 +84,29 @@ class ListView extends BaseView {
                         <caption
                             data-count={eventsRendered.length + " attendance(s)"}
                             data-current-week={date.isSame(moment(), 'isoWeek') ? 'true' : 'false'}>
-                            {date.format("[Week #]ww[]")}
+                            {date.format("[Week #]WW[]")}
                         </caption>
-                        <tbody>{eventsRendered.length ? eventsRendered : this.noEvent()}</tbody>
+                        <tbody>{eventsRendered}</tbody>
                     </table>
                 );
             }
         }
 
-        return [...daysRendered];
+        if (daysRendered.length === 0) {
+            daysRendered.push(
+                <table
+                    key={"week-table-empty"}
+                    className="attendances list-view col-md-24">
+                    <caption data-count={"0 attendance(s)"} />
+                    <tbody>{this.noEvent()}</tbody>
+                </table>
+            );
+        }
+
+        return [
+            <h3 className="col-md-24 mt-5" key="heading">Their Attendances</h3>,
+            ...daysRendered,
+        ];
     };
 }
 

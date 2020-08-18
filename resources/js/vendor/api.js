@@ -3,14 +3,27 @@ import React from "react";
 import axios from "./axios";
 import * as schema from "./schema";
 
-export const getAttendances = (cancelToken, userId) =>
+export const getAttendances = (cancelToken, userId, params) =>
+    // Object.values(params).reduce((acc, curr) => [acc, "&", curr], "");
     axios
-        .get("/api/attendances/" + userId, {
-            cancelToken: cancelToken.token,
-        })
+        .get(
+            "/api/attendances/" + userId + '?' + (
+                params
+                    ? Object
+                        .keys(params)
+                        .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
+                        .join('&')
+                    : ''
+            ), {
+                cancelToken: cancelToken.token,
+            }
+        )
         .then(response => {
             if (response.data) {
-                return normalize(response.data, schema.listOfAttendances);
+                return {
+                    body: normalize(response.data, schema.listOfAttendances),
+                    headers: response.headers,
+                };
             }
 
             return null;
