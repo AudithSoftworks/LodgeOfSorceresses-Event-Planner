@@ -19,11 +19,14 @@ class AttendanceController extends Controller
     {
         $this->authorize('user', User::class);
 
-        $query = Attendance::query()//            ->where('created_at', '>=', new CarbonImmutable('4 weeks ago Monday'))
-        ;
-        $attendances = $query->whereHas('attendees', static function (Builder $query) use ($userId) {
-            $query->where('user_id', $userId);
-        })->with('attendees')->orderBy('created_at')->get();
+        $attendances = Attendance::query()
+            ->select('attendances.*')
+            ->whereHas('attendees', static function (Builder $query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->with('attendees')
+            ->orderBy('created_at')
+            ->get();
         if ($attendances->count()) {
             $ipsApi = app('ips.api');
             foreach ($attendances as $attendance) {

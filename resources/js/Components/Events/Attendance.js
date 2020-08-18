@@ -16,10 +16,10 @@ class BaseView extends PureComponent {
         </tr>,
     ];
 
-    getEventsForGivenWeek = date => {
+    getEventsOfTheSameWeekAsGivenWeek = date => {
         const { events } = this.props;
 
-        return events.filter(event => moment(event["created_at"]).isSame(date, "week"));
+        return events.filter(event => moment(event["created_at"]).isSame(date, "isoWeek"));
     };
 }
 
@@ -37,17 +37,16 @@ class ListView extends BaseView {
 
         const daysRendered = [];
         for (
-            let date = moment(startDate), weekOfYear = date.isoWeek(), colorHue = 360 * Math.random();
+            let date = moment(startDate), weekOfYear = date.isoWeek();
             date.isSameOrBefore(endDate, "second");
             date = moment(date).add(1, "weeks")
         ) {
             if (!date.isSame(startDate, "second") && date.isoWeek() !== weekOfYear) {
-                colorHue = 360 * Math.random();
                 weekOfYear = date.isoWeek();
             }
 
             const eventsRendered = [];
-            this.getEventsForGivenWeek(date).forEach(event => {
+            this.getEventsOfTheSameWeekAsGivenWeek(date).forEach(event => {
                 const galleryImagesRendered = event.gallery_images.map(image => (<li key={v4()}><a href={image.large} target='_blank'><img alt='' src={image.small} /></a></li>));
                 const createdByLink = event.created_by ? (
                     <>-- <i><Link to={'/users/' + event.created_by.id}>{event.created_by.name}</Link></i></>
