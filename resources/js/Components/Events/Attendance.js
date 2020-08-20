@@ -13,9 +13,20 @@ import Notification from "../Notification";
 
 class BaseView extends PureComponent {
     noEvent = () => [
-        <tr key={"event-none"}>
-            <td>No attendance records</td>
-        </tr>,
+        <table
+            key={"week-table-empty"}
+            className="attendances list-view col-md-24">
+            <caption
+                data-current-week='true'
+                data-count='0 attendance(s)'>
+                {moment().format("[Weeks #]WW[]") + ' through ' + moment().subtract(3, 'weeks').format("[#]WW[]")}
+            </caption>
+            <tbody>
+                <tr key={"event-none"}>
+                    <td>No attendance records found for the past 3 weeks.</td>
+                </tr>
+            </tbody>
+        </table>
     ];
 
     getEventsOfTheSameWeekAsGivenWeek = date => {
@@ -93,14 +104,7 @@ class ListView extends BaseView {
         }
 
         if (daysRendered.length === 0) {
-            daysRendered.push(
-                <table
-                    key={"week-table-empty"}
-                    className="attendances list-view col-md-24">
-                    <caption data-count={"0 attendance(s)"} />
-                    <tbody>{this.noEvent()}</tbody>
-                </table>
-            );
+            daysRendered.push(this.noEvent());
         }
 
         return [

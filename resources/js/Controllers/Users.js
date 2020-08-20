@@ -4,7 +4,7 @@ import { faChevronCircleLeft } from "@fortawesome/pro-light-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
 import PropTypes from "prop-types";
-import React, { PureComponent } from "react";
+import React, { Fragment, PureComponent } from "react";
 import { connect } from "react-redux";
 import { Link, Redirect } from "react-router-dom";
 import { errorsAction, infosAction, warningsAction } from "../actions/notifications";
@@ -69,14 +69,40 @@ class Users extends PureComponent {
                         getAttendances(this.cancelTokenSource, match.params.id)
                             .then(attendances => {
                                 this.cancelTokenSource = null;
-                                const attendancesArray = Array.from(attendances.body.result, id => attendances.body.entities["attendance"][id]);
-                                if (attendancesArray.length === 0) {
-                                    dispatch(warningsAction('No attendances for past 3 weeks were found.'));
+                                if (attendances) {
+                                    const attendancesArray = Array.from(attendances.body.result, id => attendances.body.entities["attendance"][id]);
+                                    const firstAttendanceDateHeader = attendances.headers['x-first-attendance-date'];
+                                    if (attendancesArray.length === 0) {
+                                        const message = [];
+                                        if (firstAttendanceDateHeader) {
+                                            message.push(
+                                                <Fragment key="f-1">No attendance records were found for last 3 weeks. </Fragment>,
+                                                <Fragment key="f-2">Feel free to load older records a week at a time.</Fragment>,
+                                            );
+                                        } else {
+                                            message.push(
+                                                <Fragment key="f-1">User has no attendance records.</Fragment>,
+                                            );
+                                        }
+                                        dispatch(
+                                            infosAction(
+                                                message,
+                                                {
+                                                    container: "bottom-center",
+                                                    animationIn: ["animated", "bounceInDown"],
+                                                    animationOut: ["animated", "bounceOutDown"],
+                                                    dismiss: { duration: 30000 },
+                                                    width: 350,
+                                                },
+                                                "no-attendances-at-first"
+                                            )
+                                        );
+                                    }
+                                    this.setState({
+                                        attendances: attendancesArray,
+                                        firstAttendanceDate: firstAttendanceDateHeader,
+                                    });
                                 }
-                                this.setState({
-                                    attendances: attendancesArray,
-                                    firstAttendanceDate: attendances.headers['x-first-attendance-date'],
-                                });
                             })
                             .catch(error => {
                                 throw error;
@@ -123,16 +149,19 @@ class Users extends PureComponent {
         getAttendances(this.cancelTokenSource, match.params.id, { b: dataBeforeAttrValue })
             .then(attendances => {
                 this.cancelTokenSource = null;
-                const attendancesArray = Array.from(attendances.body.result, id => attendances.body.entities["attendance"][id]);
-                if (attendancesArray.length === 0) {
-                    dispatch(warningsAction('Reached the end of attendance list.'));
+                if (attendances) {
+                    const attendancesArray = Array.from(attendances.body.result, id => attendances.body.entities["attendance"][id]);
+                    if (attendancesArray.length === 0) {
+                        dispatch(warningsAction('Reached the end of attendance list.'));
+                        currentTarget.remove();
 
-                    return;
+                        return;
+                    }
+                    currentTarget.removeAttribute("disabled");
+                    this.setState({
+                        attendances: [...this.state.attendances, ...attendancesArray],
+                    });
                 }
-                currentTarget.removeAttribute("disabled");
-                this.setState({
-                    attendances: [...this.state.attendances, ...attendancesArray],
-                });
             })
             .catch(error => {
                 throw error;
@@ -167,10 +196,10 @@ class Users extends PureComponent {
                                   ? startDate.format()
                                   : moment().subtract(3, 'weeks').startOf("isoWeek").format()
                           }
-                          onClick={event => this.loadMore(event)}>load older attendances for next active week</button>
+                          onClick={event => this.loadMore(event)}>load older records</button>
                 : <button key='load-more-button'
                           className='btn btn-primary btn-sm ml-auto mr-auto'
-                          disabled={true}>no loadable attendances exist</button>;
+                          disabled={true}>nothing to load</button>;
         }
 
         const characterListRendered = user.characters.length

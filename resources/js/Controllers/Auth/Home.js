@@ -29,14 +29,17 @@ class Home extends PureComponent {
             getAttendances(this.cancelTokenSource, me.id)
                 .then(attendances => {
                     this.cancelTokenSource = null;
-                    const attendancesArray = Array.from(attendances.result, id => attendances.entities["attendance"][id]);
-                    this.setState({
-                        attendances: attendancesArray,
-                    });
+                    if (attendances) {
+                        const attendancesArray = Array.from(attendances.body.result, id => attendances.body.entities["attendance"][id]);
+                        this.setState({
+                            attendances: attendancesArray,
+                        });
+                    }
                 })
                 .catch(error => {
                     if (!axios.isCancel(error)) {
-                        const message = error.response.data.message || error.response.statusText || error.message;
+                        console.log(error)
+                        const message = (error.response && (error.response.data.message || error.response.statusText)) || error.message;
                         dispatch(errorsAction(message));
                     }
                 });
@@ -129,10 +132,13 @@ class Home extends PureComponent {
                     <h3>Important Readings</h3>
                     <ul>
                         <li><a href='https://lodgeofsorceresses.com/topic/423-guild-introduction-lodge-of-sorceresses/' target='_blank'>Guild Introduction</a></li>
-                        <li><a href='https://lodgeofsorceresses.com/topic/423-guild-introduction-lodge-of-sorceresses/?do=findComment&comment=12160' target='_blank'>Guild Requirements (for Members)</a></li>
+                        <li><a href='https://lodgeofsorceresses.com/topic/423-guild-introduction-lodge-of-sorceresses/?do=findComment&comment=12160' target='_blank'>Guild Requirements (for
+                            Members)</a></li>
                         <li><a href='https://lodgeofsorceresses.com/topic/5741-pve-content-clearance-guide/' target='_blank'>Tier-based Content Clearance Model</a></li>
-                        <li><a href='https://lodgeofsorceresses.com/topic/5506-endgame-progression-guidelines-for-cores-upd-2020-02-18/' target='_blank'>Endgame Attendance Guidelines for Raid Cores</a></li>
-                        <li><a href='https://lodgeofsorceresses.com/topic/423-guild-introduction-lodge-of-sorceresses/?do=findComment&comment=10741' target='_blank'>What is Open Initiative (aka Soulshriven project)?</a></li>
+                        <li><a href='https://lodgeofsorceresses.com/topic/5506-endgame-progression-guidelines-for-cores-upd-2020-02-18/' target='_blank'>Endgame Attendance Guidelines for Raid
+                            Cores</a></li>
+                        <li><a href='https://lodgeofsorceresses.com/topic/423-guild-introduction-lodge-of-sorceresses/?do=findComment&comment=10741' target='_blank'>What is Open Initiative (aka
+                            Soulshriven project)?</a></li>
                         <li><a href='https://lodgeofsorceresses.com/topic/5751-open-events-organization-guidelines/' target='_blank'>Open Events Organization Guidelines</a></li>
                     </ul>
                 </article>

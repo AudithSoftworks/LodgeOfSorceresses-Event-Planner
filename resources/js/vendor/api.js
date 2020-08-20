@@ -3,8 +3,7 @@ import React from "react";
 import axios from "./axios";
 import * as schema from "./schema";
 
-export const getAttendances = (cancelToken, userId, params) =>
-    // Object.values(params).reduce((acc, curr) => [acc, "&", curr], "");
+export const getAttendances = (cancelToken, userId, params = {}) =>
     axios
         .get(
             "/api/attendances/" + userId + '?' + (
