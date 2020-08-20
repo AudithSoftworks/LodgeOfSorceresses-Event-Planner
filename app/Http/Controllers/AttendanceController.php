@@ -6,10 +6,13 @@ use App\Models\Attendance;
 use App\Models\User;
 use App\Traits\Attendance\IsAttendance;
 use Carbon\CarbonImmutable;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class AttendanceController extends Controller
 {
@@ -27,6 +30,15 @@ class AttendanceController extends Controller
     {
         $this->authorize('user', User::class);
 
+        $validator = Validator::make($request->all(), [
+            'b' => 'sometimes|date_format:' . DateTimeInterface::ATOM,
+        ], [
+            'b.date_format' => '"b" parameter needs to be in ISODate format.',
+        ]);
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
         $firstEverAttendance = Attendance::query()
             ->select('attendances.*')
             ->whereHas('attendees', static function (Builder $query) use ($userId) {
@@ -42,8 +54,8 @@ class AttendanceController extends Controller
             })
             ->with('attendees')
             ->orderBy('created_at', 'desc');
-        if ($request->has('b') && preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}$/', $offsetDate = $request->get('b'))) {
-            $offsetDate = (new CarbonImmutable($offsetDate));
+        if ($request->has('b')) {
+            $offsetDate = (new CarbonImmutable($request->get('b')));
             $attendances = new EloquentCollection();
             if ($firstEverAttendance !== null) {
                 while ($attendances->count() === 0) {

@@ -40,11 +40,12 @@ BaseView.propTypes = {
     start: PropTypes.object, // [null = no attendances found; undefined = attendances to be loaded]
     end: PropTypes.object, // [null = no attendances found; undefined = attendances to be loaded]
     events: PropTypes.arrayOf(attendance),
+    heading: PropTypes.string,
 };
 
 class ListView extends BaseView {
     render = () => {
-        const { start, end } = this.props;
+        const { heading, start, end } = this.props;
 
         if (start === undefined || end === undefined) {
             return [<Loading message="Fetching attendance data..." key="loading" />, <Notification key="notifications" />];
@@ -108,7 +109,7 @@ class ListView extends BaseView {
         }
 
         return [
-            <h3 className="col-md-24 mt-5" key="heading">Their Attendances</h3>,
+            <h3 className="col-md-24 mt-5" key="heading">{heading || 'Their Attendances'}</h3>,
             ...daysRendered,
         ];
     };

@@ -18,7 +18,7 @@ class Home extends PureComponent {
         super(props);
         this.authorizeUser = authorizeUser.bind(this);
         this.state = {
-            attendances: [],
+            attendances: null,
         };
     }
 
@@ -55,12 +55,12 @@ class Home extends PureComponent {
             return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
         }
         const { attendances } = this.state;
-        const startDate = attendances.length ? moment(attendances[0]["created_at"]) : undefined;
-        const endDate = attendances.length ? moment(attendances[attendances.length - 1]["created_at"]) : undefined;
-        const attendancesRendered = attendances.length ? [
-            <h3 className="col-md-24 mt-5" key="heading">My Attendances</h3>,
-            <Attendance.ListView start={startDate} end={endDate} events={attendances} key="attendances" />
-        ] : [];
+        let startDate = undefined;
+        let endDate = undefined;
+        if (attendances !== null && attendances instanceof Array) {
+            startDate = attendances.length ? moment(attendances[attendances.length - 1]["created_at"]) : null;
+            endDate = attendances.length ? moment(attendances[0]["created_at"]) : null;
+        }
 
         return [
             <section className="col-md-13 col-lg-17 p-0 mb-4 dashboard" key="dashboard">
@@ -126,7 +126,7 @@ class Home extends PureComponent {
                             ]}
                     </dd>
                 </dl>
-                {[...attendancesRendered]}
+                <Attendance.ListView start={startDate} end={endDate} events={attendances} heading='My Attendances' key="attendances" />
                 <article className='col-md-24 mt-5'>
                     <h3>Important Readings</h3>
                     <ul>

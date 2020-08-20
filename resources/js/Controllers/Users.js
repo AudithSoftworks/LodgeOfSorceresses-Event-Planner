@@ -164,7 +164,8 @@ class Users extends PureComponent {
                 }
             })
             .catch(error => {
-                throw error;
+                const message = (error.response && (error.response.data.message || error.response.statusText)) || error.message;
+                dispatch(errorsAction(message));
             });
     };
 
