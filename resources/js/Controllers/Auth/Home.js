@@ -38,7 +38,6 @@ class Home extends PureComponent {
                 })
                 .catch(error => {
                     if (!axios.isCancel(error)) {
-                        console.log(error)
                         const message = (error.response && (error.response.data.message || error.response.statusText)) || error.message;
                         dispatch(errorsAction(message));
                     }
