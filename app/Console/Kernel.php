@@ -16,7 +16,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command(Commands\AnnounceDailyMidgameEventsOnDiscord::class)->dailyAt('10:00')->timezone('Europe/Berlin')->sendOutputTo(self::LOG_FILE, true);
+        $schedule->command(Commands\AnnounceDailyMidgameEventsOnDiscord::class)->dailyAt('08:30')->timezone('Europe/Berlin')->sendOutputTo(self::LOG_FILE, true);
         $schedule->command(Commands\PruneOrphanedFiles::class)->weekly()->timezone('Europe/Berlin')->sendOutputTo(self::LOG_FILE, true);
         $schedule->command(Commands\RequestDpsParseRenewal::class)->monthlyOn(15, '07:00')->timezone('Europe/Berlin')->sendOutputTo(self::LOG_FILE, true);
         $schedule->command(Commands\SyncOauthAccounts::class)->dailyAt('05:00')->timezone('Europe/Berlin')->sendOutputTo(self::LOG_FILE, true);

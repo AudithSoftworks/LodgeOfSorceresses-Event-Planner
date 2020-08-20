@@ -4,10 +4,10 @@ import { faChevronCircleLeft } from "@fortawesome/pro-light-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
 import PropTypes from "prop-types";
-import React, { PureComponent } from "react";
+import React, { Fragment, PureComponent } from "react";
 import { connect } from "react-redux";
 import { Link, Redirect } from "react-router-dom";
-import { errorsAction, infosAction } from "../actions/notifications";
+import { errorsAction, infosAction, warningsAction } from "../actions/notifications";
 import List from "../Components/Characters/List";
 import * as Attendance from "../Components/Events/Attendance";
 import Loading from "../Components/Loading";
@@ -23,7 +23,8 @@ class Users extends PureComponent {
         this.state = {
             allUsers: null,
             user: null,
-            attendances: [],
+            attendances: null, // [empty array = no attendances found; null = attendances to be loaded]
+            firstAttendanceDate: null,
         };
         this.filter = filter.bind(this);
     }
@@ -39,6 +40,11 @@ class Users extends PureComponent {
     componentDidUpdate = (prevProps) => {
         const { match } = this.props;
         if (match.params.id && match.params.id !== prevProps.match.params.id) {
+            this.setState({
+                user: null,
+                attendances: null,
+                firstAttendanceDate: null,
+            });
             this.fetchData();
         }
     };
@@ -57,14 +63,46 @@ class Users extends PureComponent {
 
                             return history.goBack();
                         }
+                        this.setState({
+                            user: user.entities.user[match.params.id],
+                        });
                         getAttendances(this.cancelTokenSource, match.params.id)
                             .then(attendances => {
                                 this.cancelTokenSource = null;
-                                const attendancesArray = Array.from(attendances.result, id => attendances.entities["attendance"][id]);
-                                this.setState({
-                                    user: user.entities.user[match.params.id],
-                                    attendances: attendancesArray,
-                                });
+                                if (attendances) {
+                                    const attendancesArray = Array.from(attendances.body.result, id => attendances.body.entities["attendance"][id]);
+                                    const firstAttendanceDateHeader = attendances.headers['x-first-attendance-date'];
+                                    if (attendancesArray.length === 0) {
+                                        const message = [];
+                                        if (firstAttendanceDateHeader) {
+                                            message.push(
+                                                <Fragment key="f-1">No attendance records were found for last 3 weeks. </Fragment>,
+                                                <Fragment key="f-2">Feel free to load older records a week at a time.</Fragment>,
+                                            );
+                                        } else {
+                                            message.push(
+                                                <Fragment key="f-1">User has no attendance records.</Fragment>,
+                                            );
+                                        }
+                                        dispatch(
+                                            infosAction(
+                                                message,
+                                                {
+                                                    container: "bottom-center",
+                                                    animationIn: ["animated", "bounceInDown"],
+                                                    animationOut: ["animated", "bounceOutDown"],
+                                                    dismiss: { duration: 30000 },
+                                                    width: 350,
+                                                },
+                                                "no-attendances-at-first"
+                                            )
+                                        );
+                                    }
+                                    this.setState({
+                                        attendances: attendancesArray,
+                                        firstAttendanceDate: firstAttendanceDateHeader,
+                                    });
+                                }
                             })
                             .catch(error => {
                                 throw error;
@@ -102,6 +140,35 @@ class Users extends PureComponent {
         }
     };
 
+    loadMore = event => {
+        const { dispatch, match } = this.props;
+        const currentTarget = event.currentTarget;
+        currentTarget.setAttribute("disabled", true);
+        this.cancelTokenSource = axios.CancelToken.source();
+        const dataBeforeAttrValue = currentTarget.getAttribute("data-before");
+        getAttendances(this.cancelTokenSource, match.params.id, { b: dataBeforeAttrValue })
+            .then(attendances => {
+                this.cancelTokenSource = null;
+                if (attendances) {
+                    const attendancesArray = Array.from(attendances.body.result, id => attendances.body.entities["attendance"][id]);
+                    if (attendancesArray.length === 0) {
+                        dispatch(warningsAction('Reached the end of attendance list.'));
+                        currentTarget.remove();
+
+                        return;
+                    }
+                    currentTarget.removeAttribute("disabled");
+                    this.setState({
+                        attendances: [...this.state.attendances, ...attendancesArray],
+                    });
+                }
+            })
+            .catch(error => {
+                const message = (error.response && (error.response.data.message || error.response.statusText)) || error.message;
+                dispatch(errorsAction(message));
+            });
+    };
+
     renderItem = user => {
         const { history, me } = this.props;
         if (!user.isMember && !user.isSoulshriven) {
@@ -115,19 +182,31 @@ class Users extends PureComponent {
                 </Link>
             ),
         };
-        const { attendances } = this.state;
-        const startDate = attendances.length ? moment(attendances[0]["created_at"]) : undefined;
-        const endDate = attendances.length ? moment(attendances[attendances.length - 1]["created_at"]) : undefined;
+        const { attendances, firstAttendanceDate } = this.state;
+        let loadMoreAttendancesButton = null;
+        let startDate = undefined;
+        let endDate = undefined;
+        if (attendances !== null && attendances instanceof Array) {
+            startDate = attendances.length ? moment(attendances[attendances.length - 1]["created_at"]) : null;
+            endDate = attendances.length ? moment(attendances[0]["created_at"]) : null;
+            loadMoreAttendancesButton = firstAttendanceDate
+                ? <button key='load-more-button'
+                          className='btn btn-primary btn-sm ml-auto mr-auto'
+                          data-before={
+                              startDate
+                                  ? startDate.format()
+                                  : moment().subtract(3, 'weeks').startOf("isoWeek").format()
+                          }
+                          onClick={event => this.loadMore(event)}>load older records</button>
+                : <button key='load-more-button'
+                          className='btn btn-primary btn-sm ml-auto mr-auto'
+                          disabled={true}>nothing to load</button>;
+        }
 
         const characterListRendered = user.characters.length
             ? [
                 <h3 className="col-md-24 mt-5" key="heading">Their Characters</h3>,
                 <List characters={user.characters} me={me} className="pl-2 pr-2 col-md-24" key="character-list" />
-            ] : [];
-        const attendancesRendered = attendances.length
-            ? [
-                <h3 className="col-md-24 mt-5" key="heading">Their Attendances</h3>,
-                <Attendance.ListView start={startDate} end={endDate} events={attendances} key="attendances" />
             ] : [];
 
         return [
@@ -154,7 +233,8 @@ class Users extends PureComponent {
                     <dd>{user.clearanceLevel ? user.clearanceLevel.rank.title : "None"}</dd>
                 </dl>
                 {[...characterListRendered]}
-                {[...attendancesRendered]}
+                <Attendance.ListView start={startDate} end={endDate} events={attendances} key="attendances" />
+                {loadMoreAttendancesButton}
             </section>,
         ];
     };

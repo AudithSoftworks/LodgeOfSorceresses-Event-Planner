@@ -16,10 +16,7 @@ class DpsParsesControllerTest extends IlluminateTestCase
 {
     use NeedsUserStubs;
 
-    /**
-     * @var bool
-     */
-    protected static $setupHasRunOnce = false;
+    protected static bool $setupHasRunOnce = false;
 
     public function setUp(): void
     {
@@ -50,8 +47,8 @@ class DpsParsesControllerTest extends IlluminateTestCase
             ->actingAs($tierOneUser)
             ->postJson(sprintf('/api/users/@me/characters/%d/parses', $tierOneUsersCharacter->id), []);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertCount(2, $responseOriginalContent);
-        $this->assertCount(4, $responseOriginalContent['errors']);
+        static::assertCount(2, $responseOriginalContent);
+        static::assertCount(4, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
         $response->assertJsonPath('errors.parse_file_hash.0', 'CMX Combat screen screenshot needs to be uploaded.');
         $response->assertJsonPath('errors.info_file_hash.0', 'CMX Info screen screenshot needs to be uploaded.');
@@ -69,8 +66,8 @@ class DpsParsesControllerTest extends IlluminateTestCase
                 'info_file_hash' => 'bogus-hash',
             ]);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertCount(2, $responseOriginalContent);
-        $this->assertCount(5, $responseOriginalContent['errors']);
+        static::assertCount(2, $responseOriginalContent);
+        static::assertCount(5, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
         $response->assertJsonFragment(['parse_file_hash' => [0 => 'CMX Combat screen screenshot file not found.']]);
         $response->assertJsonFragment(['info_file_hash' => [0 => 'CMX Info screen screenshot file not found.']]);
@@ -111,10 +108,10 @@ class DpsParsesControllerTest extends IlluminateTestCase
         $response->assertStatus(JsonResponse::HTTP_CREATED);
         /** @var \App\Models\Character $responseOriginalContent */
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertInstanceOf(Character::class, $responseOriginalContent);
-        $this->assertTrue($responseOriginalContent->exists);
-        $this->assertFalse($responseOriginalContent->wasRecentlyCreated); // Data returned is from cache, thus not new.
-        $this->assertIsInt($responseOriginalContent->id);
+        static::assertInstanceOf(Character::class, $responseOriginalContent);
+        static::assertTrue($responseOriginalContent->exists);
+        static::assertFalse($responseOriginalContent->wasRecentlyCreated); // Data returned is from cache, thus not new.
+        static::assertIsInt($responseOriginalContent->id);
 
         Event::assertDispatched(DpsParseSubmitted::class);
 
@@ -179,7 +176,7 @@ class DpsParsesControllerTest extends IlluminateTestCase
             );
         $response->assertStatus(JsonResponse::HTTP_NO_CONTENT);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertEmpty($responseOriginalContent);
+        static::assertEmpty($responseOriginalContent);
 
         Event::assertDispatched(DpsParseDeleted::class);
     }

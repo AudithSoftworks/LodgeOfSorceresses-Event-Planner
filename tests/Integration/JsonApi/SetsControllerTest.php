@@ -30,7 +30,7 @@ class SetsControllerTest extends IlluminateTestCase
             ->getJson('/api/sets');
         $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertNotNull($responseOriginalContent);
+        static::assertNotNull($responseOriginalContent);
         $response->assertJsonPath('message', 'This action is unauthorized.');
     }
 
@@ -44,9 +44,9 @@ class SetsControllerTest extends IlluminateTestCase
             ->getJson('/api/sets');
         $response->assertStatus(JsonResponse::HTTP_OK);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertNotNull($responseOriginalContent);
-        $this->assertIsIterable($responseOriginalContent);
+        static::assertNotNull($responseOriginalContent);
+        static::assertIsIterable($responseOriginalContent);
         $firstEntry = array_shift($responseOriginalContent);
-        $this->assertNotEmpty($firstEntry['name']);
+        static::assertNotEmpty($firstEntry['name']);
     }
 }

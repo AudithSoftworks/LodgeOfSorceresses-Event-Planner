@@ -4,16 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Character;
 use App\Models\User;
-use App\Traits\Character\HasOrIsDpsParse;
-use App\Traits\Character\IsCharacter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class CharactersController extends Controller
 {
-    use IsCharacter, HasOrIsDpsParse;
-
     /**
      * @param \Illuminate\Http\Request $request
      *

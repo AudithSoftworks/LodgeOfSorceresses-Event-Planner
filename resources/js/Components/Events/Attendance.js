@@ -8,46 +8,66 @@ import { Link } from "react-router-dom";
 import v4 from "react-uuid";
 import { transformAnchors } from "../../helpers";
 import { attendance } from "../../vendor/data";
+import Loading from "../Loading";
+import Notification from "../Notification";
 
 class BaseView extends PureComponent {
     noEvent = () => [
-        <tr key={"event-none"}>
-            <td>No attendance records</td>
-        </tr>,
+        <table
+            key={"week-table-empty"}
+            className="attendances list-view col-md-24">
+            <caption
+                data-current-week='true'
+                data-count='0 attendance(s)'>
+                {moment().format("[Weeks #]WW[]") + ' through ' + moment().subtract(3, 'weeks').format("[#]WW[]")}
+            </caption>
+            <tbody>
+                <tr key={"event-none"}>
+                    <td>No attendance records found for the past 3 weeks.</td>
+                </tr>
+            </tbody>
+        </table>
     ];
 
-    getEventsForGivenWeek = date => {
+    getEventsOfTheSameWeekAsGivenWeek = date => {
         const { events } = this.props;
 
-        return events.filter(event => moment(event["created_at"]).isSame(date, "week"));
+        return events.filter(event => moment(event["created_at"]).isSame(date, "isoWeek"));
     };
 }
 
 BaseView.propTypes = {
-    start: PropTypes.object,
-    end: PropTypes.object,
+    start: PropTypes.object, // [null = no attendances found; undefined = attendances to be loaded]
+    end: PropTypes.object, // [null = no attendances found; undefined = attendances to be loaded]
     events: PropTypes.arrayOf(attendance),
+    heading: PropTypes.string,
 };
 
 class ListView extends BaseView {
     render = () => {
-        const { start, end } = this.props;
-        const startDate = start && start instanceof moment ? moment(start).startOf("isoWeek") : moment().startOf("month");
-        const endDate = end && end instanceof moment ? moment(end).endOf("isoWeek") : moment().endOf("month");
+        const { heading, start, end } = this.props;
+
+        if (start === undefined || end === undefined) {
+            return [<Loading message="Fetching attendance data..." key="loading" />, <Notification key="notifications" />];
+        }
+
+        const startDate = start !== null && start instanceof moment ? moment(start) : moment();
+        startDate.startOf("isoWeek");
+        const endDate = end !== null && end instanceof moment ? moment(end) : moment();
+        endDate.endOf("isoWeek");
 
         const daysRendered = [];
         for (
-            let date = moment(startDate), weekOfYear = date.isoWeek(), colorHue = 360 * Math.random();
-            date.isSameOrBefore(endDate, "second");
-            date = moment(date).add(1, "weeks")
+            let date = moment(endDate), weekOfYear = date.isoWeek();
+            date.isSameOrAfter(startDate, "second");
+            date = moment(date).subtract(1, "weeks")
         ) {
             if (!date.isSame(startDate, "second") && date.isoWeek() !== weekOfYear) {
-                colorHue = 360 * Math.random();
                 weekOfYear = date.isoWeek();
             }
 
             const eventsRendered = [];
-            this.getEventsForGivenWeek(date).forEach(event => {
+            this.getEventsOfTheSameWeekAsGivenWeek(date).forEach(event => {
                 const galleryImagesRendered = event.gallery_images.map(image => (<li key={v4()}><a href={image.large} target='_blank'><img alt='' src={image.small} /></a></li>));
                 const createdByLink = event.created_by ? (
                     <>-- <i><Link to={'/users/' + event.created_by.id}>{event.created_by.name}</Link></i></>
@@ -67,6 +87,7 @@ class ListView extends BaseView {
                     </tr>
                 );
             });
+
             if (eventsRendered.length) {
                 daysRendered.push(
                     <table
@@ -75,15 +96,22 @@ class ListView extends BaseView {
                         <caption
                             data-count={eventsRendered.length + " attendance(s)"}
                             data-current-week={date.isSame(moment(), 'isoWeek') ? 'true' : 'false'}>
-                            {date.format("[Week #]ww[]")}
+                            {date.format("[Week #]WW[]")}
                         </caption>
-                        <tbody>{eventsRendered.length ? eventsRendered : this.noEvent()}</tbody>
+                        <tbody>{eventsRendered}</tbody>
                     </table>
                 );
             }
         }
 
-        return [...daysRendered];
+        if (daysRendered.length === 0) {
+            daysRendered.push(this.noEvent());
+        }
+
+        return [
+            <h3 className="col-md-24 mt-5" key="heading">{heading || 'Their Attendances'}</h3>,
+            ...daysRendered,
+        ];
     };
 }
 

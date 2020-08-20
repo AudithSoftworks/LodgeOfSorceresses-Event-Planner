@@ -3,6 +3,7 @@
 namespace App\Tests\Integration\JsonApi;
 
 use App\Tests\IlluminateTestCase;
+use ContentTableSeeder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Artisan;
 
@@ -11,14 +12,14 @@ class ContentControllerTest extends IlluminateTestCase
     /**
      * @var bool
      */
-    protected static $setupHasRunOnce = false;
+    protected static bool $setupHasRunOnce = false;
 
     public function setUp(): void
     {
         parent::setUp();
         if (!static::$setupHasRunOnce) {
             Artisan::call('migrate');
-            Artisan::call('db:seed', ['--class' => \ContentTableSeeder::class]);
+            Artisan::call('db:seed', ['--class' => ContentTableSeeder::class]);
             static::$setupHasRunOnce = true;
         }
     }
@@ -30,12 +31,12 @@ class ContentControllerTest extends IlluminateTestCase
             ->getJson('/api/content');
         $response->assertStatus(JsonResponse::HTTP_OK);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertNotNull($responseOriginalContent);
-        $this->assertIsIterable($responseOriginalContent);
+        static::assertNotNull($responseOriginalContent);
+        static::assertIsIterable($responseOriginalContent);
         $firstEntry = array_shift($responseOriginalContent);
-        $this->assertNotEmpty($firstEntry['name']);
+        static::assertNotEmpty($firstEntry['name']);
         $lastEntry = array_pop($responseOriginalContent);
-        $this->assertNotEmpty($lastEntry['name']);
+        static::assertNotEmpty($lastEntry['name']);
     }
 
     public function testShowForFailure(): void
