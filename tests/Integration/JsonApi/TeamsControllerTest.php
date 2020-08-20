@@ -17,7 +17,7 @@ class TeamsControllerTest extends IlluminateTestCase
     /**
      * @var bool
      */
-    protected static $setupHasRunOnce = false;
+    protected static bool $setupHasRunOnce = false;
 
     public function setUp(): void
     {
@@ -64,8 +64,8 @@ class TeamsControllerTest extends IlluminateTestCase
                 'led_by' => static::$adminUser,
             ]);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertCount(2, $responseOriginalContent);
-        $this->assertCount(4, $responseOriginalContent['errors']);
+        static::assertCount(2, $responseOriginalContent);
+        static::assertCount(4, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
         $response->assertJsonPath('errors.name.0', 'Team name is required.');
         $response->assertJsonPath('errors.tier.0', 'Tier must be from 1 to 4.');
@@ -84,8 +84,8 @@ class TeamsControllerTest extends IlluminateTestCase
             ]);
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertCount(2, $responseOriginalContent);
-        $this->assertCount(1, $responseOriginalContent['errors']);
+        static::assertCount(2, $responseOriginalContent);
+        static::assertCount(1, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
         $response->assertJsonPath('errors.discord_role_id.0', 'Discord Role-ID isn\'t valid.');
 
@@ -100,8 +100,8 @@ class TeamsControllerTest extends IlluminateTestCase
             ]);
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertCount(2, $responseOriginalContent);
-        $this->assertCount(1, $responseOriginalContent['errors']);
+        static::assertCount(2, $responseOriginalContent);
+        static::assertCount(1, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
         $response->assertJsonPath('errors.led_by.0', 'User doesn\'t have an eligible character to join this team.');
     }
@@ -122,9 +122,9 @@ class TeamsControllerTest extends IlluminateTestCase
         $response->assertStatus(JsonResponse::HTTP_CREATED);
         /** @var \App\Models\Team $responseOriginalContent */
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertTrue($responseOriginalContent->exists);
-        $this->assertFalse($responseOriginalContent->wasRecentlyCreated); // Data returned is from cache, thus not new.
-        $this->assertIsInt($responseOriginalContent->id);
+        static::assertTrue($responseOriginalContent->exists);
+        static::assertFalse($responseOriginalContent->wasRecentlyCreated); // Data returned is from cache, thus not new.
+        static::assertIsInt($responseOriginalContent->id);
     }
 
     public function testShowForFailure(): void
@@ -185,8 +185,8 @@ class TeamsControllerTest extends IlluminateTestCase
                 'led_by' => static::$adminUser,
             ]);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertCount(2, $responseOriginalContent);
-        $this->assertCount(2, $responseOriginalContent['errors']);
+        static::assertCount(2, $responseOriginalContent);
+        static::assertCount(2, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
         $response->assertJsonPath('errors.discord_role_id.0', 'The discord role id must be a number.');
         $response->assertJsonPath('errors.led_by.0', 'The led by must be a number.');
@@ -204,8 +204,8 @@ class TeamsControllerTest extends IlluminateTestCase
             ]);
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertCount(2, $responseOriginalContent);
-        $this->assertCount(1, $responseOriginalContent['errors']);
+        static::assertCount(2, $responseOriginalContent);
+        static::assertCount(1, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
         $response->assertJsonPath('errors.discord_role_id.0', 'Discord Role-ID isn\'t valid.');
 
@@ -221,8 +221,8 @@ class TeamsControllerTest extends IlluminateTestCase
             ]);
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertCount(2, $responseOriginalContent);
-        $this->assertCount(1, $responseOriginalContent['errors']);
+        static::assertCount(2, $responseOriginalContent);
+        static::assertCount(1, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
         $response->assertJsonPath('errors.led_by.0', 'User doesn\'t have an eligible character to join this team.');
 
@@ -260,9 +260,9 @@ class TeamsControllerTest extends IlluminateTestCase
         $response->assertStatus(JsonResponse::HTTP_OK);
         /** @var \App\Models\Team $responseOriginalContent */
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertTrue($responseOriginalContent->exists);
-        $this->assertFalse($responseOriginalContent->wasRecentlyCreated);
-        $this->assertEquals('Core 2', $responseOriginalContent->name);
+        static::assertTrue($responseOriginalContent->exists);
+        static::assertFalse($responseOriginalContent->wasRecentlyCreated);
+        static::assertEquals('Core 2', $responseOriginalContent->name);
 
         # Case 2: Admin updating someone else's team
         $response = $this
@@ -277,9 +277,9 @@ class TeamsControllerTest extends IlluminateTestCase
         $response->assertStatus(JsonResponse::HTTP_OK);
         /** @var \App\Models\Team $responseOriginalContent */
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertTrue($responseOriginalContent->exists);
-        $this->assertFalse($responseOriginalContent->wasRecentlyCreated);
-        $this->assertEquals('Core 3', $responseOriginalContent->name);
+        static::assertTrue($responseOriginalContent->exists);
+        static::assertFalse($responseOriginalContent->wasRecentlyCreated);
+        static::assertEquals('Core 3', $responseOriginalContent->name);
 
         Event::assertDispatched(TeamUpdated::class);
     }
@@ -320,7 +320,7 @@ class TeamsControllerTest extends IlluminateTestCase
             ->deleteJson('/api/teams/1');
         $response->assertStatus(JsonResponse::HTTP_NO_CONTENT);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertEmpty($responseOriginalContent);
+        static::assertEmpty($responseOriginalContent);
 
         Event::assertDispatched(TeamDeleted::class);
     }

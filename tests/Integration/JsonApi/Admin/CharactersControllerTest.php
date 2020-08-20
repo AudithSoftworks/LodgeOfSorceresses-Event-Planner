@@ -17,7 +17,7 @@ class CharactersControllerTest extends IlluminateTestCase
     /**
      * @var bool
      */
-    protected static $setupHasRunOnce = false;
+    protected static bool $setupHasRunOnce = false;
 
     public function setUp(): void
     {
@@ -60,7 +60,7 @@ class CharactersControllerTest extends IlluminateTestCase
             ->putJson('/api/admin/characters/1', []);
         $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertNotNull($responseOriginalContent);
+        static::assertNotNull($responseOriginalContent);
         $response->assertJsonPath('message', 'This action is unauthorized.');
 
         # Case: Not found.
@@ -73,7 +73,7 @@ class CharactersControllerTest extends IlluminateTestCase
             ]);
         $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertCount(1, $responseOriginalContent);
+        static::assertCount(1, $responseOriginalContent);
         $response->assertJsonPath('message', 'Character not found!');
 
         # Case: Self-ranking.
@@ -86,7 +86,7 @@ class CharactersControllerTest extends IlluminateTestCase
             ]);
         $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertCount(1, $responseOriginalContent);
+        static::assertCount(1, $responseOriginalContent);
         $response->assertJsonPath('message', 'Self-ranking disabled!');
 
         # Case: Attempting to rerank a Damage-Dealer
@@ -99,8 +99,8 @@ class CharactersControllerTest extends IlluminateTestCase
             ]);
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertCount(2, $responseOriginalContent);
-        $this->assertCount(1, $responseOriginalContent['errors']);
+        static::assertCount(2, $responseOriginalContent);
+        static::assertCount(1, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
         $response->assertJsonPath('errors.action.0', 'Damage Dealers can only be ranked via Parse submission!');
 
@@ -112,8 +112,8 @@ class CharactersControllerTest extends IlluminateTestCase
             ->putJson('/api/admin/characters/' . $tierTwoHealerUser->characters->first()->id, []);
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertCount(2, $responseOriginalContent);
-        $this->assertCount(1, $responseOriginalContent['errors']);
+        static::assertCount(2, $responseOriginalContent);
+        static::assertCount(1, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
         $response->assertJsonPath('errors.action.0', 'Action is required.');
 
@@ -127,8 +127,8 @@ class CharactersControllerTest extends IlluminateTestCase
             ]);
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertCount(2, $responseOriginalContent);
-        $this->assertCount(1, $responseOriginalContent['errors']);
+        static::assertCount(2, $responseOriginalContent);
+        static::assertCount(1, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
         $response->assertJsonPath('errors.action.0', 'Action should either be promote or demote.');
     }
@@ -147,9 +147,9 @@ class CharactersControllerTest extends IlluminateTestCase
         $response->assertStatus(JsonResponse::HTTP_OK);
         /** @var \App\Models\Character $responseOriginalContent */
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertTrue($responseOriginalContent->exists);
-        $this->assertFalse($responseOriginalContent->wasRecentlyCreated);
-        $this->assertEquals(3, $responseOriginalContent->approved_for_tier);
+        static::assertTrue($responseOriginalContent->exists);
+        static::assertFalse($responseOriginalContent->wasRecentlyCreated);
+        static::assertEquals(3, $responseOriginalContent->approved_for_tier);
 
         Event::assertDispatched(CharacterPromoted::class);
         Event::assertNotDispatched(CharacterDemoted::class);
@@ -169,9 +169,9 @@ class CharactersControllerTest extends IlluminateTestCase
         $response->assertStatus(JsonResponse::HTTP_OK);
         /** @var \App\Models\Character $responseOriginalContent */
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertTrue($responseOriginalContent->exists);
-        $this->assertFalse($responseOriginalContent->wasRecentlyCreated);
-        $this->assertEquals(1, $responseOriginalContent->approved_for_tier);
+        static::assertTrue($responseOriginalContent->exists);
+        static::assertFalse($responseOriginalContent->wasRecentlyCreated);
+        static::assertEquals(1, $responseOriginalContent->approved_for_tier);
 
         Event::assertDispatched(CharacterDemoted::class);
         Event::assertNotDispatched(CharacterPromoted::class);

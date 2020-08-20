@@ -20,15 +20,9 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
 {
     use NeedsTeamStubs, NeedsUserStubs;
 
-    /**
-     * @var bool
-     */
-    protected static $setupHasRunOnce = false;
+    protected static bool $setupHasRunOnce = false;
 
-    /**
-     * @var \App\Models\Team
-     */
-    protected static $team;
+    protected static Team $team;
 
     public function setUp(): void
     {
@@ -89,8 +83,8 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
             ->withoutMiddleware()
             ->postJson('/api/teams/' . static::$team->id . '/characters');
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertCount(2, $responseOriginalContent);
-        $this->assertCount(1, $responseOriginalContent['errors']);
+        static::assertCount(2, $responseOriginalContent);
+        static::assertCount(1, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
         $response->assertJsonFragment(['characterIds' => [0 => 'Select the character(s) to be added to the team.']]);
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
@@ -102,8 +96,8 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
                 'characterIds' => ['a'],
             ]);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertCount(2, $responseOriginalContent);
-        $this->assertCount(1, $responseOriginalContent['errors']);
+        static::assertCount(2, $responseOriginalContent);
+        static::assertCount(1, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
         $response->assertJsonFragment(['characterIds.0' => [0 => 'The characterIds.0 must be a number.']]);
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
@@ -115,8 +109,8 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
                 'characterIds' => [1000],
             ]);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertCount(2, $responseOriginalContent);
-        $this->assertCount(1, $responseOriginalContent['errors']);
+        static::assertCount(2, $responseOriginalContent);
+        static::assertCount(1, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
         $response->assertJsonFragment(['characterIds.0' => [0 => 'No such characters exist.']]);
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
@@ -172,13 +166,13 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
         $response->assertStatus(JsonResponse::HTTP_CREATED);
         /** @var \App\Models\Team $teamFromResponse */
         $teamFromResponse = $response->getOriginalContent();
-        $this->assertInstanceOf(Team::class, $teamFromResponse);
-        $this->assertTrue($teamFromResponse->exists);
-        $this->assertFalse($teamFromResponse->wasRecentlyCreated);
-        $this->assertIsInt($teamFromResponse->id);
-        $this->assertEquals(4, $teamFromResponse->members->count());
+        static::assertInstanceOf(Team::class, $teamFromResponse);
+        static::assertTrue($teamFromResponse->exists);
+        static::assertFalse($teamFromResponse->wasRecentlyCreated);
+        static::assertIsInt($teamFromResponse->id);
+        static::assertEquals(4, $teamFromResponse->members->count());
         foreach ($teamFromResponse->members as $member) {
-            $this->assertGreaterThanOrEqual(2, $member->approved_for_tier);
+            static::assertGreaterThanOrEqual(2, $member->approved_for_tier);
         }
         Event::assertDispatched(TeamUpdated::class);
         Event::assertDispatched(MemberInvited::class);
@@ -225,8 +219,8 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
             ->withoutMiddleware()
             ->putJson('/api/teams/' . static::$team->id . '/characters/' . $teamLeaderCharacter->id);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertCount(2, $responseOriginalContent);
-        $this->assertCount(1, $responseOriginalContent['errors']);
+        static::assertCount(2, $responseOriginalContent);
+        static::assertCount(1, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
         $response->assertJsonPath('errors.accepted_terms.0', 'The accepted terms field is required.');
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
@@ -238,8 +232,8 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
                 'accepted_terms' => '3',
             ]);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertCount(2, $responseOriginalContent);
-        $this->assertCount(1, $responseOriginalContent['errors']);
+        static::assertCount(2, $responseOriginalContent);
+        static::assertCount(1, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
         $response->assertJsonPath('errors.accepted_terms.0', 'Please make sure you accept the terms of membership.');
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
@@ -296,19 +290,19 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
         $response->assertStatus(JsonResponse::HTTP_OK);
         /** @var \App\Models\Team $teamFromResponse */
         $teamFromResponse = $response->getOriginalContent();
-        $this->assertInstanceOf(Team::class, $teamFromResponse);
-        $this->assertTrue($teamFromResponse->exists);
-        $this->assertFalse($teamFromResponse->wasRecentlyCreated);
-        $this->assertIsInt($teamFromResponse->id);
-        $this->assertEquals(4, $teamFromResponse->members->count());
+        static::assertInstanceOf(Team::class, $teamFromResponse);
+        static::assertTrue($teamFromResponse->exists);
+        static::assertFalse($teamFromResponse->wasRecentlyCreated);
+        static::assertIsInt($teamFromResponse->id);
+        static::assertEquals(4, $teamFromResponse->members->count());
         foreach ($teamFromResponse->members as $character) {
-            $this->assertGreaterThanOrEqual(2, $character->approved_for_tier);
+            static::assertGreaterThanOrEqual(2, $character->approved_for_tier);
             if ($character->id === $teamLeaderCharacter->id) {
-                $this->assertTrue((bool)$character->teamMembership->status);
-                $this->assertTrue((bool)$character->teamMembership->accepted_terms);
+                static::assertTrue((bool)$character->teamMembership->status);
+                static::assertTrue((bool)$character->teamMembership->accepted_terms);
             } else {
-                $this->assertFalse((bool)$character->teamMembership->status);
-                $this->assertFalse((bool)$character->teamMembership->accepted_terms);
+                static::assertFalse((bool)$character->teamMembership->status);
+                static::assertFalse((bool)$character->teamMembership->accepted_terms);
             }
         }
 
@@ -348,7 +342,7 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
         $response->assertStatus(JsonResponse::HTTP_OK);
         /** @var \Illuminate\Database\Eloquent\Relations\Pivot $teamMembershipPivotFromResponse */
         $teamMembershipPivotFromResponse = $response->getOriginalContent();
-        $this->assertInstanceOf(Pivot::class, $teamMembershipPivotFromResponse);
+        static::assertInstanceOf(Pivot::class, $teamMembershipPivotFromResponse);
         $response->assertJsonPath('status', $_ENV['DB_CONNECTION'] === 'pgsql' ? true : 1);
         $response->assertJsonPath('accepted_terms', $_ENV['DB_CONNECTION'] === 'pgsql' ? true : 1);
     }
@@ -413,8 +407,8 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
         $response->assertNoContent();
 
         static::$team->refresh();
-        $this->assertEquals(3, static::$team->members->count());
-        $this->assertEquals(0, static::$team->members->filter(static function (Character $character) {
+        static::assertEquals(3, static::$team->members->count());
+        static::assertEquals(0, static::$team->members->filter(static function (Character $character) {
             return $character->owner->id === static::$team->ledBy->id;
         })->count());
 
@@ -429,8 +423,8 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
         $response->assertNoContent();
 
         static::$team->refresh();
-        $this->assertEquals(2, static::$team->members->count());
-        $this->assertEquals(0, static::$team->members->filter(static function (Character $character) {
+        static::assertEquals(2, static::$team->members->count());
+        static::assertEquals(0, static::$team->members->filter(static function (Character $character) {
             return $character->owner->id === static::$team->ledBy->id;
         })->count());
 

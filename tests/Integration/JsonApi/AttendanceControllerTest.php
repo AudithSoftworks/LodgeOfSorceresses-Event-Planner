@@ -30,7 +30,7 @@ class AttendanceControllerTest extends IlluminateTestCase
             ->getJson('/api/attendances/1');
         $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertNotNull($responseOriginalContent);
+        static::assertNotNull($responseOriginalContent);
         $response->assertJsonPath('message', 'This action is unauthorized.');
     }
 
@@ -49,13 +49,13 @@ class AttendanceControllerTest extends IlluminateTestCase
         $response->assertStatus(JsonResponse::HTTP_OK);
         /** @var \Illuminate\Support\Collection $responseOriginalContent */
         $responseOriginalContent = $response->getOriginalContent();
-        $this->assertNotNull($responseOriginalContent);
-        $this->assertIsIterable($responseOriginalContent);
-        $this->assertCount(1, $responseOriginalContent);
+        static::assertNotNull($responseOriginalContent);
+        static::assertIsIterable($responseOriginalContent);
+        static::assertCount(1, $responseOriginalContent);
         $responseAsArray = $responseOriginalContent->toArray();
         $firstEntry = $responseAsArray[0];
-        $this->assertNotEmpty($firstEntry['attendees']);
-        $this->assertIsIterable($firstEntry['attendees']);
-        $this->assertCount(1, $firstEntry['attendees']);
+        static::assertNotEmpty($firstEntry['attendees']);
+        static::assertIsIterable($firstEntry['attendees']);
+        static::assertCount(1, $firstEntry['attendees']);
     }
 }

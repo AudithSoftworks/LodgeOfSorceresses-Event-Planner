@@ -9,7 +9,6 @@ use App\Models\UserOAuth;
 
 trait NeedsTeamStubs
 {
-
     private function stubTierXAdminUserTeam(int $tier): Team
     {
         /** @var UserOAuth $adminUserOauth */
