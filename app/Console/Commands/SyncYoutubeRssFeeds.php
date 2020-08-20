@@ -16,7 +16,7 @@ class SyncYoutubeRssFeeds extends Command
     /**
      * @var string
      */
-    protected $signature = 'discord:rss {channelId? : 24-letter channel ID, e.g. UCuLGCNYH1t5DyQQ5tfU4Hdw}';
+    protected $signature = 'youtube:sync {channelId? : 24-letter channel ID, e.g. UCuLGCNYH1t5DyQQ5tfU4Hdw}';
 
     /**
      * @var string
@@ -57,11 +57,30 @@ class SyncYoutubeRssFeeds extends Command
 
                 return;
             }
-            /** @var \Google_Service_YouTube_SearchResult[] $items */
-            $items = $response->getItems();
-            if (count($items) > 0) {
+            /** @var \Google_Service_YouTube_SearchResult[] $searchResultItems */
+            $searchResultItems = $response->getItems();
+            if (count($searchResultItems) > 0) {
                 $channel = YoutubeFeedsChannel::query()->find($channelId);
                 $channelUpdatedAt = $channel->updated_at ? clone $channel->updated_at : new CarbonImmutable('1 weeks ago');
+
+                $resourceIdObjList = array_column($searchResultItems, 'id');
+                $videoIdList = array_column($resourceIdObjList, 'videoId');
+
+                $queryParams = [
+                    'id' => implode(',', $videoIdList),
+                ];
+                $videoListResponse = $this->service->videos->listVideos([
+                    'contentDetails',
+                    'id',
+                    'liveStreamingDetails',
+                    'player',
+                    'snippet',
+                    'statistics',
+                    'status',
+                    'topicDetails',
+                ], $queryParams);
+                /** @var \Google_Service_YouTube_Video[] $items */
+                $items = $videoListResponse->getItems();
                 foreach ($items as $item) {
                     $id = $item->getId();
                     $snippet = $item->getSnippet();
@@ -74,23 +93,23 @@ class SyncYoutubeRssFeeds extends Command
                     $thumbnails = $snippet->getThumbnails();
                     YoutubeFeedsVideo::unguard(true);
                     $video = YoutubeFeedsVideo::query()->updateOrCreate([
-                        'id' => $id->getVideoId(),
+                        'id' => $id,
                     ], [
                         'channel_id' => $snippet->getChannelId(),
                         'title' => htmlspecialchars_decode($snippet->getTitle(), ENT_QUOTES),
                         'description' => htmlspecialchars_decode($snippet->getDescription(), ENT_QUOTES),
-                        'url' => sprintf('https://www.youtube.com/watch?v=%s', $id->getVideoId()),
+                        'url' => sprintf('https://www.youtube.com/watch?v=%s', $id),
                         'thumbnail' => $thumbnails->getHigh()->getUrl(),
                         'created_at' => new CarbonImmutable($snippet->getPublishedAt()),
                         'updated_at' => new CarbonImmutable(),
                     ]);
                     YoutubeFeedsVideo::unguard(false);
                     if ($video->wasRecentlyCreated && $video->created_at->isAfter($channelUpdatedAt)) {
-                        $this->info(sprintf('Processing video (video id: %s)', $video->id));
+                        $this->info(sprintf('Processing video (video id: %s)', $id));
                         $this->postOnDiscord($video);
-                        $this->postOnIps($video);
+                        $this->postOnIps($video, $item);
                     } else {
-                        $this->warn(sprintf('Video already in records or older than last fetch date (video id: %s)', $video->id));
+                        $this->warn(sprintf('Skipping video (video id: %s) - already recorded or too old', $video->id));
                         continue;
                     }
                     $video->isDirty() && $video->save();
@@ -106,43 +125,41 @@ class SyncYoutubeRssFeeds extends Command
     }
 
     /**
-     * @param \App\Models\YoutubeFeedsVideo $video
+     * @param \App\Models\YoutubeFeedsVideo $videoModel
      *
      * @throws \JsonException
      */
-    private function postOnDiscord(YoutubeFeedsVideo $video): void
+    private function postOnDiscord(YoutubeFeedsVideo $videoModel): void
     {
         $subscriptionsChannelId = config('services.discord.channels.subscriptions');
         $discordApi = app('discord.api');
         $responseDecoded = $discordApi->createMessageInChannel($subscriptionsChannelId, [
             RequestOptions::FORM_PARAMS => [
                 'payload_json' => json_encode([
-                    'content' => 'New video from **' . $video->channel->title . '**: ' . $video->title . ".\n"
-                        . $video->url,
+                    'content' => 'New video from **' . $videoModel->channel->title . '**: ' . $videoModel->title . ".\n"
+                        . $videoModel->url,
                     'tts' => false,
                 ], JSON_THROW_ON_ERROR),
             ],
         ]);
-        $video->discord_message_id = $responseDecoded['id'];
-        $this->info('Posted on Discord (Video ID: ' . $video->id . ')');
+        $videoModel->discord_message_id = $responseDecoded['id'];
+        $this->info('Posted on Discord (Video ID: ' . $videoModel->id . ')');
     }
 
-    private function postOnIps(YoutubeFeedsVideo $video): void
+    private function postOnIps(YoutubeFeedsVideo $videoModel, \Google_Service_YouTube_Video $videoObj): void
     {
         if (!app()->environment('production')) {
             return;
         }
         $forumId = config('services.ips.forums.herald');
-        $title = '[' . $video->channel->title . '] ' . $video->title;
-        $post = '
+        $title = '[' . $videoModel->channel->title . '] ' . $videoModel->title;
+        $post = sprintf('
             <div class="ipsEmbeddedVideo" contenteditable="false">
-                <div>
-                    <iframe allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" height="270" id="ips_uid_1588_7" width="480" frameborder="0" data-embed-src="https://www.youtube.com/embed/' . $video->id . '?feature=oembed"></iframe>
-                </div>
+                <div>%s</div>
             </div>
-        ';
+        ', $videoObj->getPlayer()->getEmbedHtml());
         $ipsApi = app('ips.api');
         $ipsApi->createTopic($forumId, $title, $post);
-        $this->info('Posted on Forums (Video ID: ' . $video->id . ')');
+        $this->info('Posted on Forums (Video ID: ' . $videoModel->id . ')');
     }
 }
