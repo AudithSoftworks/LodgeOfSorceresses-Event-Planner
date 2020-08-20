@@ -10,7 +10,9 @@ axios.interceptors.response.use(function (response) {
     return response;
 }, function (error) {
     // Any status codes that falls outside the range of 2xx cause this function to trigger
-    if (error.response && error.response.status === 503) {
+    if (error.response && error.response.status === 401 && window.location.pathname !=='/') {
+        return window.location.href = '/logout';
+    } else if (error.response && error.response.status === 503) {
         return window.location.href = '/';
     }
 

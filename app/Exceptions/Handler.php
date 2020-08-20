@@ -88,8 +88,8 @@ class Handler extends ExceptionHandler
 
         if ($e instanceof InvalidStateException) {
             return $requestExpectsJson
-                ? response()->json(['message' => 'Session Expired. Please refresh the page!'], JsonResponse::HTTP_UNAUTHORIZED)
-                : redirect()->guest('/logout')->withErrors('Session Expired. Please refresh the page!');
+                ? response()->json(['message' => 'Session expired! Please re-login.'], JsonResponse::HTTP_UNAUTHORIZED)
+                : redirect()->guest('/logout')->withErrors('Session expired! Please re-login.');
         }
 
         if ($request->method() !== 'GET' && $request->header('content-type') === 'application/x-www-form-urlencoded') {
@@ -111,6 +111,6 @@ class Handler extends ExceptionHandler
     {
         return $request->expectsJson()
             ? response()->json(['message' => 'Please login.'], SymfonyHttpResponse::HTTP_UNAUTHORIZED)
-            : redirect()->guest('/logout')->withErrors('Session expired.');
+            : redirect()->guest('/logout')->withErrors('Session expired! Please re-login.');
     }
 }
