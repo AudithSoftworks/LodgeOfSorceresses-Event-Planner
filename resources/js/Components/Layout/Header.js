@@ -145,12 +145,12 @@ class Header extends Component {
                         </a>
                     </li>
                     <li className="d-none d-lg-block">
-                        <a href="https://www.esologs.com/guild/autojoin/521/XTk263af" title="ESOLogs" target="_blank">
+                        <a href="https://www.esologs.com/guild/autojoin/521/XTk263af" title="Discord" target="_blank">
                             <FontAwesomeIcon icon={faAnalytics} size="lg" /> ESOLogs
                         </a>
                     </li>
                     <li className="d-none d-lg-block">
-                        <a href="https://discord.gg/DQ68UNr" title="ESOLogs" target="_blank">
+                        <a href="3" title="ESOLogs" target="_blank">
                             <FontAwesomeIcon icon={["fab", "discord"]} size="lg" /> Discord
                         </a>
                     </li>
