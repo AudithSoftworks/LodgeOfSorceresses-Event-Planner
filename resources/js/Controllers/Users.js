@@ -152,7 +152,7 @@ class Users extends PureComponent {
                 if (attendances) {
                     const attendancesArray = Array.from(attendances.body.result, id => attendances.body.entities["attendance"][id]);
                     if (attendancesArray.length === 0) {
-                        dispatch(warningsAction('Reached the end of attendance list.'));
+                        dispatch(warningsAction('Reached the end of the attendance list.'));
                         currentTarget.remove();
 
                         return;
