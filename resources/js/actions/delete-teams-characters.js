@@ -8,9 +8,10 @@ export const TYPE_DELETE_TEAMS_CHARACTERS_FAILURE = "DELETE_TEAMS_CHARACTERS_FAI
 
 const RESPONSE_MESSAGE_SUCCESS = "Member(s) removed.";
 
-const deleteTeamsCharactersSendAction = data => ({
+const deleteTeamsCharactersSendAction = (teamId, characterId) => ({
     type: TYPE_DELETE_TEAMS_CHARACTERS_SEND,
-    data,
+    teamId,
+    characterId,
 });
 
 const deleteTeamsCharactersSuccessAction = (response, message, teamId, characterId) => ({

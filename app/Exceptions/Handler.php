@@ -15,6 +15,8 @@ use Throwable;
 
 class Handler extends ExceptionHandler
 {
+    private const LOGOUT_PATH = '/logout';
+
     /**
      * A list of the exception types that are not reported.
      *
@@ -31,31 +33,6 @@ class Handler extends ExceptionHandler
     ];
 
     /**
-     * A list of the inputs that are never flashed for validation exceptions.
-     *
-     * @var array
-     */
-    protected $dontFlash = [
-        'password',
-        'password_confirmation',
-    ];
-
-    /**
-     * Report or log an exception.
-     * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
-     *
-     * @param \Throwable $e
-     *
-     * @throws \Exception
-     *
-     * @return void
-     */
-    public function report(Throwable $e): void
-    {
-        parent::report($e);
-    }
-
-    /**
      * Render an exception into an HTTP response.
      *
      * @param \Illuminate\Http\Request $request
@@ -68,28 +45,29 @@ class Handler extends ExceptionHandler
     {
         $requestExpectsJson = $request->expectsJson();
         if ($e instanceof ModelNotFoundException || $e instanceof AuthorizationException) {
+            $statusCode = $e instanceof ModelNotFoundException
+                ? JsonResponse::HTTP_NOT_FOUND
+                : JsonResponse::HTTP_FORBIDDEN;
+
             return $requestExpectsJson
-                ? response()->json(
-                    ['message' => $e->getMessage() ?? 'Not found!'],
-                    $e instanceof ModelNotFoundException
-                        ? JsonResponse::HTTP_NOT_FOUND
-                        : JsonResponse::HTTP_FORBIDDEN
-                )
-                : redirect()->guest('/logout')->withErrors($e->getMessage());
+                ? response()->json(['message' => $e->getMessage() ?? 'Not found!'], $statusCode)
+                : redirect()->guest(self::LOGOUT_PATH)->withErrors($e->getMessage());
         }
 
         if ($e instanceof MaintenanceModeException) {
+            $message = !empty($message = $e->getMessage())
+                ? 'Service Unavailable due to Maintenance: ' . $message
+                : 'Service Unavailable due to Maintenance';
+
             return $requestExpectsJson
                 ? response()->json(['message' => 'Service Unavailable due to Maintenance.'], JsonResponse::HTTP_SERVICE_UNAVAILABLE)
-                : abort(JsonResponse::HTTP_SERVICE_UNAVAILABLE, !empty($message = $e->getMessage())
-                    ? 'Service Unavailable due to Maintenance: ' . $message
-                    : 'Service Unavailable due to Maintenance');
+                : abort(JsonResponse::HTTP_SERVICE_UNAVAILABLE, $message);
         }
 
         if ($e instanceof InvalidStateException) {
             return $requestExpectsJson
                 ? response()->json(['message' => 'Session expired! Please re-login.'], JsonResponse::HTTP_UNAUTHORIZED)
-                : redirect()->guest('/logout')->withErrors('Session expired! Please re-login.');
+                : redirect()->guest(self::LOGOUT_PATH)->withErrors('Session expired! Please re-login.');
         }
 
         if ($request->method() !== 'GET' && $request->header('content-type') === 'application/x-www-form-urlencoded') {
@@ -111,6 +89,6 @@ class Handler extends ExceptionHandler
     {
         return $request->expectsJson()
             ? response()->json(['message' => 'Please login.'], SymfonyHttpResponse::HTTP_UNAUTHORIZED)
-            : redirect()->guest('/logout')->withErrors('Session expired! Please re-login.');
+            : redirect()->guest(self::LOGOUT_PATH)->withErrors('Session expired! Please re-login.');
     }
 }

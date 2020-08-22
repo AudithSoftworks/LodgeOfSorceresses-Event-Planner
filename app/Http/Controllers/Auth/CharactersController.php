@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -29,7 +30,7 @@ class CharactersController extends Controller
         $this->authorize('user', User::class);
 
         $characterIds = Character::query()
-            ->whereUserId(app('auth.driver')->id())
+            ->whereUserId(Auth::id())
             ->orderBy('name')
             ->get(['id'])->pluck('id');
 

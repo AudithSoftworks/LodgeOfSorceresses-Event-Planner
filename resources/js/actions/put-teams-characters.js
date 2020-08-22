@@ -8,8 +8,10 @@ export const TYPE_PUT_TEAMS_CHARACTERS_FAILURE = "PUT_TEAMS_CHARACTERS_FAILURE";
 
 const RESPONSE_MESSAGE_SUCCESS = "Team membership updated!";
 
-const putTeamsCharactersSendAction = data => ({
+const putTeamsCharactersSendAction = (teamId, characterId, data) => ({
     type: TYPE_PUT_TEAMS_CHARACTERS_SEND,
+    teamId,
+    characterId,
     data,
 });
 

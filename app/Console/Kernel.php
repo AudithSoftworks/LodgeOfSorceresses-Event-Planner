@@ -8,7 +8,7 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 class Kernel extends ConsoleKernel
 {
     private const LOG_FILE = '/var/log/lodgeofsorceresses.log';
-    
+
     /**
      * Define the application's command schedule.
      *
@@ -16,12 +16,14 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command(Commands\AnnounceDailyMidgameEventsOnDiscord::class)->dailyAt('08:30')->timezone('Europe/Berlin')->sendOutputTo(self::LOG_FILE, true);
-        $schedule->command(Commands\PruneOrphanedFiles::class)->weekly()->timezone('Europe/Berlin')->sendOutputTo(self::LOG_FILE, true);
-        $schedule->command(Commands\RequestDpsParseRenewal::class)->monthlyOn(15, '07:00')->timezone('Europe/Berlin')->sendOutputTo(self::LOG_FILE, true);
-        $schedule->command(Commands\SyncOauthAccounts::class)->dailyAt('05:00')->timezone('Europe/Berlin')->sendOutputTo(self::LOG_FILE, true);
-        $schedule->command(Commands\SyncYoutubeRssFeeds::class)->dailyAt('05:15')->timezone('Europe/Berlin')->sendOutputTo(self::LOG_FILE, true);
-        $schedule->command(Commands\TrackAttendances::class)->cron('0 */6 * * *')->timezone('Europe/Berlin')->sendOutputTo(self::LOG_FILE, true);
+        $timezone = config('app.timezone');
+
+        $schedule->command(Commands\AnnounceDailyMidgameEventsOnDiscord::class)->dailyAt('06:30')->timezone($timezone)->sendOutputTo(self::LOG_FILE, true);
+        $schedule->command(Commands\PruneOrphanedFiles::class)->weekly()->timezone($timezone)->sendOutputTo(self::LOG_FILE, true);
+        $schedule->command(Commands\RequestDpsParseRenewal::class)->monthlyOn(15, '05:00')->timezone($timezone)->sendOutputTo(self::LOG_FILE, true);
+        $schedule->command(Commands\SyncOauthAccounts::class)->dailyAt('03:00')->timezone($timezone)->sendOutputTo(self::LOG_FILE, true);
+        $schedule->command(Commands\SyncYoutubeRssFeeds::class)->dailyAt('03:15')->timezone($timezone)->sendOutputTo(self::LOG_FILE, true);
+        $schedule->command(Commands\TrackAttendances::class)->cron('0 */6 * * *')->timezone($timezone)->sendOutputTo(self::LOG_FILE, true);
     }
 
     /**

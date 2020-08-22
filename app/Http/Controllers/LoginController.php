@@ -83,22 +83,13 @@ class LoginController extends Controller
      */
     public function handleOAuthReturn(Request $request, SocialiteContract $socialite, $provider)
     {
-        switch ($provider) {
-            case 'ips':
-                if (!$request->exists('code')) {
-                    return back();
-                }
-                break;
-            case 'discord':
-                if (!$request->exists('code')) {
-                    return redirect()->intended($this->redirectPath());
-                }
-                break;
+        if (!$request->exists('code')) {
+            return ($provider === 'discord') ? redirect()->intended($this->redirectPath()) : back();
         }
 
         /** @var CustomOauthTwoUser $oauthTwoUser */
         $oauthTwoUser = $socialite->driver($provider)->user();
-        if (($user = $this->loginViaOAuth($oauthTwoUser, $provider)) !== null) {
+        if ($this->loginViaOAuth($oauthTwoUser, $provider) !== null) {
             !empty($oauthTwoUser->token) && $request->session()->put('token', $oauthTwoUser->token);
             !empty($oauthTwoUser->refreshToken) && $request->session()->put('refreshToken', $oauthTwoUser->refreshToken);
 

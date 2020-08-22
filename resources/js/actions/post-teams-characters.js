@@ -8,8 +8,9 @@ export const TYPE_POST_TEAMS_CHARACTERS_FAILURE = "POST_TEAMS_CHARACTERS_FAILURE
 
 const RESPONSE_MESSAGE_SUCCESS = "Character(s) invited.";
 
-const postTeamsCharactersSendAction = data => ({
+const postTeamsCharactersSendAction = (teamId, data) => ({
     type: TYPE_POST_TEAMS_CHARACTERS_SEND,
+    teamId,
     data,
 });
 

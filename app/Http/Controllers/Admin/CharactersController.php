@@ -8,8 +8,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Character;
 use App\Models\User;
 use App\Singleton\RoleTypes;
-use App\Traits\Character\HasOrIsDpsParse;
-use App\Traits\Character\IsCharacter;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
@@ -22,8 +20,6 @@ use Illuminate\Validation\ValidationException;
 
 class CharactersController extends Controller
 {
-    use IsCharacter, HasOrIsDpsParse;
-
     /**
      * @param \Illuminate\Http\Request $request
      * @param int                      $characterId
@@ -63,15 +59,13 @@ class CharactersController extends Controller
         }
 
         $guildRankingService = app('guild.ranks.clearance');
-        switch ($actionParam = $request->get('action')) {
-            case 'promote':
-                $guildRankingService->promoteCharacter($character);
-                Event::dispatch(new CharacterPromoted($character));
-                break;
-            case 'demote':
-                $guildRankingService->demoteCharacter($character);
-                Event::dispatch(new CharacterDemoted($character));
-                break;
+        $actionParam = $request->get('action');
+        if ($actionParam === 'promote') {
+            $guildRankingService->promoteCharacter($character);
+            Event::dispatch(new CharacterPromoted($character));
+        } elseif ($actionParam === 'demote') {
+            $guildRankingService->demoteCharacter($character);
+            Event::dispatch(new CharacterDemoted($character));
         }
         Cache::has('character-' . $character->id); // Recache trigger.
 
