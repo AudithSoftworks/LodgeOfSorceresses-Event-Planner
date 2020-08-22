@@ -170,7 +170,7 @@ class LoginController extends Controller
                     'email' => $oauthTwoUser->getEmail(),
                     'password' => Hash::make(uniqid('', true))
                 ]);
-                event(new Registered($ownerAccount, $provider));
+                Event::dispatch(new Registered($ownerAccount, $provider));
             }
 
             # If user account is soft-deleted, restore it.

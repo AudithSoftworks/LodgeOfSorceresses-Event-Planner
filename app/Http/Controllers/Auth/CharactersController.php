@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Character;
 use App\Models\User;
-use App\Traits\Character\HasOrIsDpsParse;
-use App\Traits\Character\IsCharacter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
@@ -17,8 +15,6 @@ use Illuminate\Validation\ValidationException;
 
 class CharactersController extends Controller
 {
-    use IsCharacter, HasOrIsDpsParse;
-
     /**
      * Display a listing of the resource.
      *
@@ -77,7 +73,7 @@ class CharactersController extends Controller
         }
 
         $character = new Character();
-        $character->user_id = app('auth.driver')->id();
+        $character->user_id = Auth::id();
         $character->name = $request->get('name');
         $character->role = $request->get('role');
         $character->class = $request->get('class');
@@ -130,15 +126,16 @@ class CharactersController extends Controller
             throw new ValidationException($validator);
         }
 
-        $character = Character::query()->where(static function (Builder $query) use ($characterId) {
+        $myId = Auth::id();
+        $character = Character::query()->where(static function (Builder $query) use ($characterId, $myId) {
             $query
-                ->where('user_id', app('auth.driver')->id())
+                ->where('user_id', $myId)
                 ->where('id', $characterId);
         })->first(['id', 'name', 'class', 'role', 'sets']);
         if (!$character) {
             throw new ModelNotFoundException('Character not found!');
         }
-        $character->user_id = app('auth.driver')->id();
+        $character->user_id = $myId;
         $request->filled('name') && $character->name = $request->get('name');
         $request->filled('role') && $character->role = $request->get('role');
         $request->filled('class') && $character->class = $request->get('class');
@@ -168,7 +165,7 @@ class CharactersController extends Controller
     {
         $this->authorize('user', User::class);
         $character = Character::query()
-            ->whereUserId(app('auth.driver')->id())
+            ->whereUserId(Auth::id())
             ->whereApprovedForTier(0)
             ->whereId($characterId)
             ->first();

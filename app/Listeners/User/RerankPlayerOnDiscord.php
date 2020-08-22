@@ -25,9 +25,9 @@ class RerankPlayerOnDiscord
      * @param \App\Events\Character\CharacterNeedsRecacheInterface|\App\Events\User\UserNeedsRecacheInterface $event
      *
      * @throws \JsonException
-     * @return bool|int
+     * @return bool
      */
-    public function handle($event)
+    public function handle($event): bool
     {
         if (($parseAuthor = $event->getOwner()) === null) {
             return false;

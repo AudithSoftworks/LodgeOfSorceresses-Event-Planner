@@ -92,9 +92,13 @@ class EventServiceProvider extends ServiceProvider
             Listeners\Team\AnnounceMemberRemovalOnDiscord::class,
         ],
 
-        Events\User\LoggedIn::class => [],
+        Events\User\LoggedIn::class => [
+            Listeners\User\TrackUserLoginForSqreen::class,
+        ],
         Events\User\LoggedOut::class => [],
-        Events\User\Registered::class => [],
+        Events\User\Registered::class => [
+            Listeners\User\TrackUserSignupForSqreen::class,
+        ],
         Events\User\NameUpdated::class => [
             Listeners\User\UpdateDiscordAndForumNames::class,
             Listeners\Cache\DeleteUserCache::class,

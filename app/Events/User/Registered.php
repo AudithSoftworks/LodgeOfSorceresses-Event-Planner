@@ -1,26 +1,28 @@
-<?php namespace App\Events\User;
+<?php
 
-use Illuminate\Contracts\Auth\Authenticatable;
+namespace App\Events\User;
+
+use App\Models\User;
 
 class Registered
 {
-    /**
-     * @var \Illuminate\Contracts\Auth\Authenticatable
-     */
-    public $user;
+    public User $user;
 
-    /**
-     * @var null|string
-     */
-    public $oauthProviderName;
+    public ?string $oauthProvider;
 
-    /**
-     * @param \Illuminate\Contracts\Auth\Authenticatable $user
-     * @param string|null                                $oauthProviderName
-     */
-    public function __construct(Authenticatable $user, $oauthProviderName = null)
+    public function __construct(User $user, ?string $oauthProviderName = null)
     {
         $this->user = $user;
-        $this->oauthProviderName = $oauthProviderName;
+        $this->oauthProvider = $oauthProviderName;
+    }
+
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    public function getOauthProvider(): ?string
+    {
+        return $this->oauthProvider;
     }
 }
