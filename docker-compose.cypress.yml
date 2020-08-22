@@ -1,8 +1,6 @@
 version: '3.7'
 
 services:
-  php:
-    image: audithsoftworks/docker:php-ci
   cypress:
     container_name: cypress
     image: audithsoftworks/docker:cypress
