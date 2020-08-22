@@ -40,6 +40,8 @@ services:
       WORKDIR: "/var/www"
       MYUID: "${MYUID:-1000}"
       MYGID: "${MYGID:-1000}"
+      SQREEN_TOKEN: "${SQREEN_TOKEN}"
+      SQREEN_APP_NAME: "${SQREEN_APP_NAME:-Lodge of Sorceresses Guild Planner}"
     entrypoint: storage/build/scripts/docker-entrypoint.sh
     command: php-fpm
     stdin_open: true
