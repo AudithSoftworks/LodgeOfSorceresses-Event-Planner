@@ -158,6 +158,11 @@ class Header extends Component {
                 <nav className="col-md-24">
                     <ul className="nav-tabs">{navLinksRendered}</ul>
                 </nav>
+                <a title="Realtime application protection" href="https://www.sqreen.com/?utm_source=badge"
+                   className='sqreen-badge d-none d-md-block'>
+                    <img src="https://s3-eu-west-1.amazonaws.com/sqreen-assets/badges/20171107/sqreen-light-badge.svg"
+                         alt="Sqreen | Runtime Application Protection" />
+                </a>
             </header>
         );
     };
