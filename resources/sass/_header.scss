@@ -265,5 +265,16 @@ body {
                 }
             }
         }
+
+        a.sqreen-badge {
+            position: absolute;
+            right: 0;
+            bottom: 10px;
+
+            > img {
+                width: 109px;
+                height: 36px;
+            }
+        }
     }
 }

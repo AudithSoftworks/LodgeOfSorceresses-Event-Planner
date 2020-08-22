@@ -128,7 +128,6 @@ jobs:
           - public/fonts
           - vendor
       before_script:
-        - cp docker-compose.ci.yml docker-compose.override.yml
         - *ssh_agent
         - *setup_env
       script:
@@ -143,7 +142,6 @@ jobs:
         directories:
           - vendor
       before_script:
-        - cp docker-compose.ci.yml docker-compose.override.yml
         - *ssh_agent
         - *setup_env
       script:
