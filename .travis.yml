@@ -38,7 +38,7 @@ setup_env: &setup_env
     "
 
 after_failure:
-  - ssh -o StrictHostKeyChecking=no lodgeofsorceresses@lodgeofsorceresses.com "test -d ~/subdomains/planner/${TRAVIS_BUILD_NUMBER} && rm -rf ~/subdomains/planner/${TRAVIS_BUILD_NUMBER}"
+  - ssh -o StrictHostKeyChecking=no lodge-planner@lodgeofsorceresses.com "test -d ~/www/${TRAVIS_BUILD_NUMBER} && rm -rf ~/www/${TRAVIS_BUILD_NUMBER}"
 
 jobs:
   fast_finish: true
@@ -159,7 +159,7 @@ jobs:
       script:
         - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
             echo "Skipping finalize-deploy step, as this is a Pull Request. Also deleting artifact uploaded to the Live server.";
-            ssh -o StrictHostKeyChecking=no lodgeofsorceresses@lodgeofsorceresses.com "test -d ~/subdomains/planner/${TRAVIS_BUILD_NUMBER} && rm -rf ~/subdomains/planner/${TRAVIS_BUILD_NUMBER}";
+            ssh -o StrictHostKeyChecking=no lodge-planner@lodgeofsorceresses.com "test -d ~/www/${TRAVIS_BUILD_NUMBER} && rm -rf ~/www/${TRAVIS_BUILD_NUMBER}";
           else
-            ssh -o StrictHostKeyChecking=no lodgeofsorceresses@lodgeofsorceresses.com 'bash -s' < ./storage/build/scripts/ci/install.sh ${TRAVIS_BUILD_NUMBER};
+            ssh -o StrictHostKeyChecking=no lodge-planner@lodgeofsorceresses.com 'bash -s' < ./storage/build/scripts/ci/install.sh ${TRAVIS_BUILD_NUMBER};
           fi
