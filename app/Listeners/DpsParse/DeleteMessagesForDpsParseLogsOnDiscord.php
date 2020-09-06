@@ -15,7 +15,7 @@ class DeleteMessagesForDpsParseLogsOnDiscord
     {
         $dpsParses = [];
         if ($event instanceof GetDpsParseInterface) {
-            $dpsParses = collect($event->getDpsParse());
+            $dpsParses = collect()->push($event->getDpsParse());
         } elseif ($event instanceof GetDpsParsesInterface) {
             $dpsParses = $event->getDpsParses();
         }

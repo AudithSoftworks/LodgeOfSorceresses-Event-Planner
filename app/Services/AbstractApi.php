@@ -14,9 +14,9 @@ abstract class AbstractApi implements ApiInterface
 {
     public string $provider;
 
-    protected Client $apiClient;
+    protected ?Client $apiClient;
 
-    protected Client $oauthClient;
+    protected ?Client $oauthClient;
 
     protected string $apiUrl;
 

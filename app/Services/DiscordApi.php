@@ -64,7 +64,7 @@ class DiscordApi extends AbstractApi
 
     protected function getApiClient(): Client
     {
-        if ($this->apiClient !== null) {
+        if (($this->apiClient ?? null) !== null) {
             return $this->apiClient;
         }
 
@@ -80,7 +80,7 @@ class DiscordApi extends AbstractApi
 
     protected function getOauthClient(): Client
     {
-        if ($this->oauthClient !== null) {
+        if (($this->oauthClient ?? null) !== null) {
             return $this->oauthClient;
         }
 

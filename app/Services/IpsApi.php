@@ -34,7 +34,7 @@ class IpsApi extends AbstractApi
 
     protected function getApiClient(): GuzzleClient
     {
-        if ($this->apiClient !== null) {
+        if (($this->apiClient ?? null) !== null) {
             return $this->apiClient;
         }
 
@@ -47,7 +47,7 @@ class IpsApi extends AbstractApi
 
     protected function getOauthClient(): GuzzleClient
     {
-        if ($this->oauthClient !== null) {
+        if (($this->oauthClient ?? null) !== null) {
             return $this->oauthClient;
         }
 
