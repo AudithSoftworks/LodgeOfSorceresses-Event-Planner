@@ -35,7 +35,7 @@
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^1.0",
         "google/apiclient": "~2.5",
-        "guzzlehttp/guzzle": "^6.5",
+        "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^7.18",
         "laravel/passport": "^9.3",
         "laravel/socialite": "^4.4",
