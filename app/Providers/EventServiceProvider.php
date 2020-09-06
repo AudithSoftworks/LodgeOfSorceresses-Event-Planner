@@ -18,7 +18,7 @@ class EventServiceProvider extends ServiceProvider
         ],
 
         Events\Character\CharacterDeleting::class => [
-            Listeners\DpsParse\DeleteDiscordMessagesWhenCharacterIsDeleting::class
+            Listeners\DpsParse\DeleteMessagesForDpsParseLogsOnDiscord::class
         ],
         Events\Character\CharacterDeleted::class => [
             Listeners\Cache\DeleteUserCache::class,
@@ -49,7 +49,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         Events\DpsParse\DpsParseDeleted::class => [
             Listeners\Cache\DeleteCharacterCache::class,
-            Listeners\DpsParse\DeleteDiscordMessagesWhenDpsParseIsDeleted::class
+            Listeners\DpsParse\DeleteMessagesForDpsParseLogsOnDiscord::class
         ],
         Events\DpsParse\DpsParseApproved::class => [
             Listeners\Cache\DeleteCharacterCache::class,

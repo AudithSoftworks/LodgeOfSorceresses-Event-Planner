@@ -6,30 +6,19 @@ use App\Models\UserOAuth;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
 abstract class AbstractApi implements ApiInterface
 {
-    /**
-     * @var string
-     */
-    public $provider;
+    public string $provider;
 
-    /**
-     * @var \GuzzleHttp\Client
-     */
-    protected $apiClient;
+    protected Client $apiClient;
 
-    /**
-     * @var \GuzzleHttp\Client
-     */
-    protected $oauthClient;
+    protected Client $oauthClient;
 
-    /**
-     * @var string
-     */
-    protected $apiUrl;
+    protected string $apiUrl;
 
     public function __construct(string $provider)
     {
@@ -49,6 +38,8 @@ abstract class AbstractApi implements ApiInterface
                     $this->waitForRateLimiting($e);
                     continue;
                 }
+                throw $e;
+            } catch (ServerException $e) {
                 throw $e;
             }
         }

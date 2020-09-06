@@ -29,12 +29,10 @@ use Illuminate\Support\Carbon;
  * @property-read File $infoScreenshot
  * @property-read User $owner
  * @property-read File $parseScreenshot
- * @method static bool|null forceDelete()
  * @method static EloquentBuilder|$this newModelQuery()
  * @method static EloquentBuilder|$this newQuery()
  * @method static QueryBuilder|$this onlyTrashed()
  * @method static EloquentBuilder|$this query()
- * @method static bool|null restore()
  * @method static EloquentBuilder|$this whereCharacterId($value)
  * @method static EloquentBuilder|$this whereCreatedAt($value)
  * @method static EloquentBuilder|$this whereDeletedAt($value)
