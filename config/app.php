@@ -151,7 +151,6 @@ return [
         Laravel\Passport\PassportServiceProvider::class,
         Laravel\Socialite\SocialiteServiceProvider::class,
         Laravel\Tinker\TinkerServiceProvider::class,
-        TwigBridge\ServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -218,6 +217,5 @@ return [
          * Custom Facades...
          */
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
-        'Twig' => TwigBridge\Facade\Twig::class,
     ],
 ];

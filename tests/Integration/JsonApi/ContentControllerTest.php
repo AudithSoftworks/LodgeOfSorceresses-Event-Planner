@@ -3,15 +3,12 @@
 namespace App\Tests\Integration\JsonApi;
 
 use App\Tests\IlluminateTestCase;
-use ContentTableSeeder;
+use Database\Seeders\ContentTableSeeder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Artisan;
 
 class ContentControllerTest extends IlluminateTestCase
 {
-    /**
-     * @var bool
-     */
     protected static bool $setupHasRunOnce = false;
 
     public function setUp(): void

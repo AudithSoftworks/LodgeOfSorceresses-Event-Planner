@@ -5,6 +5,7 @@ use App\Exceptions\FileStream as FileStreamExceptions;
 use App\Models\File;
 use Cloudinary;
 use ErrorException;
+use Illuminate\Contracts\Filesystem\Factory as FactoryContract;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -14,38 +15,27 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class FileStream
 {
-    /**
-     * @var \Illuminate\Filesystem\FilesystemAdapter
-     */
-    public $filesystem;
+    public FactoryContract $filesystem;
 
     /**
      * Folder to hold uploaded chunks.
-     *
-     * @var string
      */
-    public $temporaryChunksFolder = '/_chunks';
+    public string $temporaryChunksFolder = '/_chunks';
 
     /**
      * Chunks will be cleaned once in 1000 requests on average.
-     *
-     * @var float
      */
-    public $chunksCleanupProbability = 0.001;
+    public float $chunksCleanupProbability = 0.001;
 
     /**
      * By default, chunks are considered loose and deletable, in 1 week.
-     *
-     * @var int
      */
-    public $chunksExpireIn;
+    public ?int $chunksExpireIn;
 
     /**
      * Upload size limit.
-     *
-     * @var int
      */
-    public $sizeLimit;
+    public ?int $sizeLimit;
 
     /**
      * FileStream constructor.
@@ -72,9 +62,9 @@ class FileStream
      *
      * @param \Illuminate\Http\Request $request
      *
-     * @return \Illuminate\Http\JsonResponse
      * @throws ErrorException
      * @throws \Exception
+     * @return \Illuminate\Http\JsonResponse
      */
     public function handleUpload(Request $request): JsonResponse
     {
@@ -195,12 +185,7 @@ class FileStream
         return true;
     }
 
-    /**
-     * @param string $size
-     *
-     * @return false|string
-     */
-    public function filesizeFromHumanReadableToBytes($size)
+    public function filesizeFromHumanReadableToBytes(string $size): ?string
     {
         if (preg_match('/^([\d,.]+)\s?([kmgtpezy]?i?b)$/i', $size, $matches) !== 1) {
             return false;
@@ -218,14 +203,7 @@ class FileStream
         return sprintf('%d', bcmul(str_replace(',', '', $coefficient), bcpow((string)$base, $factor)));
     }
 
-    /**
-     * @param int  $bytes
-     * @param int  $decimals
-     * @param bool $binary
-     *
-     * @return string
-     */
-    public function filesizeFromBytesToHumanReadable($bytes, $decimals = 2, $binary = true): string
+    public function filesizeFromBytesToHumanReadable(int $bytes, int $decimals = 2, bool $binary = true): string
     {
         $binaryPrefices = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
         $decimalPrefices = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
@@ -234,21 +212,11 @@ class FileStream
         return (sprintf("%.{$decimals}f", $bytes / (($binary ? 1024 : 1000) ** $factor)) . ' ' . $binary) ? $binaryPrefices[$factor] : $decimalPrefices[$factor];
     }
 
-    /**
-     * @param string $path
-     *
-     * @return string
-     */
-    public function getAbsolutePath($path): string
+    public function getAbsolutePath(string $path): string
     {
         return $this->filesystem->path(trim($path, DIRECTORY_SEPARATOR));
     }
 
-    /**
-     * @param File $file
-     *
-     * @return array
-     */
     public function url(File $file): array
     {
         $large = cloudinary_url($file->hash, [
@@ -267,10 +235,10 @@ class FileStream
      * @param string $qquuid
      * @param string $tag
      *
-     * @return bool
      * @throws \Exception
+     * @return bool
      */
-    public function deleteFile($qquuid, $tag = ''): bool
+    public function deleteFile(string $qquuid, string $tag = ''): bool
     {
         /** @var \App\Models\User $me */
         $me = Auth::user();
@@ -300,11 +268,6 @@ class FileStream
         }
     }
 
-    /**
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return void
-     */
     private function combineChunks(Request $request): void
     {
         # Prelim

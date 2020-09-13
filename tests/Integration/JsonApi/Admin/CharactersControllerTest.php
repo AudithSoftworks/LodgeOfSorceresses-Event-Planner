@@ -4,6 +4,8 @@ namespace App\Tests\Integration\JsonApi\Admin;
 
 use App\Events\Character\CharacterDemoted;
 use App\Events\Character\CharacterPromoted;
+use App\Singleton\ClassTypes;
+use App\Singleton\RoleTypes;
 use App\Tests\IlluminateTestCase;
 use App\Tests\Integration\JsonApi\Traits\NeedsUserStubs;
 use Illuminate\Http\JsonResponse;
@@ -90,7 +92,7 @@ class CharactersControllerTest extends IlluminateTestCase
         $response->assertJsonPath('message', 'Self-ranking disabled!');
 
         # Case: Attempting to rerank a Damage-Dealer
-        $tierTwoDdUser = $this->stubTierXMemberUser(2);
+        $tierTwoDdUser = $this->stubCustomMemberUserWithCustomCharacters(2);
         $response = $this
             ->actingAs(static::$adminUser)
             ->withoutMiddleware()
@@ -105,7 +107,7 @@ class CharactersControllerTest extends IlluminateTestCase
         $response->assertJsonPath('errors.action.0', 'Damage Dealers can only be ranked via Parse submission!');
 
         # Case: Missing 'action' parameter.
-        $tierTwoHealerUser = $this->stubTierXMemberUser(2, 'healer');
+        $tierTwoHealerUser = $this->stubCustomMemberUserWithCustomCharacters(2, RoleTypes::ROLE_HEALER, ClassTypes::CLASS_TEMPLAR);
         $response = $this
             ->actingAs(static::$adminUser)
             ->withoutMiddleware()
@@ -118,7 +120,7 @@ class CharactersControllerTest extends IlluminateTestCase
         $response->assertJsonPath('errors.action.0', 'Action is required.');
 
         # Case: Missing 'action' parameter.
-        $tierTwoHealerUser = $this->stubTierXMemberUser(2, 'healer');
+        $tierTwoHealerUser = $this->stubCustomMemberUserWithCustomCharacters(2, RoleTypes::ROLE_HEALER, ClassTypes::CLASS_TEMPLAR);
         $response = $this
             ->actingAs(static::$adminUser)
             ->withoutMiddleware()
@@ -137,7 +139,7 @@ class CharactersControllerTest extends IlluminateTestCase
     {
         Event::fake([CharacterPromoted::class, CharacterDemoted::class]);
 
-        $tierTwoTankUser = $this->stubTierXMemberUser(2, 'tank');
+        $tierTwoTankUser = $this->stubCustomMemberUserWithCustomCharacters(2, RoleTypes::ROLE_TANK, ClassTypes::CLASS_DRAGONKNIGHT);
         $response = $this
             ->actingAs(static::$adminUser)
             ->withoutMiddleware()
@@ -159,7 +161,7 @@ class CharactersControllerTest extends IlluminateTestCase
     {
         Event::fake([CharacterPromoted::class, CharacterDemoted::class]);
 
-        $tierTwoHealerUser = $this->stubTierXMemberUser(2, 'healer');
+        $tierTwoHealerUser = $this->stubCustomMemberUserWithCustomCharacters(2, RoleTypes::ROLE_HEALER, ClassTypes::CLASS_TEMPLAR);
         $response = $this
             ->actingAs(static::$adminUser)
             ->withoutMiddleware()

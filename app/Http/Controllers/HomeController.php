@@ -16,7 +16,7 @@ class HomeController extends Controller
         $errorBag = Session::get('errors');
         $errors = $errorBag !== null ? $errorBag->all() : [];
 
-        return view('index', [
+        return view('layout', [
             'errors' => json_encode($errors, JSON_THROW_ON_ERROR),
         ]);
     }

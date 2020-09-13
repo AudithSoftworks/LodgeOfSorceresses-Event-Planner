@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
@@ -33,6 +34,8 @@ use Illuminate\Support\Carbon;
  */
 class Attendance extends Model
 {
+    use HasFactory;
+
     protected $table = 'attendances';
 
     public function attendees(): BelongsToMany

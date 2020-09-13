@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use App\Services\GuildRanksAndClearance;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
@@ -8,7 +10,7 @@ use Illuminate\Support\Facades\Schema;
 class ContentTableSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Run the database seeders.
      *
      * @return void
      */

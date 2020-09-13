@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use App\Extensions\Socialite\DiscordProvider;
 use App\Extensions\Socialite\IpsProvider;
+use App\Services\LaravelMix;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
+use Illuminate\Foundation\Mix;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
@@ -15,7 +17,7 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      *
-     * @return void
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function boot(): void
     {
@@ -25,21 +27,23 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Register any application services.
-     *
-     * @return void
      */
     public function register(): void
     {
         Passport::ignoreMigrations();
 
-        if (!app()->environment('production')) {
-            app()->register(IdeHelperServiceProvider::class);
+        if (!$this->app->environment('production')) {
+            $this->app->register(IdeHelperServiceProvider::class);
+            $this->app->bind(Mix::class, LaravelMix::class);
         }
     }
 
+    /**
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
     private function extendSocialiteWithAdditionalProviders(): void
     {
-        $socialite = app(Factory::class);
+        $socialite = $this->app->make(Factory::class);
         $socialite->extend(
             'ips',
             static function ($app) use ($socialite) {
