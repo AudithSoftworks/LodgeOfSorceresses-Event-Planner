@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
 use App\Traits\Character\HasOrIsDpsParse;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
@@ -66,13 +67,17 @@ class DpsParsesController extends Controller
         $me = Auth::user();
 
         $dpsParse = DpsParse::query()
-            ->with(['character'])
+            ->with(['character', 'owner'])
             ->whereId($parseId)
             ->whereNull('processed_by')
             ->first();
 
         if (!$dpsParse) {
             throw new ModelNotFoundException('Parse not found!');
+        }
+
+        if ($dpsParse->owner->id === $me->id) {
+            throw new AuthorizationException('Can\'t evaluate your own parse! Ask a fellow officer to do it for you.');
         }
 
         $dpsParse->processed_by = $me->id;
