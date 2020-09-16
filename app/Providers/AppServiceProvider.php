@@ -32,9 +32,9 @@ class AppServiceProvider extends ServiceProvider
     {
         Passport::ignoreMigrations();
 
+        $this->app->bind(Mix::class, LaravelMix::class);
         if (!$this->app->environment('production')) {
             $this->app->register(IdeHelperServiceProvider::class);
-            $this->app->bind(Mix::class, LaravelMix::class);
         }
     }
 

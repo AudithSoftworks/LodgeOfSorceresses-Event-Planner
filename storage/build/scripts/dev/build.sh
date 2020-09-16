@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
+test -f docker-compose.override.yml || cp docker-compose.cypress.yml docker-compose.override.yml;
 docker-compose pull;
 docker-compose down;
 docker system prune --force --volumes;
 docker-compose up -d;
 docker-compose ps;
 
-test -f .env || cat .env.example | tee .env > /dev/null 2>&1;
+test -f .env || cp .env.example .env;
 
 docker-compose exec php bash -c "
     export NPM_CONFIG_LOGLEVEL=warn;
