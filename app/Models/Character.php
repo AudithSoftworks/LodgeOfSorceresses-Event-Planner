@@ -7,6 +7,7 @@ use App\Events\Character\CharacterDeleting;
 use App\Events\Character\CharacterSaved;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -50,6 +51,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Character extends Model
 {
+    use HasFactory;
+
     /**
      * {@inheritdoc}
      */

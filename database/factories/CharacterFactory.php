@@ -1,54 +1,73 @@
 <?php
 
+namespace Database\Factories;
+
 use App\Models\Character;
 use App\Models\User;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
-$factory->define(Character::class, static function () {
-    return [
-        'user_id' => factory(User::class),
-        'name' => 'A character name',
-        'role' => RoleTypes::ROLE_TANK,
-        'class' => ClassTypes::CLASS_DRAGONKNIGHT,
-        'sets' => '1',
-        'approved_for_tier' => 0,
-    ];
-});
+class CharacterFactory extends Factory
+{
+    protected $model = Character::class;
 
-$factory->state(Character::class, 'tank', [
-    'role' => RoleTypes::ROLE_TANK,
-    'class' => ClassTypes::CLASS_DRAGONKNIGHT,
-]);
+    public function definition(): array
+    {
+        return [
+            'user_id' => User::factory()->make(),
+            'name' => 'A character name',
+            'role' => RoleTypes::ROLE_TANK,
+            'class' => ClassTypes::CLASS_DRAGONKNIGHT,
+            'sets' => '1',
+            'approved_for_tier' => 0,
+        ];
+    }
 
-$factory->state(Character::class, 'healer', [
-    'role' => RoleTypes::ROLE_HEALER,
-    'class' => ClassTypes::CLASS_TEMPLAR,
-]);
+    public function role(int $role, int $class): self
+    {
+        return $this->state([
+            'role' => $role,
+            'class' => $class,
+        ]);
+    }
 
-$factory->state(Character::class, 'magdd', [
-    'role' => RoleTypes::ROLE_MAGICKA_DD,
-    'class' => ClassTypes::CLASS_SORCERER,
-]);
+    public function tank(): self
+    {
+        return $this->state([
+            'role' => RoleTypes::ROLE_TANK,
+            'class' => ClassTypes::CLASS_DRAGONKNIGHT,
+        ]);
+    }
 
-$factory->state(Character::class, 'stamdd', [
-    'role' => RoleTypes::ROLE_STAMINA_DD,
-    'class' => ClassTypes::CLASS_NECROMANCER,
-]);
+    public function healer(): self
+    {
+        return $this->state([
+            'role' => RoleTypes::ROLE_HEALER,
+            'class' => ClassTypes::CLASS_TEMPLAR,
+        ]);
+    }
 
-$factory->state(Character::class, 'tier-1', [
-    'approved_for_tier' => 1,
-]);
+    public function magdd(): self
+    {
+        return $this->state([
+            'role' => RoleTypes::ROLE_MAGICKA_DD,
+            'class' => ClassTypes::CLASS_SORCERER,
+        ]);
+    }
 
-$factory->state(Character::class, 'tier-2', [
-    'approved_for_tier' => 2,
-]);
+    public function stamdd(): self
+    {
+        return $this->state([
+            'role' => RoleTypes::ROLE_STAMINA_DD,
+            'class' => ClassTypes::CLASS_NECROMANCER,
+        ]);
+    }
 
-$factory->state(Character::class, 'tier-3', [
-    'approved_for_tier' => 3,
-]);
-
-$factory->state(Character::class, 'tier-4', [
-    'approved_for_tier' => 4,
-]);
+    public function tier(int $tier): self
+    {
+        return $this->state([
+            'approved_for_tier' => $tier,
+        ]);
+    }
+}

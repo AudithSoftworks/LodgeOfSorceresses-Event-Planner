@@ -2,14 +2,13 @@
 /cypress/fixtures/.*.json
 /cypress/screenshots/*
 /cypress/videos/*
-/database/seeds/SetsTableSeeder.php
-/database/seeds/SkillsTableSeeder.php
+/database/seeders/SetsTableSeeder.php
+/database/seeders/SkillsTableSeeder.php
 /node_modules
 /public/build
 /public/fonts/*
 /public/storage
 /storage/*.key
-/storage/coverage*
 /vendor
 !.babelrc
 !.env.*

@@ -8,10 +8,10 @@
             <directory suffix=".php">./app</directory>
         </include>
         <report>
-            <clover outputFile="./storage/coverage/unit/coverage.xml" />
-            <html outputDirectory="./storage/coverage/unit/report" lowUpperBound="35" highLowerBound="70" />
-            <php outputFile="./storage/coverage/unit/coverage.cov" />
-            <text outputFile="php://stdout" />
+            <clover outputFile="./storage/coverage/coverage.xml" />
+            <html outputDirectory="./storage/coverage/.report" lowUpperBound="35" highLowerBound="70" />
+            <php outputFile="./storage/coverage/coverage.cov" />
+<!--            <text outputFile="php://stdout" />-->
         </report>
     </coverage>
     <testsuites>

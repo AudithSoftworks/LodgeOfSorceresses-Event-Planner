@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use App\Models\User;
 use App\Models\UserOAuth;
 use Illuminate\Database\Seeder;
@@ -7,7 +9,7 @@ use Illuminate\Database\Seeder;
 class UsersTableSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Run the database seeders.
      *
      * @return void
      */

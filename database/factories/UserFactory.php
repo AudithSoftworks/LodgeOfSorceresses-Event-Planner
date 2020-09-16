@@ -1,26 +1,43 @@
 <?php
 
+namespace Database\Factories;
+
 use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
-$factory->define(User::class, static function (Faker\Generator $faker) {
-    return [
-        'name' => $faker->name,
-        'email' => $faker->unique()->safeEmail,
-        'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-        'remember_token' => Str::random(10),
-    ];
-});
+class UserFactory extends Factory
+{
+    protected $model = User::class;
 
-$factory->state(User::class, 'member', [
-    'name' => 'Member',
-]);
+    public function definition(): array
+    {
+        return [
+            'name' => $this->faker->name,
+            'email' => $this->faker->unique()->safeEmail,
+            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+            'remember_token' => Str::random(10),
+        ];
+    }
 
-$factory->state(User::class, 'admin-member', [
-    'name' => 'Admin',
-]);
+    public function soulshriven(): self
+    {
+        return $this->state([
+            'name' => 'Soulshriven',
+        ]);
+    }
 
-$factory->state(User::class, 'soulshriven', [
-    'name' => 'Soulshriven',
-]);
+    public function member(): self
+    {
+        return $this->state([
+            'name' => 'Member',
+        ]);
+    }
+
+    public function admin(): self
+    {
+        return $this->state([
+            'name' => 'Admin',
+        ]);
+    }
+}

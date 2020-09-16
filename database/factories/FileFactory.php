@@ -1,14 +1,22 @@
 <?php
 
-use App\Models\File;
+namespace Database\Factories;
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
-$factory->define(File::class, static function (Faker\Generator $faker) {
-    return [
-        'hash' => hash('md5', $faker->word),
-        'disk' => 'local',
-        'path' => '/some/irrelevant/path',
-        'mime' => 'image/jpeg',
-        'size' => 1024,
-    ];
-});
+use App\Models\File;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class FileFactory extends Factory
+{
+    protected $model = File::class;
+
+    public function definition(): array
+    {
+        return [
+            'hash' => hash('md5', $this->faker->word),
+            'disk' => 'local',
+            'path' => '/some/irrelevant/path',
+            'mime' => 'image/jpeg',
+            'size' => 1024,
+        ];
+    }
+}

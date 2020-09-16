@@ -147,10 +147,10 @@ class TeamsCharactersControllerTest extends IlluminateTestCase
     {
         # Case 1: Regular store
         Event::fake([MemberInvited::class, TeamUpdated::class]);
-        $tierOneMemberUser = $this->stubTierXMemberUser(1);
-        $tierTwoMemberUser = $this->stubTierXMemberUser(2);
-        $tierThreeMemberUser = $this->stubTierXMemberUser(3);
-        $tierFourMemberUser = $this->stubTierXMemberUser(4);
+        $tierOneMemberUser = $this->stubCustomMemberUserWithCustomCharacters(1);
+        $tierTwoMemberUser = $this->stubCustomMemberUserWithCustomCharacters(2);
+        $tierThreeMemberUser = $this->stubCustomMemberUserWithCustomCharacters(3);
+        $tierFourMemberUser = $this->stubCustomMemberUserWithCustomCharacters(4);
         $response = $this
             ->actingAs(static::$team->ledBy)
             ->withoutMiddleware()

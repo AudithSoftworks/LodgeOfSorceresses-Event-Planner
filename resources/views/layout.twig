@@ -1,8 +1,0 @@
-<!DOCTYPE html>
-{% set locale = app.make('translator').getLocale() %}
-<html lang="{{ locale }}">
-    <head>
-        {{ block('document_head') }}
-    </head>
-    <body id="root" class="theme-default" data-flash-messages="{{ errors }}" />
-</html>

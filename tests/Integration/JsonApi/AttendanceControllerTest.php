@@ -43,22 +43,22 @@ class AttendanceControllerTest extends IlluminateTestCase
         $this->stubSoulshrivenUser();
 
         /** @var Attendance $attendance */
-        $attendance = factory(Attendance::class)->create([
+        $attendance = Attendance::factory()->create([
             'text' => '2 weeks ago',
             'created_at' => (new CarbonImmutable())->subWeeks(2),
         ]);
         $attendance->attendees()->sync([static::$soulshriven->id]);
-        $attendance = factory(Attendance::class)->create([
+        $attendance = Attendance::factory()->create([
             'text' => '4 weeks ago',
             'created_at' => (new CarbonImmutable())->subWeeks(4),
         ]);
         $attendance->attendees()->sync([static::$soulshriven->id]);
-        $attendance = factory(Attendance::class)->create([
+        $attendance = Attendance::factory()->create([
             'text' => '4 weeks 1 day ago',
             'created_at' => (new CarbonImmutable())->subWeeks(4)->subDay(),
         ]);
         $attendance->attendees()->sync([static::$soulshriven->id]);
-        $attendance = factory(Attendance::class)->create([
+        $attendance = Attendance::factory()->create([
             'text' => '6 weeks ago',
             'created_at' => (new CarbonImmutable())->subWeeks(5),
         ]);
