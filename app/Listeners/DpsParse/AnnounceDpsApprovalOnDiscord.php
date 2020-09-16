@@ -11,12 +11,6 @@ use Illuminate\Support\Facades\Auth;
 
 class AnnounceDpsApprovalOnDiscord
 {
-    private const TOPIC_URLS_CONTENT_CLEARANCE_GUIDE = 'https://lodgeofsorceresses.com/topic/5741-pve-content-clearance-guide/';
-
-    private const TOPIC_URLS_ENDGAME_ATTENDANCE_GUIDELINES = 'https://lodgeofsorceresses.com/topic/5506-endgame-attendance-guidelines/';
-
-    private const TOPIC_URLS_REQUIREMENTS_TO_JOIN_CORE = 'https://lodgeofsorceresses.com/topic/4887-requirements-to-join-a-core/';
-
     public function __construct()
     {
         Cloudinary::config([
@@ -103,7 +97,7 @@ class AnnounceDpsApprovalOnDiscord
                                 'secure' => true,
                                 'width' => 300,
                                 'height' => 300,
-                            ])
+                            ]),
                         ],
                         'fields' => [
                             [
@@ -139,14 +133,14 @@ class AnnounceDpsApprovalOnDiscord
                         'image' => [
                             'url' => cloudinary_url($dpsParse->parse_file_hash, [
                                 'secure' => true,
-                            ])
+                            ]),
                         ],
                         'footer' => [
-                            'text' => 'Sent via Lodge of Sorceresses Guild Planner at: https://planner.lodgeofsorceresses.com'
-                        ]
+                            'text' => 'Sent via Lodge of Sorceresses Guild Planner at: https://planner.lodgeofsorceresses.com',
+                        ],
                     ],
                 ], JSON_THROW_ON_ERROR),
-            ]
+            ],
         ]);
         $dpsParse->discord_notification_message_ids = $responseDecoded['id'];
         $dpsParse->save();
@@ -167,48 +161,19 @@ class AnnounceDpsApprovalOnDiscord
             $discordApi->createMessageInChannel($dmChannel['id'], [
                 RequestOptions::FORM_PARAMS => [
                     'payload_json' => json_encode([
-                        'content' => $mentionedName . ', you are cleared for **' . $characterClearanceTitle . '** on your ' . $className . ' ' . $roleName . ' named _' . $character->name . "_.\n"
-                            . 'Please start doing content with folks and let the guild get to know you and vice versa (3 day event attendance is in effect). '
-                            . 'It is very important for our community! '
-                            . "Depending on your clearance, _Midgame_, _DPS Trainings_ & _Endgame_ are potentially eligible content towards your attendance.\n"
-                            . 'Additionally, please do not forget to constantly improve and keep sending your improved DPS Parses at least every 15 days. Otherwise your Clearance might get revoked. '
-                            . "Refer to our _Guidance team_, should you need any assistance with training or any other questions! Good luck!\n"
-                            . '_P.S.:_ Feel free to find important links listed below for your convenience.'
-                        ,
-                        'tts' => false,
-                        'embed' => [
-                            'color' => 0x00aa00,
-                            'thumbnail' => [
-                                'url' => cloudinary_url('special/logo.png', [
-                                    'secure' => true,
-                                    'width' => 300,
-                                    'height' => 300,
-                                ])
-                            ],
-                            'fields' => [
-                                [
-                                    'name' => 'DPS Training',
-                                    'value' => 'Sign-up [on Calendar](https://lodgeofsorceresses.com/calendar/)',
-                                ],
-                                [
-                                    'name' => 'Content Clearance Guide',
-                                    'value' => 'Read [this topic](' . self::TOPIC_URLS_CONTENT_CLEARANCE_GUIDE . ') to learn more about Content Clearance Tiers',
-                                ],
-                                [
-                                    'name' => 'Endgame Attendance Guidelines',
-                                    'value' => 'Read [this topic](' . self::TOPIC_URLS_ENDGAME_ATTENDANCE_GUIDELINES . ') as a preparation to join a Core',
-                                ],
-                                [
-                                    'name' => 'Raid Core Requirements to Join',
-                                    'value' => 'Read [this topic](' . self::TOPIC_URLS_REQUIREMENTS_TO_JOIN_CORE . ') as a preparation to join a Core',
-                                ],
-                            ],
-                            'footer' => [
-                                'text' => 'Sent via Lodge of Sorceresses Guild Planner at: https://planner.lodgeofsorceresses.com'
-                            ]
-                        ],
+                        'content' => sprintf(
+                            '%s, you are cleared for **%s** on your _%s (%s)_ named _%s_.' . PHP_EOL
+                            . 'Please start doing content with folks and let the community get to know you and vice versa. '
+                            . 'Additionally, please keep training and submit your improved Parses every 60 days at latest. '
+                            . 'Otherwise your character\'s Tier-level might get revoked. Good luck!',
+                            $mentionedName,
+                            $characterClearanceTitle,
+                            $className,
+                            $roleName,
+                            $character->name
+                        ),
                     ], JSON_THROW_ON_ERROR),
-                ]
+                ],
             ]);
         }
 
