@@ -9,7 +9,6 @@
 /public/fonts/*
 /public/storage
 /storage/*.key
-/storage/coverage*
 /vendor
 !.babelrc
 !.env.*
