@@ -1,12 +1,12 @@
-import * as api from "../vendor/api/auth";
+import * as api from '../vendor/api/auth';
 
-export const TYPE_DELETE_MY_CHARACTER_SEND = "DELETE_MY_CHARACTER_SEND";
+export const TYPE_DELETE_MY_CHARACTER_SEND = 'DELETE_MY_CHARACTER_SEND';
 
-export const TYPE_DELETE_MY_CHARACTER_SUCCESS = "DELETE_MY_CHARACTER_SUCCESS";
+export const TYPE_DELETE_MY_CHARACTER_SUCCESS = 'DELETE_MY_CHARACTER_SUCCESS';
 
-export const TYPE_DELETE_MY_CHARACTER_FAILURE = "DELETE_MY_CHARACTER_FAILURE";
+export const TYPE_DELETE_MY_CHARACTER_FAILURE = 'DELETE_MY_CHARACTER_FAILURE';
 
-const RESPONSE_MESSAGE_SUCCESS = "Character deleted.";
+const RESPONSE_MESSAGE_SUCCESS = 'Character deleted.';
 
 const deleteMyCharacterSendAction = characterId => ({
     type: TYPE_DELETE_MY_CHARACTER_SEND,
@@ -29,7 +29,7 @@ const deleteMyCharacterFailureAction = error => {
 
 const deleteMyCharacterAction = characterId => (dispatch, getState) => {
     dispatch(deleteMyCharacterSendAction(characterId));
-    const axiosCancelTokenSource = getState().getIn(["axiosCancelTokenSource"]);
+    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .deleteMyCharacter(axiosCancelTokenSource, characterId, dispatch)
         .then(response => {

@@ -4,7 +4,7 @@ export const stubSoulshrivenWithNoNameAndNoForumOauth = cy => {
         method: 'GET',
         url: '/api/users/@me',
         delay: 1000,
-        response: '@soulshriven'
+        response: '@soulshriven',
     }).as('loadSoulshrivenWithNoNameAndNoForumOauth');
 };
 
@@ -14,7 +14,7 @@ export const stubSoulshrivenWithNoForumOauth = cy => {
         method: 'GET',
         url: '/api/users/@me',
         delay: 1000,
-        response: '@soulshriven'
+        response: '@soulshriven',
     }).as('loadSoulshrivenWithNoForumOauth');
 };
 

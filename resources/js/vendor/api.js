@@ -1,21 +1,20 @@
-import { normalize } from "normalizr";
-import React from "react";
-import axios from "./axios";
-import * as schema from "./schema";
+import { normalize } from 'normalizr';
+import axios from './axios';
+import * as schema from './schema';
 
 export const getAttendances = (cancelToken, userId, params = {}) =>
     axios
         .get(
-            "/api/attendances/" + userId + '?' + (
-                params
-                    ? Object
+            '/api/attendances/' + userId + '?' + (
+                params ?
+                    Object
                         .keys(params)
                         .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
-                        .join('&')
-                    : ''
+                        .join('&') :
+                    ''
             ), {
                 cancelToken: cancelToken.token,
-            }
+            },
         )
         .then(response => {
             if (response.data) {
@@ -33,7 +32,7 @@ export const getAttendances = (cancelToken, userId, params = {}) =>
 
 export const getOnboardingContentByStep = (cancelToken, mode, step) =>
     axios
-        .get("/api/onboarding/" + mode + "/content/by-step/" + step, {
+        .get('/api/onboarding/' + mode + '/content/by-step/' + step, {
             cancelToken: cancelToken.token,
         })
         .then(response => {
@@ -49,7 +48,7 @@ export const getOnboardingContentByStep = (cancelToken, mode, step) =>
 
 export const getSets = cancelToken =>
     axios
-        .get("/api/sets", {
+        .get('/api/sets', {
             cancelToken: cancelToken.token,
         })
         .then(response => {
@@ -65,7 +64,7 @@ export const getSets = cancelToken =>
 
 export const getSkills = cancelToken =>
     axios
-        .get("/api/skills", {
+        .get('/api/skills', {
             cancelToken: cancelToken.token,
         })
         .then(response => {
@@ -81,7 +80,7 @@ export const getSkills = cancelToken =>
 
 export const getContent = cancelToken =>
     axios
-        .get("/api/content", {
+        .get('/api/content', {
             cancelToken: cancelToken.token,
         })
         .then(response => {
@@ -97,7 +96,7 @@ export const getContent = cancelToken =>
 
 export const getAllUsers = cancelToken =>
     axios
-        .get("/api/users", {
+        .get('/api/users', {
             cancelToken: cancelToken.token,
         })
         .then(response => {
@@ -113,7 +112,7 @@ export const getAllUsers = cancelToken =>
 
 export const getUser = (cancelToken, userId) =>
     axios
-        .get("/api/users/" + userId, {
+        .get('/api/users/' + userId, {
             cancelToken: cancelToken.token,
         })
         .then(response => {
@@ -129,7 +128,7 @@ export const getUser = (cancelToken, userId) =>
 
 export const getAllCharacters = (cancelToken, tier) =>
     axios
-        .get("/api/characters?tier=" + tier, {
+        .get('/api/characters?tier=' + tier, {
             cancelToken: cancelToken.token,
         })
         .then(response => {
@@ -145,7 +144,7 @@ export const getAllCharacters = (cancelToken, tier) =>
 
 export const getCharacter = (cancelToken, characterId) =>
     axios
-        .get("/api/characters/" + characterId, {
+        .get('/api/characters/' + characterId, {
             cancelToken: cancelToken.token,
         })
         .then(response => {
@@ -161,7 +160,7 @@ export const getCharacter = (cancelToken, characterId) =>
 
 export const getTeams = cancelToken =>
     axios
-        .get("/api/teams", {
+        .get('/api/teams', {
             cancelToken: cancelToken.token,
         })
         .then(response => {
@@ -174,7 +173,7 @@ export const getTeams = cancelToken =>
 
 export const postTeam = (cancelToken, data) =>
     axios
-        .post("/api/teams", data, {
+        .post('/api/teams', data, {
             cancelToken: cancelToken.token,
         })
         .then(response => {
@@ -190,10 +189,10 @@ export const postTeam = (cancelToken, data) =>
 
 export const putTeam = (cancelToken, teamId, data) =>
     axios
-        .post("/api/teams/" + teamId, data, {
+        .post('/api/teams/' + teamId, data, {
             cancelToken: cancelToken.token,
             headers: {
-                "X-HTTP-Method-Override": "PUT",
+                'X-HTTP-Method-Override': 'PUT',
             },
         })
         .then(response => {
@@ -209,7 +208,7 @@ export const putTeam = (cancelToken, teamId, data) =>
 
 export const deleteTeam = (cancelToken, teamId) =>
     axios
-        .delete("/api/teams/" + teamId, {
+        .delete('/api/teams/' + teamId, {
             cancelToken: cancelToken.token,
         })
         .then(response => response.status === 204)
@@ -219,7 +218,7 @@ export const deleteTeam = (cancelToken, teamId) =>
 
 export const postTeamsCharacters = (cancelToken, teamId, data) =>
     axios
-        .post("/api/teams/" + teamId + "/characters", data, {
+        .post('/api/teams/' + teamId + '/characters', data, {
             cancelToken: cancelToken.token,
         })
         .then(response => {
@@ -235,10 +234,10 @@ export const postTeamsCharacters = (cancelToken, teamId, data) =>
 
 export const putTeamsCharacters = (cancelToken, teamId, characterId, data) =>
     axios
-        .post("/api/teams/" + teamId + "/characters/" + characterId, data, {
+        .post('/api/teams/' + teamId + '/characters/' + characterId, data, {
             cancelToken: cancelToken.token,
             headers: {
-                "X-HTTP-Method-Override": "PUT",
+                'X-HTTP-Method-Override': 'PUT',
             },
         })
         .then(response => {
@@ -254,7 +253,7 @@ export const putTeamsCharacters = (cancelToken, teamId, characterId, data) =>
 
 export const deleteTeamsCharacters = (cancelToken, teamId, characterId) =>
     axios
-        .delete("/api/teams/" + teamId + "/characters/" + characterId, {
+        .delete('/api/teams/' + teamId + '/characters/' + characterId, {
             cancelToken: cancelToken.token,
         })
         .then(response => response.status === 204)

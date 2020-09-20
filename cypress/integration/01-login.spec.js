@@ -1,5 +1,5 @@
-describe('Login Screen', function () {
-    it('Inspects Login Screen', function () {
+describe('Login Screen', function() {
+    it('Inspects Login Screen', function() {
         cy.visit('/');
         cy.get('header > h1').should('have.css', 'background-image', 'url("http://planner.lodgeofsorceresses.test/images/logo.png")');
         cy.get('header > ul.member-bar > li > figure > figcaption').should('have.text', 'Welcome, Soulless One!');

@@ -1,7 +1,7 @@
-import { stubGuest } from "../../../fixtures/xhr-operations/users/@me/guest";
+import { stubGuest } from '../../../fixtures/xhr-operations/users/@me/guest';
 
-describe('Guest User - Onboarding - Start Point', function () {
-    it('redirects to Dashboard and shows the beginning of Onboarding wizard (Member vs Soulshriven choice)', function () {
+describe('Guest User - Onboarding - Start Point', function() {
+    it('redirects to Dashboard and shows the beginning of Onboarding wizard (Member vs Soulshriven choice)', function() {
         cy.server();
         stubGuest(cy);
 

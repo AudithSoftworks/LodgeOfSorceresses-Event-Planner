@@ -1,7 +1,7 @@
-import * as deleteMyCharacterActions from "../actions/delete-my-character";
-import * as getCharacterActions from "../actions/get-character";
-import * as putCharacterActions from "../actions/put-character";
-import * as viewCharacterActions from "../actions/view-character";
+import * as deleteMyCharacterActions from '../actions/delete-my-character';
+import * as getCharacterActions from '../actions/get-character';
+import * as putCharacterActions from '../actions/put-character';
+import * as viewCharacterActions from '../actions/view-character';
 
 const selectedCharacterReducer = (state = {}, action) => {
     if (action.type === getCharacterActions.TYPE_GET_CHARACTER_SUCCESS || action.type === putCharacterActions.TYPE_PUT_CHARACTER_SUCCESS) {

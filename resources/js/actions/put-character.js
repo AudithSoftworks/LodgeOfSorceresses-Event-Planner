@@ -1,12 +1,12 @@
-import * as api from "../vendor/api/admin";
+import * as api from '../vendor/api/admin';
 
-export const TYPE_PUT_CHARACTER_SEND = "PUT_CHARACTER_SEND";
+export const TYPE_PUT_CHARACTER_SEND = 'PUT_CHARACTER_SEND';
 
-export const TYPE_PUT_CHARACTER_SUCCESS = "PUT_CHARACTER_SUCCESS";
+export const TYPE_PUT_CHARACTER_SUCCESS = 'PUT_CHARACTER_SUCCESS';
 
-export const TYPE_PUT_CHARACTER_FAILURE = "PUT_CHARACTER_FAILURE";
+export const TYPE_PUT_CHARACTER_FAILURE = 'PUT_CHARACTER_FAILURE';
 
-const RESPONSE_MESSAGE_SUCCESS = "Character reranked.";
+const RESPONSE_MESSAGE_SUCCESS = 'Character reranked.';
 
 const putCharacterSendAction = (characterId, data) => ({
     type: TYPE_PUT_CHARACTER_SEND,
@@ -29,7 +29,7 @@ const putCharacterFailureAction = error => ({
 
 const putCharacterAction = (characterId, data) => (dispatch, getState) => {
     dispatch(putCharacterSendAction(characterId, data));
-    const axiosCancelTokenSource = getState().getIn(["axiosCancelTokenSource"]);
+    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .putCharacter(axiosCancelTokenSource, characterId, data, dispatch)
         .then(response => {

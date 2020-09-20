@@ -31,7 +31,7 @@ class AttendanceController extends Controller
         $this->authorize('user', User::class);
 
         $validator = Validator::make($request->all(), [
-            'b' => 'sometimes|date_format:' . DateTimeInterface::ATOM,
+            'b' => 'sometimes|date_format:' . DateTimeInterface::RFC3339_EXTENDED,
         ], [
             'b.date_format' => '"b" parameter needs to be in ISODate format.',
         ]);

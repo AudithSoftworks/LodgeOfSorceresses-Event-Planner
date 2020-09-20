@@ -3,6 +3,6 @@ export const teams = cy => {
     cy.route({
         method: 'GET',
         url: '/api/teams',
-        response: '@teams'
+        response: '@teams',
     }).as('loadTeams');
 };

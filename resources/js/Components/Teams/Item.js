@@ -1,21 +1,21 @@
-import { faChevronCircleLeft, faSunrise, faSunset, faTrashAlt } from "@fortawesome/pro-light-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import PropTypes from "prop-types";
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { Link } from "react-router-dom";
-import Select from "react-select";
-import makeAnimated from "react-select/animated";
-import deleteTeamsCharactersAction from "../../actions/delete-teams-characters";
-import { errorsAction } from "../../actions/notifications";
-import postTeamsCharactersAction from "../../actions/post-teams-characters";
-import { renderActionList } from "../../helpers";
-import { getAllCharacters } from "../../vendor/api";
-import axios from "../../vendor/axios";
-import { team, teams, user } from "../../vendor/data";
-import Loading from "../Loading";
-import Notification from "../Notification";
-import List from "../TeamsCharacters/List";
+import { faChevronCircleLeft, faSunrise, faSunset, faTrashAlt } from '@fortawesome/pro-light-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
+import deleteTeamsCharactersAction from '../../actions/delete-teams-characters';
+import { errorsAction } from '../../actions/notifications';
+import postTeamsCharactersAction from '../../actions/post-teams-characters';
+import { renderActionList } from '../../helpers';
+import { getAllCharacters } from '../../vendor/api';
+import axios from '../../vendor/axios';
+import { team, teams, user } from '../../vendor/data';
+import Loading from '../Loading';
+import Notification from '../Notification';
+import List from '../TeamsCharacters/List';
 
 class Item extends Component {
     constructor(props) {
@@ -50,7 +50,7 @@ class Item extends Component {
     };
 
     componentWillUnmount = () => {
-        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel("Request cancelled.");
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
     };
 
     handleTeamsCharactersPost = event => {
@@ -72,9 +72,9 @@ class Item extends Component {
 
     handleTeamsCharactersDelete = event => {
         event.preventDefault();
-        if (confirm("Are you sure you want to remove this character from the team?")) {
+        if (confirm('Are you sure you want to remove this character from the team?')) {
             const currentTarget = event.currentTarget;
-            const characterId = parseInt(currentTarget.getAttribute("data-id"));
+            const characterId = parseInt(currentTarget.getAttribute('data-id'));
             const { team } = this.state;
 
             return this.props.deleteTeamsCharactersAction(team.id, characterId).then(() => {
@@ -102,16 +102,16 @@ class Item extends Component {
 
             return acc;
         }, []);
-        const characterOptions = Object.values(characters.entities["characters"])
+        const characterOptions = Object.values(characters.entities['characters'])
             .filter(c => teamMembersIds.indexOf(c.id) === -1 && c.owner !== null)
             .map(c => ({
                 value: c.id,
-                label: "@" + c.owner.name + ": " + c.name + " (" + c.class + "/" + c.role + ") [Tier-" + c.approved_for_tier + "]",
+                label: '@' + c.owner.name + ': ' + c.name + ' (' + c.class + '/' + c.role + ') [Tier-' + c.approved_for_tier + ']',
             }));
 
         return (
             <form className="col-md-24 d-flex flex-row flex-wrap p-0" onSubmit={this.handleTeamsCharactersPost} key="teams-characters-store-form">
-                <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute("content")} />
+                <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')} />
                 <fieldset className="form-group col-md-24">
                     <label>Eligible Characters</label>
                     <Select
@@ -143,24 +143,24 @@ class Item extends Component {
         const { team } = this.state;
         const actionList = {
             return: (
-                <Link to={"/teams"} title="Back to Teams">
+                <Link to={'/teams'} title="Back to Teams">
                     <FontAwesomeIcon icon={faChevronCircleLeft} />
                 </Link>
             ),
             tierIncrease:
-                typeof changeTierHandler === "function" && authorizedTeamManager && team.tier < 4 ? (
+                typeof changeTierHandler === 'function' && authorizedTeamManager && team.tier < 4 ? (
                     <a href="#" onClick={changeTierHandler} data-id={team.id} data-action="increase-tier" title="Increase Tier">
                         <FontAwesomeIcon icon={faSunrise} />
                     </a>
                 ) : null,
             tierDecrease:
-                typeof changeTierHandler === "function" && authorizedTeamManager && team.tier > 1 ? (
+                typeof changeTierHandler === 'function' && authorizedTeamManager && team.tier > 1 ? (
                     <a href="#" onClick={changeTierHandler} data-id={team.id} data-action="decrease-tier" title="Decrease Tier">
                         <FontAwesomeIcon icon={faSunset} />
                     </a>
                 ) : null,
             delete:
-                typeof deleteTeamHandler === "function" && authorizedTeamManager ? (
+                typeof deleteTeamHandler === 'function' && authorizedTeamManager ? (
                     <Link to="#" onClick={deleteTeamHandler} data-id={team.id} title="Delete Team">
                         <FontAwesomeIcon icon={faTrashAlt} />
                     </Link>
@@ -176,7 +176,7 @@ class Item extends Component {
                     <dd>{team.tier}</dd>
 
                     <dt>Leader</dt>
-                    <dd>{"@" + team.led_by.name}</dd>
+                    <dd>{'@' + team.led_by.name}</dd>
 
                     <dt># of Members</dt>
                     <dd>{team.members.length}</dd>
@@ -192,6 +192,7 @@ Item.propTypes = {
     authorizedTeamManager: PropTypes.bool.isRequired,
     changeTierHandler: PropTypes.func, // based on existense of this param, we render ChangeTier buttons
     deleteTeamHandler: PropTypes.func, // based on existense of this param, we render Delete button
+    axiosCancelTokenSource: PropTypes.object,
     me: user.isRequired,
     team,
     teams,
@@ -202,7 +203,7 @@ Item.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
+    axiosCancelTokenSource: state.getIn(['axiosCancelTokenSource']),
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -1,13 +1,13 @@
-import { ConnectedRouter } from "connected-react-router/immutable";
-import PropTypes from "prop-types";
-import React, { PureComponent } from "react";
-import { connect } from "react-redux";
-import getUserAction from "../actions/get-user";
-import Footer from "../Components/Layout/Footer";
-import Header from "../Components/Layout/Header";
-import Main from "../Components/Layout/Main";
-import Loading from "../Components/Loading";
-import { user } from "../vendor/data";
+import { ConnectedRouter } from 'connected-react-router/immutable';
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+import { connect } from 'react-redux';
+import getUserAction from '../actions/get-user';
+import Footer from '../Components/Layout/Footer';
+import Header from '../Components/Layout/Header';
+import Main from '../Components/Layout/Main';
+import Loading from '../Components/Loading';
+import { user } from '../vendor/data';
 
 class Application extends PureComponent {
     constructor(props) {
@@ -32,10 +32,10 @@ class Application extends PureComponent {
         }
 
         const { history } = this.props;
-        document.querySelector("body").setAttribute("data-initialized", "true");
+        document.querySelector('body').setAttribute('data-initialized', 'true');
 
         return (
-            <ConnectedRouter history={history}>
+            <ConnectedRouter history={history} noInitialPop>
                 <Header />
                 <Main />
                 <Footer />
@@ -53,7 +53,7 @@ Application.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    me: state.getIn(["me"]),
+    me: state.getIn(['me']),
 });
 
 const mapDispatchToProps = dispatch => ({

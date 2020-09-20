@@ -1,9 +1,9 @@
-import PropTypes from "prop-types";
-import React, { PureComponent } from "react";
-import { connect } from "react-redux";
-import { Link } from "react-router-dom";
-import Notification from "../../Components/Notification";
-import { characters } from "../../vendor/data";
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import Notification from '../../Components/Notification';
+import { characters } from '../../vendor/data';
 
 class Home extends PureComponent {
     render = () => {
@@ -36,8 +36,8 @@ Home.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    notifications: state.getIn(["notifications"]),
-    allCharacters: state.getIn(["allCharacters"]),
+    notifications: state.getIn(['notifications']),
+    allCharacters: state.getIn(['allCharacters']),
 });
 
 export default connect(mapStateToProps)(Home);

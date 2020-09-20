@@ -1,9 +1,9 @@
-import(/* webpackPrefetch: true, webpackChunkName: "team-member-list-table-scss" */ "../../../sass/_team-member-list-table.scss");
+import(/* webpackPrefetch: true, webpackChunkName: "team-member-list-table-scss" */ '../../../sass/_team-member-list-table.scss');
 
-import PropTypes from "prop-types";
-import React, { Component } from "react";
-import { team, user } from "../../vendor/data";
-import Item from "./List/Item";
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { team, user } from '../../vendor/data';
+import Item from './List/Item';
 
 class List extends Component {
     render = () => {
@@ -25,7 +25,7 @@ class List extends Component {
             ));
         if (teamMembersRendered.length) {
             teamMembersRendered = [
-                <table key="teams-characters-list-table" className={"pl-2 pr-2 col-md-24 teams-characters-list-table " + className}>
+                <table key="teams-characters-list-table" className={'pl-2 pr-2 col-md-24 teams-characters-list-table ' + className}>
                     <thead>
                         <tr>
                             <th scope="col">ESO ID</th>

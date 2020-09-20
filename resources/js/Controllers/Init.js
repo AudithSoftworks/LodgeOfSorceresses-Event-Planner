@@ -1,18 +1,18 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import PropTypes from "prop-types";
-import React, { PureComponent } from "react";
-import { connect } from "react-redux";
-import { Redirect } from "react-router-dom";
-import getContentAction from "../actions/get-content";
-import getMyCharactersAction from "../actions/get-my-characters";
-import getSetsAction from "../actions/get-sets";
-import getSkillsAction from "../actions/get-skills";
-import getTeamsAction from "../actions/get-teams";
-import { errorsAction } from "../actions/notifications";
-import Loading from "../Components/Loading";
-import Notification from "../Components/Notification";
-import { authorizeUser } from "../helpers";
-import { characters, user } from "../vendor/data";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
+import getContentAction from '../actions/get-content';
+import getMyCharactersAction from '../actions/get-my-characters';
+import getSetsAction from '../actions/get-sets';
+import getSkillsAction from '../actions/get-skills';
+import getTeamsAction from '../actions/get-teams';
+import { errorsAction } from '../actions/notifications';
+import Loading from '../Components/Loading';
+import Notification from '../Components/Notification';
+import { authorizeUser } from '../helpers';
+import { characters, content, teams, user } from '../vendor/data';
 
 class Init extends PureComponent {
     constructor(props) {
@@ -44,12 +44,12 @@ class Init extends PureComponent {
     };
 
     componentWillUnmount = () => {
-        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel("Request cancelled.");
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
     };
 
     setRedirectUri = location => {
-        if (!localStorage.getItem("redirectUri") && location.state && location.state.prevPath) {
-            localStorage.setItem("redirectUri", location.state.prevPath);
+        if (!localStorage.getItem('redirectUri') && location.state && location.state.prevPath) {
+            localStorage.setItem('redirectUri', location.state.prevPath);
         }
     };
 
@@ -57,14 +57,14 @@ class Init extends PureComponent {
         this.setRedirectUri(this.props.location);
 
         return (
-            <form className="col-md-24 d-flex flex-row flex-wrap p-0" onSubmit={this.handleSubmit} key="characterCreationForm">
+            <form className="col-md-24 d-flex flex-row flex-wrap p-0" key="loginForm">
                 <h2 className="form-title col-md-24 text-center pl-0 pr-0 mt-md-5 mb-md-5" title="Login">
                     Login
                 </h2>
-                <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute("content")} />
+                <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')} />
                 <fieldset className="form-group col-md-24 text-center">
-                    <a href="/oauth/to/discord" style={{ backgroundColor: "#8ea1e1", borderColor: "transparent" }} className="btn btn-info btn-sm mr-2">
-                        <FontAwesomeIcon icon={["fab", "discord"]} /> Login via Discord
+                    <a href="/oauth/to/discord" style={{ backgroundColor: '#8ea1e1', borderColor: 'transparent' }} className="btn btn-info btn-sm mr-2">
+                        <FontAwesomeIcon icon={['fab', 'discord']} /> Login via Discord
                     </a>
                 </fieldset>
             </form>
@@ -72,22 +72,22 @@ class Init extends PureComponent {
     };
 
     renderFlashMessages = () => {
-        const bodyElement = document.querySelector("body");
-        const flashMessages = JSON.parse(bodyElement.getAttribute("data-flash-messages"));
+        const bodyElement = document.querySelector('body');
+        const flashMessages = JSON.parse(bodyElement.getAttribute('data-flash-messages'));
         const { dispatch, notifications } = this.props;
-        if (flashMessages.length && notifications.find(n => n.key === "flash-messages") === undefined) {
+        if (flashMessages.length && notifications.find(n => n.key === 'flash-messages') === undefined) {
             dispatch(
                 errorsAction(
                     flashMessages,
                     {
-                        container: "bottom-center",
-                        animationIn: ["animated", "bounceInDown"],
-                        animationOut: ["animated", "bounceOutDown"],
+                        container: 'bottom-center',
+                        animationIn: ['animated', 'bounceInDown'],
+                        animationOut: ['animated', 'bounceOutDown'],
                         dismiss: { duration: 30000 },
                         width: 320,
                     },
-                    "flash-messages"
-                )
+                    'flash-messages',
+                ),
             );
         }
     };
@@ -107,10 +107,10 @@ class Init extends PureComponent {
             return [<Loading key="loading" message="Loading data..." />, <Notification key="notifications" />];
         }
 
-        let redirectUri = localStorage.getItem("redirectUri");
-        localStorage.removeItem("redirectUri");
-        if (!redirectUri || redirectUri === "") {
-            redirectUri = "/@me";
+        let redirectUri = localStorage.getItem('redirectUri');
+        localStorage.removeItem('redirectUri');
+        if (!redirectUri || redirectUri === '') {
+            redirectUri = '/@me';
         }
 
         return <Redirect to={redirectUri} />;
@@ -128,6 +128,8 @@ Init.propTypes = {
     notifications: PropTypes.array,
     sets: PropTypes.array,
     skills: PropTypes.array,
+    content,
+    teams,
 
     dispatch: PropTypes.func.isRequired,
     getContentAction: PropTypes.func.isRequired,
@@ -138,14 +140,14 @@ Init.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
-    content: state.getIn(["content"]),
-    me: state.getIn(["me"]),
-    myCharacters: state.getIn(["myCharacters"]),
-    notifications: state.getIn(["notifications"]),
-    sets: state.getIn(["sets"]),
-    skills: state.getIn(["skills"]),
-    teams: state.getIn(["teams"]),
+    axiosCancelTokenSource: state.getIn(['axiosCancelTokenSource']),
+    content: state.getIn(['content']),
+    me: state.getIn(['me']),
+    myCharacters: state.getIn(['myCharacters']),
+    notifications: state.getIn(['notifications']),
+    sets: state.getIn(['sets']),
+    skills: state.getIn(['skills']),
+    teams: state.getIn(['teams']),
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -1,15 +1,15 @@
-import { noAttendances } from "../../../fixtures/xhr-operations/attendances/no-attendances";
-import { content } from "../../../fixtures/xhr-operations/content";
-import { soulshriven as stubFetchingCmsContentForOnboardingSteps } from "../../../fixtures/xhr-operations/onboarding/soulshriven";
-import { sets } from "../../../fixtures/xhr-operations/sets";
-import { skills } from "../../../fixtures/xhr-operations/skills";
-import { teams } from "../../../fixtures/xhr-operations/teams";
-import { noCharacters } from "../../../fixtures/xhr-operations/users/@me/characters/no-characters";
-import { stubGuest } from "../../../fixtures/xhr-operations/users/@me/guest";
-import { stubSoulshrivenWithNoNameAndNoForumOauth, stubUpdateName } from "../../../fixtures/xhr-operations/users/@me/soulshriven";
+import { noAttendances } from '../../../fixtures/xhr-operations/attendances/no-attendances';
+import { content } from '../../../fixtures/xhr-operations/content';
+import { soulshriven as stubFetchingCmsContentForOnboardingSteps } from '../../../fixtures/xhr-operations/onboarding/soulshriven';
+import { sets } from '../../../fixtures/xhr-operations/sets';
+import { skills } from '../../../fixtures/xhr-operations/skills';
+import { teams } from '../../../fixtures/xhr-operations/teams';
+import { noCharacters } from '../../../fixtures/xhr-operations/users/@me/characters/no-characters';
+import { stubGuest } from '../../../fixtures/xhr-operations/users/@me/guest';
+import { stubSoulshrivenWithNoNameAndNoForumOauth, stubUpdateName } from '../../../fixtures/xhr-operations/users/@me/soulshriven';
 
-describe('New User - Onboarding - Full Soulshriven Workflow', function () {
-    it('user clicks "Soulshriven" link, initiates Onboarding Wizard', function () {
+describe('New User - Onboarding - Full Soulshriven Workflow', function() {
+    it('user clicks "Soulshriven" link, initiates Onboarding Wizard', function() {
         cy.server();
 
         stubGuest(cy);
@@ -17,7 +17,7 @@ describe('New User - Onboarding - Full Soulshriven Workflow', function () {
 
         cy.visit('/');
         cy.get('h2[data-cy="loading"]').contains('Checking session...');
-        cy.wait('@loadGuestUser')
+        cy.wait('@loadGuestUser');
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/home');
 
         cy.get('article.membership-mode-selection > a[data-heading="Soulshriven"]').click();
@@ -33,13 +33,13 @@ describe('New User - Onboarding - Full Soulshriven Workflow', function () {
         cy.get('article.cms-content + span > button:nth-of-type(3)').contains('Continue');
     });
 
-    it('user goes through 3 Onboarding steps and completes Onboarding as a Soulshriven', function () {
+    it('user goes through 3 Onboarding steps and completes Onboarding as a Soulshriven', function() {
         cy.server();
         stubGuest(cy);
 
         cy.visit('/onboarding/soulshriven');
         cy.get('h2[data-cy="loading"]').contains('Checking session...');
-        cy.wait('@loadGuestUser')
+        cy.wait('@loadGuestUser');
 
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/onboarding/soulshriven');
         cy.get('h2[data-cy="loading"]').contains('Loading...'); // Suspense lazy loading of components
@@ -101,16 +101,16 @@ describe('New User - Onboarding - Full Soulshriven Workflow', function () {
             .should('have.text', 'Onboarding complete.');
     });
 
-    it('after Onboarding, on Dashboard, user updates their ESO-ID', function () {
+    it('after Onboarding, on Dashboard, user updates their ESO-ID', function() {
         cy.server();
         stubSoulshrivenWithNoNameAndNoForumOauth(cy);
 
         cy.visit('/');
         cy.get('h2[data-cy="loading"]').contains('Checking session...');
-        cy.wait('@loadSoulshrivenWithNoNameAndNoForumOauth')
+        cy.wait('@loadSoulshrivenWithNoNameAndNoForumOauth');
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/home');
 
-        cy.get('[data-cy="account-status-element"].danger > input[type="text"]')
+        cy.get('[data-cy="username-not-set"].danger > input[type="text"]')
             .type('SoulshrivenEsoId')
             .should('have.value', 'SoulshrivenEsoId');
 
@@ -122,9 +122,9 @@ describe('New User - Onboarding - Full Soulshriven Workflow', function () {
         noCharacters(cy);
         noAttendances(cy);
 
-        cy.get('[data-cy="account-status-element"].danger > input[type="submit"]').click();
+        cy.get('[data-cy="username-not-set"].danger > input[type="submit"]').click();
         cy.wait('@updateSoulshrivenName');
-        let userUpdatedNotificationMessage = cy.get('.react-notification-root ' +
+        const userUpdatedNotificationMessage = cy.get('.react-notification-root ' +
             '> .notification-container-top-right ' +
             '> .notification-item-root ' +
             '> .notification-item ' +
@@ -133,7 +133,7 @@ describe('New User - Onboarding - Full Soulshriven Workflow', function () {
             '> .notification-message');
         userUpdatedNotificationMessage
             .should('exist')
-            .should('have.text', 'User updated.')
+            .should('have.text', 'User updated.');
         userUpdatedNotificationMessage.click();
         userUpdatedNotificationMessage.should('not.exist');
 

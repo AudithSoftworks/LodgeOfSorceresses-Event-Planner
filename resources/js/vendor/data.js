@@ -1,4 +1,4 @@
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
 export const content = PropTypes.arrayOf(
     PropTypes.shape({
@@ -10,7 +10,7 @@ export const content = PropTypes.arrayOf(
         tier: PropTypes.number,
         created_at: PropTypes.string,
         updated_at: PropTypes.string,
-    })
+    }),
 );
 
 export const dpsParse = PropTypes.shape({

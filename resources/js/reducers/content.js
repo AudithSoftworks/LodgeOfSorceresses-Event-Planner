@@ -1,4 +1,4 @@
-import * as getActions from "../actions/get-content";
+import * as getActions from '../actions/get-content';
 
 const contentReducer = (state = null, action) => {
     if (action.type === getActions.TYPE_GET_CONTENT_SUCCESS) {

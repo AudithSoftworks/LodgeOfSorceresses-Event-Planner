@@ -1,12 +1,12 @@
-import * as api from "../vendor/api/auth";
+import * as api from '../vendor/api/auth';
 
-export const TYPE_PUT_USER_SEND = "PUT_USER_SEND";
+export const TYPE_PUT_USER_SEND = 'PUT_USER_SEND';
 
-export const TYPE_PUT_USER_SUCCESS = "PUT_USER_SUCCESS";
+export const TYPE_PUT_USER_SUCCESS = 'PUT_USER_SUCCESS';
 
-export const TYPE_PUT_USER_FAILURE = "PUT_USER_FAILURE";
+export const TYPE_PUT_USER_FAILURE = 'PUT_USER_FAILURE';
 
-const RESPONSE_MESSAGE_SUCCESS = "User updated.";
+const RESPONSE_MESSAGE_SUCCESS = 'User updated.';
 
 const putUserSendAction = data => ({
     type: TYPE_PUT_USER_SEND,
@@ -27,7 +27,7 @@ const putUserFailureAction = error => ({
 
 const putUserAction = data => (dispatch, getState) => {
     dispatch(putUserSendAction(data));
-    const axiosCancelTokenSource = getState().getIn(["axiosCancelTokenSource"]);
+    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .putUser(axiosCancelTokenSource, data, dispatch)
         .then(response => {

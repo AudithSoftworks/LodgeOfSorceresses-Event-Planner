@@ -1,3 +1,3 @@
-module.exports = function (on, config) {
+module.exports = function(on, config) {
     // configure plugins here
-}
+};

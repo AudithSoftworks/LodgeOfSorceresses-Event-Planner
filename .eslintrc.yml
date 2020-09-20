@@ -3,7 +3,9 @@ env:
   es6: true
   node: true
 extends:
-  - google
+  - 'eslint:recommended'
+  - 'plugin:react/recommended'
+  - 'google'
 globals:
   Atomics: readonly
   SharedArrayBuffer: readonly
@@ -34,7 +36,7 @@ rules:
   quotes:
     - error
     - single
+  require-jsdoc: off
   semi:
     - error
     - always
-

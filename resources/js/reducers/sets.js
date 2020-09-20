@@ -1,4 +1,4 @@
-import * as getActions from "../actions/get-sets";
+import * as getActions from '../actions/get-sets';
 
 const setsReducer = (state = null, action) => {
     if (action.type === getActions.TYPE_GET_SETS_SUCCESS) {

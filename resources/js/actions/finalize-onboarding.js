@@ -1,12 +1,12 @@
-import * as api from "../vendor/api/auth";
+import * as api from '../vendor/api/auth';
 
-export const TYPE_FINALIZE_ONBOARDING_SEND = "FINALIZE_ONBOARDING_SEND";
+export const TYPE_FINALIZE_ONBOARDING_SEND = 'FINALIZE_ONBOARDING_SEND';
 
-export const TYPE_FINALIZE_ONBOARDING_SUCCESS = "FINALIZE_ONBOARDING_SUCCESS";
+export const TYPE_FINALIZE_ONBOARDING_SUCCESS = 'FINALIZE_ONBOARDING_SUCCESS';
 
-export const TYPE_FINALIZE_ONBOARDING_FAILURE = "FINALIZE_ONBOARDING_FAILURE";
+export const TYPE_FINALIZE_ONBOARDING_FAILURE = 'FINALIZE_ONBOARDING_FAILURE';
 
-const RESPONSE_MESSAGE_SUCCESS = "Onboarding complete.";
+const RESPONSE_MESSAGE_SUCCESS = 'Onboarding complete.';
 
 const finalizeOnboardingSendAction = data => ({
     type: TYPE_FINALIZE_ONBOARDING_SEND,
@@ -27,7 +27,7 @@ const finalizeOnboardingFailureAction = error => ({
 
 const finalizeOnboardingAction = data => (dispatch, getState) => {
     dispatch(finalizeOnboardingSendAction(data));
-    const axiosCancelTokenSource = getState().getIn(["axiosCancelTokenSource"]);
+    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .finalizeOnboarding(axiosCancelTokenSource, data, dispatch)
         .then(response => {

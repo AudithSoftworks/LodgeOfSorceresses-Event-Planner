@@ -1,21 +1,21 @@
-import(/* webpackPrefetch: true, webpackChunkName: "users-scss" */ "../../sass/_users.scss");
+import(/* webpackPrefetch: true, webpackChunkName: "users-scss" */ '../../sass/_users.scss');
 
-import { faChevronCircleLeft } from "@fortawesome/pro-light-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import moment from "moment";
-import PropTypes from "prop-types";
-import React, { Fragment, PureComponent } from "react";
-import { connect } from "react-redux";
-import { Link, Redirect } from "react-router-dom";
-import { errorsAction, infosAction, warningsAction } from "../actions/notifications";
-import List from "../Components/Characters/List";
-import * as Attendance from "../Components/Events/Attendance";
-import Loading from "../Components/Loading";
-import Notification from "../Components/Notification";
-import { filter, renderActionList } from "../helpers";
-import { getAllUsers, getAttendances, getUser } from "../vendor/api";
-import axios from "../vendor/axios";
-import { user } from "../vendor/data";
+import { faChevronCircleLeft } from '@fortawesome/pro-light-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { DateTime } from 'luxon';
+import PropTypes from 'prop-types';
+import React, { Fragment, PureComponent } from 'react';
+import { connect } from 'react-redux';
+import { Link, Redirect } from 'react-router-dom';
+import { errorsAction, infosAction, warningsAction } from '../actions/notifications';
+import List from '../Components/Characters/List';
+import * as Attendance from '../Components/Events/Attendance';
+import Loading from '../Components/Loading';
+import Notification from '../Components/Notification';
+import { filter, renderActionList } from '../helpers';
+import { getAllUsers, getAttendances, getUser } from '../vendor/api';
+import axios from '../vendor/axios';
+import { user } from '../vendor/data';
 
 class Users extends PureComponent {
     constructor(props) {
@@ -30,14 +30,14 @@ class Users extends PureComponent {
     }
 
     componentWillUnmount = () => {
-        this.cancelTokenSource && this.cancelTokenSource.cancel("Request cancelled.");
+        this.cancelTokenSource && this.cancelTokenSource.cancel('Request cancelled.');
     };
 
     componentDidMount = () => {
         this.fetchData();
     };
 
-    componentDidUpdate = (prevProps) => {
+    componentDidUpdate = prevProps => {
         const { match } = this.props;
         if (match.params.id && match.params.id !== prevProps.match.params.id) {
             this.setState({
@@ -70,7 +70,7 @@ class Users extends PureComponent {
                             .then(attendances => {
                                 this.cancelTokenSource = null;
                                 if (attendances) {
-                                    const attendancesArray = Array.from(attendances.body.result, id => attendances.body.entities["attendance"][id]);
+                                    const attendancesArray = Array.from(attendances.body.result, id => attendances.body.entities['attendance'][id]);
                                     const firstAttendanceDateHeader = attendances.headers['x-first-attendance-date'];
                                     if (attendancesArray.length === 0) {
                                         const message = [];
@@ -88,14 +88,14 @@ class Users extends PureComponent {
                                             infosAction(
                                                 message,
                                                 {
-                                                    container: "bottom-center",
-                                                    animationIn: ["animated", "bounceInDown"],
-                                                    animationOut: ["animated", "bounceOutDown"],
+                                                    container: 'bottom-center',
+                                                    animationIn: ['animated', 'bounceInDown'],
+                                                    animationOut: ['animated', 'bounceOutDown'],
                                                     dismiss: { duration: 30000 },
                                                     width: 350,
                                                 },
-                                                "no-attendances-at-first"
-                                            )
+                                                'no-attendances-at-first',
+                                            ),
                                         );
                                     }
                                     this.setState({
@@ -116,13 +116,13 @@ class Users extends PureComponent {
                                 infosAction(
                                     'No Users Found!',
                                     {
-                                        container: "bottom-center",
-                                        animationIn: ["animated", "bounceInDown"],
-                                        animationOut: ["animated", "bounceOutDown"],
+                                        container: 'bottom-center',
+                                        animationIn: ['animated', 'bounceInDown'],
+                                        animationOut: ['animated', 'bounceOutDown'],
                                         dismiss: { duration: 30000 },
                                     },
-                                    "no-users-found"
-                                )
+                                    'no-users-found',
+                                ),
                             );
                         }
                         this.cancelTokenSource = null;
@@ -143,21 +143,21 @@ class Users extends PureComponent {
     loadMore = event => {
         const { dispatch, match } = this.props;
         const currentTarget = event.currentTarget;
-        currentTarget.setAttribute("disabled", true);
+        currentTarget.setAttribute('disabled', true);
         this.cancelTokenSource = axios.CancelToken.source();
-        const dataBeforeAttrValue = currentTarget.getAttribute("data-before");
+        const dataBeforeAttrValue = currentTarget.getAttribute('data-before');
         getAttendances(this.cancelTokenSource, match.params.id, { b: dataBeforeAttrValue })
             .then(attendances => {
                 this.cancelTokenSource = null;
                 if (attendances) {
-                    const attendancesArray = Array.from(attendances.body.result, id => attendances.body.entities["attendance"][id]);
+                    const attendancesArray = Array.from(attendances.body.result, id => attendances.body.entities['attendance'][id]);
                     if (attendancesArray.length === 0) {
                         dispatch(warningsAction('Reached the end of the attendance list.'));
                         currentTarget.remove();
 
                         return;
                     }
-                    currentTarget.removeAttribute("disabled");
+                    currentTarget.removeAttribute('disabled');
                     this.setState({
                         attendances: [...this.state.attendances, ...attendancesArray],
                     });
@@ -177,7 +177,7 @@ class Users extends PureComponent {
 
         const actionList = {
             return: (
-                <Link to={"/users"} title="Back to Roster">
+                <Link to={'/users'} title="Back to Roster">
                     <FontAwesomeIcon icon={faChevronCircleLeft} />
                 </Link>
             ),
@@ -187,50 +187,50 @@ class Users extends PureComponent {
         let startDate = undefined;
         let endDate = undefined;
         if (attendances !== null && attendances instanceof Array) {
-            startDate = attendances.length ? moment(attendances[attendances.length - 1]["created_at"]) : null;
-            endDate = attendances.length ? moment(attendances[0]["created_at"]) : null;
-            loadMoreAttendancesButton = firstAttendanceDate
-                ? <button key='load-more-button'
-                          className='btn btn-primary btn-sm ml-auto mr-auto'
-                          data-before={
-                              startDate
-                                  ? startDate.format()
-                                  : moment().subtract(3, 'weeks').startOf("isoWeek").format()
-                          }
-                          onClick={event => this.loadMore(event)}>load older records</button>
-                : <button key='load-more-button'
-                          className='btn btn-primary btn-sm ml-auto mr-auto'
-                          disabled={true}>nothing to load</button>;
+            startDate = attendances.length ? DateTime.fromISO(attendances[attendances.length - 1]['created_at']) : null;
+            endDate = attendances.length ? DateTime.fromISO(attendances[0]['created_at']) : null;
+            loadMoreAttendancesButton = firstAttendanceDate ?
+                <button key='load-more-button'
+                    className='btn btn-primary btn-sm ml-auto mr-auto'
+                    data-before={
+                        startDate ?
+                            startDate.toISO() :
+                            DateTime.local().minus({ weeks: 3 }).startOf('week').toISO()
+                    }
+                    onClick={event => this.loadMore(event)}>load older records</button> :
+                <button key='load-more-button'
+                    className='btn btn-primary btn-sm ml-auto mr-auto'
+                    disabled={true}>nothing to load</button>;
         }
 
-        const characterListRendered = user.characters.length
-            ? [
+        const characterListRendered = user.characters.length ?
+            [
                 <h3 className="col-md-24 mt-5" key="heading">Their Characters</h3>,
-                <List characters={user.characters} me={me} className="pl-2 pr-2 col-md-24" key="character-list" />
+                <List characters={user.characters} me={me} className="pl-2 pr-2 col-md-24" key="character-list" />,
             ] : [];
 
         return [
             <section className="col-md-24 p-0 mb-4 user-profile" key="user-profile">
                 <h2 className="form-title col-md-24 pr-5" title="Welcome!">
-                    {"@" + user.name}
+                    {'@' + user.name}
                 </h2>
                 <ul className="ne-corner">{renderActionList(actionList)}</ul>
                 <h3 className="col-md-24 mt-2">Account Summary</h3>
-                <dl className={user.isMember ? "members" : "soulshriven"}>
+                <dl className={user.isMember ? 'members' : 'soulshriven'}>
                     <dt>Account Type</dt>
-                    <dd>{user.isMember ? "Member" : "Soulshriven"}</dd>
+                    <dd>{user.isMember ? 'Member' : 'Soulshriven'}</dd>
                 </dl>
-                <dl className={user.linkedAccountsParsed.ips ? "info" : "danger"}>
+                <dl className={user.linkedAccountsParsed.ips ? 'info' : 'danger'}>
                     <dt>Forum Account Linked</dt>
-                    <dd>{user.linkedAccountsParsed.ips ? "Yes" : "No"}</dd>
+                    <dd>{user.linkedAccountsParsed.ips ? 'Yes' : 'No'}</dd>
                 </dl>
-                <dl className={user.characters.length > 0 ? "info" : "danger"}>
+                <dl className={user.characters.length > 0 ? 'info' : 'danger'}>
                     <dt># of characters</dt>
                     <dd>{user.characters.length}</dd>
                 </dl>
-                <dl className={user.clearanceLevel ? user.clearanceLevel.slug : "danger"}>
+                <dl className={user.clearanceLevel ? user.clearanceLevel.slug : 'danger'}>
                     <dt>Overall Rank</dt>
-                    <dd>{user.clearanceLevel ? user.clearanceLevel.rank.title : "None"}</dd>
+                    <dd>{user.clearanceLevel ? user.clearanceLevel.rank.title : 'None'}</dd>
                 </dl>
                 {[...characterListRendered]}
                 <Attendance.ListView start={startDate} end={endDate} events={attendances} key="attendances" />
@@ -243,12 +243,12 @@ class Users extends PureComponent {
         if (!user.isMember && !user.isSoulshriven) {
             return null;
         }
-        let rowBgColor = user.clearanceLevel ? user.clearanceLevel.slug : "no-clearance";
+        const rowBgColor = user.clearanceLevel ? user.clearanceLevel.slug : 'no-clearance';
 
         return (
-            <li className={rowBgColor + " mb-1 mr-1"} key={"user-" + user.id} data-id={user.id}>
-                <Link to={"/users/" + user.id} title="User Sheet">
-                    {"@" + user.name}
+            <li className={rowBgColor + ' mb-1 mr-1'} key={'user-' + user.id} data-id={user.id}>
+                <Link to={'/users/' + user.id} title="User Sheet">
+                    {'@' + user.name}
                 </Link>
             </li>
         );
@@ -260,7 +260,7 @@ class Users extends PureComponent {
         }
         let charactersRendered = allUsers.result
             .map(userId => {
-                const user = allUsers.entities["user"][userId];
+                const user = allUsers.entities['user'][userId];
                 if (user[mode] === false) {
                     return null;
                 }
@@ -288,7 +288,7 @@ class Users extends PureComponent {
     render = () => {
         const { me, location, match } = this.props;
         if (!me) {
-            return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname }}} />;
         }
 
         const { allUsers, user } = this.state;
@@ -310,7 +310,7 @@ class Users extends PureComponent {
             <h2 className="form-title col-md-24" key='heading'>Roster</h2>,
             ...memberListRendered,
             ...soulshrivenListRendered,
-            <Notification key="notifications" />
+            <Notification key="notifications" />,
         ];
     };
 }
@@ -323,11 +323,13 @@ Users.propTypes = {
     axiosCancelTokenSource: PropTypes.object,
     me: user,
     notifications: PropTypes.array,
+
+    dispatch: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
-    me: state.getIn(["me"]),
-    notifications: state.getIn(["notifications"]),
+    me: state.getIn(['me']),
+    notifications: state.getIn(['notifications']),
 });
 
 const mapDispatchToProps = dispatch => ({

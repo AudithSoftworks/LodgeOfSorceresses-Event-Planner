@@ -4,7 +4,7 @@ export const stubMemberWithNoName = cy => {
         method: 'GET',
         url: '/api/users/@me',
         delay: 1000,
-        response: '@member'
+        response: '@member',
     }).as('loadMemberWithNoName');
 };
 
@@ -14,7 +14,7 @@ export const stubMember = cy => {
         method: 'GET',
         url: '/api/users/@me',
         delay: 1000,
-        response: '@member'
+        response: '@member',
     }).as('loadMember');
 };
 

@@ -1,10 +1,10 @@
-import * as api from "../vendor/api";
+import * as api from '../vendor/api';
 
-export const TYPE_VIEW_CHARACTER_SEND = "VIEW_CHARACTER_SEND";
+export const TYPE_VIEW_CHARACTER_SEND = 'VIEW_CHARACTER_SEND';
 
-export const TYPE_VIEW_CHARACTER_SUCCESS = "VIEW_CHARACTER_SUCCESS";
+export const TYPE_VIEW_CHARACTER_SUCCESS = 'VIEW_CHARACTER_SUCCESS';
 
-export const TYPE_VIEW_CHARACTER_FAILURE = "VIEW_CHARACTER_FAILURE";
+export const TYPE_VIEW_CHARACTER_FAILURE = 'VIEW_CHARACTER_FAILURE';
 
 const viewCharacterInitializeAction = characterId => ({
     type: TYPE_VIEW_CHARACTER_SEND,
@@ -24,7 +24,7 @@ const viewCharacterFailureAction = error => ({
 
 const viewCharacterAction = (characterId, customMessage) => (dispatch, getState) => {
     dispatch(viewCharacterInitializeAction(characterId));
-    const axiosCancelTokenSource = getState().getIn(["axiosCancelTokenSource"]);
+    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .getCharacter(axiosCancelTokenSource, characterId, dispatch)
         .then(response => {

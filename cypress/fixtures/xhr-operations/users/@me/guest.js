@@ -4,6 +4,6 @@ export const stubGuest = cy => {
         method: 'GET',
         url: '/api/users/@me',
         delay: 1000,
-        response: '@guestUser'
+        response: '@guestUser',
     }).as('loadGuestUser');
 };

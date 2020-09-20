@@ -3,6 +3,6 @@ export const sets = cy => {
     cy.route({
         method: 'GET',
         url: '/api/sets',
-        response: '@sets'
+        response: '@sets',
     }).as('loadSets');
 };
