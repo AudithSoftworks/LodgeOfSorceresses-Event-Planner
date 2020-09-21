@@ -74,8 +74,11 @@ trait NeedsUserStubs
         return $adminUser;
     }
 
-    private function stubCustomMemberUserWithCustomCharacters(int $tier, int $role = RoleTypes::ROLE_MAGICKA_DD, int $class = ClassTypes::CLASS_SORCERER): User
-    {
+    private function stubCustomMemberUserWithCustomCharacters(
+        ?int $tier = null,
+        ?int $role = RoleTypes::ROLE_MAGICKA_DD,
+        ?int $class = ClassTypes::CLASS_SORCERER
+    ): User {
         /** @var \Database\Factories\UserOAuthFactory $userOauthFactory */
         $userOauthFactory = UserOAuth::factory();
 
@@ -91,11 +94,13 @@ trait NeedsUserStubs
         ]);
         /** @var \App\Models\User $tierXMemberUser */
         $tierXMemberUser = $memberUserOauth->owner()->first();
-        $tierXCharacter = $characterFactory->tier($tier)->role($role, $class)->create([
-            'user_id' => $tierXMemberUser,
-        ]);
-        $tierXMemberUser->setRelation('characters', collect([$tierXCharacter]));
-        $tierXMemberUser->save();
+        if ($tier !== null && $role !== null && $class !== null) {
+            $tierXCharacter = $characterFactory->tier($tier)->role($role, $class)->create([
+                'user_id' => $tierXMemberUser,
+            ]);
+            $tierXMemberUser->setRelation('characters', collect([$tierXCharacter]));
+            $tierXMemberUser->save();
+        }
 
         return $tierXMemberUser;
     }
@@ -124,5 +129,23 @@ trait NeedsUserStubs
             $soulshrivenUser = $soulshrivenOauth->owner()->first();
             static::$soulshriven = $soulshrivenUser;
         }
+    }
+
+    private function stubGuestUser(): User
+    {
+        /** @var \Database\Factories\UserOAuthFactory $userOauthFactory */
+        $userOauthFactory = UserOAuth::factory();
+
+        /** @var \Database\Factories\UserFactory $userFactory */
+        $userFactory = User::factory();
+
+        /** @var UserOAuth $guestOauth */
+        $guestOauth = $userOauthFactory->create([
+            'user_id' => $userFactory->create(),
+        ]);
+        /** @var User $guestUser */
+        $guestUser = $guestOauth->owner()->first();
+
+        return $guestUser;
     }
 }

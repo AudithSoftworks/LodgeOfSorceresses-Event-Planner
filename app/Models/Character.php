@@ -19,8 +19,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $name
  * @property int $class
  * @property int $role
- * @property string $sets
- * @property string|null $skills
+ * @property null|string|array $sets
+ * @property null|string|array $skills
  * @property int $approved_for_tier
  * @property int|null $last_submitted_dps_amount
  * @property \Illuminate\Support\Carbon|null $created_at
