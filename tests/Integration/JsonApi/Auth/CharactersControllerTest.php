@@ -31,7 +31,7 @@ class CharactersControllerTest extends IlluminateTestCase
         }
     }
 
-    public function testStoreForFailure(): void
+    public function testStoringForFailure(): void
     {
         $guestUser = $this->stubGuestUser();
         $tierOneUser = $this->stubCustomMemberUserWithCustomCharacters();
@@ -125,7 +125,7 @@ class CharactersControllerTest extends IlluminateTestCase
         Event::assertNotDispatched(CharacterSaved::class);
     }
 
-    public function testStoreForSuccess(): Character
+    public function testStoringForSuccess(): Character
     {
         Event::fake([CharacterSaved::class]);
 
@@ -163,11 +163,11 @@ class CharactersControllerTest extends IlluminateTestCase
     }
 
     /**
-     * @depends testStoreForSuccess
+     * @depends testStoringForSuccess
      *
      * @param \App\Models\Character $character
      */
-    public function testUpdateForFailure(Character $character): void
+    public function testUpdatingForFailure(Character $character): void
     {
         $guestUser = $this->stubGuestUser();
         $tierOneUser = $this->stubCustomMemberUserWithCustomCharacters();
@@ -260,20 +260,18 @@ class CharactersControllerTest extends IlluminateTestCase
     }
 
     /**
-     * @depends testStoreForSuccess
+     * @depends testStoringForSuccess
      *
      * @param \App\Models\Character $character
      *
      * @return \App\Models\Character
      */
-    public function testUpdateForSuccess(Character $character): Character
+    public function testUpdatingNonTieredCharacter(Character $character): Character
     {
         Event::fake([CharacterSaved::class]);
 
-        $owner = $character->owner;
-
         $response = $this
-            ->actingAs($owner, 'api')
+            ->actingAs($character->owner, 'api')
             ->putJson(sprintf('/api/users/@me/characters/%d', $character->id), [
                 'name' => 'New Character',
                 'role' => RoleTypes::ROLE_HEALER,
@@ -299,6 +297,18 @@ class CharactersControllerTest extends IlluminateTestCase
 
         Event::assertDispatched(CharacterSaved::class);
 
+        return $responseOriginalContent;
+    }
+
+    /**
+     * @depends testUpdatingNonTieredCharacter
+     *
+     * @param \App\Models\Character $character
+     *
+     * @return \App\Models\Character
+     */
+    public function testUpdatingTieredCharacter(Character $character): Character
+    {
         # Modify data for the next test.
         $characterRaw = Character::query()->find($character->id);
         $characterRaw->approved_for_tier = 2;
@@ -308,7 +318,7 @@ class CharactersControllerTest extends IlluminateTestCase
 
         # Case: Attempting to update Tiered Character
         $response = $this
-            ->actingAs($owner, 'api')
+            ->actingAs($character->owner, 'api')
             ->putJson(sprintf('/api/users/@me/characters/%d', $character->id), [
                 'role' => RoleTypes::ROLE_TANK,
                 'class' => ClassTypes::CLASS_NECROMANCER,
@@ -331,11 +341,11 @@ class CharactersControllerTest extends IlluminateTestCase
     }
 
     /**
-     * @depends testStoreForSuccess
+     * @depends testUpdatingTieredCharacter
      *
      * @param \App\Models\Character $character
      */
-    public function testDestroyForFailure(Character $character): void
+    public function testDeletingForFailure(Character $character): void
     {
         $guestUser = $this->stubGuestUser();
 
@@ -364,11 +374,11 @@ class CharactersControllerTest extends IlluminateTestCase
     }
 
     /**
-     * @depends testUpdateForSuccess
+     * @depends testUpdatingTieredCharacter
      *
      * @param \App\Models\Character $character
      */
-    public function testDestroyForSuccess(Character $character): void
+    public function testDeletingTieredCharacter(Character $character): void
     {
         Event::fake([CharacterDeleted::class]);
 
@@ -382,15 +392,44 @@ class CharactersControllerTest extends IlluminateTestCase
         $response->assertJsonPath('message', 'Character not found!');
 
         Event::assertNotDispatched(CharacterDeleted::class);
+    }
 
-        # Modify data for the next test.
+    /**
+     * @depends testUpdatingTieredCharacter
+     *
+     * @param \App\Models\Character $character
+     *
+     * @return \App\Models\Character
+     */
+    public function testDeletingNonTieredCharacterBelongingToWrongOwner(Character $character): Character
+    {
         $characterRaw = Character::query()->find($character->id);
         $characterRaw->approved_for_tier = 0;
         $characterRaw->save();
 
+        $guestUser = $this->stubGuestUser();
+
         Event::fake([CharacterDeleted::class]);
 
-        # Case: Delete Tier-0
+        $response = $this
+            ->actingAs($guestUser, 'api')
+            ->deleteJson(sprintf('/api/users/@me/characters/%d', $character->id));
+        $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
+
+        Event::assertNotDispatched(CharacterDeleted::class);
+
+        return $character;
+    }
+
+    /**
+     * @depends testDeletingNonTieredCharacterBelongingToWrongOwner
+     *
+     * @param \App\Models\Character $character
+     */
+    public function testDeletingNonTieredCharacterWithCorrectOwner(Character $character): void
+    {
+        Event::fake([CharacterDeleted::class]);
+
         $response = $this
             ->actingAs($character->owner, 'api')
             ->deleteJson(sprintf('/api/users/@me/characters/%d', $character->id));
