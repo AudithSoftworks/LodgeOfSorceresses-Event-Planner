@@ -73,14 +73,14 @@ class Home extends PureComponent {
                 <dl className={me.isMember ? 'members' : 'soulshriven'}>
                     <dt>Account Type</dt>
                     <dd>
-                        {me.isMember ?
-                            [
+                        {me.isMember
+                            ? [
                                 <Fragment key="item-1">Member</Fragment>,
                                 <small key="item-2">
                                     [<Link to="/onboarding/soulshriven">switch</Link>]
                                 </small>,
-                            ] :
-                            [
+                            ]
+                            : [
                                 <Fragment key="item-1">Soulshriven</Fragment>,
                                 <small key="item-2">
                                     [<Link to="/onboarding/members">switch</Link>]
@@ -91,14 +91,14 @@ class Home extends PureComponent {
                 <dl className={me.linkedAccountsParsed.ips ? 'info' : 'danger'}>
                     <dt>Forum Account Linked</dt>
                     <dd>
-                        {me.linkedAccountsParsed.ips ?
-                            [
+                        {me.linkedAccountsParsed.ips
+                            ? [
                                 <Fragment key="item-1">Yes</Fragment>,
                                 <small key="item-2">
                                     [<a href="/oauth/to/ips">refresh it</a>]
                                 </small>,
-                            ] :
-                            [
+                            ]
+                            : [
                                 <Fragment key="item-1">No</Fragment>,
                                 <small key="item-2">
                                     [<a href="/oauth/to/ips">link now</a>]
@@ -118,9 +118,9 @@ class Home extends PureComponent {
                 <dl className={me.clearanceLevel ? me.clearanceLevel.slug : 'danger'}>
                     <dt>Overall Rank</dt>
                     <dd>
-                        {me.clearanceLevel ?
-                            me.clearanceLevel.rank.title :
-                            [
+                        {me.clearanceLevel
+                            ? me.clearanceLevel.rank.title
+                            : [
                                 <Fragment key="item-1">None</Fragment>,
                                 <small key="item-2">
                                     [<Link to="/@me/characters">get going</Link>]

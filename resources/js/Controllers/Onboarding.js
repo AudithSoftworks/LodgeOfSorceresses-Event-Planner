@@ -70,9 +70,9 @@ class Onboarding extends PureComponent {
     deleteUserHandler = () => {
         if (
             confirm(
-                'Are you sure you want to cancel your application and delete your account from our records?' +
-                '\n\nThis is *irreversible*!' +
-                '\n\nIf yes, please don\'t forget to revoke the authorization granted to "Lodge of Sorceresses" in User Settings > Authorized Apps on Discord.',
+                'Are you sure you want to cancel your application and delete your account from our records?'
+                + '\n\nThis is *irreversible*!'
+                + '\n\nIf yes, please don\'t forget to revoke the authorization granted to "Lodge of Sorceresses" in User Settings > Authorized Apps on Discord.',
             )
         ) {
             const { deleteUserAction } = this.props;

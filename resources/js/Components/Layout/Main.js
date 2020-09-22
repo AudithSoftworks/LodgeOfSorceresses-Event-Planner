@@ -31,8 +31,8 @@ class Main extends PureComponent {
     }
 
     fetchUserRoutes = () => {
-        return this.authorizeUser(true) ?
-            [
+        return this.authorizeUser(true)
+            ? [
                 <Route exact path="/users" component={props => <Users {...props} />} key="/users" />,
                 <Route exact path="/users/:id(\d+)" component={props => <Users {...props} />} key="/users/:id" />,
                 <Route exact path="/characters/:id(\d+)" component={props => <Characters {...props} />} key="/characters/:id" />,
@@ -65,13 +65,13 @@ class Main extends PureComponent {
                         </Fragment>
                     )}
                 />,
-            ] :
-            [];
+            ]
+            : [];
     };
 
     fetchAdminRoutes = me => {
-        return me && me.isAdmin ?
-            [
+        return me && me.isAdmin
+            ? [
                 <Route
                     key="/admin"
                     path="/admin"
@@ -82,8 +82,8 @@ class Main extends PureComponent {
                         </Fragment>
                     )}
                 />,
-            ] :
-            [];
+            ]
+            : [];
     };
 
     render = () => {

@@ -9,22 +9,22 @@ import DpsParsesList from '../DpsParses/List';
 
 class Item extends PureComponent {
     renderDpsParses = character => {
-        const pendingDpsParsesRendered = character.dps_parses_pending.length ?
-            [
+        const pendingDpsParsesRendered = character.dps_parses_pending.length
+            ? [
                 <article className="col-lg-24" key="pending-parses">
                     <h3>Latest 10 DPS Parses Pending Inspection</h3>
                     <DpsParsesList dpsParses={character.dps_parses_pending.slice(0, 10)} />
                 </article>,
-            ] :
-            [];
-        const processedDpsParsesRendered = character.dps_parses_processed.length ?
-            [
+            ]
+            : [];
+        const processedDpsParsesRendered = character.dps_parses_processed.length
+            ? [
                 <article className="col-lg-24 mb-5" key="processed-parses">
                     <h3>Latest 10 DPS Parses Approved</h3>
                     <DpsParsesList dpsParses={character.dps_parses_processed.slice(0, 10)} />
                 </article>,
-            ] :
-            [];
+            ]
+            : [];
 
         return [...pendingDpsParsesRendered, ...processedDpsParsesRendered];
     };

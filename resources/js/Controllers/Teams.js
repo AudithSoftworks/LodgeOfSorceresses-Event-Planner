@@ -41,13 +41,12 @@ class Teams extends PureComponent {
     renderNoTeamsCreateOneNotification = () => {
         const { dispatch, me, teams, notifications } = this.props;
         if (teams && !teams.length && notifications.find(n => n.key === 'no-teams-create-one') === undefined) {
-            const messages =
-                me && me.isAdmin ?
-                    [
-                        <Fragment key="f-1">Create a new team, by clicking</Fragment>,
-                        <FontAwesomeIcon icon={faUsersMedical} key="icon" />, <Fragment key="f-2">icon on top right corner.</Fragment>,
-                    ] :
-                    [<Fragment key="f-1">No teams found.</Fragment>];
+            const messages = me && me.isAdmin
+                ? [
+                    <Fragment key="f-1">Create a new team, by clicking</Fragment>,
+                    <FontAwesomeIcon icon={faUsersMedical} key="icon" />, <Fragment key="f-2">icon on top right corner.</Fragment>,
+                ]
+                : [<Fragment key="f-1">No teams found.</Fragment>];
             dispatch(
                 infosAction(
                     messages.reduce((acc, curr) => [acc, ' ', curr]),

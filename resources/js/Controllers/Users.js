@@ -189,22 +189,22 @@ class Users extends PureComponent {
         if (attendances !== null && attendances instanceof Array) {
             startDate = attendances.length ? DateTime.fromISO(attendances[attendances.length - 1]['created_at']) : null;
             endDate = attendances.length ? DateTime.fromISO(attendances[0]['created_at']) : null;
-            loadMoreAttendancesButton = firstAttendanceDate ?
-                <button key='load-more-button'
+            loadMoreAttendancesButton = firstAttendanceDate
+                ? <button key='load-more-button'
                     className='btn btn-primary btn-sm ml-auto mr-auto'
                     data-before={
-                        startDate ?
-                            startDate.toISO() :
-                            DateTime.local().minus({ weeks: 3 }).startOf('week').toISO()
+                        startDate
+                            ? startDate.toISO()
+                            : DateTime.local().minus({ weeks: 3 }).startOf('week').toISO()
                     }
-                    onClick={event => this.loadMore(event)}>load older records</button> :
-                <button key='load-more-button'
+                    onClick={event => this.loadMore(event)}>load older records</button>
+                : <button key='load-more-button'
                     className='btn btn-primary btn-sm ml-auto mr-auto'
                     disabled={true}>nothing to load</button>;
         }
 
-        const characterListRendered = user.characters.length ?
-            [
+        const characterListRendered = user.characters.length
+            ? [
                 <h3 className="col-md-24 mt-5" key="heading">Their Characters</h3>,
                 <List characters={user.characters} me={me} className="pl-2 pr-2 col-md-24" key="character-list" />,
             ] : [];

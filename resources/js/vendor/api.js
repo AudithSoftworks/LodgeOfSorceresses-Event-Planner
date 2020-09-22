@@ -6,12 +6,12 @@ export const getAttendances = (cancelToken, userId, params = {}) =>
     axios
         .get(
             '/api/attendances/' + userId + '?' + (
-                params ?
-                    Object
+                params
+                    ? Object
                         .keys(params)
                         .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
-                        .join('&') :
-                    ''
+                        .join('&')
+                    : ''
             ), {
                 cancelToken: cancelToken.token,
             },

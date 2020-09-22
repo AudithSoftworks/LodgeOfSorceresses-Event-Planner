@@ -33,6 +33,9 @@ rules:
     - always
     - objectsInObjects: false
       arraysInObjects: false
+  operator-linebreak:
+    - error
+    - before
   quotes:
     - error
     - single
