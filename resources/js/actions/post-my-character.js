@@ -1,7 +1,8 @@
 import * as api from '../vendor/api/auth';
-import getCharacterAction from './get-character';
 
 export const TYPE_POST_MY_CHARACTER_SEND = 'POST_MY_CHARACTER_SEND';
+
+export const TYPE_POST_MY_CHARACTER_SUCCESS = 'POST_MY_CHARACTER_SUCCESS';
 
 export const TYPE_POST_MY_CHARACTER_FAILURE = 'POST_MY_CHARACTER_FAILURE';
 
@@ -10,6 +11,12 @@ const RESPONSE_MESSAGE_SUCCESS = 'Character created.';
 const postMyCharacterSendAction = data => ({
     type: TYPE_POST_MY_CHARACTER_SEND,
     data,
+});
+
+const postMyCharacterSuccessAction = (response, message) => ({
+    type: TYPE_POST_MY_CHARACTER_SUCCESS,
+    response,
+    message,
 });
 
 const postMyCharacterFailureAction = error => ({
@@ -24,7 +31,7 @@ const postMyCharacterAction = data => (dispatch, getState) => {
     return api
         .postMyCharacter(axiosCancelTokenSource, data, dispatch)
         .then(response => {
-            dispatch(getCharacterAction(response.data['lastInsertId'], RESPONSE_MESSAGE_SUCCESS));
+            dispatch(postMyCharacterSuccessAction(response, RESPONSE_MESSAGE_SUCCESS));
         })
         .catch(error => {
             dispatch(postMyCharacterFailureAction(error));

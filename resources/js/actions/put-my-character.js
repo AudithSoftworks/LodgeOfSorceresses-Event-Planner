@@ -1,5 +1,4 @@
 import * as api from '../vendor/api/auth';
-import getCharacterAction from './get-character';
 
 export const TYPE_PUT_MY_CHARACTER_SEND = 'PUT_MY_CHARACTER_SEND';
 
@@ -15,6 +14,12 @@ const putMyCharacterSendAction = (characterId, data) => ({
     data,
 });
 
+const putMyCharacterSuccessAction = (response, message) => ({
+    type: TYPE_PUT_MY_CHARACTER_SUCCESS,
+    response,
+    message,
+});
+
 const putMyCharacterFailureAction = error => ({
     type: TYPE_PUT_MY_CHARACTER_FAILURE,
     message: (error.response ? error.response.data.message || error.response.statusText : null) || error.message,
@@ -26,8 +31,8 @@ const putMyCharacterAction = (characterId, data) => (dispatch, getState) => {
     const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .putMyCharacter(axiosCancelTokenSource, characterId, data, dispatch)
-        .then(() => {
-            dispatch(getCharacterAction(characterId, RESPONSE_MESSAGE_SUCCESS));
+        .then(response => {
+            dispatch(putMyCharacterSuccessAction(response, RESPONSE_MESSAGE_SUCCESS));
         })
         .catch(error => {
             dispatch(putMyCharacterFailureAction(error));

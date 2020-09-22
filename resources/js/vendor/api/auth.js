@@ -88,7 +88,13 @@ export const postMyCharacter = (cancelToken, data) =>
         .post('/api/users/@me/characters', data, {
             cancelToken: cancelToken.token,
         })
-        .then(response => response)
+        .then(response => {
+            if (response.status === 201 && response.data) {
+                return normalize(response.data, schema.character);
+            }
+
+            return null;
+        })
         .catch(error => {
             throw error;
         });
@@ -101,7 +107,13 @@ export const putMyCharacter = (cancelToken, characterId, data) =>
                 'X-HTTP-Method-Override': 'PUT',
             },
         })
-        .then(response => response.status === 204)
+        .then(response => {
+            if (response.data) {
+                return normalize(response.data, schema.character);
+            }
+
+            return null;
+        })
         .catch(error => {
             throw error;
         });
