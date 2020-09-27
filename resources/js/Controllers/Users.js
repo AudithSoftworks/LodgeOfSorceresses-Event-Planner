@@ -288,7 +288,7 @@ class Users extends PureComponent {
     render = () => {
         const { me, location, match } = this.props;
         if (!me) {
-            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname }}} />;
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
 
         const { allUsers, user } = this.state;

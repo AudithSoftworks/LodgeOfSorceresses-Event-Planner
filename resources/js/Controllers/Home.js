@@ -32,7 +32,7 @@ class Home extends PureComponent {
     render = () => {
         const { me, location } = this.props;
         if (!me) {
-            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname }}} />;
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
 
         const accountStatusOptions = [];

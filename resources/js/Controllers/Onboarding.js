@@ -84,10 +84,10 @@ class Onboarding extends PureComponent {
         const { history, match, me, location } = this.props;
         const mode = match.params.mode;
         if (!me || (mode !== 'members' && mode !== 'soulshriven')) {
-            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname }}} />;
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
         if (this.authorizeUser() && ((me.isMember && mode === 'members') || (me.isSoulshriven && mode === 'soulshriven'))) {
-            return <Redirect to={{ pathname: '/home', state: { prevPath: location.pathname }}} />;
+            return <Redirect to={{ pathname: '/home', state: { prevPath: location.pathname } }} />;
         }
 
         const contentHeadings = this.getHeadingsOfSteps(mode);

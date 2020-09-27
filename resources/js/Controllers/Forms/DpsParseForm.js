@@ -276,7 +276,7 @@ class DpsParseForm extends PureComponent {
     render = () => {
         const { myCharacters } = this.props;
         if (!myCharacters) {
-            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname }}} />;
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
         const character = this.getCharacter();
         if (!character) {

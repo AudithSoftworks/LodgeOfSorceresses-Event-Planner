@@ -52,7 +52,7 @@ class Characters extends PureComponent {
     render = () => {
         const { me, location, myCharacters } = this.props;
         if (!myCharacters) {
-            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname }}} />;
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
 
         const actionList = {

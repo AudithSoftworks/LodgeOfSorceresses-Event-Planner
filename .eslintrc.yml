@@ -31,8 +31,8 @@ rules:
   object-curly-spacing:
     - error
     - always
-    - objectsInObjects: false
-      arraysInObjects: false
+    - objectsInObjects: true
+      arraysInObjects: true
   operator-linebreak:
     - error
     - before

@@ -121,7 +121,7 @@ class EventForm extends PureComponent {
     render = () => {
         const { content } = this.props;
         if (!content) {
-            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname }}} />;
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
 
         return [this.renderForm(), <Notification key="notifications" />];

@@ -52,7 +52,7 @@ class Home extends PureComponent {
     render = () => {
         const { me, location, myCharacters } = this.props;
         if (!me || !myCharacters) {
-            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname }}} />;
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         } else if (!this.authorizeUser(true)) {
             return <Redirect to="/home" />;
         }

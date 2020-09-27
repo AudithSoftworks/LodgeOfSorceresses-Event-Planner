@@ -41,7 +41,7 @@ class Main extends PureComponent {
                 <Route
                     key="/teams"
                     path="/teams"
-                    render={({ match: { url }}) => (
+                    render={({ match: { url } }) => (
                         <Fragment>
                             <Route exact path={url} component={props => <Teams {...props} />} />
                             <Route path={url + '/create'} component={props => <TeamForm {...props} />} />
@@ -54,7 +54,7 @@ class Main extends PureComponent {
                 <Route
                     key="/@me"
                     path="/@me"
-                    render={({ match: { url }}) => (
+                    render={({ match: { url } }) => (
                         <Fragment>
                             <Route exact path={url} component={props => <Dashboard {...props} />} />
                             <Route exact path={url + '/characters'} component={props => <MyCharacters {...props} />} />
@@ -75,7 +75,7 @@ class Main extends PureComponent {
                 <Route
                     key="/admin"
                     path="/admin"
-                    render={({ match: { url }}) => (
+                    render={({ match: { url } }) => (
                         <Fragment>
                             <Route exact path={url} component={props => <AdminHome {...props} />} />
                             <Route path={url + '/parses'} component={props => <AdminDpsParses {...props} />} />

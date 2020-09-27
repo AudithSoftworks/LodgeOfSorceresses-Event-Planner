@@ -29,7 +29,7 @@ class NoMatch extends PureComponent {
             );
         }
 
-        return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname }}} />;
+        return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
     }
 }
 

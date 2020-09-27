@@ -70,7 +70,7 @@ class TeamMembershipTerms extends PureComponent {
     render = () => {
         const { location, me, teams } = this.props;
         if (!me || !teams) {
-            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname }}} />;
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
         const { team, character } = this.state;
         if (!team || !character) {

@@ -34,7 +34,7 @@ class Characters extends PureComponent {
     render = () => {
         const { me, character, location, match } = this.props;
         if (!me) {
-            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname }}} />;
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
 
         if (!this.authorizeUser(true) || !match.params.id) {

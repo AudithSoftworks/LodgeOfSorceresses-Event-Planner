@@ -172,7 +172,7 @@ class TeamForm extends PureComponent {
     render = () => {
         const { teams, location } = this.props;
         if (!teams) {
-            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname }}} />;
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
         const { users } = this.state;
         if (!users) {
