@@ -10,22 +10,22 @@ import Notification from '../../Components/Notification';
 import { characters, content } from '../../vendor/data';
 
 class EventForm extends PureComponent {
-    componentWillUnmount = () => {
+    componentWillUnmount() {
         this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
-    };
+    }
 
-    UNSAFE_componentWillUpdate = nextProps => {
+    componentDidUpdate(prevProps, prevState, snapshot) {
         // We had a change in Events data: Redirect!
-        if (nextProps.myCharacters.length !== this.props.myCharacters.length) {
+        if (prevProps.myCharacters.length !== this.props.myCharacters.length) {
             return this.props.history.push('/events');
         }
         const { match } = this.props;
         if (match.params && match.params.id) {
-            if (this.props.myCharacters !== nextProps.myCharacters) {
+            if (prevProps.myCharacters !== this.props.myCharacters) {
                 return this.props.history.push('/events');
             }
         }
-    };
+    }
 
     handleSubmit = event => {
         event.preventDefault();

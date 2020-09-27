@@ -175,14 +175,14 @@ class DpsParseForm extends PureComponent {
         this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
     }
 
-    UNSAFE_componentWillUpdate = nextProps => {
+    componentDidUpdate(prevProps, prevState, snapshot) {
         // We had a change in Characters data: Redirect!
         const { history, match } = this.props;
         const characterId = match.params.id;
-        if (this.props.myCharacters !== nextProps.myCharacters) {
+        if (this.props.myCharacters !== prevProps.myCharacters) {
             return history.push('/@me/characters/' + characterId + '/parses');
         }
-    };
+    }
 
     getCharacter = () => {
         const { match, myCharacters } = this.props;

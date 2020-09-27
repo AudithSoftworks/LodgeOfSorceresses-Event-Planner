@@ -26,22 +26,22 @@ class CharacterForm extends PureComponent {
         { value: 4, label: 'Stamina DD' },
     ];
 
-    componentWillUnmount = () => {
+    componentWillUnmount() {
         this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
-    };
+    }
 
-    UNSAFE_componentWillUpdate = nextProps => {
+    componentDidUpdate(prevProps, prevState, snapshot) {
         // We had a change in Characters data: Redirect!
-        if (nextProps.myCharacters.length !== this.props.myCharacters.length) {
+        if (prevProps.myCharacters.length !== this.props.myCharacters.length) {
             return this.props.history.push('/@me/characters');
         }
         const { history, match } = this.props;
         if (match.params && match.params.id) {
-            if (this.props.myCharacters !== nextProps.myCharacters) {
+            if (this.props.myCharacters !== prevProps.myCharacters) {
                 return history.push('/@me/characters');
             }
         }
-    };
+    }
 
     getCharacter = () => {
         const { match, myCharacters } = this.props;
@@ -129,14 +129,14 @@ class CharacterForm extends PureComponent {
         const contentOptions = Object.values(content)
             .filter(item => item.type !== 'midgame')
             .map(item => ({ value: item.id, label: item.version ? item.short_name + ' ' + item.version : item.short_name }));
-        const charactersSetsIds = character ? Object.values(character.sets).map(item => item.id) : [];
-        const charactersSkillsIds = character ? Object.values(character.skills).map(item => item.id) : [];
-        const charactersContentIds = character ? Object.values(character.content).map(item => item.id) : [];
+        const charactersSetsIds = character ? Object.values(character.sets).map(set => set.id) : [];
+        const charactersSkillsIds = character ? Object.values(character.skills).map(skill => skill.id) : [];
+        const charactersContentIds = character ? Object.values(character.content).map(content => content.id) : [];
         const heading = (match.params.id ? 'Edit' : 'Create') + ' Character';
         const animated = makeAnimated();
 
         return (
-            <form className="col-md-24 d-flex flex-row flex-wrap p-0" onSubmit={this.handleSubmit} key="characterCreationForm">
+            <form className="col-md-24 d-flex flex-row flex-wrap p-0" onSubmit={event => this.handleSubmit(event)} key="characterCreationForm">
                 <h2 className="form-title col-md-24" title={heading}>
                     {heading}
                 </h2>
