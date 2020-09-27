@@ -64,10 +64,10 @@ class DpsParses extends PureComponent {
         const dpsParses = character.dps_parses_pending;
         if (dpsParses && !dpsParses.length && notifications.find(n => n.key === 'no-dps-parses-create-one') === undefined) {
             const message = [
-                <Fragment key="f-1">Create a new parse, by clicking</Fragment>,
+                <Fragment key="f-1">Create a new parse, by clicking </Fragment>,
                 <FontAwesomeIcon icon={faUserPlus} key="icon" />,
-                <Fragment key="f-2">icon on top right corner.</Fragment>,
-            ].reduce((prev, curr) => [prev, ' ', curr]);
+                <Fragment key="f-2"> icon on top right corner.</Fragment>,
+            ].reduce((acc, curr) => [...acc, curr], []);
             dispatch(
                 infosAction(
                     message,

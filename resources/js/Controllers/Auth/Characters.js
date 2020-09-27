@@ -29,10 +29,10 @@ class Characters extends PureComponent {
         const { dispatch, myCharacters, notifications } = this.props;
         if (myCharacters && !myCharacters.length && notifications.find(n => n.key === 'no-characters-create-one') === undefined) {
             const message = [
-                <Fragment key="f-1">Create a new character, by clicking</Fragment>,
+                <Fragment key="f-1">Create a new character, by clicking </Fragment>,
                 <FontAwesomeIcon icon={faUserPlus} key="icon" />,
-                <Fragment key="f-2">icon on top right corner.</Fragment>,
-            ].reduce((acc, curr) => [acc, ' ', curr]);
+                <Fragment key="f-2"> icon on top right corner.</Fragment>,
+            ].reduce((acc, curr) => [...acc, curr], []);
             dispatch(
                 infosAction(
                     message,

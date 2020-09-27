@@ -43,13 +43,14 @@ class Teams extends PureComponent {
         if (teams && !teams.length && notifications.find(n => n.key === 'no-teams-create-one') === undefined) {
             const messages = me && me.isAdmin
                 ? [
-                    <Fragment key="f-1">Create a new team, by clicking</Fragment>,
-                    <FontAwesomeIcon icon={faUsersMedical} key="icon" />, <Fragment key="f-2">icon on top right corner.</Fragment>,
+                    <Fragment key="f-1">Create a new team, by clicking </Fragment>,
+                    <FontAwesomeIcon icon={faUsersMedical} key="icon" />,
+                    <Fragment key="f-2"> icon on top right corner.</Fragment>,
                 ]
                 : [<Fragment key="f-1">No teams found.</Fragment>];
             dispatch(
                 infosAction(
-                    messages.reduce((acc, curr) => [acc, ' ', curr]),
+                    messages.reduce((acc, curr) => [...acc, curr], []),
                     {
                         container: 'bottom-center',
                         animationIn: ['animated', 'bounceInDown'],
@@ -66,14 +67,15 @@ class Teams extends PureComponent {
     render = () => {
         const { location, match, me, teams } = this.props;
         if (!teams) {
-            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname }}} />;
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
 
         const { team } = this.state;
         if (match.params.id && team) {
             const authorizedTeamManager = authorizeTeamManager({ me, team });
             return [
-                <Item key="team-item"
+                <Item
+                    key="team-item"
                     authorizedTeamManager={authorizedTeamManager}
                     me={me}
                     team={team}
