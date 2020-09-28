@@ -132,7 +132,6 @@ class CharactersControllerTest extends IlluminateTestCase
 
         $response = $this
             ->actingAs($tierOneUser, 'api')
-            ->withoutMiddleware()
             ->postJson('/api/users/@me/characters', [
                 'name' => 'Some Character',
                 'role' => RoleTypes::ROLE_MAGICKA_DD,

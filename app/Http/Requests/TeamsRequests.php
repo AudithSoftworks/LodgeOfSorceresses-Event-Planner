@@ -53,6 +53,7 @@ class TeamsRequests extends FormRequest
                 'led_by' => 'sometimes|required|numeric|exists:users,id',
             ];
         }
+
         return [];
     }
 

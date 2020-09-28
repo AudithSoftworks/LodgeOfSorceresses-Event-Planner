@@ -2,7 +2,7 @@
 
 /**
  * @noinspection PhpUnusedParameterInspection
- * @todo Remove this when upgrading to PHP-8, where we can have argument types without arguments
+ * @todo         Remove this when upgrading to PHP-8, where we can have argument types without arguments
  */
 
 namespace App\Http\Requests;
@@ -38,6 +38,7 @@ class TeamsCharactersRequests extends FormRequest
                 'accepted_terms' => 'required|accepted',
             ];
         }
+
         return [];
     }
 

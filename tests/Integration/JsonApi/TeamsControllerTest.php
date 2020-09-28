@@ -105,7 +105,6 @@ class TeamsControllerTest extends IlluminateTestCase
 
         $response = $this
             ->actingAs($tierOneAdmin, 'api')
-            ->withoutMiddleware()
             ->postJson('/api/teams', [
                 'name' => 'Core 1',
                 'tier' => 4,
@@ -150,7 +149,6 @@ class TeamsControllerTest extends IlluminateTestCase
         $tierFourMemberUser = $this->stubCustomUserWithCustomCharacters('member', 4, RoleTypes::ROLE_MAGICKA_DD, ClassTypes::CLASS_SORCERER);
         $response = $this
             ->actingAs($tierFourMemberUser, 'api')
-            ->withoutMiddleware()
             ->getJson(sprintf('/api/teams/%d', $team->id));
         $response->assertStatus(JsonResponse::HTTP_OK);
     }

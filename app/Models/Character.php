@@ -73,25 +73,16 @@ class Character extends Model
         'sets',
     ];
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
     public function content(): BelongsToMany
     {
         return $this->belongsToMany(Content::class, 'characters_content', 'character_id', 'content_id')->withTimestamps();
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
     public function dpsParses(): HasMany
     {
         return $this->hasMany(DpsParse::class);
