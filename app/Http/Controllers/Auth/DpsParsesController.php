@@ -7,6 +7,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\DpsParse\DpsParseDeleted;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\DpsParsesRequests;
 use App\Models\Character;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
 
 class DpsParsesController extends Controller
 {
@@ -55,6 +57,7 @@ class DpsParsesController extends Controller
         }
 
         $dpsParse->delete();
+        Event::dispatch(new DpsParseDeleted($dpsParse));
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);
     }
