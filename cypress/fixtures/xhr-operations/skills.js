@@ -3,6 +3,6 @@ export const skills = cy => {
     cy.route({
         method: 'GET',
         url: '/api/skills',
-        response: '@skills'
+        response: '@skills',
     }).as('loadSkills');
 };

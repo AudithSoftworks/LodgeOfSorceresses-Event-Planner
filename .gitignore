@@ -12,6 +12,7 @@
 /vendor
 !.babelrc
 !.env.*
+!.eslint*
 !.git*
 !.*rc
 !*.yml

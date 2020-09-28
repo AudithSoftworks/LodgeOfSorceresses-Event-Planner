@@ -25,15 +25,7 @@ $router->middleware(['auth:api', 'throttle'])->group(static function (Router $ro
     $router->apiResource('users', 'UsersController')->only(['index', 'show']);
     $router->apiResource('characters', 'CharactersController')->only(['index', 'show']);
     $router->apiResource('teams', 'TeamsController')->only(['index', 'store', 'show', 'update', 'destroy']);
-    $router
-        ->apiResource('teams/{team}/characters', 'TeamsCharactersController')
-        ->names([
-            'index' => 'teams.characters.index',
-            'show' => 'teams.characters.show',
-            'store' => 'teams.characters.store',
-            'update' => 'teams.characters.update',
-            'destroy' => 'teams.characters.destroy',
-        ]);
+    $router->apiResource('teams.characters', 'TeamsCharactersController');
 
     $router->get('users/@me', 'Auth\UsersController@me')->name('@me.show');
     $router->put('users/@me', 'Auth\UsersController@updateMe')->name('@me.update');
@@ -48,7 +40,7 @@ $router->middleware(['auth:api', 'throttle'])->group(static function (Router $ro
             'destroy' => '@me.characters.destroy',
         ]);
     $router
-        ->apiResource('users/@me/characters/{char}/parses', 'Auth\DpsParsesController')
+        ->apiResource('users/@me/characters.dps_parses', 'Auth\DpsParsesController')
         ->only(['store', 'destroy'])
         ->names([
             'store' => '@me.characters.parses.store',

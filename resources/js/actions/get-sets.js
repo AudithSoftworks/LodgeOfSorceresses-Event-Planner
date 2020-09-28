@@ -1,10 +1,10 @@
-import * as api from "../vendor/api";
+import * as api from '../vendor/api';
 
-export const TYPE_GET_SETS_SEND = "GET_SETS_SEND";
+export const TYPE_GET_SETS_SEND = 'GET_SETS_SEND';
 
-export const TYPE_GET_SETS_SUCCESS = "GET_SETS_SUCCESS";
+export const TYPE_GET_SETS_SUCCESS = 'GET_SETS_SUCCESS';
 
-export const TYPE_GET_SETS_FAILURE = "GET_SETS_FAILURE";
+export const TYPE_GET_SETS_FAILURE = 'GET_SETS_FAILURE';
 
 const getSetsSendAction = () => ({
     type: TYPE_GET_SETS_SEND,
@@ -24,7 +24,7 @@ const getSetsFailureAction = error => {
 
 const getSetsAction = () => (dispatch, getState) => {
     dispatch(getSetsSendAction());
-    const axiosCancelTokenSource = getState().getIn(["axiosCancelTokenSource"]);
+    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .getSets(axiosCancelTokenSource, dispatch)
         .then(response => {

@@ -1,61 +1,62 @@
-import FineUploaderTraditional from "fine-uploader-wrappers";
-import PropTypes from "prop-types";
-import React, { PureComponent } from "react";
-import Loadable from "react-loadable";
-import { connect } from "react-redux";
-import { Link, Redirect } from "react-router-dom";
-import Select from "react-select";
-import makeAnimated from "react-select/animated";
-import postMyDpsParseAction from "../../actions/post-my-dps-parse";
-import Loading from "../../Components/Loading";
-import Notification from "../../Components/Notification";
-import { characters } from "../../vendor/data";
+import(/* webpackPrefetch: true, webpackChunkName: "react-fine-uploader_gallery-css" */ '../../../sass/vendor/_fine-uploader-gallery.scss');
 
-const Gallery = Loadable({
-    loader: () =>
-        import(/* webpackPrefetch: true, webpackChunkName: "react-fine-uploader" */ "react-fine-uploader"),
-    loading: () => <Loading />,
+import FineUploaderTraditional from 'fine-uploader-wrappers';
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+import Loadable from 'react-loadable';
+import { connect } from 'react-redux';
+import { Link, Redirect } from 'react-router-dom';
+import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
+import postMyDpsParseAction from '../../actions/post-my-dps-parse';
+import Loading from '../../Components/Loading';
+import Notification from '../../Components/Notification';
+import { characters } from '../../vendor/data';
+
+const Gallery = new Loadable({
+    loader: () => import(/* webpackPrefetch: true, webpackChunkName: "react-fine-uploader" */ 'react-fine-uploader'),
+    loading() {
+        return <Loading />;
+    },
 });
-
-import(/* webpackPrefetch: true, webpackChunkName: "react-fine-uploader_gallery-css" */ "../../../sass/vendor/_fine-uploader-gallery.scss");
 
 class DpsParseForm extends PureComponent {
     classOptions = [
-        { value: 1, label: "Dragonknight" },
-        { value: 2, label: "Nightblade" },
-        { value: 3, label: "Sorcerer" },
-        { value: 4, label: "Templar" },
-        { value: 5, label: "Warden" },
-        { value: 6, label: "Necromancer" },
+        { value: 1, label: 'Dragonknight' },
+        { value: 2, label: 'Nightblade' },
+        { value: 3, label: 'Sorcerer' },
+        { value: 4, label: 'Templar' },
+        { value: 5, label: 'Warden' },
+        { value: 6, label: 'Necromancer' },
     ];
 
     roleOptions = [
-        { value: 1, label: "Tank" },
-        { value: 2, label: "Healer" },
-        { value: 3, label: "Magicka DD" },
-        { value: 4, label: "Stamina DD" },
+        { value: 1, label: 'Tank' },
+        { value: 2, label: 'Healer' },
+        { value: 3, label: 'Magicka DD' },
+        { value: 4, label: 'Stamina DD' },
     ];
 
     parseScreenshotUploader = new FineUploaderTraditional({
         options: {
             request: {
-                endpoint: "/api/files",
+                endpoint: '/api/files',
                 customHeaders: {
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 },
                 params: {
-                    qqtag: "parse-screenshot",
+                    qqtag: 'parse-screenshot',
                 },
             },
             validation: {
-                allowedExtensions: ["jpeg", "jpg", "png", "gif"],
-                acceptFiles: "image/*",
+                allowedExtensions: ['jpeg', 'jpg', 'png', 'gif'],
+                acceptFiles: 'image/*',
                 itemLimit: 1,
             },
             scaling: {
                 sendOriginal: false,
                 includeExif: true,
-                sizes: [{ name: "", maxSize: 1024 }],
+                sizes: [{ name: '', maxSize: 1024 }],
             },
             chunking: {
                 enabled: true,
@@ -64,7 +65,7 @@ class DpsParseForm extends PureComponent {
                 },
                 partSize: 1024000,
                 success: {
-                    endpoint: "/api/files?post-process=1",
+                    endpoint: '/api/files?post-process=1',
                 },
             },
             resume: {
@@ -74,12 +75,12 @@ class DpsParseForm extends PureComponent {
             },
             deleteFile: {
                 enabled: true,
-                endpoint: "/api/files",
+                endpoint: '/api/files',
                 params: {
-                    tag: "parse-screenshot",
+                    tag: 'parse-screenshot',
                 },
                 customHeaders: {
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 },
             },
             callbacks: {
@@ -102,23 +103,23 @@ class DpsParseForm extends PureComponent {
     infoScreenshotUploader = new FineUploaderTraditional({
         options: {
             request: {
-                endpoint: "/api/files",
+                endpoint: '/api/files',
                 customHeaders: {
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 },
                 params: {
-                    qqtag: "info-screenshot",
+                    qqtag: 'info-screenshot',
                 },
             },
             validation: {
-                allowedExtensions: ["jpeg", "jpg", "png", "gif"],
-                acceptFiles: "image/*",
+                allowedExtensions: ['jpeg', 'jpg', 'png', 'gif'],
+                acceptFiles: 'image/*',
                 itemLimit: 1,
             },
             scaling: {
                 sendOriginal: false,
                 includeExif: true,
-                sizes: [{ name: "", maxSize: 1024 }],
+                sizes: [{ name: '', maxSize: 1024 }],
             },
             chunking: {
                 enabled: true,
@@ -127,7 +128,7 @@ class DpsParseForm extends PureComponent {
                 },
                 partSize: 1024000,
                 success: {
-                    endpoint: "/api/files?post-process=1",
+                    endpoint: '/api/files?post-process=1',
                 },
             },
             resume: {
@@ -137,12 +138,12 @@ class DpsParseForm extends PureComponent {
             },
             deleteFile: {
                 enabled: true,
-                endpoint: "/api/files",
+                endpoint: '/api/files',
                 params: {
-                    tag: "info-screenshot",
+                    tag: 'info-screenshot',
                 },
                 customHeaders: {
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 },
             },
             callbacks: {
@@ -171,17 +172,17 @@ class DpsParseForm extends PureComponent {
     }
 
     componentWillUnmount() {
-        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel("Request cancelled.");
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
     }
 
-    UNSAFE_componentWillUpdate = nextProps => {
+    componentDidUpdate(prevProps, prevState, snapshot) {
         // We had a change in Characters data: Redirect!
-        const { match } = this.props;
+        const { history, match } = this.props;
         const characterId = match.params.id;
-        if (this.props.myCharacters !== nextProps.myCharacters) {
-            return this.props.history.push("/@me/characters/" + characterId + "/parses");
+        if (this.props.myCharacters !== prevProps.myCharacters) {
+            return history.push('/@me/characters/' + characterId + '/parses');
         }
-    };
+    }
 
     getCharacter = () => {
         const { match, myCharacters } = this.props;
@@ -203,7 +204,7 @@ class DpsParseForm extends PureComponent {
         const { sets } = this.props;
         const { parseScreenshotHash, infoScreenshotHash } = this.state;
         const setsOptions = Object.values(sets).map(item => ({ value: item.id, label: item.name }));
-        const charactersSetsIds = character ? Object.values(character.sets).map(item => item.id) : [];
+        const charactersSetsIds = character ? Object.values(character.sets).map(set => set.id) : [];
         const animated = makeAnimated();
 
         return (
@@ -213,20 +214,21 @@ class DpsParseForm extends PureComponent {
                     <b>Parse submission rules:</b>
                     <ul>
                         <li>Please use <strong>21-million-HP Trial Dummy</strong> for parsing and kill the dummy for 100% of its HP.</li>
-                        <li><strong>Parses can't be older than 2 weeks!</strong> When a major Update is released, Parses need to be created after the launch date.</li>
+                        <li><strong>Parses can&apos;t be older than 2 weeks!</strong> When a major Update is released, Parses need to be created after the launch date.</li>
                         <li>Make sure you have around <strong>5850 Penetration</strong> in your Parse-screenshots (±100 is an acceptable margin).</li>
                         <li>Every new Parse will update your existing Tier-level, i.e. sending lower DPS numbers can cause demotion.</li>
                         <li>When submitting a Parse, <strong>include only the Sets</strong> used for that particular Parse, removing everything else.</li>
                         <li><strong>Usage of Mythic set items in Parses is not allowed</strong>!</li>
                         <li>When submitting a Parse, <strong>enter DPS amount as it is, without rounding it</strong>, in the form of pure numbers.</li>
                         <li>Each Parse needs to have <strong>screenshots from both Fight-Log and Info screens of Combat Metrics addon</strong>.</li>
-                        <li>After submitting a Parse, please check screenshots to see if they are readable; if not, delete your Parse, resubmit with <strong>cropped screenshots</strong> for better readability.</li>
+                        <li>After submitting a Parse, please check screenshots to see if they are readable;
+                            if not, delete your Parse, resubmit with <strong>cropped screenshots</strong> for better readability.</li>
                         <li>Every Character needs their Parses <strong>refreshed at least every 60 days</strong>. Failing to do so will revoke your Tier-level automatically.</li>
                     </ul>
                 </article>
-                <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute("content")} />
-                <input type="hidden" name="parse_file_hash" value={parseScreenshotHash || ""} />
-                <input type="hidden" name="info_file_hash" value={infoScreenshotHash || ""} />
+                <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')} />
+                <input type="hidden" name="parse_file_hash" value={parseScreenshotHash || ''} />
+                <input type="hidden" name="info_file_hash" value={infoScreenshotHash || ''} />
                 <fieldset className="form-group col-md-24 col-lg-12">
                     <label>Sets worn during Parse:</label>
                     <Select
@@ -260,7 +262,7 @@ class DpsParseForm extends PureComponent {
                     <Gallery uploader={this.infoScreenshotUploader} className="uploader" />
                 </fieldset>
                 <fieldset className="form-group col-md-24 text-right">
-                    <Link to={"/@me/characters/" + character.id + "/parses"} className="btn btn-info btn-lg mr-1">
+                    <Link to={'/@me/characters/' + character.id + '/parses'} className="btn btn-info btn-lg mr-1">
                         Cancel
                     </Link>
                     <button className="btn btn-primary btn-lg" type="submit">
@@ -274,7 +276,7 @@ class DpsParseForm extends PureComponent {
     render = () => {
         const { myCharacters } = this.props;
         if (!myCharacters) {
-            return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
         const character = this.getCharacter();
         if (!character) {
@@ -301,10 +303,10 @@ DpsParseForm.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
-    sets: state.getIn(["sets"]),
-    myCharacters: state.getIn(["myCharacters"]),
-    notifications: state.getIn(["notifications"]),
+    axiosCancelTokenSource: state.getIn(['axiosCancelTokenSource']),
+    sets: state.getIn(['sets']),
+    myCharacters: state.getIn(['myCharacters']),
+    notifications: state.getIn(['notifications']),
 });
 
 const mapDispatchToProps = dispatch => ({

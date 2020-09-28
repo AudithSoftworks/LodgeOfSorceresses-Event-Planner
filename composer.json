@@ -6,6 +6,7 @@
         "framework",
         "laravel",
         "event planner",
+        "guild planner",
         "lodge of sorceresses",
         "shahriyar imanov",
         "shehi"
@@ -15,7 +16,6 @@
         {
             "name": "Shahriyar Imanov",
             "email": "shehi@imanov.me",
-            "homepage": "http://cv.imanov.me",
             "role": "Developer"
         }
     ],

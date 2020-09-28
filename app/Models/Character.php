@@ -19,8 +19,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $name
  * @property int $class
  * @property int $role
- * @property string $sets
- * @property string|null $skills
+ * @property null|string|array $sets
+ * @property null|string|array $skills
  * @property int $approved_for_tier
  * @property int|null $last_submitted_dps_amount
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -73,25 +73,16 @@ class Character extends Model
         'sets',
     ];
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
     public function content(): BelongsToMany
     {
         return $this->belongsToMany(Content::class, 'characters_content', 'character_id', 'content_id')->withTimestamps();
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
     public function dpsParses(): HasMany
     {
         return $this->hasMany(DpsParse::class);

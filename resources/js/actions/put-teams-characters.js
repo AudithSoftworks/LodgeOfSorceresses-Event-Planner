@@ -1,12 +1,12 @@
-import * as api from "../vendor/api";
+import * as api from '../vendor/api';
 
-export const TYPE_PUT_TEAMS_CHARACTERS_SEND = "PUT_TEAMS_CHARACTERS_SEND";
+export const TYPE_PUT_TEAMS_CHARACTERS_SEND = 'PUT_TEAMS_CHARACTERS_SEND';
 
-export const TYPE_PUT_TEAMS_CHARACTERS_SUCCESS = "PUT_TEAMS_CHARACTERS_SUCCESS";
+export const TYPE_PUT_TEAMS_CHARACTERS_SUCCESS = 'PUT_TEAMS_CHARACTERS_SUCCESS';
 
-export const TYPE_PUT_TEAMS_CHARACTERS_FAILURE = "PUT_TEAMS_CHARACTERS_FAILURE";
+export const TYPE_PUT_TEAMS_CHARACTERS_FAILURE = 'PUT_TEAMS_CHARACTERS_FAILURE';
 
-const RESPONSE_MESSAGE_SUCCESS = "Team membership updated!";
+const RESPONSE_MESSAGE_SUCCESS = 'Team membership updated!';
 
 const putTeamsCharactersSendAction = (teamId, characterId, data) => ({
     type: TYPE_PUT_TEAMS_CHARACTERS_SEND,
@@ -31,7 +31,7 @@ const putTeamsCharactersFailureAction = error => ({
 
 const putTeamsCharactersAction = (teamId, characterId, data) => (dispatch, getState) => {
     dispatch(putTeamsCharactersSendAction(teamId, characterId, data));
-    const axiosCancelTokenSource = getState().getIn(["axiosCancelTokenSource"]);
+    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .putTeamsCharacters(axiosCancelTokenSource, teamId, characterId, data, dispatch)
         .then(response => {

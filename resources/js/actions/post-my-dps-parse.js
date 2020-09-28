@@ -1,12 +1,12 @@
-import * as api from "../vendor/api/auth";
+import * as api from '../vendor/api/auth';
 
-export const TYPE_POST_MY_DPS_PARSE_SEND = "POST_MY_DPS_PARSE_SEND";
+export const TYPE_POST_MY_DPS_PARSE_SEND = 'POST_MY_DPS_PARSE_SEND';
 
-export const TYPE_POST_MY_DPS_PARSE_SUCCESS = "POST_MY_DPS_PARSE_SUCCESS";
+export const TYPE_POST_MY_DPS_PARSE_SUCCESS = 'POST_MY_DPS_PARSE_SUCCESS';
 
-export const TYPE_POST_MY_DPS_PARSE_FAILURE = "POST_MY_DPS_PARSE_FAILURE";
+export const TYPE_POST_MY_DPS_PARSE_FAILURE = 'POST_MY_DPS_PARSE_FAILURE';
 
-const RESPONSE_MESSAGE_SUCCESS = "Parse submitted.";
+const RESPONSE_MESSAGE_SUCCESS = 'Parse submitted.';
 
 const postMyDpsParseSendAction = (characterId, data) => ({
     type: TYPE_POST_MY_DPS_PARSE_SEND,
@@ -28,7 +28,7 @@ const postMyDpsParseFailureAction = error => ({
 
 const postMyDpsParseAction = (characterId, data) => (dispatch, getState) => {
     dispatch(postMyDpsParseSendAction(characterId, data));
-    const axiosCancelTokenSource = getState().getIn(["axiosCancelTokenSource"]);
+    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .postMyDpsParse(axiosCancelTokenSource, characterId, data, dispatch)
         .then(response => {

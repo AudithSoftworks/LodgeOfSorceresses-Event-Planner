@@ -3,6 +3,6 @@ export const content = cy => {
     cy.route({
         method: 'GET',
         url: '/api/content',
-        response: '@content'
+        response: '@content',
     }).as('loadContent');
 };

@@ -4,6 +4,9 @@ namespace App\Tests\Integration\JsonApi;
 
 use App\Events\Team\TeamDeleted;
 use App\Events\Team\TeamUpdated;
+use App\Models\Team;
+use App\Singleton\ClassTypes;
+use App\Singleton\RoleTypes;
 use App\Tests\IlluminateTestCase;
 use App\Tests\Integration\JsonApi\Traits\NeedsUserStubs;
 use Illuminate\Http\JsonResponse;
@@ -30,38 +33,27 @@ class TeamsControllerTest extends IlluminateTestCase
 
     public function testStoreForFailure(): void
     {
-        $this->stubTierFourMemberUser();
-        $this->stubTierFourAdminUser();
-        $tierOneAdmin = $this->stubTierOneAdminUser();
+        $tierFourMemberUser = $this->stubCustomUserWithCustomCharacters('member', 4, RoleTypes::ROLE_MAGICKA_DD, ClassTypes::CLASS_SORCERER);
+        $tierOneAdminUser = $this->stubCustomUserWithCustomCharacters('admin', 1, RoleTypes::ROLE_MAGICKA_DD, ClassTypes::CLASS_SORCERER);
 
         # Case 1: No authentication
         $response = $this
-            ->withoutMiddleware()
-            ->postJson('/api/teams', [
-                'tier' => 7,
-                'led_by' => static::$adminUser->id,
-            ]);
-        $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
+            ->postJson('/api/teams', []);
+        $response->assertStatus(JsonResponse::HTTP_UNAUTHORIZED);
 
-        # Case 2: Non-admin attempting to create a team
+        # Case 1: No authorization
         $response = $this
-            ->actingAs(static::$tierFourMemberUser)
-            ->withoutMiddleware()
-            ->postJson('/api/teams', [
-                'name' => 'Core 1',
-                'tier' => 4,
-                'discord_role_id' => '491244517579254146',
-                'led_by' => static::$tierFourMemberUser->id,
-            ]);
+            ->actingAs($tierFourMemberUser, 'api')
+            ->postJson('/api/teams', []);
         $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
 
         # Case 3: Invalid input
         $response = $this
-            ->actingAs(static::$adminUser)
+            ->actingAs($tierOneAdminUser, 'api')
             ->postJson('/api/teams', [
                 'tier' => 7,
                 'discord_role_id' => 'bogus',
-                'led_by' => static::$adminUser,
+                'led_by' => $tierFourMemberUser,
             ]);
         $responseOriginalContent = $response->getOriginalContent();
         static::assertCount(2, $responseOriginalContent);
@@ -69,18 +61,18 @@ class TeamsControllerTest extends IlluminateTestCase
         $response->assertJsonPath('message', 'The given data was invalid.');
         $response->assertJsonPath('errors.name.0', 'Team name is required.');
         $response->assertJsonPath('errors.tier.0', 'Tier must be from 1 to 4.');
-        $response->assertJsonPath('errors.discord_role_id.0', 'The discord role id must be a number.');
-        $response->assertJsonPath('errors.led_by.0', 'The led by must be a number.');
+        $response->assertJsonPath('errors.discord_role_id.0', 'Discord Role-ID needs to be a numeric value.');
+        $response->assertJsonPath('errors.led_by.0', 'Team Leader needs to be a numeric value.');
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
 
         # Case 4: Invalid discord_role_id
         $response = $this
-            ->actingAs($tierOneAdmin)
+            ->actingAs($tierOneAdminUser, 'api')
             ->postJson('/api/teams', [
                 'name' => 'Team',
                 'tier' => 4,
                 'discord_role_id' => '491244517589254446',
-                'led_by' => $tierOneAdmin->id,
+                'led_by' => $tierOneAdminUser->id,
             ]);
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         $responseOriginalContent = $response->getOriginalContent();
@@ -91,12 +83,12 @@ class TeamsControllerTest extends IlluminateTestCase
 
         # Case 4: Non-eligible team leader
         $response = $this
-            ->actingAs($tierOneAdmin)
+            ->actingAs($tierOneAdminUser, 'api')
             ->postJson('/api/teams', [
                 'name' => 'Team',
                 'tier' => 4,
                 'discord_role_id' => '499973058401140737',
-                'led_by' => $tierOneAdmin->id,
+                'led_by' => $tierOneAdminUser->id,
             ]);
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         $responseOriginalContent = $response->getOriginalContent();
@@ -106,18 +98,18 @@ class TeamsControllerTest extends IlluminateTestCase
         $response->assertJsonPath('errors.led_by.0', 'User doesn\'t have an eligible character to join this team.');
     }
 
-    public function testStoreForSuccess(): void
+    public function testStoreForSuccess(): Team
     {
-        $tierOneAdmin = $this->stubTierOneAdminUser();
+        $tierFourMemberUser = $this->stubCustomUserWithCustomCharacters('member', 4, RoleTypes::ROLE_MAGICKA_DD, ClassTypes::CLASS_SORCERER);
+        $tierOneAdmin = $this->stubCustomUserWithCustomCharacters('admin', 1, RoleTypes::ROLE_MAGICKA_DD, ClassTypes::CLASS_SORCERER);
 
         $response = $this
-            ->actingAs($tierOneAdmin)
-            ->withoutMiddleware()
+            ->actingAs($tierOneAdmin, 'api')
             ->postJson('/api/teams', [
                 'name' => 'Core 1',
                 'tier' => 4,
                 'discord_role_id' => '499973058401140737',
-                'led_by' => static::$tierFourMemberUser->id,
+                'led_by' => $tierFourMemberUser->id,
             ]);
         $response->assertStatus(JsonResponse::HTTP_CREATED);
         /** @var \App\Models\Team $responseOriginalContent */
@@ -125,78 +117,90 @@ class TeamsControllerTest extends IlluminateTestCase
         static::assertTrue($responseOriginalContent->exists);
         static::assertFalse($responseOriginalContent->wasRecentlyCreated); // Data returned is from cache, thus not new.
         static::assertIsInt($responseOriginalContent->id);
+
+        return $responseOriginalContent;
     }
 
     public function testShowForFailure(): void
     {
+        $response = $this->getJson('/api/teams/1');
+        $response->assertStatus(JsonResponse::HTTP_UNAUTHORIZED);
+
+        $guestUser = $this->stubCustomUserWithCustomCharacters();
         $response = $this
-            ->withoutMiddleware()
+            ->actingAs($guestUser, 'api')
             ->getJson('/api/teams/1');
         $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
 
+        $tierFourMemberUser = $this->stubCustomUserWithCustomCharacters('member', 4, RoleTypes::ROLE_MAGICKA_DD, ClassTypes::CLASS_SORCERER);
         $response = $this
-            ->actingAs(static::$tierFourMemberUser)
-            ->withoutMiddleware()
+            ->actingAs($tierFourMemberUser, 'api')
             ->getJson('/api/teams/10000');
         $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
     }
 
     /**
      * @depends testStoreForSuccess
+     *
+     * @param \App\Models\Team $team
      */
-    public function testShowForSuccess(): void
+    public function testShowForSuccess(Team $team): void
     {
+        $tierFourMemberUser = $this->stubCustomUserWithCustomCharacters('member', 4, RoleTypes::ROLE_MAGICKA_DD, ClassTypes::CLASS_SORCERER);
         $response = $this
-            ->actingAs(static::$tierFourMemberUser)
-            ->withoutMiddleware()
-            ->getJson('/api/teams/1');
-        $response->assertStatus(200);
+            ->actingAs($tierFourMemberUser, 'api')
+            ->getJson(sprintf('/api/teams/%d', $team->id));
+        $response->assertStatus(JsonResponse::HTTP_OK);
     }
 
-    public function testUpdateForFailure(): void
+    /**
+     * @depends testStoreForSuccess
+     *
+     * @param \App\Models\Team $team
+     */
+    public function testUpdateForFailure(Team $team): void
     {
         Event::fake([TeamUpdated::class]);
 
+        $guestUser = $this->stubCustomUserWithCustomCharacters();
+
         # Case 1: No authentication
         $response = $this
-            ->withoutMiddleware()
-            ->putJson('/api/teams/1', [
-                'tier' => 7,
-                'led_by' => static::$adminUser->id,
-            ]);
+            ->putJson('/api/teams/1', []);
+        $response->assertStatus(JsonResponse::HTTP_UNAUTHORIZED);
+
+        # Case 1: No authorization
+        $response = $this
+            ->actingAs($guestUser, 'api')
+            ->putJson('/api/teams/1', []);
         $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
 
         # Case 2: Non-existent team
         $response = $this
-            ->actingAs(static::$adminUser)
-            ->withoutMiddleware()
-            ->putJson('/api/teams/100', [
-                'tier' => 4,
-                'led_by' => static::$adminUser->id,
-            ]);
+            ->actingAs($team->ledBy, 'api')
+            ->putJson('/api/teams/100', []);
         $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
 
         # Case 3: Invalid input
         $response = $this
-            ->actingAs(static::$adminUser)
-            ->withoutMiddleware()
+            ->actingAs($team->ledBy, 'api')
             ->putJson('/api/teams/1', [
                 'discord_role_id' => 'bogus',
-                'led_by' => static::$adminUser,
+                'led_by' => $team->ledBy,
             ]);
         $responseOriginalContent = $response->getOriginalContent();
         static::assertCount(2, $responseOriginalContent);
         static::assertCount(2, $responseOriginalContent['errors']);
         $response->assertJsonPath('message', 'The given data was invalid.');
-        $response->assertJsonPath('errors.discord_role_id.0', 'The discord role id must be a number.');
-        $response->assertJsonPath('errors.led_by.0', 'The led by must be a number.');
+        $response->assertJsonPath('errors.discord_role_id.0', 'Discord Role-ID needs to be a numeric value.');
+        $response->assertJsonPath('errors.led_by.0', 'Team Leader needs to be a numeric value.');
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
 
         # Case 4: Invalid discord_role_id
-        $tierOneMember = $this->stubCustomMemberUserWithCustomCharacters(1);
+        $tierOneMember = $this->stubCustomUserWithCustomCharacters('member', 1, RoleTypes::ROLE_MAGICKA_DD, ClassTypes::CLASS_SORCERER);
         $response = $this
-            ->actingAs(static::$adminUser)
-            ->postJson('/api/teams', [
+            ->actingAs($team->ledBy, 'api')
+            ->putJson(sprintf('/api/teams/%d', $team->id), [
                 'name' => 'Team',
                 'tier' => 4,
                 'discord_role_id' => '491244517589254446',
@@ -210,10 +214,10 @@ class TeamsControllerTest extends IlluminateTestCase
         $response->assertJsonPath('errors.discord_role_id.0', 'Discord Role-ID isn\'t valid.');
 
         # Case 5: Non-eligible team leader
-        $tierOneMember = $this->stubCustomMemberUserWithCustomCharacters(1);
+        $tierOneMember = $this->stubCustomUserWithCustomCharacters('member', 1, RoleTypes::ROLE_MAGICKA_DD, ClassTypes::CLASS_SORCERER);
         $response = $this
-            ->actingAs(static::$adminUser)
-            ->postJson('/api/teams', [
+            ->actingAs($team->ledBy, 'api')
+            ->putJson(sprintf('/api/teams/%d', $team->id), [
                 'name' => 'Team',
                 'tier' => 4,
                 'discord_role_id' => '499973058401140737',
@@ -228,12 +232,12 @@ class TeamsControllerTest extends IlluminateTestCase
 
         # Case 6: Non-admin trying to edit someone else's team
         $response = $this
-            ->actingAs($tierOneMember)
-            ->postJson('/api/teams', [
+            ->actingAs($tierOneMember, 'api')
+            ->putJson(sprintf('/api/teams/%d', $team->id), [
                 'name' => 'Team',
                 'tier' => 4,
                 'discord_role_id' => '499973058401140737',
-                'led_by' => static::$adminUser->id,
+                'led_by' => $team->createdBy->id,
             ]);
         $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
 
@@ -242,20 +246,25 @@ class TeamsControllerTest extends IlluminateTestCase
 
     /**
      * @depends testStoreForSuccess
+     *
+     * @param \App\Models\Team $team
+     *
+     * @return \App\Models\Team
      */
-    public function testUpdateForSuccess(): void
+    public function testUpdateForSuccess(Team $team): Team
     {
         Event::fake([TeamUpdated::class]);
 
-        # Case 1: Non-admin updating their own team
+        $tierFourMemberUser = $this->stubCustomUserWithCustomCharacters('member', 4, RoleTypes::ROLE_MAGICKA_DD, ClassTypes::CLASS_SORCERER);
+
+        # Case 1: Team leader their own team
         $response = $this
-            ->actingAs(static::$tierFourMemberUser)
-            ->withoutMiddleware()
-            ->putJson('/api/teams/1', [
+            ->actingAs($team->ledBy, 'api')
+            ->putJson(sprintf('/api/teams/%d', $team->id), [
                 'name' => 'Core 2',
                 'tier' => 4,
                 'discord_role_id' => '499973058401140737',
-                'led_by' => static::$tierFourMemberUser->id,
+                'led_by' => $tierFourMemberUser->id,
             ]);
         $response->assertStatus(JsonResponse::HTTP_OK);
         /** @var \App\Models\Team $responseOriginalContent */
@@ -266,13 +275,12 @@ class TeamsControllerTest extends IlluminateTestCase
 
         # Case 2: Admin updating someone else's team
         $response = $this
-            ->actingAs(static::$adminUser)
-            ->withoutMiddleware()
-            ->putJson('/api/teams/1', [
+            ->actingAs($team->createdBy, 'api')
+            ->putJson(sprintf('/api/teams/%d', $team->id), [
                 'name' => 'Core 3',
                 'tier' => 4,
                 'discord_role_id' => '499973058401140737',
-                'led_by' => static::$tierFourMemberUser->id,
+                'led_by' => $tierFourMemberUser->id,
             ]);
         $response->assertStatus(JsonResponse::HTTP_OK);
         /** @var \App\Models\Team $responseOriginalContent */
@@ -282,42 +290,54 @@ class TeamsControllerTest extends IlluminateTestCase
         static::assertEquals('Core 3', $responseOriginalContent->name);
 
         Event::assertDispatched(TeamUpdated::class);
+
+        return $responseOriginalContent;
     }
 
-    public function testDestroyForFailure(): void
+    /**
+     * @depends testUpdateForSuccess
+     *
+     * @param \App\Models\Team $team
+     */
+    public function testDestroyForFailure(Team $team): void
     {
         Event::fake([TeamDeleted::class]);
 
-        $this->stubSoulshrivenUser();
+        $soulshrivenUser = $this->stubCustomUserWithCustomCharacters('soulshriven');
 
-        # Case 1: No authentication
+        # Case: No authentication
+        $response = $this->deleteJson(sprintf('/api/teams/%d', $team->id));
+        $response->assertStatus(JsonResponse::HTTP_UNAUTHORIZED);
+
+        # Case: No authorization - Team leader trying to delete their team
         $response = $this
-            ->withoutMiddleware()
-            ->deleteJson('/api/teams/1');
+            ->actingAs($team->ledBy, 'api')
+            ->deleteJson(sprintf('/api/teams/%d', $team->id));
         $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
 
-        # Case 2: User trying to delete someone else's team
+        Event::assertNotDispatched(TeamDeleted::class);
+
+        # Case: No authorization - User trying to delete someone else's team
         $response = $this
-            ->actingAs(static::$soulshriven)
-            ->withoutMiddleware()
-            ->deleteJson('/api/teams/1');
-        $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
+            ->actingAs($soulshrivenUser, 'api')
+            ->deleteJson(sprintf('/api/teams/%d', $team->id));
+        $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
 
         Event::assertNotDispatched(TeamDeleted::class);
     }
 
     /**
      * @depends testUpdateForSuccess
+     *
+     * @param \App\Models\Team $team
      */
-    public function testDestroyForSuccess(): void
+    public function testDestroyForSuccess(Team $team): void
     {
         Event::fake([TeamDeleted::class]);
-        $this->stubTierFourMemberUser();
 
         $response = $this
-            ->actingAs(static::$tierFourMemberUser)
-            ->withoutMiddleware()
-            ->deleteJson('/api/teams/1');
+            ->actingAs($team->createdBy, 'api')
+            ->deleteJson(sprintf('/api/teams/%d', $team->id));
         $response->assertStatus(JsonResponse::HTTP_NO_CONTENT);
         $responseOriginalContent = $response->getOriginalContent();
         static::assertEmpty($responseOriginalContent);

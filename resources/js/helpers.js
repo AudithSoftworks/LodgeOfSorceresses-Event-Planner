@@ -1,15 +1,19 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-export const authorizeUser = function (withAdditionalPrechecks = false) {
+export const authorizeUser = function(withAdditionalPrechecks = false) {
     const { me } = this.props;
 
     if (!me) {
         return false;
     }
 
-    if (withAdditionalPrechecks && (!me.name || !me.name.length)) {
-        return false;
+    if (withAdditionalPrechecks) {
+        if (!me.name || !me.name.length) {
+            return false;
+        } else if (me.isMember ? !me.linkedAccountsParsed.ips : false) {
+            return false;
+        }
     }
 
     return me.isMember || me.isSoulshriven;
@@ -30,11 +34,11 @@ export const renderActionList = actionList => {
     return actionListRendered;
 };
 
-export const deleteMyCharacter = function (event) {
+export const deleteMyCharacter = function(event) {
     event.preventDefault();
-    if (confirm("Are you sure you want to delete this character?")) {
+    if (confirm('Are you sure you want to delete this character?')) {
         const currentTarget = event.currentTarget;
-        const characterId = parseInt(currentTarget.getAttribute("data-id"));
+        const characterId = parseInt(currentTarget.getAttribute('data-id'));
         if (characterId) {
             const { deleteMyCharacterAction } = this.props;
             deleteMyCharacterAction(characterId);
@@ -42,11 +46,11 @@ export const deleteMyCharacter = function (event) {
     }
 };
 
-export const deleteTeam = function (event) {
+export const deleteTeam = function(event) {
     event.preventDefault();
-    if (confirm("Are you sure you want to delete this team?")) {
+    if (confirm('Are you sure you want to delete this team?')) {
         const currentTarget = event.currentTarget;
-        const teamId = parseInt(currentTarget.getAttribute("data-id"));
+        const teamId = parseInt(currentTarget.getAttribute('data-id'));
         if (teamId) {
             const { deleteTeamAction } = this.props;
             deleteTeamAction(teamId);
@@ -54,23 +58,23 @@ export const deleteTeam = function (event) {
     }
 };
 
-export const rerankCharacter = function (event) {
+export const rerankCharacter = function(event) {
     event.preventDefault();
-    if (confirm("Are you sure you want to **Rerank** this Character?")) {
+    if (confirm('Are you sure you want to **Rerank** this Character?')) {
         const currentTarget = event.currentTarget;
-        const characterId = parseInt(currentTarget.getAttribute("data-id"));
-        const action = currentTarget.getAttribute("data-action");
+        const characterId = parseInt(currentTarget.getAttribute('data-id'));
+        const action = currentTarget.getAttribute('data-action');
         const { putCharacterAction } = this.props;
         putCharacterAction(characterId, { action });
     }
 };
 
-export const filter = function (event, typeUpdating) {
+export const filter = function(event, typeUpdating) {
     const temp = Object.assign({}, this.state.filters);
     for (const [type, value] of Object.entries(temp)) {
         if (type === typeUpdating) {
             temp[type] = !value;
-            event.currentTarget.classList.toggle("inactive");
+            event.currentTarget.classList.toggle('inactive');
         } else {
             temp[type] = value;
         }
@@ -80,15 +84,15 @@ export const filter = function (event, typeUpdating) {
     });
 };
 
-export const transformAnchors = function (node, children) {
-    if (node.tagName.toLowerCase() === "a") {
-        const styleStr = node.getAttribute("style");
+export const transformAnchors = function(node, children) {
+    if (node.tagName.toLowerCase() === 'a') {
+        const styleStr = node.getAttribute('style');
         const styleObj = {};
         if (styleStr !== null && styleStr.length) {
-            const styles = styleStr.split(";");
+            const styles = styleStr.split(';');
             let i = styles.length;
             while (i--) {
-                let styleKeyValues = styles[i].split(":");
+                const styleKeyValues = styles[i].split(':');
                 const k = styleKeyValues[0];
                 const v = styleKeyValues[1];
                 if (k.length && v.length) {
@@ -97,13 +101,13 @@ export const transformAnchors = function (node, children) {
             }
         }
 
-        const target = node.getAttribute("href").match(/^https?:/) ? '_blank' : null;
+        const target = node.getAttribute('href').match(/^https?:/) ? '_blank' : null;
         if (!target) {
-            return <Link to={node.getAttribute("href")} className={node.className} style={styleObj}>{children}</Link>
+            return <Link to={node.getAttribute('href')} className={node.className} style={styleObj}>{children}</Link>;
         }
 
         return (
-            <a href={node.getAttribute("href")} className={node.className} style={styleObj} target={target} rel="noreferrer noopener">
+            <a href={node.getAttribute('href')} className={node.className} style={styleObj} target={target} rel="noreferrer noopener">
                 {children}
             </a>
         );

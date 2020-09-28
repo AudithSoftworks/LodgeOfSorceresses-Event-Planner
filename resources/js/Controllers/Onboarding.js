@@ -1,24 +1,24 @@
-import(/* webpackPrefetch: true, webpackChunkName: "header-scss" */ "../../sass/_cms.scss");
+import(/* webpackPrefetch: true, webpackChunkName: "header-scss" */ '../../sass/_cms.scss');
 
-import { Markup } from "interweave";
-import PropTypes from "prop-types";
-import React, { PureComponent } from "react";
-import { connect } from "react-redux";
-import { Redirect } from "react-router-dom";
-import finalizeOnboardingAction from "../actions/finalize-onboarding";
-import deleteUserAction from "../actions/delete-user";
-import { errorsAction } from "../actions/notifications";
-import Loading from "../Components/Loading";
-import { authorizeUser, transformAnchors } from "../helpers";
-import { getOnboardingContentByStep } from "../vendor/api";
-import axios from "../vendor/axios";
-import { user } from "../vendor/data";
-import Notification from "../Components/Notification";
+import { Markup } from 'interweave';
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
+import finalizeOnboardingAction from '../actions/finalize-onboarding';
+import deleteUserAction from '../actions/delete-user';
+import { errorsAction } from '../actions/notifications';
+import Loading from '../Components/Loading';
+import { authorizeUser, transformAnchors } from '../helpers';
+import { getOnboardingContentByStep } from '../vendor/api';
+import axios from '../vendor/axios';
+import { user } from '../vendor/data';
+import Notification from '../Components/Notification';
 
 class Onboarding extends PureComponent {
     mapOfSteps = {
-        members: ["Guild Introduction", "General Guild Requirements", "Tier-based Content Clearance Model", "Endgame Attendance Guidelines for Raid Cores (optional reading)"],
-        soulshriven: ["Tier-based Content Clearance Model", "What is Open Initiative?", "Open-Events Organization Guidelines (optional reading)"],
+        members: ['Guild Introduction', 'General Guild Requirements', 'Tier-based Content Clearance Model', 'Endgame Attendance Guidelines for Raid Cores (optional reading)'],
+        soulshriven: ['Tier-based Content Clearance Model', 'What is Open Initiative?', 'Open-Events Organization Guidelines (optional reading)'],
     };
 
     constructor(props) {
@@ -35,12 +35,12 @@ class Onboarding extends PureComponent {
     };
 
     componentWillUnmount = () => {
-        this.cancelTokenSource && this.cancelTokenSource.cancel("Request cancelled.");
+        this.cancelTokenSource && this.cancelTokenSource.cancel('Request cancelled.');
     };
 
     UNSAFE_componentWillUpdate = nextProps => {
         if (this.props.me !== nextProps.me) {
-            return this.props.history.push("/");
+            return this.props.history.push('/');
         }
     };
 
@@ -70,9 +70,9 @@ class Onboarding extends PureComponent {
     deleteUserHandler = () => {
         if (
             confirm(
-                "Are you sure you want to cancel your application and delete your account from our records?" +
-                    "\n\nThis is *irreversible*!" +
-                    '\n\nIf yes, please don\'t forget to revoke the authorization granted to "Lodge of Sorceresses" in User Settings > Authorized Apps on Discord.'
+                'Are you sure you want to cancel your application and delete your account from our records?'
+                + '\n\nThis is *irreversible*!'
+                + '\n\nIf yes, please don\'t forget to revoke the authorization granted to "Lodge of Sorceresses" in User Settings > Authorized Apps on Discord.',
             )
         ) {
             const { deleteUserAction } = this.props;
@@ -83,11 +83,11 @@ class Onboarding extends PureComponent {
     render = () => {
         const { history, match, me, location } = this.props;
         const mode = match.params.mode;
-        if (!me || (mode !== "members" && mode !== "soulshriven")) {
-            return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
+        if (!me || (mode !== 'members' && mode !== 'soulshriven')) {
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
-        if (this.authorizeUser() && ((me.isMember && mode === "members") || (me.isSoulshriven && mode === "soulshriven"))) {
-            return <Redirect to={{ pathname: "/home", state: { prevPath: location.pathname } }} />;
+        if (this.authorizeUser() && ((me.isMember && mode === 'members') || (me.isSoulshriven && mode === 'soulshriven'))) {
+            return <Redirect to={{ pathname: '/home', state: { prevPath: location.pathname } }} />;
         }
 
         const contentHeadings = this.getHeadingsOfSteps(mode);
@@ -101,13 +101,13 @@ class Onboarding extends PureComponent {
         const currentData = data.shift();
 
         return [
-            <h2 className={"col-md-24" + (step === numberOfSteps + 1 ? " mt-5 mb-5 text-center" : "")} key="title">
-                {step < numberOfSteps + 1 ? "Step " + step + "/" + numberOfSteps + ": " + contentHeadings[step - 1] : "Joining the Guild as a " + (mode === "members" ? "Member" : "Soulshriven")}
+            <h2 className={'col-md-24' + (step === numberOfSteps + 1 ? ' mt-5 mb-5 text-center' : '')} key="title">
+                {step < numberOfSteps + 1 ? 'Step ' + step + '/' + numberOfSteps + ': ' + contentHeadings[step - 1] : 'Joining the Guild as a ' + (mode === 'members' ? 'Member' : 'Soulshriven')}
             </h2>,
             <article className="col-24 cms-content" key="article">
                 {step < numberOfSteps + 1 ? (
-                    <Markup content={currentData["content"]} noWrap={true} transform={transformAnchors} key="content" />
-                ) : mode === "members" ? (
+                    <Markup content={currentData['content']} noWrap={true} transform={transformAnchors} key="content" />
+                ) : mode === 'members' ? (
                     <article className="text-center pt-5 mb-5">
                         <p>I have read all the material provided and understood what guild membership entails.</p>
                         <p>I want to join Lodge as a Member!</p>
@@ -127,7 +127,7 @@ class Onboarding extends PureComponent {
                     Cancel the application & DELETE my account!
                 </button>
                 <button type="button" onClick={step < numberOfSteps + 1 ? () => this.setState({ step: step + 1 }) : () => this.finalizeOnboardingHandler(mode)} className="btn btn-success btn-lg ml-5">
-                    {step < numberOfSteps + 1 ? "Continue" : "Accept & Join"}
+                    {step < numberOfSteps + 1 ? 'Continue' : 'Accept & Join'}
                 </button>
             </span>,
             <Notification key="notification" />,
@@ -150,8 +150,8 @@ Onboarding.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    me: state.getIn(["me"]),
-    notifications: state.getIn(["notifications"]),
+    me: state.getIn(['me']),
+    notifications: state.getIn(['notifications']),
 });
 
 const mapDispatchToProps = dispatch => ({

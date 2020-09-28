@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Events\DpsParse\DpsParseDeleted;
+use App\Events\DpsParse\DpsParseSubmitted;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -68,6 +70,14 @@ class DpsParse extends Model
      * {@inheritdoc}
      */
     protected $dates = ['deleted_at'];
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $dispatchesEvents = [
+        'created' => DpsParseSubmitted::class,
+        'deleted' => DpsParseDeleted::class,
+    ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

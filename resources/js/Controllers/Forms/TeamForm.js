@@ -1,24 +1,24 @@
-import PropTypes from "prop-types";
-import React, { PureComponent } from "react";
-import { connect } from "react-redux";
-import { Link, Redirect } from "react-router-dom";
-import Select from "react-select";
-import makeAnimated from "react-select/animated";
-import { errorsAction } from "../../actions/notifications";
-import postTeamAction from "../../actions/post-team";
-import putTeamAction from "../../actions/put-team";
-import Loading from "../../Components/Loading";
-import Notification from "../../Components/Notification";
-import { getAllUsers } from "../../vendor/api";
-import axios from "../../vendor/axios";
-import { teams } from "../../vendor/data";
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+import { connect } from 'react-redux';
+import { Link, Redirect } from 'react-router-dom';
+import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
+import { errorsAction } from '../../actions/notifications';
+import postTeamAction from '../../actions/post-team';
+import putTeamAction from '../../actions/put-team';
+import Loading from '../../Components/Loading';
+import Notification from '../../Components/Notification';
+import { getAllUsers } from '../../vendor/api';
+import axios from '../../vendor/axios';
+import { teams } from '../../vendor/data';
 
 class TeamForm extends PureComponent {
     tierOptions = [
-        { value: 1, label: "Tier-1" },
-        { value: 2, label: "Tier-2" },
-        { value: 3, label: "Tier-3" },
-        { value: 4, label: "Tier-4" },
+        { value: 1, label: 'Tier-1' },
+        { value: 2, label: 'Tier-2' },
+        { value: 3, label: 'Tier-3' },
+        { value: 4, label: 'Tier-4' },
     ];
 
     constructor(props) {
@@ -50,18 +50,18 @@ class TeamForm extends PureComponent {
     };
 
     componentWillUnmount = () => {
-        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel("Request cancelled.");
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
     };
 
     UNSAFE_componentWillUpdate = nextProps => {
         // We had a change in Teams data: Redirect!
         if (nextProps.teams.length !== this.props.teams.length) {
-            return this.props.history.push("/teams");
+            return this.props.history.push('/teams');
         }
         const { match } = this.props;
         if (match.params && match.params.id) {
             if (this.props.teams !== nextProps.teams) {
-                return this.props.history.push("/teams");
+                return this.props.history.push('/teams');
             }
         }
     };
@@ -92,8 +92,8 @@ class TeamForm extends PureComponent {
         const { match } = this.props;
         const { users } = this.state;
 
-        const userOptions = Object.values(users.entities["user"]).map(item => ({ value: item.id, label: item.name }));
-        const heading = (match.params.id ? "Edit" : "Create") + " Team";
+        const userOptions = Object.values(users.entities['user']).map(item => ({ value: item.id, label: item.name }));
+        const heading = (match.params.id ? 'Edit' : 'Create') + ' Team';
         const animated = makeAnimated();
 
         return (
@@ -101,10 +101,10 @@ class TeamForm extends PureComponent {
                 <h2 className="form-title col-md-24" title={heading}>
                     {heading}
                 </h2>
-                <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute("content")} />
+                <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')} />
                 <fieldset className="form-group col-md-10 col-xl-12">
                     <label htmlFor="characterName">Team Name:</label>
-                    <input type="text" name="name" id="teamName" className="form-control form-control-sm" placeholder="Enter..." defaultValue={team ? team.name : ""} autoComplete="off" required />
+                    <input type="text" name="name" id="teamName" className="form-control form-control-sm" placeholder="Enter..." defaultValue={team ? team.name : ''} autoComplete="off" required />
                 </fieldset>
                 <fieldset className="form-group col-md-6 col-xl-3">
                     <label>Content Tier:</label>
@@ -128,7 +128,7 @@ class TeamForm extends PureComponent {
                         id="discordRoleId"
                         className="form-control form-control-sm"
                         placeholder="Discord Role Id"
-                        defaultValue={team ? team.discord_role_id : ""}
+                        defaultValue={team ? team.discord_role_id : ''}
                         autoComplete="off"
                         required
                     />
@@ -141,7 +141,7 @@ class TeamForm extends PureComponent {
                         id="discordLobbyChannelId"
                         className="form-control form-control-sm"
                         placeholder="Discord Lobby Channel Id"
-                        defaultValue={team ? team.discord_lobby_channel_id : ""}
+                        defaultValue={team ? team.discord_lobby_channel_id : ''}
                         autoComplete="off"
                     />
                 </fieldset>
@@ -153,7 +153,7 @@ class TeamForm extends PureComponent {
                         id="discordRantChannelId"
                         className="form-control form-control-sm"
                         placeholder="Discord Rant Channel Id"
-                        defaultValue={team ? team.discord_rant_channel_id : ""}
+                        defaultValue={team ? team.discord_rant_channel_id : ''}
                         autoComplete="off"
                     />
                 </fieldset>
@@ -172,7 +172,7 @@ class TeamForm extends PureComponent {
     render = () => {
         const { teams, location } = this.props;
         if (!teams) {
-            return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
         const { users } = this.state;
         if (!users) {
@@ -200,9 +200,9 @@ TeamForm.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
-    teams: state.getIn(["teams"]),
-    notifications: state.getIn(["notifications"]),
+    axiosCancelTokenSource: state.getIn(['axiosCancelTokenSource']),
+    teams: state.getIn(['teams']),
+    notifications: state.getIn(['notifications']),
 });
 
 const mapDispatchToProps = dispatch => ({

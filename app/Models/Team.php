@@ -46,8 +46,9 @@ class Team extends Model
 {
     use HasFactory;
 
-    protected $table = 'teams';
-
+    /**
+     * {@inheritdoc}
+     */
     protected $dispatchesEvents = [
         'deleted' => TeamDeleted::class,
         'updated' => TeamUpdated::class,

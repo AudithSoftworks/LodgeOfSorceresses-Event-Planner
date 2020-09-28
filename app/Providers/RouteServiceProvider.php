@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @noinspection PhpUnusedParameterInspection
+ * @todo Remove this when upgrading to PHP-8, where we can have argument types without arguments
+ */
+
 namespace App\Providers;
 
 use Illuminate\Cache\RateLimiting\Limit;
@@ -10,7 +15,6 @@ use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
-
     /**
      * The path to the "home" route for your application.
      * This is used by Laravel authentication to redirect users after login.

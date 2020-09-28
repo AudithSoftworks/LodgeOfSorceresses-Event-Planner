@@ -1,15 +1,15 @@
-import PropTypes from "prop-types";
-import React, { PureComponent } from "react";
-import { connect } from "react-redux";
-import { Redirect } from "react-router-dom";
-import deleteMyCharacterAction from "../actions/delete-my-character";
-import putCharacterAction from "../actions/put-character";
-import viewCharacterAction from "../actions/view-character";
-import Character from "../Components/Characters/Item";
-import Loading from "../Components/Loading";
-import Notification from "../Components/Notification";
-import { authorizeUser, deleteMyCharacter, rerankCharacter } from "../helpers";
-import { character, user } from "../vendor/data";
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
+import deleteMyCharacterAction from '../actions/delete-my-character';
+import putCharacterAction from '../actions/put-character';
+import viewCharacterAction from '../actions/view-character';
+import Character from '../Components/Characters/Item';
+import Loading from '../Components/Loading';
+import Notification from '../Components/Notification';
+import { authorizeUser, deleteMyCharacter, rerankCharacter } from '../helpers';
+import { character, user } from '../vendor/data';
 
 class Characters extends PureComponent {
     constructor(props) {
@@ -20,12 +20,12 @@ class Characters extends PureComponent {
     }
 
     componentWillUnmount = () => {
-        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel("Request cancelled.");
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
     };
 
     componentDidMount = () => {
         const { character, me, match } = this.props;
-        let characterIdParam = me && match.params.id ? parseInt(match.params.id) : null;
+        const characterIdParam = me && match.params.id ? parseInt(match.params.id) : null;
         if (characterIdParam && (!Object.keys(character).length || character.id !== characterIdParam)) {
             this.props.viewCharacterAction(characterIdParam);
         }
@@ -34,7 +34,7 @@ class Characters extends PureComponent {
     render = () => {
         const { me, character, location, match } = this.props;
         if (!me) {
-            return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
 
         if (!this.authorizeUser(true) || !match.params.id) {
@@ -76,10 +76,10 @@ Characters.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
-    me: state.getIn(["me"]),
-    character: state.getIn(["selectedCharacter"]),
-    notifications: state.getIn(["notifications"]),
+    axiosCancelTokenSource: state.getIn(['axiosCancelTokenSource']),
+    me: state.getIn(['me']),
+    character: state.getIn(['selectedCharacter']),
+    notifications: state.getIn(['notifications']),
 });
 
 const mapDispatchToProps = dispatch => ({

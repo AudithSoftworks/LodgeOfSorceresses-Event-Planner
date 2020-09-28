@@ -1,15 +1,15 @@
-import { noAttendances } from "../../../fixtures/xhr-operations/attendances/no-attendances";
-import { content } from "../../../fixtures/xhr-operations/content";
-import { sets } from "../../../fixtures/xhr-operations/sets";
-import { skills } from "../../../fixtures/xhr-operations/skills";
-import { teams } from "../../../fixtures/xhr-operations/teams";
-import { users } from "../../../fixtures/xhr-operations/users";
-import { stubFetchingUserHeiims } from "../../../fixtures/xhr-operations/users/6/member";
-import { noCharacters } from "../../../fixtures/xhr-operations/users/@me/characters/no-characters";
-import { stubSoulshrivenWithNoForumOauth } from "../../../fixtures/xhr-operations/users/@me/soulshriven";
+import { noAttendances } from '../../../fixtures/xhr-operations/attendances/no-attendances';
+import { content } from '../../../fixtures/xhr-operations/content';
+import { sets } from '../../../fixtures/xhr-operations/sets';
+import { skills } from '../../../fixtures/xhr-operations/skills';
+import { teams } from '../../../fixtures/xhr-operations/teams';
+import { users } from '../../../fixtures/xhr-operations/users';
+import { stubFetchingUserHeiims } from '../../../fixtures/xhr-operations/users/6/member';
+import { noCharacters } from '../../../fixtures/xhr-operations/users/@me/characters/no-characters';
+import { stubSoulshrivenWithNoForumOauth } from '../../../fixtures/xhr-operations/users/@me/soulshriven';
 
-describe('Roster Screen for Soulshriven user', function () {
-    it('visits Roster page', function () {
+describe('Roster Screen for Soulshriven user', function() {
+    it('visits Roster page', function() {
         cy.server();
         stubSoulshrivenWithNoForumOauth(cy);
         sets(cy);
@@ -21,7 +21,7 @@ describe('Roster Screen for Soulshriven user', function () {
 
         cy.visit('/');
         cy.get('h2[data-cy="loading"]').contains('Checking session...');
-        cy.wait('@loadSoulshrivenWithNoForumOauth')
+        cy.wait('@loadSoulshrivenWithNoForumOauth');
 
         cy.wait(['@loadCharacters', '@loadSets', '@loadSkills', '@loadContent', '@loadTeams']);
         cy.url().should('eq', 'http://planner.lodgeofsorceresses.test/@me');

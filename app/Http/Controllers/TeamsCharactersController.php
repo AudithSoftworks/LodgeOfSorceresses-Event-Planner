@@ -1,22 +1,25 @@
 <?php
 
+/**
+ * @noinspection PhpUnusedParameterInspection
+ * @todo         Remove this when upgrading to PHP-8, where we can have argument types without arguments
+ */
+
 namespace App\Http\Controllers;
 
 use App\Events\Team\MemberInvited;
 use App\Events\Team\MemberJoined;
 use App\Events\Team\MemberRemoved;
 use App\Events\Team\TeamUpdated;
+use App\Http\Requests\TeamsCharactersRequests;
 use App\Models\Character;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
 
 class TeamsCharactersController extends Controller
 {
@@ -25,8 +28,8 @@ class TeamsCharactersController extends Controller
      *
      * @param int $teamId
      *
-     * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(int $teamId): JsonResponse
     {
@@ -49,35 +52,15 @@ class TeamsCharactersController extends Controller
     /**
      * Endpoint to invite a team member.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param int                      $teamId
+     * @param \App\Http\Requests\TeamsCharactersRequests $request
+     * @param \App\Models\Team $team
      *
-     * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
-     * @throws \Illuminate\Validation\ValidationException
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request, int $teamId): JsonResponse
+    public function store(TeamsCharactersRequests $request, Team $team): JsonResponse
     {
-        $this->authorize('user', User::class);
-
-        $validator = Validator::make($request->all(), [
-            'characterIds' => 'required|array',
-            'characterIds.*' => 'required|numeric|exists:characters,id',
-        ], [
-            'characterIds.required' => 'Select the character(s) to be added to the team.',
-            'characterIds.*.exists' => 'No such characters exist.',
-        ]);
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
-
         $myId = Auth::id();
-        Cache::has('team-' . $teamId); // Recache trigger.
-        /** @var Team $team */
-        $team = Cache::get('team-' . $teamId);
-        if (!$team) {
-            return response()->json(['message' => 'Team not found!'])->setStatusCode(JsonResponse::HTTP_NOT_FOUND);
-        }
         if ($team->led_by !== $myId && $team->created_by !== $myId) {
             throw new AuthorizationException('Only team leader or creator can invite new members!');
         }
@@ -110,31 +93,16 @@ class TeamsCharactersController extends Controller
     /**
      * Endpoint to show a team membership record.
      *
-     * @param int $teamId
-     * @param int $characterId
+     * @param \App\Http\Requests\TeamsCharactersRequests $request
+     * @param \App\Models\Team $team
+     * @param \App\Models\Character $character
      *
      * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function show(int $teamId, int $characterId): JsonResponse
+    public function show(TeamsCharactersRequests $request, Team $team, Character $character): JsonResponse
     {
-        $this->authorize('user', User::class);
-
-        Cache::has('team-' . $teamId); // Trigger Recache listener.
-        /** @var \App\Models\Team $team */
-        $team = Cache::get('team-' . $teamId);
-        if (!$team) {
-            return response()->json(['message' => 'Team not found!'])->setStatusCode(JsonResponse::HTTP_NOT_FOUND);
-        }
-        $teamMembersFiltered = $team->members->filter(static function (Character $character) use ($characterId) {
-            return $character->id === $characterId;
-        });
-        if (!$teamMembersFiltered->count()) {
-            return response()->json(['message' => 'Team has no such member!'])->setStatusCode(JsonResponse::HTTP_NOT_FOUND);
-        }
-
         /** @var \Illuminate\Database\Eloquent\Relations\Pivot $pivot */
-        $pivot = $teamMembersFiltered->first()->teamMembership;
+        $pivot = $character->teams->first()->teamMembership;
 
         return response()->json($pivot, JsonResponse::HTTP_OK);
     }
@@ -142,51 +110,22 @@ class TeamsCharactersController extends Controller
     /**
      * Endpoint for team member to update their membership record.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param int                      $teamId
-     * @param int                      $characterId
+     * @param \App\Http\Requests\TeamsCharactersRequests $request
+     * @param \App\Models\Team $team
+     * @param \App\Models\Character $character
      *
-     * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
-     * @throws \Illuminate\Validation\ValidationException
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, int $teamId, int $characterId): JsonResponse
+    public function update(TeamsCharactersRequests $request, Team $team, Character $character): JsonResponse
     {
-        $this->authorize('user', User::class);
-
-        $validator = Validator::make($request->all(), [
-            'accepted_terms' => 'required|accepted',
-        ], [
-            'accepted_terms.accepted' => 'Please make sure you accept the terms of membership.',
-        ]);
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
-
-        Cache::has('team-' . $teamId); // Recache trigger.
-        /** @var Team $team */
-        $team = Cache::get('team-' . $teamId);
-        if (!$team) {
-            return response()->json(['message' => 'Team not found!'])->setStatusCode(JsonResponse::HTTP_NOT_FOUND);
-        }
-        $teamMembersFiltered = $team->members->filter(static function (Character $character) use ($characterId) {
-            return $character->id === $characterId;
-        });
-        if (!$teamMembersFiltered->count()) {
-            return response()->json(['message' => 'Team has no such member!'])->setStatusCode(JsonResponse::HTTP_NOT_FOUND);
-        }
-
-        /** @var Character $character */
-        $character = $teamMembersFiltered->first();
         $character->loadMissing('owner');
-        $myId = Auth::id();
-        if ($character->owner->id !== $myId) {
-            throw new AuthorizationException('You can\'t manage someone else\'s team membership options!');
+        if ($character->owner->id !== Auth::id()) {
+            throw new AuthorizationException('This team invitation doesn\'t belong to you!');
         }
 
         /** @var \Illuminate\Database\Eloquent\Relations\Pivot $pivot */
-        /** @noinspection PhpUndefinedFieldInspection */
-        $pivot = $character->teamMembership;
+        $pivot = $character->teams->first()->teamMembership;
         /** @noinspection PhpUndefinedFieldInspection */
         $pivot->status = $pivot->accepted_terms = true;
         $pivot->save();
@@ -201,40 +140,23 @@ class TeamsCharactersController extends Controller
     /**
      * Endpoint to remove a team member.
      *
-     * @param int $teamId
-     * @param int $characterId
+     * @param \App\Http\Requests\TeamsCharactersRequests $request
+     * @param \App\Models\Team $team
+     * @param \App\Models\Character $character
      *
-     * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(int $teamId, int $characterId): JsonResponse
+    public function destroy(TeamsCharactersRequests $request, Team $team, Character $character): JsonResponse
     {
-        $this->authorize('user', User::class);
-
-        Cache::has('team-' . $teamId); // Recache trigger.
-        /** @var Team $team */
-        $team = Cache::get('team-' . $teamId);
-        if (!$team) {
-            return response()->json(['message' => 'Team not found!'])->setStatusCode(JsonResponse::HTTP_NOT_FOUND);
-        }
-
-        $teamMembersFiltered = $team->members->filter(static function (Character $character) use ($characterId) {
-            return $character->id === $characterId;
-        });
-        if (!$teamMembersFiltered->count()) {
-            return response()->json(['message' => 'Team has no such member!'])->setStatusCode(JsonResponse::HTTP_NOT_FOUND);
-        }
-
         $myId = Auth::id();
-        /** @var Character $character */
-        $character = $teamMembersFiltered->first();
         if ($character->owner->id !== $myId && $team->led_by !== $myId && $team->created_by !== $myId) {
             throw new AuthorizationException('Not allowed to terminate this team membership record! Only the member themselves or the team leader can do that.');
         }
 
-        /** @noinspection PhpUndefinedFieldInspection */
         /** @var \Illuminate\Database\Eloquent\Relations\Pivot $pivot */
-        $pivot = $character->teamMembership;
+        $pivot = $character->teams->first()->teamMembership;
+        /** @noinspection PhpUndefinedFieldInspection */
         $isMemberActive = (bool)$pivot->status;
         $pivot->delete();
 

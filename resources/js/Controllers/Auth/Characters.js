@@ -1,15 +1,15 @@
-import { faTachometerAlt, faUserPlus } from "@fortawesome/pro-light-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import PropTypes from "prop-types";
-import React, { Fragment, PureComponent } from "react";
-import { connect } from "react-redux";
-import { Link, Redirect } from "react-router-dom";
-import deleteMyCharacterAction from "../../actions/delete-my-character";
-import { infosAction } from "../../actions/notifications";
-import List from "../../Components/Characters/List";
-import Notification from "../../Components/Notification";
-import { deleteMyCharacter, renderActionList } from "../../helpers";
-import { characters, user } from "../../vendor/data";
+import { faTachometerAlt, faUserPlus } from '@fortawesome/pro-light-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types';
+import React, { Fragment, PureComponent } from 'react';
+import { connect } from 'react-redux';
+import { Link, Redirect } from 'react-router-dom';
+import deleteMyCharacterAction from '../../actions/delete-my-character';
+import { infosAction } from '../../actions/notifications';
+import List from '../../Components/Characters/List';
+import Notification from '../../Components/Notification';
+import { deleteMyCharacter, renderActionList } from '../../helpers';
+import { characters, user } from '../../vendor/data';
 
 class Characters extends PureComponent {
     constructor(props) {
@@ -18,7 +18,7 @@ class Characters extends PureComponent {
     }
 
     componentWillUnmount() {
-        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel("Request cancelled.");
+        this.props.axiosCancelTokenSource && this.props.axiosCancelTokenSource.cancel('Request cancelled.');
     }
 
     componentDidMount = () => {
@@ -27,24 +27,24 @@ class Characters extends PureComponent {
 
     renderNoCharactersCreateOneNotification = () => {
         const { dispatch, myCharacters, notifications } = this.props;
-        if (myCharacters && !myCharacters.length && notifications.find(n => n.key === "no-characters-create-one") === undefined) {
+        if (myCharacters && !myCharacters.length && notifications.find(n => n.key === 'no-characters-create-one') === undefined) {
             const message = [
-                <Fragment key="f-1">Create a new character, by clicking</Fragment>,
+                <Fragment key="f-1">Create a new character, by clicking </Fragment>,
                 <FontAwesomeIcon icon={faUserPlus} key="icon" />,
-                <Fragment key="f-2">icon on top right corner.</Fragment>,
-            ].reduce((acc, curr) => [acc, " ", curr]);
+                <Fragment key="f-2"> icon on top right corner.</Fragment>,
+            ].reduce((acc, curr) => [...acc, curr], []);
             dispatch(
                 infosAction(
                     message,
                     {
-                        container: "bottom-center",
-                        animationIn: ["animated", "bounceInDown"],
-                        animationOut: ["animated", "bounceOutDown"],
+                        container: 'bottom-center',
+                        animationIn: ['animated', 'bounceInDown'],
+                        animationOut: ['animated', 'bounceOutDown'],
                         dismiss: { duration: 30000 },
                         width: 250,
                     },
-                    "no-characters-create-one"
-                )
+                    'no-characters-create-one',
+                ),
             );
         }
     };
@@ -52,7 +52,7 @@ class Characters extends PureComponent {
     render = () => {
         const { me, location, myCharacters } = this.props;
         if (!myCharacters) {
-            return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
+            return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
         }
 
         const actionList = {
@@ -78,7 +78,7 @@ class Characters extends PureComponent {
                             When creating a Character, select <b>all</b> your available sets.
                         </li>
                         <li>To have different Roles for the same Character, create a new Character with the same name, but a different Role.</li>
-                        <li>Once a Character has an approved Parse, it can only be partially edited (i.e. its name, class and role can't be edited).</li>
+                        <li>Once a Character has an approved Parse, it can only be partially edited (i.e. its name, class and role can&apos;t be edited).</li>
                         <li>Once a Character has a Clearance (Tier-1 and above), it cannot be deleted.</li>
                     </ul>
                 </article>
@@ -105,10 +105,10 @@ Characters.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    axiosCancelTokenSource: state.getIn(["axiosCancelTokenSource"]),
-    me: state.getIn(["me"]),
-    myCharacters: state.getIn(["myCharacters"]),
-    notifications: state.getIn(["notifications"]),
+    axiosCancelTokenSource: state.getIn(['axiosCancelTokenSource']),
+    me: state.getIn(['me']),
+    myCharacters: state.getIn(['myCharacters']),
+    notifications: state.getIn(['notifications']),
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -4,6 +4,6 @@ export const noCharacters = cy => {
         method: 'GET',
         url: '/api/users/@me/characters',
         delay: 4000,
-        response: '@noCharacters'
+        response: '@noCharacters',
     }).as('loadCharacters');
 };

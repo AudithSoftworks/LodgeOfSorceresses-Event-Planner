@@ -3,7 +3,9 @@ env:
   es6: true
   node: true
 extends:
-  - google
+  - 'eslint:recommended'
+  - 'plugin:react/recommended'
+  - 'google'
 globals:
   Atomics: readonly
   SharedArrayBuffer: readonly
@@ -29,12 +31,15 @@ rules:
   object-curly-spacing:
     - error
     - always
-    - objectsInObjects: false
-      arraysInObjects: false
+    - objectsInObjects: true
+      arraysInObjects: true
+  operator-linebreak:
+    - error
+    - before
   quotes:
     - error
     - single
+  require-jsdoc: off
   semi:
     - error
     - always
-

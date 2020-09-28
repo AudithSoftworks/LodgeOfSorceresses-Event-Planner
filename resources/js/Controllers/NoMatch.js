@@ -1,5 +1,5 @@
-import React, { PureComponent } from "react";
-import { Redirect } from "react-router-dom";
+import React, { PureComponent } from 'react';
+import { Redirect } from 'react-router-dom';
 
 class NoMatch extends PureComponent {
     constructor(props) {
@@ -29,7 +29,7 @@ class NoMatch extends PureComponent {
             );
         }
 
-        return <Redirect to={{ pathname: "/", state: { prevPath: location.pathname } }} />;
+        return <Redirect to={{ pathname: '/', state: { prevPath: location.pathname } }} />;
     }
 }
 

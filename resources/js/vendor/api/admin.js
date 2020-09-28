@@ -1,18 +1,17 @@
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faDiscord } from "@fortawesome/free-brands-svg-icons";
-import { normalize } from "normalizr";
-import React from "react";
-import axios from "../axios";
-import * as schema from "../schema";
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faDiscord } from '@fortawesome/free-brands-svg-icons';
+import { normalize } from 'normalizr';
+import axios from '../axios';
+import * as schema from '../schema';
 
 library.add(faDiscord);
 
 export const putCharacter = (cancelToken, characterId, data) =>
     axios
-        .post("/api/admin/characters/" + characterId, data, {
+        .post('/api/admin/characters/' + characterId, data, {
             cancelToken: cancelToken.token,
             headers: {
-                "X-HTTP-Method-Override": "PUT",
+                'X-HTTP-Method-Override': 'PUT',
             },
         })
         .then(response => {
@@ -28,7 +27,7 @@ export const putCharacter = (cancelToken, characterId, data) =>
 
 export const getPendingDpsParses = cancelToken =>
     axios
-        .get("/api/admin/parses", {
+        .get('/api/admin/parses', {
             cancelToken: cancelToken.token,
         })
         .then(response => {
@@ -44,10 +43,10 @@ export const getPendingDpsParses = cancelToken =>
 
 export const updatePendingDpsParse = (cancelToken, parseId) =>
     axios
-        .post("/api/admin/parses/" + parseId, null, {
+        .post('/api/admin/parses/' + parseId, null, {
             cancelToken: cancelToken.token,
             headers: {
-                "X-HTTP-Method-Override": "PUT",
+                'X-HTTP-Method-Override': 'PUT',
             },
         })
         .then(response => response)
@@ -57,7 +56,7 @@ export const updatePendingDpsParse = (cancelToken, parseId) =>
 
 export const deletePendingDpsParse = (cancelToken, parseId, reasonForDisapproval) =>
     axios
-        .delete("/api/admin/parses/" + parseId, {
+        .delete('/api/admin/parses/' + parseId, {
             cancelToken: cancelToken.token,
             data: {
                 reason_for_disapproval: reasonForDisapproval,

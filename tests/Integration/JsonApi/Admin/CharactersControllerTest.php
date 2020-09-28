@@ -4,6 +4,7 @@ namespace App\Tests\Integration\JsonApi\Admin;
 
 use App\Events\Character\CharacterDemoted;
 use App\Events\Character\CharacterPromoted;
+use App\Models\User;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
 use App\Tests\IlluminateTestCase;
@@ -21,19 +22,22 @@ class CharactersControllerTest extends IlluminateTestCase
      */
     protected static bool $setupHasRunOnce = false;
 
+    protected static ?User $adminUser;
+
     public function setUp(): void
     {
         parent::setUp();
         if (!static::$setupHasRunOnce) {
             Artisan::call('migrate:fresh');
             static::$setupHasRunOnce = true;
+
+            static::$adminUser = $this->stubCustomUserWithCustomCharacters('admin', 3, RoleTypes::ROLE_TANK, ClassTypes::CLASS_NECROMANCER);
         }
     }
 
     public function testIndexForFailure(): void
     {
         $response = $this
-            ->withoutMiddleware()
             ->getJson('/api/admin/characters');
         $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
     }
@@ -41,7 +45,6 @@ class CharactersControllerTest extends IlluminateTestCase
     public function testShowForFailure(): void
     {
         $response = $this
-            ->withoutMiddleware()
             ->getJson('/api/admin/characters/1');
         $response->assertStatus(JsonResponse::HTTP_METHOD_NOT_ALLOWED);
     }
@@ -49,7 +52,6 @@ class CharactersControllerTest extends IlluminateTestCase
     public function testStoreForFailure(): void
     {
         $response = $this
-            ->withoutMiddleware()
             ->postJson('/api/admin/characters', []);
         $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
     }
@@ -57,19 +59,12 @@ class CharactersControllerTest extends IlluminateTestCase
     public function testUpdateForFailure(): void
     {
         # Case: No authentication.
-        $response = $this
-            ->withoutMiddleware()
-            ->putJson('/api/admin/characters/1', []);
-        $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
-        $responseOriginalContent = $response->getOriginalContent();
-        static::assertNotNull($responseOriginalContent);
-        $response->assertJsonPath('message', 'This action is unauthorized.');
+        $response = $this->putJson('/api/admin/characters/1', []);
+        $response->assertStatus(JsonResponse::HTTP_UNAUTHORIZED);
 
         # Case: Not found.
-        $this->stubTierFourAdminUser();
         $response = $this
-            ->actingAs(static::$adminUser)
-            ->withoutMiddleware()
+            ->actingAs(static::$adminUser, 'api')
             ->putJson('/api/admin/characters/1000', [
                 'action' => 'promote'
             ]);
@@ -79,10 +74,8 @@ class CharactersControllerTest extends IlluminateTestCase
         $response->assertJsonPath('message', 'Character not found!');
 
         # Case: Self-ranking.
-        $this->stubTierFourAdminUser();
         $response = $this
-            ->actingAs(static::$adminUser)
-            ->withoutMiddleware()
+            ->actingAs(static::$adminUser, 'api')
             ->putJson('/api/admin/characters/' . static::$adminUser->characters->first()->id, [
                 'action' => 'promote'
             ]);
@@ -92,10 +85,9 @@ class CharactersControllerTest extends IlluminateTestCase
         $response->assertJsonPath('message', 'Self-ranking disabled!');
 
         # Case: Attempting to rerank a Damage-Dealer
-        $tierTwoDdUser = $this->stubCustomMemberUserWithCustomCharacters(2);
+        $tierTwoDdUser = $this->stubCustomUserWithCustomCharacters('member', 2, RoleTypes::ROLE_MAGICKA_DD, ClassTypes::CLASS_SORCERER);
         $response = $this
-            ->actingAs(static::$adminUser)
-            ->withoutMiddleware()
+            ->actingAs(static::$adminUser, 'api')
             ->putJson('/api/admin/characters/' . $tierTwoDdUser->characters->first()->id, [
                 'action' => 'promote'
             ]);
@@ -107,10 +99,9 @@ class CharactersControllerTest extends IlluminateTestCase
         $response->assertJsonPath('errors.action.0', 'Damage Dealers can only be ranked via Parse submission!');
 
         # Case: Missing 'action' parameter.
-        $tierTwoHealerUser = $this->stubCustomMemberUserWithCustomCharacters(2, RoleTypes::ROLE_HEALER, ClassTypes::CLASS_TEMPLAR);
+        $tierTwoHealerUser = $this->stubCustomUserWithCustomCharacters('member', 2, RoleTypes::ROLE_HEALER, ClassTypes::CLASS_TEMPLAR);
         $response = $this
-            ->actingAs(static::$adminUser)
-            ->withoutMiddleware()
+            ->actingAs(static::$adminUser, 'api')
             ->putJson('/api/admin/characters/' . $tierTwoHealerUser->characters->first()->id, []);
         $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         $responseOriginalContent = $response->getOriginalContent();
@@ -120,10 +111,9 @@ class CharactersControllerTest extends IlluminateTestCase
         $response->assertJsonPath('errors.action.0', 'Action is required.');
 
         # Case: Missing 'action' parameter.
-        $tierTwoHealerUser = $this->stubCustomMemberUserWithCustomCharacters(2, RoleTypes::ROLE_HEALER, ClassTypes::CLASS_TEMPLAR);
+        $tierTwoHealerUser = $this->stubCustomUserWithCustomCharacters('member', 2, RoleTypes::ROLE_HEALER, ClassTypes::CLASS_TEMPLAR);
         $response = $this
-            ->actingAs(static::$adminUser)
-            ->withoutMiddleware()
+            ->actingAs(static::$adminUser, 'api')
             ->putJson('/api/admin/characters/' . $tierTwoHealerUser->characters->first()->id, [
                 'action' => 'random-value'
             ]);
@@ -139,10 +129,10 @@ class CharactersControllerTest extends IlluminateTestCase
     {
         Event::fake([CharacterPromoted::class, CharacterDemoted::class]);
 
-        $tierTwoTankUser = $this->stubCustomMemberUserWithCustomCharacters(2, RoleTypes::ROLE_TANK, ClassTypes::CLASS_DRAGONKNIGHT);
+        $tierTwoTankUser = $this->stubCustomUserWithCustomCharacters('member', 2, RoleTypes::ROLE_TANK, ClassTypes::CLASS_DRAGONKNIGHT);
+
         $response = $this
-            ->actingAs(static::$adminUser)
-            ->withoutMiddleware()
+            ->actingAs(static::$adminUser, 'api')
             ->putJson('/api/admin/characters/' . $tierTwoTankUser->characters->first()->id, [
                 'action' => 'promote'
             ]);
@@ -161,10 +151,10 @@ class CharactersControllerTest extends IlluminateTestCase
     {
         Event::fake([CharacterPromoted::class, CharacterDemoted::class]);
 
-        $tierTwoHealerUser = $this->stubCustomMemberUserWithCustomCharacters(2, RoleTypes::ROLE_HEALER, ClassTypes::CLASS_TEMPLAR);
+        $tierTwoHealerUser = $this->stubCustomUserWithCustomCharacters('member', 2, RoleTypes::ROLE_HEALER, ClassTypes::CLASS_TEMPLAR);
+
         $response = $this
-            ->actingAs(static::$adminUser)
-            ->withoutMiddleware()
+            ->actingAs(static::$adminUser, 'api')
             ->putJson('/api/admin/characters/' . $tierTwoHealerUser->characters->first()->id, [
                 'action' => 'demote'
             ]);
@@ -181,9 +171,7 @@ class CharactersControllerTest extends IlluminateTestCase
 
     public function testDestroyForFailure(): void
     {
-        $response = $this
-            ->withoutMiddleware()
-            ->deleteJson('/api/admin/characters/1');
+        $response = $this->deleteJson('/api/admin/characters/1');
         $response->assertStatus(JsonResponse::HTTP_METHOD_NOT_ALLOWED);
     }
 }

@@ -1,12 +1,12 @@
-import * as api from "../vendor/api";
+import * as api from '../vendor/api';
 
-export const TYPE_DELETE_TEAM_SEND = "DELETE_TEAM_SEND";
+export const TYPE_DELETE_TEAM_SEND = 'DELETE_TEAM_SEND';
 
-export const TYPE_DELETE_TEAM_SUCCESS = "DELETE_TEAM_SUCCESS";
+export const TYPE_DELETE_TEAM_SUCCESS = 'DELETE_TEAM_SUCCESS';
 
-export const TYPE_DELETE_TEAM_FAILURE = "DELETE_TEAM_FAILURE";
+export const TYPE_DELETE_TEAM_FAILURE = 'DELETE_TEAM_FAILURE';
 
-const RESPONSE_MESSAGE_SUCCESS = "Team deleted.";
+const RESPONSE_MESSAGE_SUCCESS = 'Team deleted.';
 
 const deleteTeamSendAction = teamId => ({
     type: TYPE_DELETE_TEAM_SEND,
@@ -29,7 +29,7 @@ const deleteTeamFailureAction = error => {
 
 const deleteTeamAction = teamId => (dispatch, getState) => {
     dispatch(deleteTeamSendAction(teamId));
-    const axiosCancelTokenSource = getState().getIn(["axiosCancelTokenSource"]);
+    const axiosCancelTokenSource = getState().getIn(['axiosCancelTokenSource']);
     return api
         .deleteTeam(axiosCancelTokenSource, teamId, dispatch)
         .then(response => {

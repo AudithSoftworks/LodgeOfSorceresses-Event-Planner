@@ -4,6 +4,6 @@ export const stubFetchingUserHeiims = cy => {
         method: 'GET',
         url: '/api/users/6',
         delay: 3000,
-        response: '@heiims'
+        response: '@heiims',
     }).as('loadHeiims');
 };

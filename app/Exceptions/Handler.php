@@ -44,14 +44,15 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $e)
     {
         $requestExpectsJson = $request->expectsJson();
-        if ($e instanceof ModelNotFoundException || $e instanceof AuthorizationException) {
-            $statusCode = $e instanceof ModelNotFoundException
-                ? JsonResponse::HTTP_NOT_FOUND
-                : JsonResponse::HTTP_FORBIDDEN;
 
-            return $requestExpectsJson
-                ? response()->json(['message' => $e->getMessage() ?? 'Not found!'], $statusCode)
-                : redirect()->guest(self::LOGOUT_PATH)->withErrors($e->getMessage());
+        if (
+            $requestExpectsJson
+            && $e instanceof ModelNotFoundException
+            && ($model = $e->getModel()) !== null
+            && strpos($model, 'App\\Models\\') !== false
+        ) {
+            $modelType = str_replace('App\\Models\\', '', $model);
+            return response()->json(['message' => sprintf('%s not found!', $modelType)], JsonResponse::HTTP_NOT_FOUND);
         }
 
         if ($e instanceof MaintenanceModeException) {
