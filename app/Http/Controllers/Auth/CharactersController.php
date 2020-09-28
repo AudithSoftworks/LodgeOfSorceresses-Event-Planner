@@ -70,8 +70,8 @@ class CharactersController extends Controller
 
     public function update(CharactersRequests $request, Character $character): JsonResponse
     {
-        if (!$character || $character->owner->id !== Auth::id()) {
-            throw new ModelNotFoundException('Character not found!');
+        if ($character->owner->id !== Auth::id()) {
+            throw (new ModelNotFoundException('Character not found!'))->setModel(Character::class);
         }
 
         $request->filled('name') && $character->name = $request->get('name');
@@ -105,8 +105,8 @@ class CharactersController extends Controller
      */
     public function destroy(CharactersRequests $request, Character $character): JsonResponse
     {
-        if (!$character || $character->approved_for_tier !== 0 || $character->owner->id !== Auth::id()) {
-            throw new ModelNotFoundException('Character not found!');
+        if ($character->approved_for_tier !== 0 || $character->owner->id !== Auth::id()) {
+            throw (new ModelNotFoundException('Character not found!'))->setModel(Character::class);
         }
 
         $character->delete();

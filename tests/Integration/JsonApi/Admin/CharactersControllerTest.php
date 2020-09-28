@@ -4,6 +4,7 @@ namespace App\Tests\Integration\JsonApi\Admin;
 
 use App\Events\Character\CharacterDemoted;
 use App\Events\Character\CharacterPromoted;
+use App\Models\User;
 use App\Singleton\ClassTypes;
 use App\Singleton\RoleTypes;
 use App\Tests\IlluminateTestCase;
@@ -21,12 +22,16 @@ class CharactersControllerTest extends IlluminateTestCase
      */
     protected static bool $setupHasRunOnce = false;
 
+    protected static ?User $adminUser;
+
     public function setUp(): void
     {
         parent::setUp();
         if (!static::$setupHasRunOnce) {
             Artisan::call('migrate:fresh');
             static::$setupHasRunOnce = true;
+
+            static::$adminUser = $this->stubCustomUserWithCustomCharacters('admin', 3, RoleTypes::ROLE_TANK, ClassTypes::CLASS_NECROMANCER);
         }
     }
 
@@ -66,7 +71,6 @@ class CharactersControllerTest extends IlluminateTestCase
         $response->assertJsonPath('message', 'This action is unauthorized.');
 
         # Case: Not found.
-        $this->stubTierFourAdminUser();
         $response = $this
             ->actingAs(static::$adminUser)
             ->withoutMiddleware()
@@ -79,7 +83,6 @@ class CharactersControllerTest extends IlluminateTestCase
         $response->assertJsonPath('message', 'Character not found!');
 
         # Case: Self-ranking.
-        $this->stubTierFourAdminUser();
         $response = $this
             ->actingAs(static::$adminUser)
             ->withoutMiddleware()
@@ -92,7 +95,7 @@ class CharactersControllerTest extends IlluminateTestCase
         $response->assertJsonPath('message', 'Self-ranking disabled!');
 
         # Case: Attempting to rerank a Damage-Dealer
-        $tierTwoDdUser = $this->stubCustomUserWithCustomCharacters(2);
+        $tierTwoDdUser = $this->stubCustomUserWithCustomCharacters('member', 2, RoleTypes::ROLE_MAGICKA_DD, ClassTypes::CLASS_SORCERER);
         $response = $this
             ->actingAs(static::$adminUser)
             ->withoutMiddleware()
@@ -107,7 +110,7 @@ class CharactersControllerTest extends IlluminateTestCase
         $response->assertJsonPath('errors.action.0', 'Damage Dealers can only be ranked via Parse submission!');
 
         # Case: Missing 'action' parameter.
-        $tierTwoHealerUser = $this->stubCustomUserWithCustomCharacters(2, RoleTypes::ROLE_HEALER, ClassTypes::CLASS_TEMPLAR);
+        $tierTwoHealerUser = $this->stubCustomUserWithCustomCharacters('member', 2, RoleTypes::ROLE_HEALER, ClassTypes::CLASS_TEMPLAR);
         $response = $this
             ->actingAs(static::$adminUser)
             ->withoutMiddleware()
@@ -120,7 +123,7 @@ class CharactersControllerTest extends IlluminateTestCase
         $response->assertJsonPath('errors.action.0', 'Action is required.');
 
         # Case: Missing 'action' parameter.
-        $tierTwoHealerUser = $this->stubCustomUserWithCustomCharacters(2, RoleTypes::ROLE_HEALER, ClassTypes::CLASS_TEMPLAR);
+        $tierTwoHealerUser = $this->stubCustomUserWithCustomCharacters('member', 2, RoleTypes::ROLE_HEALER, ClassTypes::CLASS_TEMPLAR);
         $response = $this
             ->actingAs(static::$adminUser)
             ->withoutMiddleware()
@@ -139,7 +142,8 @@ class CharactersControllerTest extends IlluminateTestCase
     {
         Event::fake([CharacterPromoted::class, CharacterDemoted::class]);
 
-        $tierTwoTankUser = $this->stubCustomUserWithCustomCharacters(2, RoleTypes::ROLE_TANK, ClassTypes::CLASS_DRAGONKNIGHT);
+        $tierTwoTankUser = $this->stubCustomUserWithCustomCharacters('member', 2, RoleTypes::ROLE_TANK, ClassTypes::CLASS_DRAGONKNIGHT);
+
         $response = $this
             ->actingAs(static::$adminUser)
             ->withoutMiddleware()
@@ -161,7 +165,8 @@ class CharactersControllerTest extends IlluminateTestCase
     {
         Event::fake([CharacterPromoted::class, CharacterDemoted::class]);
 
-        $tierTwoHealerUser = $this->stubCustomUserWithCustomCharacters(2, RoleTypes::ROLE_HEALER, ClassTypes::CLASS_TEMPLAR);
+        $tierTwoHealerUser = $this->stubCustomUserWithCustomCharacters('member', 2, RoleTypes::ROLE_HEALER, ClassTypes::CLASS_TEMPLAR);
+
         $response = $this
             ->actingAs(static::$adminUser)
             ->withoutMiddleware()

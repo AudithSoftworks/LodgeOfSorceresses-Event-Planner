@@ -23,9 +23,7 @@ class ContentControllerTest extends IlluminateTestCase
 
     public function testIndexForSuccess(): void
     {
-        $response = $this
-            ->withoutMiddleware()
-            ->getJson('/api/content');
+        $response = $this->getJson('/api/content');
         $response->assertStatus(JsonResponse::HTTP_OK);
         $responseOriginalContent = $response->getOriginalContent();
         static::assertNotNull($responseOriginalContent);
@@ -38,33 +36,25 @@ class ContentControllerTest extends IlluminateTestCase
 
     public function testShowForFailure(): void
     {
-        $response = $this
-            ->withoutMiddleware()
-            ->getJson('/api/content/1');
+        $response = $this->getJson('/api/content/1');
         $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
     }
 
     public function testStoreForFailure(): void
     {
-        $response = $this
-            ->withoutMiddleware()
-            ->postJson('/api/content', []);
+        $response = $this->postJson('/api/content', []);
         $response->assertStatus(JsonResponse::HTTP_METHOD_NOT_ALLOWED);
     }
 
     public function testUpdateForFailure(): void
     {
-        $response = $this
-            ->withoutMiddleware()
-            ->putJson('/api/content/1', []);
+        $response = $this->putJson('/api/content/1', []);
         $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
     }
 
     public function testDestroyForFailure(): void
     {
-        $response = $this
-            ->withoutMiddleware()
-            ->deleteJson('/api/content/1');
+        $response = $this->deleteJson('/api/content/1');
         $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
     }
 }

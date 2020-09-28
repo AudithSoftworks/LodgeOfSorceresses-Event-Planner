@@ -25,22 +25,22 @@ class SetsControllerTest extends IlluminateTestCase
 
     public function testIndexForFailure(): void
     {
+        $response = $this->getJson('/api/sets');
+        $response->assertStatus(JsonResponse::HTTP_UNAUTHORIZED);
+
+        $guestUser = $this->stubCustomUserWithCustomCharacters();
         $response = $this
-            ->withoutMiddleware()
+            ->actingAs($guestUser, 'api')
             ->getJson('/api/sets');
         $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
-        $responseOriginalContent = $response->getOriginalContent();
-        static::assertNotNull($responseOriginalContent);
-        $response->assertJsonPath('message', 'This action is unauthorized.');
     }
 
     public function testIndexForSuccess(): void
     {
-        $this->stubSoulshrivenUser();
+        $soulshrivenUser = $this->stubCustomUserWithCustomCharacters('soulshriven');
 
         $response = $this
-            ->actingAs(static::$soulshriven)
-            ->withoutMiddleware()
+            ->actingAs($soulshrivenUser, 'api')
             ->getJson('/api/sets');
         $response->assertStatus(JsonResponse::HTTP_OK);
         $responseOriginalContent = $response->getOriginalContent();

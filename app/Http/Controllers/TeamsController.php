@@ -1,10 +1,16 @@
 <?php
 
+/**
+ * @noinspection PhpUnusedParameterInspection
+ * @todo Remove this when upgrading to PHP-8, where we can have argument types without arguments
+ */
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TeamsRequests;
 use App\Models\Team;
 use App\Models\User;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -15,8 +21,8 @@ use Illuminate\Validation\ValidationException;
 class TeamsController extends Controller
 {
     /**
-     * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(): JsonResponse
     {
@@ -39,8 +45,8 @@ class TeamsController extends Controller
     /**
      * @param \App\Http\Requests\TeamsRequests $request
      *
-     * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(TeamsRequests $request): JsonResponse
     {
@@ -76,8 +82,8 @@ class TeamsController extends Controller
     /**
      * @param int $teamId
      *
-     * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(int $teamId): JsonResponse
     {
@@ -94,10 +100,11 @@ class TeamsController extends Controller
 
     /**
      * @param \App\Http\Requests\TeamsRequests $request
-     * @param int                              $teamId
+     * @param int $teamId
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      * @throws \Illuminate\Validation\ValidationException
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(TeamsRequests $request, int $teamId): JsonResponse
     {
@@ -112,7 +119,7 @@ class TeamsController extends Controller
             throw new ModelNotFoundException('Team not found!');
         }
         if ($team->led_by !== $myId && $team->created_by !== $myId && Gate::denies('is-admin')) {
-            throw new ModelNotFoundException('Team not found!');
+            throw new AuthorizationException();
         }
 
         $team->name = $request->get('name');
@@ -147,25 +154,18 @@ class TeamsController extends Controller
     }
 
     /**
-     * @param int $teamId
+     * @param \App\Http\Requests\TeamsRequests $request
+     * @param \App\Models\Team $team
      *
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Auth\Access\AuthorizationException
      * @throws \Exception
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(int $teamId): JsonResponse
+    public function destroy(TeamsRequests $request, Team $team): JsonResponse
     {
-        $this->authorize('user', User::class);
-
         $myId = Auth::id();
-        Cache::has('team-' . $teamId); // Recache trigger.
-        /** @var \App\Models\Team $team */
-        $team = Cache::get('team-' . $teamId);
-        if (!$team) {
-            throw new ModelNotFoundException('Team not found!');
-        }
         if ($team->led_by !== $myId && $team->created_by !== $myId && Gate::denies('is-admin')) {
-            throw new ModelNotFoundException('Team not found!');
+            throw new AuthorizationException();
         }
 
         $team->delete();

@@ -6,6 +6,8 @@ use App\Events\DpsParse\DpsParseDeleted;
 use App\Events\DpsParse\DpsParseSubmitted;
 use App\Models\Character;
 use App\Models\File;
+use App\Singleton\ClassTypes;
+use App\Singleton\RoleTypes;
 use App\Tests\IlluminateTestCase;
 use App\Tests\Integration\JsonApi\Traits\NeedsUserStubs;
 use Illuminate\Http\JsonResponse;
@@ -32,7 +34,7 @@ class DpsParsesControllerTest extends IlluminateTestCase
     {
         Event::fake([DpsParseSubmitted::class]);
 
-        $tierOneUser = $this->stubCustomUserWithCustomCharacters(1);
+        $tierOneUser = $this->stubCustomUserWithCustomCharacters('member', 1, RoleTypes::ROLE_MAGICKA_DD, ClassTypes::CLASS_SORCERER);
         /** @var \App\Models\Character $tierOneUsersCharacter */
         $tierOneUsersCharacter = $tierOneUser->characters->first();
 
@@ -44,7 +46,7 @@ class DpsParsesControllerTest extends IlluminateTestCase
 
         # Case: Invalid input
         $response = $this
-            ->actingAs($tierOneUser)
+            ->actingAs($tierOneUser, 'api')
             ->postJson(sprintf('/api/users/@me/characters/%d/parses', $tierOneUsersCharacter->id), []);
         $responseOriginalContent = $response->getOriginalContent();
         static::assertCount(2, $responseOriginalContent);
@@ -58,7 +60,7 @@ class DpsParsesControllerTest extends IlluminateTestCase
 
         # Case: Invalid input 2
         $response = $this
-            ->actingAs($tierOneUser)
+            ->actingAs($tierOneUser, 'api')
             ->postJson(sprintf('/api/users/@me/characters/%d/parses', $tierOneUsersCharacter->id), [
                 'sets' => [0],
                 'dps_amount' => 'string',
@@ -83,7 +85,7 @@ class DpsParsesControllerTest extends IlluminateTestCase
     {
         Event::fake([DpsParseSubmitted::class]);
 
-        $tierOneUser = $this->stubCustomUserWithCustomCharacters(1);
+        $tierOneUser = $this->stubCustomUserWithCustomCharacters('member', 1, RoleTypes::ROLE_MAGICKA_DD, ClassTypes::CLASS_SORCERER);
         /** @var File $file */
         $file = File::factory()->create();
         $file->uploaders()->attach([
@@ -97,7 +99,7 @@ class DpsParsesControllerTest extends IlluminateTestCase
         $tierOneUsersCharacter = $tierOneUser->characters->first();
 
         $response = $this
-            ->actingAs($tierOneUser)
+            ->actingAs($tierOneUser, 'api')
             ->withoutMiddleware()
             ->postJson(sprintf('/api/users/@me/characters/%d/parses', $tierOneUsersCharacter->id), [
                 'sets' => [2, 3],
@@ -127,7 +129,7 @@ class DpsParsesControllerTest extends IlluminateTestCase
     {
         Event::fake([DpsParseDeleted::class]);
 
-        $this->stubSoulshrivenUser();
+        $soulshrivenUser = $this->stubCustomUserWithCustomCharacters('soulshriven');
 
         # Case 1: No authentication
         $response = $this
@@ -143,7 +145,7 @@ class DpsParsesControllerTest extends IlluminateTestCase
 
         # Case 2: User trying to delete someone else's Parse
         $response = $this
-            ->actingAs(static::$soulshriven)
+            ->actingAs($soulshrivenUser, 'api')
             ->withoutMiddleware()
             ->deleteJson(
                 sprintf('/api/users/@me/characters/%d/parses/%d',
@@ -166,8 +168,7 @@ class DpsParsesControllerTest extends IlluminateTestCase
         Event::fake([DpsParseDeleted::class]);
 
         $response = $this
-            ->actingAs($character->owner)
-            ->withoutMiddleware()
+            ->actingAs($character->owner, 'api')
             ->deleteJson(
                 sprintf('/api/users/@me/characters/%d/parses/%d',
                     $character->id,

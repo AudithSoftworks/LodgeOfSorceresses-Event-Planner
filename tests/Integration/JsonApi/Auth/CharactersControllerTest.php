@@ -33,8 +33,8 @@ class CharactersControllerTest extends IlluminateTestCase
 
     public function testStoringForFailure(): void
     {
-        $guestUser = $this->stubGuestUser();
-        $tierOneUser = $this->stubCustomUserWithCustomCharacters();
+        $guestUser = $this->stubCustomUserWithCustomCharacters();
+        $tierOneUser = $this->stubCustomUserWithCustomCharacters('member', 1, RoleTypes::ROLE_MAGICKA_DD, ClassTypes::CLASS_SORCERER);
 
         Event::fake([CharacterSaved::class]);
 
@@ -50,7 +50,7 @@ class CharactersControllerTest extends IlluminateTestCase
 
         # Case: Invalid input
         $response = $this
-            ->actingAs($tierOneUser)
+            ->actingAs($tierOneUser, 'api')
             ->postJson('/api/users/@me/characters', []);
         $responseOriginalContent = $response->getOriginalContent();
         static::assertCount(2, $responseOriginalContent);
@@ -64,7 +64,7 @@ class CharactersControllerTest extends IlluminateTestCase
 
         # Case: Invalid input 2
         $response = $this
-            ->actingAs($tierOneUser)
+            ->actingAs($tierOneUser, 'api')
             ->postJson('/api/users/@me/characters', [
                 'name' => 1,
                 'role' => 'bogus-id',
@@ -100,7 +100,7 @@ class CharactersControllerTest extends IlluminateTestCase
 
         # Case: Invalid input 3
         $response = $this
-            ->actingAs($tierOneUser)
+            ->actingAs($tierOneUser, 'api')
             ->postJson('/api/users/@me/characters', [
                 'name' => 1,
                 'role' => null,
@@ -128,10 +128,10 @@ class CharactersControllerTest extends IlluminateTestCase
     {
         Event::fake([CharacterSaved::class]);
 
-        $tierOneUser = $this->stubCustomUserWithCustomCharacters();
+        $tierOneUser = $this->stubCustomUserWithCustomCharacters('member', 1, RoleTypes::ROLE_MAGICKA_DD, ClassTypes::CLASS_SORCERER);
 
         $response = $this
-            ->actingAs($tierOneUser)
+            ->actingAs($tierOneUser, 'api')
             ->withoutMiddleware()
             ->postJson('/api/users/@me/characters', [
                 'name' => 'Some Character',
@@ -168,8 +168,8 @@ class CharactersControllerTest extends IlluminateTestCase
      */
     public function testUpdatingForFailure(Character $character): void
     {
-        $guestUser = $this->stubGuestUser();
-        $tierOneUser = $this->stubCustomUserWithCustomCharacters();
+        $guestUser = $this->stubCustomUserWithCustomCharacters();
+        $tierOneUser = $this->stubCustomUserWithCustomCharacters('member', 1, RoleTypes::ROLE_MAGICKA_DD, ClassTypes::CLASS_SORCERER);
 
         Event::fake([CharacterSaved::class]);
 
@@ -346,11 +346,10 @@ class CharactersControllerTest extends IlluminateTestCase
      */
     public function testDeletingForFailure(Character $character): void
     {
-        $guestUser = $this->stubGuestUser();
+        $guestUser = $this->stubCustomUserWithCustomCharacters();
+        $soulshrivenUser = $this->stubCustomUserWithCustomCharacters('soulshriven');
 
         Event::fake([CharacterDeleted::class]);
-
-        $this->stubSoulshrivenUser();
 
         # Case 1: No authentication
         $response = $this
@@ -365,7 +364,7 @@ class CharactersControllerTest extends IlluminateTestCase
 
         # Case 2: User trying to delete someone else's Parse
         $response = $this
-            ->actingAs(static::$soulshriven)
+            ->actingAs($soulshrivenUser, 'api')
             ->deleteJson(sprintf('/api/users/@me/characters/%d', $character->id));
         $response->assertStatus(JsonResponse::HTTP_NOT_FOUND);
 
@@ -406,7 +405,7 @@ class CharactersControllerTest extends IlluminateTestCase
         $characterRaw->approved_for_tier = 0;
         $characterRaw->save();
 
-        $guestUser = $this->stubGuestUser();
+        $guestUser = $this->stubCustomUserWithCustomCharacters();
 
         Event::fake([CharacterDeleted::class]);
 

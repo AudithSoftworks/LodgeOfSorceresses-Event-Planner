@@ -31,7 +31,7 @@ class AttendanceControllerTest extends IlluminateTestCase
         $response = $this->getJson('/api/attendances/1');
         $response->assertStatus(JsonResponse::HTTP_UNAUTHORIZED);
 
-        $guestUser = $this->stubCustomUserWithCustomCharacters(null, null, null, null);
+        $guestUser = $this->stubCustomUserWithCustomCharacters();
         $response = $this
             ->actingAs($guestUser, 'api')
             ->getJson(sprintf('/api/attendances/%d', $guestUser->id));
@@ -43,7 +43,7 @@ class AttendanceControllerTest extends IlluminateTestCase
      */
     public function testIndexForSuccess(): void
     {
-        $tierTwoSoulshrivenUser = $this->stubCustomUserWithCustomCharacters(2, RoleTypes::ROLE_TANK, ClassTypes::CLASS_NECROMANCER, 'soulshriven');
+        $tierTwoSoulshrivenUser = $this->stubCustomUserWithCustomCharacters('soulshriven', 2, RoleTypes::ROLE_TANK, ClassTypes::CLASS_NECROMANCER);
 
         /** @var Attendance $attendance */
         $attendance = Attendance::factory()->create([
@@ -85,7 +85,11 @@ class AttendanceControllerTest extends IlluminateTestCase
         $createdAtInAtomFormat = (new CarbonImmutable($entries[0]['created_at']))->toRfc3339String(true);
         $response = $this
             ->actingAs($tierTwoSoulshrivenUser, 'api')
-            ->getJson('/api/attendances/' . $tierTwoSoulshrivenUser->id . '?b=' . urlencode($createdAtInAtomFormat));
+            ->getJson(sprintf(
+                '/api/attendances/%d?b=%s',
+                $tierTwoSoulshrivenUser->id,
+                urlencode($createdAtInAtomFormat)
+            ));
         $response->assertStatus(JsonResponse::HTTP_OK);
         /** @var \Illuminate\Support\Collection $responseOriginalContent */
         $responseOriginalContent = $response->getOriginalContent();
@@ -101,7 +105,11 @@ class AttendanceControllerTest extends IlluminateTestCase
         $createdAtInAtomFormat = (new CarbonImmutable($entries[0]['created_at']))->toRfc3339String(true);
         $response = $this
             ->actingAs($tierTwoSoulshrivenUser, 'api')
-            ->getJson('/api/attendances/' . $tierTwoSoulshrivenUser->id . '?b=' . urlencode($createdAtInAtomFormat));
+            ->getJson(sprintf(
+                '/api/attendances/%d?b=%s',
+                $tierTwoSoulshrivenUser->id,
+                urlencode($createdAtInAtomFormat)
+            ));
         $response->assertStatus(JsonResponse::HTTP_OK);
         /** @var \Illuminate\Support\Collection $responseOriginalContent */
         $responseOriginalContent = $response->getOriginalContent();
