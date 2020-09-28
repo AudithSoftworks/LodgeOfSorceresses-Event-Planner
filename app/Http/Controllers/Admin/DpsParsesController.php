@@ -119,7 +119,6 @@ class DpsParsesController extends Controller
         $dpsParse->save();
 
         $dpsParse->delete();
-
         Event::dispatch(new DpsParseDisapproved($dpsParse));
 
         return response()->json([], JsonResponse::HTTP_NO_CONTENT);
