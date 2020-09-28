@@ -1,3 +1,5 @@
+import(/* webpackPrefetch: true, webpackChunkName: "react-fine-uploader_gallery-css" */ '../../../sass/vendor/_fine-uploader-gallery.scss');
+
 import FineUploaderTraditional from 'fine-uploader-wrappers';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
@@ -17,8 +19,6 @@ const Gallery = new Loadable({
         return <Loading />;
     },
 });
-
-import(/* webpackPrefetch: true, webpackChunkName: "react-fine-uploader_gallery-css" */ '../../../sass/vendor/_fine-uploader-gallery.scss');
 
 class DpsParseForm extends PureComponent {
     classOptions = [
