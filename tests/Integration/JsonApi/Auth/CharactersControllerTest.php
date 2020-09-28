@@ -34,13 +34,12 @@ class CharactersControllerTest extends IlluminateTestCase
     public function testStoringForFailure(): void
     {
         $guestUser = $this->stubGuestUser();
-        $tierOneUser = $this->stubCustomMemberUserWithCustomCharacters();
+        $tierOneUser = $this->stubCustomUserWithCustomCharacters();
 
         Event::fake([CharacterSaved::class]);
 
         # Case: No authentication
-        $response = $this
-            ->postJson('/api/users/@me/characters', []);
+        $response = $this->postJson('/api/users/@me/characters', []);
         $response->assertStatus(JsonResponse::HTTP_UNAUTHORIZED);
 
         # Case: No permission
@@ -129,7 +128,7 @@ class CharactersControllerTest extends IlluminateTestCase
     {
         Event::fake([CharacterSaved::class]);
 
-        $tierOneUser = $this->stubCustomMemberUserWithCustomCharacters();
+        $tierOneUser = $this->stubCustomUserWithCustomCharacters();
 
         $response = $this
             ->actingAs($tierOneUser)
@@ -170,7 +169,7 @@ class CharactersControllerTest extends IlluminateTestCase
     public function testUpdatingForFailure(Character $character): void
     {
         $guestUser = $this->stubGuestUser();
-        $tierOneUser = $this->stubCustomMemberUserWithCustomCharacters();
+        $tierOneUser = $this->stubCustomUserWithCustomCharacters();
 
         Event::fake([CharacterSaved::class]);
 

@@ -74,41 +74,44 @@ trait NeedsUserStubs
         return $adminUser;
     }
 
-    private function stubCustomMemberUserWithCustomCharacters(
+    private function stubCustomUserWithCustomCharacters(
         ?int $tier = null,
         ?int $role = RoleTypes::ROLE_MAGICKA_DD,
-        ?int $class = ClassTypes::CLASS_SORCERER
+        ?int $class = ClassTypes::CLASS_SORCERER,
+        ?string $factoryState = 'member'
     ): User {
         /** @var \Database\Factories\UserOAuthFactory $userOauthFactory */
         $userOauthFactory = UserOAuth::factory();
+        $factoryState !== null && $userOauthFactory = $userOauthFactory->{$factoryState}();
 
         /** @var \Database\Factories\UserFactory $userFactory */
         $userFactory = User::factory();
+        $factoryState !== null && $userFactory = $userFactory->{$factoryState}();
 
         /** @var \Database\Factories\CharacterFactory $characterFactory */
         $characterFactory = Character::factory();
 
-        /** @var UserOAuth $memberUserOauth */
-        $memberUserOauth = $userOauthFactory->member()->create([
-            'user_id' => $userFactory->member()->create(),
+        /** @var UserOAuth $userOAuth */
+        $userOAuth = $userOauthFactory->create([
+            'user_id' => $userFactory->create(),
         ]);
-        /** @var \App\Models\User $tierXMemberUser */
-        $tierXMemberUser = $memberUserOauth->owner()->first();
+        /** @var \App\Models\User $tierXUser */
+        $tierXUser = $userOAuth->owner()->first();
         if ($tier !== null && $role !== null && $class !== null) {
             $tierXCharacter = $characterFactory->tier($tier)->role($role, $class)->create([
-                'user_id' => $tierXMemberUser,
+                'user_id' => $tierXUser,
             ]);
-            $tierXMemberUser->setRelation('characters', collect([$tierXCharacter]));
-            $tierXMemberUser->save();
+            $tierXUser->setRelation('characters', collect([$tierXCharacter]));
+            $tierXUser->save();
         }
 
-        return $tierXMemberUser;
+        return $tierXUser;
     }
 
     private function stubTierFourMemberUser(): void
     {
         if (!static::$tierFourMemberUser) {
-            static::$tierFourMemberUser = $this->stubCustomMemberUserWithCustomCharacters(4);
+            static::$tierFourMemberUser = $this->stubCustomUserWithCustomCharacters(4);
         }
     }
 
@@ -125,9 +128,7 @@ trait NeedsUserStubs
             $soulshrivenOauth = $userOauthFactory->soulshriven()->create([
                 'user_id' => $userFactory->soulshriven()->create(),
             ]);
-            /** @var User $soulshrivenUser */
-            $soulshrivenUser = $soulshrivenOauth->owner()->first();
-            static::$soulshriven = $soulshrivenUser;
+            static::$soulshriven = $soulshrivenOauth->owner;
         }
     }
 

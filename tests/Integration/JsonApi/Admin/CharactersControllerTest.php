@@ -92,7 +92,7 @@ class CharactersControllerTest extends IlluminateTestCase
         $response->assertJsonPath('message', 'Self-ranking disabled!');
 
         # Case: Attempting to rerank a Damage-Dealer
-        $tierTwoDdUser = $this->stubCustomMemberUserWithCustomCharacters(2);
+        $tierTwoDdUser = $this->stubCustomUserWithCustomCharacters(2);
         $response = $this
             ->actingAs(static::$adminUser)
             ->withoutMiddleware()
@@ -107,7 +107,7 @@ class CharactersControllerTest extends IlluminateTestCase
         $response->assertJsonPath('errors.action.0', 'Damage Dealers can only be ranked via Parse submission!');
 
         # Case: Missing 'action' parameter.
-        $tierTwoHealerUser = $this->stubCustomMemberUserWithCustomCharacters(2, RoleTypes::ROLE_HEALER, ClassTypes::CLASS_TEMPLAR);
+        $tierTwoHealerUser = $this->stubCustomUserWithCustomCharacters(2, RoleTypes::ROLE_HEALER, ClassTypes::CLASS_TEMPLAR);
         $response = $this
             ->actingAs(static::$adminUser)
             ->withoutMiddleware()
@@ -120,7 +120,7 @@ class CharactersControllerTest extends IlluminateTestCase
         $response->assertJsonPath('errors.action.0', 'Action is required.');
 
         # Case: Missing 'action' parameter.
-        $tierTwoHealerUser = $this->stubCustomMemberUserWithCustomCharacters(2, RoleTypes::ROLE_HEALER, ClassTypes::CLASS_TEMPLAR);
+        $tierTwoHealerUser = $this->stubCustomUserWithCustomCharacters(2, RoleTypes::ROLE_HEALER, ClassTypes::CLASS_TEMPLAR);
         $response = $this
             ->actingAs(static::$adminUser)
             ->withoutMiddleware()
@@ -139,7 +139,7 @@ class CharactersControllerTest extends IlluminateTestCase
     {
         Event::fake([CharacterPromoted::class, CharacterDemoted::class]);
 
-        $tierTwoTankUser = $this->stubCustomMemberUserWithCustomCharacters(2, RoleTypes::ROLE_TANK, ClassTypes::CLASS_DRAGONKNIGHT);
+        $tierTwoTankUser = $this->stubCustomUserWithCustomCharacters(2, RoleTypes::ROLE_TANK, ClassTypes::CLASS_DRAGONKNIGHT);
         $response = $this
             ->actingAs(static::$adminUser)
             ->withoutMiddleware()
@@ -161,7 +161,7 @@ class CharactersControllerTest extends IlluminateTestCase
     {
         Event::fake([CharacterPromoted::class, CharacterDemoted::class]);
 
-        $tierTwoHealerUser = $this->stubCustomMemberUserWithCustomCharacters(2, RoleTypes::ROLE_HEALER, ClassTypes::CLASS_TEMPLAR);
+        $tierTwoHealerUser = $this->stubCustomUserWithCustomCharacters(2, RoleTypes::ROLE_HEALER, ClassTypes::CLASS_TEMPLAR);
         $response = $this
             ->actingAs(static::$adminUser)
             ->withoutMiddleware()

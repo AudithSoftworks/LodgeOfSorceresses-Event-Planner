@@ -3,6 +3,8 @@
 namespace App\Tests\Integration\JsonApi;
 
 use App\Models\Attendance;
+use App\Singleton\ClassTypes;
+use App\Singleton\RoleTypes;
 use App\Tests\IlluminateTestCase;
 use App\Tests\Integration\JsonApi\Traits\NeedsUserStubs;
 use Carbon\CarbonImmutable;
@@ -26,13 +28,14 @@ class AttendanceControllerTest extends IlluminateTestCase
 
     public function testIndexForFailure(): void
     {
+        $response = $this->getJson('/api/attendances/1');
+        $response->assertStatus(JsonResponse::HTTP_UNAUTHORIZED);
+
+        $guestUser = $this->stubCustomUserWithCustomCharacters(null, null, null, null);
         $response = $this
-            ->withoutMiddleware()
-            ->getJson('/api/attendances/1');
+            ->actingAs($guestUser, 'api')
+            ->getJson(sprintf('/api/attendances/%d', $guestUser->id));
         $response->assertStatus(JsonResponse::HTTP_FORBIDDEN);
-        $responseOriginalContent = $response->getOriginalContent();
-        static::assertNotNull($responseOriginalContent);
-        $response->assertJsonPath('message', 'This action is unauthorized.');
     }
 
     /**
@@ -40,34 +43,33 @@ class AttendanceControllerTest extends IlluminateTestCase
      */
     public function testIndexForSuccess(): void
     {
-        $this->stubSoulshrivenUser();
+        $tierTwoSoulshrivenUser = $this->stubCustomUserWithCustomCharacters(2, RoleTypes::ROLE_TANK, ClassTypes::CLASS_NECROMANCER, 'soulshriven');
 
         /** @var Attendance $attendance */
         $attendance = Attendance::factory()->create([
             'text' => '2 weeks ago',
             'created_at' => (new CarbonImmutable())->subWeeks(2),
         ]);
-        $attendance->attendees()->sync([static::$soulshriven->id]);
+        $attendance->attendees()->sync([$tierTwoSoulshrivenUser->id]);
         $attendance = Attendance::factory()->create([
             'text' => '4 weeks ago',
             'created_at' => (new CarbonImmutable())->subWeeks(4),
         ]);
-        $attendance->attendees()->sync([static::$soulshriven->id]);
+        $attendance->attendees()->sync([$tierTwoSoulshrivenUser->id]);
         $attendance = Attendance::factory()->create([
             'text' => '4 weeks 1 day ago',
             'created_at' => (new CarbonImmutable())->subWeeks(4)->subDay(),
         ]);
-        $attendance->attendees()->sync([static::$soulshriven->id]);
+        $attendance->attendees()->sync([$tierTwoSoulshrivenUser->id]);
         $attendance = Attendance::factory()->create([
-            'text' => '6 weeks ago',
+            'text' => '5 weeks ago',
             'created_at' => (new CarbonImmutable())->subWeeks(5),
         ]);
-        $attendance->attendees()->sync([static::$soulshriven->id]);
+        $attendance->attendees()->sync([$tierTwoSoulshrivenUser->id]);
 
         $response = $this
-            ->actingAs(static::$soulshriven)
-            ->withoutMiddleware()
-            ->getJson('/api/attendances/' . static::$soulshriven->id);
+            ->actingAs($tierTwoSoulshrivenUser, 'api')
+            ->getJson(sprintf('/api/attendances/%d', $tierTwoSoulshrivenUser->id));
         $response->assertStatus(JsonResponse::HTTP_OK);
         /** @var \Illuminate\Support\Collection $responseOriginalContent */
         $responseOriginalContent = $response->getOriginalContent();
@@ -80,29 +82,10 @@ class AttendanceControllerTest extends IlluminateTestCase
         static::assertIsIterable($entries[0]['attendees']);
         static::assertCount(1, $entries[0]['attendees']);
 
-        $createdAtInAtomFormat = (new CarbonImmutable($entries[0]['created_at']))->toAtomString();
+        $createdAtInAtomFormat = (new CarbonImmutable($entries[0]['created_at']))->toRfc3339String(true);
         $response = $this
-            ->actingAs(static::$soulshriven)
-            ->withoutMiddleware()
-            ->getJson('/api/attendances/' . static::$soulshriven->id . '?b=' . urlencode($createdAtInAtomFormat));
-        $response->assertStatus(JsonResponse::HTTP_OK);
-        /** @var \Illuminate\Support\Collection $responseOriginalContent */
-        $responseOriginalContent = $response->getOriginalContent();
-        static::assertNotNull($responseOriginalContent);
-        static::assertIsIterable($responseOriginalContent);
-        static::assertCount(2, $responseOriginalContent);
-        $entries = $responseOriginalContent->toArray();
-        static::assertEquals('4 weeks ago', $entries[0]['text']);
-        static::assertEquals('4 weeks 1 day ago', $entries[1]['text']);
-        static::assertNotEmpty($entries[0]['attendees']);
-        static::assertIsIterable($entries[0]['attendees']);
-        static::assertCount(1, $entries[0]['attendees']);
-
-        $createdAtInAtomFormat = (new CarbonImmutable($entries[1]['created_at']))->toAtomString();
-        $response = $this
-            ->actingAs(static::$soulshriven)
-            ->withoutMiddleware()
-            ->getJson('/api/attendances/' . static::$soulshriven->id . '?b=' . urlencode($createdAtInAtomFormat));
+            ->actingAs($tierTwoSoulshrivenUser, 'api')
+            ->getJson('/api/attendances/' . $tierTwoSoulshrivenUser->id . '?b=' . urlencode($createdAtInAtomFormat));
         $response->assertStatus(JsonResponse::HTTP_OK);
         /** @var \Illuminate\Support\Collection $responseOriginalContent */
         $responseOriginalContent = $response->getOriginalContent();
@@ -110,7 +93,24 @@ class AttendanceControllerTest extends IlluminateTestCase
         static::assertIsIterable($responseOriginalContent);
         static::assertCount(1, $responseOriginalContent);
         $entries = $responseOriginalContent->toArray();
-        static::assertEquals('6 weeks ago', $entries[0]['text']);
+        static::assertEquals('4 weeks ago', $entries[0]['text']);
+        static::assertNotEmpty($entries[0]['attendees']);
+        static::assertIsIterable($entries[0]['attendees']);
+        static::assertCount(1, $entries[0]['attendees']);
+
+        $createdAtInAtomFormat = (new CarbonImmutable($entries[0]['created_at']))->toRfc3339String(true);
+        $response = $this
+            ->actingAs($tierTwoSoulshrivenUser, 'api')
+            ->getJson('/api/attendances/' . $tierTwoSoulshrivenUser->id . '?b=' . urlencode($createdAtInAtomFormat));
+        $response->assertStatus(JsonResponse::HTTP_OK);
+        /** @var \Illuminate\Support\Collection $responseOriginalContent */
+        $responseOriginalContent = $response->getOriginalContent();
+        static::assertNotNull($responseOriginalContent);
+        static::assertIsIterable($responseOriginalContent);
+        static::assertCount(2, $responseOriginalContent);
+        $entries = $responseOriginalContent->toArray();
+        static::assertEquals('4 weeks 1 day ago', $entries[0]['text']);
+        static::assertEquals('5 weeks ago', $entries[1]['text']);
         static::assertNotEmpty($entries[0]['attendees']);
         static::assertIsIterable($entries[0]['attendees']);
         static::assertCount(1, $entries[0]['attendees']);

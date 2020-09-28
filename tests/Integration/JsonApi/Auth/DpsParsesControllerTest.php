@@ -32,7 +32,7 @@ class DpsParsesControllerTest extends IlluminateTestCase
     {
         Event::fake([DpsParseSubmitted::class]);
 
-        $tierOneUser = $this->stubCustomMemberUserWithCustomCharacters(1);
+        $tierOneUser = $this->stubCustomUserWithCustomCharacters(1);
         /** @var \App\Models\Character $tierOneUsersCharacter */
         $tierOneUsersCharacter = $tierOneUser->characters->first();
 
@@ -83,7 +83,7 @@ class DpsParsesControllerTest extends IlluminateTestCase
     {
         Event::fake([DpsParseSubmitted::class]);
 
-        $tierOneUser = $this->stubCustomMemberUserWithCustomCharacters(1);
+        $tierOneUser = $this->stubCustomUserWithCustomCharacters(1);
         /** @var File $file */
         $file = File::factory()->create();
         $file->uploaders()->attach([
