@@ -57,4 +57,6 @@ docker-compose exec php bash -c "
     ./artisan optimize:clear;
 
     ./vendor/bin/phpunit --debug --verbose || exit 1;
+
+    COVERALLS_REPO_TOKEN=${COVERALLS_REPO_TOKEN} ./vendor/bin/php-coveralls -x ./storage/coverage/coverage.xml -o ./storage/logs/coveralls-upload.json -e test -v
 ";
