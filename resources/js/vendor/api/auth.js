@@ -130,7 +130,7 @@ export const deleteMyCharacter = (cancelToken, characterId) =>
 
 export const postMyDpsParse = (cancelToken, characterId, data) =>
     axios
-        .post('/api/users/@me/characters/' + characterId + '/parses', data, {
+        .post('/api/users/@me/characters/' + characterId + '/dps_parses', data, {
             cancelToken: cancelToken.token,
         })
         .then(response => {
@@ -146,7 +146,7 @@ export const postMyDpsParse = (cancelToken, characterId, data) =>
 
 export const deleteMyDpsParse = (cancelToken, characterId, parseId) =>
     axios
-        .delete('/api/users/@me/characters/' + characterId + '/parses/' + parseId, {
+        .delete('/api/users/@me/characters/' + characterId + '/dps_parses/' + parseId, {
             cancelToken: cancelToken.token,
         })
         .then(response => {
