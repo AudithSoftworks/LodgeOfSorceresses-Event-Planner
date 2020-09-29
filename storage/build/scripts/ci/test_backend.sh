@@ -56,5 +56,5 @@ docker-compose exec php bash -c "
     ./artisan pmg:sets;
     ./artisan optimize:clear;
 
-    ./vendor/bin/phpunit --no-coverage --debug --verbose || exit 1;
+    ./vendor/bin/phpunit --debug --verbose || exit 1;
 ";

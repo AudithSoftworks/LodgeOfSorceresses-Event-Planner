@@ -147,6 +147,8 @@ jobs:
       script:
         - ./storage/build/scripts/ci/build_for_backend.sh
         - ./storage/build/scripts/ci/test_backend.sh
+      after_script:
+        - travis_retry php vendor/bin/php-coveralls
 
     - stage: deploy
       name: 'Finalize Deployment'
