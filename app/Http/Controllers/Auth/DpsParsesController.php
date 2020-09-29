@@ -20,12 +20,6 @@ use Illuminate\Support\Facades\Event;
 
 class DpsParsesController extends Controller
 {
-    /**
-     * @param \App\Http\Requests\Auth\DpsParsesRequests $request
-     * @param \App\Models\Character $character
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function store(DpsParsesRequests $request, Character $character): JsonResponse
     {
         $dpsParse = new DpsParse();

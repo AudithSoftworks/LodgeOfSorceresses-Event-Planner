@@ -47,23 +47,23 @@ class AttendanceControllerTest extends IlluminateTestCase
 
         /** @var Attendance $attendance */
         $attendance = Attendance::factory()->create([
-            'text' => '2 weeks ago',
-            'created_at' => (new CarbonImmutable())->subWeeks(2),
+            'text' => '2 weeks ago Monday',
+            'created_at' => new CarbonImmutable('2 weeks ago Monday'),
         ]);
         $attendance->attendees()->sync([$tierTwoSoulshrivenUser->id]);
         $attendance = Attendance::factory()->create([
-            'text' => '4 weeks ago',
-            'created_at' => (new CarbonImmutable())->subWeeks(4),
+            'text' => '4 weeks ago Wednesday',
+            'created_at' => new CarbonImmutable('4 weeks ago Wednesday'),
         ]);
         $attendance->attendees()->sync([$tierTwoSoulshrivenUser->id]);
         $attendance = Attendance::factory()->create([
-            'text' => '4 weeks 1 day ago',
-            'created_at' => (new CarbonImmutable())->subWeeks(4)->subDay(),
+            'text' => '5 weeks ago Tuesday',
+            'created_at' => new CarbonImmutable('5 weeks ago Tuesday'),
         ]);
         $attendance->attendees()->sync([$tierTwoSoulshrivenUser->id]);
         $attendance = Attendance::factory()->create([
-            'text' => '5 weeks ago',
-            'created_at' => (new CarbonImmutable())->subWeeks(5),
+            'text' => '5 weeks ago Sunday',
+            'created_at' => new CarbonImmutable('5 weeks ago Sunday'),
         ]);
         $attendance->attendees()->sync([$tierTwoSoulshrivenUser->id]);
 
@@ -77,7 +77,7 @@ class AttendanceControllerTest extends IlluminateTestCase
         static::assertIsIterable($responseOriginalContent);
         static::assertCount(1, $responseOriginalContent);
         $entries = $responseOriginalContent->toArray();
-        static::assertEquals('2 weeks ago', $entries[0]['text']);
+        static::assertEquals('2 weeks ago Monday', $entries[0]['text']);
         static::assertNotEmpty($entries[0]['attendees']);
         static::assertIsIterable($entries[0]['attendees']);
         static::assertCount(1, $entries[0]['attendees']);
@@ -97,7 +97,7 @@ class AttendanceControllerTest extends IlluminateTestCase
         static::assertIsIterable($responseOriginalContent);
         static::assertCount(1, $responseOriginalContent);
         $entries = $responseOriginalContent->toArray();
-        static::assertEquals('4 weeks ago', $entries[0]['text']);
+        static::assertEquals('4 weeks ago Wednesday', $entries[0]['text']);
         static::assertNotEmpty($entries[0]['attendees']);
         static::assertIsIterable($entries[0]['attendees']);
         static::assertCount(1, $entries[0]['attendees']);
@@ -117,8 +117,8 @@ class AttendanceControllerTest extends IlluminateTestCase
         static::assertIsIterable($responseOriginalContent);
         static::assertCount(2, $responseOriginalContent);
         $entries = $responseOriginalContent->toArray();
-        static::assertEquals('4 weeks 1 day ago', $entries[0]['text']);
-        static::assertEquals('5 weeks ago', $entries[1]['text']);
+        static::assertEquals('5 weeks ago Sunday', $entries[0]['text']);
+        static::assertEquals('5 weeks ago Tuesday', $entries[1]['text']);
         static::assertNotEmpty($entries[0]['attendees']);
         static::assertIsIterable($entries[0]['attendees']);
         static::assertCount(1, $entries[0]['attendees']);
