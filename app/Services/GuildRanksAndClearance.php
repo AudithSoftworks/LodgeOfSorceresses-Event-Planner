@@ -258,7 +258,8 @@ class GuildRanksAndClearance
             ->merge($discordRoleIdsOfGivenUsersSpecialRoles)
             ->merge($discordRoleIdsOfGivenUsersRoles)
             ->merge($discordRoleIdsOfGivenUsersTeams)
-            ->unique();
+            ->unique()
+            ->values();
 
         $result = app('discord.api')->modifyGuildMember($discordAccount->remote_id, ['roles' => $usersNewDiscordRoles->all()]);
         if ($result !== null) {
