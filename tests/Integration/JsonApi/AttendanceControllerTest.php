@@ -48,22 +48,22 @@ class AttendanceControllerTest extends IlluminateTestCase
         /** @var Attendance $attendance */
         $attendance = Attendance::factory()->create([
             'text' => '2 weeks ago Monday',
-            'created_at' => new CarbonImmutable('2 weeks ago Monday'),
+            'created_at' => (new CarbonImmutable())->subWeeks(2)->startOf('week'),
         ]);
         $attendance->attendees()->sync([$tierTwoSoulshrivenUser->id]);
         $attendance = Attendance::factory()->create([
             'text' => '4 weeks ago Wednesday',
-            'created_at' => new CarbonImmutable('4 weeks ago Wednesday'),
+            'created_at' => (new CarbonImmutable())->subWeeks(4)->startOf('week')->addDays(2),
         ]);
         $attendance->attendees()->sync([$tierTwoSoulshrivenUser->id]);
         $attendance = Attendance::factory()->create([
             'text' => '5 weeks ago Tuesday',
-            'created_at' => new CarbonImmutable('5 weeks ago Tuesday'),
+            'created_at' => (new CarbonImmutable())->subWeeks(5)->startOf('week')->addDays(1),
         ]);
         $attendance->attendees()->sync([$tierTwoSoulshrivenUser->id]);
         $attendance = Attendance::factory()->create([
             'text' => '5 weeks ago Sunday',
-            'created_at' => new CarbonImmutable('5 weeks ago Sunday'),
+            'created_at' => (new CarbonImmutable())->subWeeks(5)->startOf('week')->addDays(6),
         ]);
         $attendance->attendees()->sync([$tierTwoSoulshrivenUser->id]);
 
