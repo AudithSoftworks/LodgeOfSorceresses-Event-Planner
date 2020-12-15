@@ -85,7 +85,7 @@ class AddYoutubeRssFeed extends Command
             return;
         }
 
-        Artisan::call('discord:rss', [
+        Artisan::call('youtube:sync', [
             'channelId' => $channelId
         ], $this->getOutput());
     }
