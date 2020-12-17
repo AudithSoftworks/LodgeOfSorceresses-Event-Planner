@@ -127,8 +127,8 @@ class TrackAttendances extends Command
             if ($mention['id'] === $this->botId) {
                 $botMentionIndex = $key;
                 # Replace bot mention from the message content
-                $message['content_for_forums'] = preg_replace('/<@!' . $this->botId . '>/', '', $message['content_for_forums']);
-                $message['content_for_planner'] = preg_replace('/<@!' . $this->botId . '>/', '', $message['content_for_planner']);
+                $message['content_for_forums'] = preg_replace('/<@!?' . $this->botId . '>/', '', $message['content_for_forums']);
+                $message['content_for_planner'] = preg_replace('/<@!?' . $this->botId . '>/', '', $message['content_for_planner']);
                 continue;
             }
             $mentionedUser = $this->getUserForGivenDiscordRemoteId($mention['id']);
@@ -149,13 +149,13 @@ class TrackAttendances extends Command
                         $mentionedUser->id,
                         $mentionedUser->name
                     );
-                    $message['content_for_forums'] = preg_replace('/<@!' . $mention['id'] . '>/', $formattedMentionForForumsContent, $message['content_for_forums']);
-                    $message['content_for_planner'] = preg_replace('/<@!' . $mention['id'] . '>/', $formattedMentionForPlannerContent, $message['content_for_planner']);
+                    $message['content_for_forums'] = preg_replace('/<@!?' . $mention['id'] . '>/', $formattedMentionForForumsContent, $message['content_for_forums']);
+                    $message['content_for_planner'] = preg_replace('/<@!?' . $mention['id'] . '>/', $formattedMentionForPlannerContent, $message['content_for_planner']);
                     $mention = $mentionedUser;
                 } else {
                     if (!in_array($mention['id'], $this->ipsOauthNotFoundList, true)) {
-                        $message['content_for_forums'] = preg_replace('/<@!' . $mention['id'] . '>/', '', $message['content_for_forums']);
-                        $message['content_for_planner'] = preg_replace('/<@!' . $mention['id'] . '>/', '', $message['content_for_planner']);
+                        $message['content_for_forums'] = preg_replace('/<@!?' . $mention['id'] . '>/', '', $message['content_for_forums']);
+                        $message['content_for_planner'] = preg_replace('/<@!?' . $mention['id'] . '>/', '', $message['content_for_planner']);
                         $this->ipsOauthNotFoundList[] = $mention['id'];
                     }
                     $this->warn('No IPS account for user: ' . $mention['username']);
