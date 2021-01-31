@@ -23,7 +23,9 @@ trait IsAttendance
         $images = [];
         foreach ($attendance->gallery_image_ids as $galleryImageId) {
             $imageData = $ipsApi->getGalleryImage($galleryImageId);
-            $images[] = $imageData['images'];
+            if ($imageData !== null) {
+                $images[] = $imageData['images'];
+            }
         }
         $attendance->setAttribute('gallery_images', $images);
         $attendance->makeVisible(['gallery_images']);
