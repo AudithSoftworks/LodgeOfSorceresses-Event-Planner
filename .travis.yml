@@ -62,62 +62,62 @@ jobs:
 #      env:
 #        - BROWSER=firefox
 
-    - stage: build
-      name: 'Build > Frontend Tests - Chrome #1'
-      cache:
-        npm: true
-        directories:
-          - ~/.cache/google-fonts
-          - public/fonts
-          - vendor
-      before_script:
-        - cp docker-compose.cypress.yml docker-compose.override.yml
-        - *ssh_agent
-        - *setup_env
-      script:
-        - ./storage/build/scripts/ci/build_for_backend.sh
-        - ./storage/build/scripts/ci/build_for_frontend.sh production
-        - ./storage/build/scripts/ci/test_frontend.sh
-      env:
-        - BROWSER=chrome
-
-    - stage: build
-      name: 'Build > Frontend Tests - Chrome #2'
-      cache:
-        npm: true
-        directories:
-          - ~/.cache/google-fonts
-          - public/fonts
-          - vendor
-      before_script:
-        - cp docker-compose.cypress.yml docker-compose.override.yml
-        - *ssh_agent
-        - *setup_env
-      script:
-        - ./storage/build/scripts/ci/build_for_backend.sh
-        - ./storage/build/scripts/ci/build_for_frontend.sh production
-        - ./storage/build/scripts/ci/test_frontend.sh
-      env:
-        - BROWSER=chrome
-
-    - stage: build
-      name: 'Build > Frontend Tests - Chrome #3'
-      cache:
-        npm: true
-        directories:
-          - ~/.cache/google-fonts
-          - public/fonts
-          - vendor
-      before_script:
-        - cp docker-compose.cypress.yml docker-compose.override.yml
-        - *ssh_agent
-        - *setup_env
-      script:
-        - ./storage/build/scripts/ci/build_for_backend.sh
-        - ./storage/build/scripts/ci/build_for_frontend.sh production
-        - ./storage/build/scripts/ci/test_frontend.sh
-      env:
-        - BROWSER=chrome
+#    - stage: build
+#      name: 'Build > Frontend Tests - Chrome #1'
+#      cache:
+#        npm: true
+#        directories:
+#          - ~/.cache/google-fonts
+#          - public/fonts
+#          - vendor
+#      before_script:
+#        - cp docker-compose.cypress.yml docker-compose.override.yml
+#        - *ssh_agent
+#        - *setup_env
+#      script:
+#        - ./storage/build/scripts/ci/build_for_backend.sh
+#        - ./storage/build/scripts/ci/build_for_frontend.sh production
+#        - ./storage/build/scripts/ci/test_frontend.sh
+#      env:
+#        - BROWSER=chrome
+#
+#    - stage: build
+#      name: 'Build > Frontend Tests - Chrome #2'
+#      cache:
+#        npm: true
+#        directories:
+#          - ~/.cache/google-fonts
+#          - public/fonts
+#          - vendor
+#      before_script:
+#        - cp docker-compose.cypress.yml docker-compose.override.yml
+#        - *ssh_agent
+#        - *setup_env
+#      script:
+#        - ./storage/build/scripts/ci/build_for_backend.sh
+#        - ./storage/build/scripts/ci/build_for_frontend.sh production
+#        - ./storage/build/scripts/ci/test_frontend.sh
+#      env:
+#        - BROWSER=chrome
+#
+#    - stage: build
+#      name: 'Build > Frontend Tests - Chrome #3'
+#      cache:
+#        npm: true
+#        directories:
+#          - ~/.cache/google-fonts
+#          - public/fonts
+#          - vendor
+#      before_script:
+#        - cp docker-compose.cypress.yml docker-compose.override.yml
+#        - *ssh_agent
+#        - *setup_env
+#      script:
+#        - ./storage/build/scripts/ci/build_for_backend.sh
+#        - ./storage/build/scripts/ci/build_for_frontend.sh production
+#        - ./storage/build/scripts/ci/test_frontend.sh
+#      env:
+#        - BROWSER=chrome
 
     - stage: build
       name: 'Build > Preliminary Deployment'

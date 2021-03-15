@@ -17,8 +17,17 @@ import Notification from '../Components/Notification';
 
 class Onboarding extends PureComponent {
     mapOfSteps = {
-        members: ['Guild Introduction', 'General Guild Requirements', 'Tier-based Content Clearance Model', 'Endgame Attendance Guidelines for Raid Cores (optional reading)'],
-        soulshriven: ['Tier-based Content Clearance Model', 'What is Open Initiative?', 'Open-Events Organization Guidelines (optional reading)'],
+        members: [
+            'Guild Introduction',
+            'General Guild Requirements',
+            // 'Tier-based Content Clearance Model',
+            // 'Endgame Attendance Guidelines for Raid Cores (optional reading)'
+        ],
+        soulshriven: [
+            // 'Tier-based Content Clearance Model',
+            'What is Open Initiative?',
+            // 'Open-Events Organization Guidelines (optional reading)'
+        ],
     };
 
     constructor(props) {

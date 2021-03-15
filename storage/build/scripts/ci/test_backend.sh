@@ -28,7 +28,7 @@ docker-compose exec php bash -c "
     ./artisan pmg:sets;
     ./artisan optimize:clear;
 
-    ./vendor/bin/phpunit --no-coverage --debug --verbose || exit 1;
+    XDEBUG_MODE=coverage ./vendor/bin/phpunit --no-coverage --debug --verbose || exit 1;
 ";
 
 sed \
@@ -56,7 +56,7 @@ docker-compose exec php bash -c "
     ./artisan pmg:sets;
     ./artisan optimize:clear;
 
-    ./vendor/bin/phpunit --debug --verbose || exit 1;
+    XDEBUG_MODE=coverage ./vendor/bin/phpunit --debug --verbose || exit 1;
 
     COVERALLS_REPO_TOKEN=${COVERALLS_REPO_TOKEN} ./vendor/bin/php-coveralls -v
 ";
