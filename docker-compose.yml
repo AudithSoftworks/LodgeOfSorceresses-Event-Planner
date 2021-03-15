@@ -2,7 +2,6 @@ version: '3.7'
 
 services:
   nginx:
-    container_name: nginx
     image: nginx
     volumes:
       - ./storage/build/configs/nginx.conf:/etc/nginx/conf.d/default.conf:ro
@@ -14,7 +13,6 @@ services:
       default:
         aliases:
           - planner.lodgeofsorceresses.test
-        ipv4_address: 172.72.0.110
 #    healthcheck:
 #      test: ["CMD", "service", "nginx", "status"]
 #      interval: 1s
@@ -22,7 +20,6 @@ services:
 #      retries: 10
 #      start_period: 10s
   php:
-    container_name: php
     image: audithsoftworks/docker:php
     working_dir: /var/www
     volumes:
@@ -35,11 +32,22 @@ services:
       - postgres
       - redis
     environment:
-      XDEBUG_CONFIG: "remote_host=172.72.0.1"
+      XDEBUG_CONFIG: >-
+        client_host=host.docker.internal
+        client_port=54321
+        discover_client_host=1
+        idekey=PHPSTORM
+        start_with_request=1
+      XDEBUG_MODE: debug
+      XDEBUG_SESSION: PHPSTORM
+      # This should correspond to the server declared in PHPStorm `Preferences | Languages & Frameworks | PHP | Servers`
+      # Then PHPStorm will use the corresponding path mappings
+      PHP_IDE_CONFIG: serverName=guildplanner-pro
       REDIS_PORT: 6379
       WORKDIR: "/var/www"
       MYUID: "${MYUID:-1000}"
       MYGID: "${MYGID:-1000}"
+      FONTAWESOME_AUTH_TOKEN: "${FONTAWESOME_AUTH_TOKEN}"
       SQREEN_TOKEN: "${SQREEN_TOKEN}"
       SQREEN_APP_NAME: "${SQREEN_APP_NAME:-Lodge of Sorceresses Guild Planner}"
     entrypoint: storage/build/scripts/docker-entrypoint.sh
@@ -47,20 +55,13 @@ services:
     stdin_open: true
     tty: true
     ipc: host
-    networks:
-      default:
-        ipv4_address: 172.72.0.100
   mariadb:
-    container_name: mariadb
     image: mariadb:10
     environment:
       MYSQL_DATABASE: "basis"
       MYSQL_ALLOW_EMPTY_PASSWORD: "true"
     volumes:
       - db-data:/var/lib/mysql:rw
-    networks:
-      default:
-        ipv4_address: 172.72.0.101
 #    healthcheck:
 #      test: ["CMD", "mysqladmin" ,"ping", "-uroot"]
 #      interval: 1s
@@ -68,15 +69,11 @@ services:
 #      retries: 10
 #      start_period: 10s
   postgres:
-    container_name: postgres
     image: postgres:latest
     environment:
       POSTGRES_DB: "basis"
       POSTGRES_PASSWORD: ""
       POSTGRES_HOST_AUTH_METHOD: "trust"
-    networks:
-      default:
-        ipv4_address: 172.72.0.120
 #    healthcheck:
 #      test: "psql -U postgres -d basis -c \"SELECT 1\""
 #      interval: 1s
@@ -84,11 +81,7 @@ services:
 #      retries: 10
 #      start_period: 10s
   redis:
-    container_name: redis
     image: redis
-    networks:
-      default:
-        ipv4_address: 172.72.0.130
 #    healthcheck:
 #      test: "redis-cli -h redis ping"
 #      interval: 1s
@@ -97,8 +90,3 @@ services:
 #      start_period: 10s
 volumes:
   db-data: {}
-networks:
-  default:
-    ipam:
-      config:
-        - subnet: 172.72.0.0/24
