@@ -30,7 +30,7 @@ return [
     */
     'lifetime' => env('SESSION_LIFETIME', 120),
     
-    'expire_on_close' => true,
+    'expire_on_close' => env('APP_ENV') === 'production',
 
     /*
     |--------------------------------------------------------------------------
@@ -42,7 +42,7 @@ return [
     | automatically by Laravel and you can use the Session like normal.
     |
     */
-    'encrypt' => true,
+    'encrypt' => env('APP_ENV') === 'production',
 
     /*
     |--------------------------------------------------------------------------

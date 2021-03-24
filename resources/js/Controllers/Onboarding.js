@@ -20,12 +20,12 @@ class Onboarding extends PureComponent {
         members: [
             'Guild Introduction',
             'General Guild Requirements',
-            // 'Tier-based Content Clearance Model',
+            'Tier-based Content & Ranking System',
             // 'Endgame Attendance Guidelines for Raid Cores (optional reading)'
         ],
         soulshriven: [
-            // 'Tier-based Content Clearance Model',
             'What is Open Initiative?',
+            'Tier-based Content & Ranking System',
             // 'Open-Events Organization Guidelines (optional reading)'
         ],
     };
