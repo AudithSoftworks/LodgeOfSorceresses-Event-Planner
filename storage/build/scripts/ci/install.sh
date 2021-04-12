@@ -14,7 +14,7 @@ echo "Linking Storage..." && ./artisan storage:link;
 echo "Generating Passport keys..." && ./artisan passport:keys;
 echo "Cache warm-up..." && ./artisan cache:warmup;
 
-composer install --prefer-source --no-interaction --no-dev;
+composer install --no-interaction --no-dev;
 
 touch ./public/$1.php;
 echo "<?php opcache_reset(); unlink(__FILE__);" | tee ./public/$1.php;

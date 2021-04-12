@@ -10,6 +10,8 @@ docker-compose exec php bash -c "
 
     npm ci;
 
+    npx browserslist@latest --update-db;
+
     cd \$WORKDIR;
     if [[ -d ~/.cache/google-fonts/.git ]]; then
         cd ~/.cache/google-fonts && git pull origin master;
